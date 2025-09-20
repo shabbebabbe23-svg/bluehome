@@ -1,0 +1,102 @@
+import { useState } from "react";
+import { Search, MapPin, Home, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import heroImage from "@/assets/hero-image.jpg";
+
+const Hero = () => {
+  const [searchLocation, setSearchLocation] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-black/20" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
+        <div className="animate-fade-in">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            Find Your
+            <span className="block bg-hero-gradient bg-clip-text text-transparent">
+              Dream Home
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl mb-12 text-white/90 max-w-2xl mx-auto">
+            Discover thousands of properties across Sweden with our modern search platform
+          </p>
+        </div>
+
+        {/* Search Card */}
+        <Card className="bg-glass backdrop-blur-md border-white/20 p-6 md:p-8 animate-slide-up">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <Input
+                placeholder="Location"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                className="pl-10 bg-white/90 border-white/30"
+              />
+            </div>
+            
+            <div className="relative">
+              <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <select 
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
+              >
+                <option value="">Property Type</option>
+                <option value="apartment">Apartment</option>
+                <option value="house">House</option>
+                <option value="villa">Villa</option>
+                <option value="townhouse">Townhouse</option>
+              </select>
+            </div>
+
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <select 
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
+              >
+                <option value="">Price Range</option>
+                <option value="0-2000000">Under 2M SEK</option>
+                <option value="2000000-4000000">2M - 4M SEK</option>
+                <option value="4000000-6000000">4M - 6M SEK</option>
+                <option value="6000000+">6M+ SEK</option>
+              </select>
+            </div>
+
+            <Button size="lg" className="bg-hero-gradient hover:scale-105 transition-transform">
+              <Search className="w-5 h-5 mr-2" />
+              Search
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2 justify-center text-sm">
+            <span className="text-muted-foreground">Popular searches:</span>
+            <button className="text-primary hover:text-primary-glow transition-colors">Stockholm</button>
+            <span className="text-muted-foreground">•</span>
+            <button className="text-primary hover:text-primary-glow transition-colors">Gothenburg</button>
+            <span className="text-muted-foreground">•</span>
+            <button className="text-primary hover:text-primary-glow transition-colors">Malmö</button>
+            <span className="text-muted-foreground">•</span>
+            <button className="text-primary hover:text-primary-glow transition-colors">Uppsala</button>
+          </div>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
