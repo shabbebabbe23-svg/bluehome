@@ -13,7 +13,7 @@ const Header = () => {
           <div className="flex items-center gap-2">
             <Home className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              Hemnet
+              Shabbes Real Estate
             </span>
           </div>
 

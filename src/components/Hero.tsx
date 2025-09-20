@@ -30,7 +30,7 @@ const Hero = () => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-white/90 max-w-2xl mx-auto">
-            Discover thousands of properties across Sweden with our modern search platform
+            Discover thousands of properties across Sweden with Shabbes Real Estate
           </p>
         </div>
 

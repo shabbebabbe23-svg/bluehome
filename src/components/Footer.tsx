@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Home className="w-8 h-8 text-primary-glow" />
-              <span className="text-2xl font-bold">Hemnet</span>
+              <span className="text-2xl font-bold">Shabbes Real Estate</span>
             </div>
             <p className="text-white/80">
               Sweden's leading platform for buying, selling, and renting properties. 
@@ -76,7 +76,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary-glow" />
-                <span className="text-white/80">info@hemnet.se</span>
+                <span className="text-white/80">info@shabbesrealestate.se</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-primary-glow" />
@@ -88,7 +88,7 @@ const Footer = () => {
 
         <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/60 mb-4 md:mb-0">
-            © 2024 Hemnet. All rights reserved.
+            © 2024 Shabbes Real Estate. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
