@@ -24,13 +24,13 @@ const Hero = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
         <div className="animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Find Your
+            Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
-              Dream Home
+              Drömhem
             </span>
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-white/90 max-w-2xl mx-auto">
-            Discover thousands of properties across Sweden with Shabbes Real Estate
+            Upptäck tusentals fastigheter över hela Sverige med Bluehome
           </p>
         </div>
 
@@ -40,7 +40,7 @@ const Hero = () => {
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
-                placeholder="Location"
+                placeholder="Plats"
                 value={searchLocation}
                 onChange={(e) => setSearchLocation(e.target.value)}
                 className="pl-10 bg-white/90 border-white/30"
@@ -54,11 +54,11 @@ const Hero = () => {
                 onChange={(e) => setPropertyType(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
               >
-                <option value="">Property Type</option>
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="villa">Villa</option>
-                <option value="townhouse">Townhouse</option>
+                <option value="">Bostadstyp</option>
+                <option value="apartment">Lägenhet</option>
+                <option value="house">Villa</option>
+                <option value="villa">Radhus</option>
+                <option value="townhouse">Bostadsrätt</option>
               </select>
             </div>
 
@@ -69,25 +69,25 @@ const Hero = () => {
                 onChange={(e) => setPriceRange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
               >
-                <option value="">Price Range</option>
-                <option value="0-2000000">Under 2M SEK</option>
-                <option value="2000000-4000000">2M - 4M SEK</option>
-                <option value="4000000-6000000">4M - 6M SEK</option>
-                <option value="6000000+">6M+ SEK</option>
+                <option value="">Prisintervall</option>
+                <option value="0-2000000">Under 2 miljoner SEK</option>
+                <option value="2000000-4000000">2 - 4 miljoner SEK</option>
+                <option value="4000000-6000000">4 - 6 miljoner SEK</option>
+                <option value="6000000+">Över 6 miljoner SEK</option>
               </select>
             </div>
 
             <Button size="lg" className="bg-hero-gradient hover:scale-105 transition-transform">
               <Search className="w-5 h-5 mr-2" />
-              Search
+              Sök
             </Button>
           </div>
 
           <div className="flex flex-wrap gap-2 justify-center text-sm">
-            <span className="text-muted-foreground">Popular searches:</span>
+            <span className="text-muted-foreground">Populära sökningar:</span>
             <button className="text-primary hover:text-primary-glow transition-colors">Stockholm</button>
             <span className="text-muted-foreground">•</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Gothenburg</button>
+            <button className="text-primary hover:text-primary-glow transition-colors">Göteborg</button>
             <span className="text-muted-foreground">•</span>
             <button className="text-primary hover:text-primary-glow transition-colors">Malmö</button>
             <span className="text-muted-foreground">•</span>

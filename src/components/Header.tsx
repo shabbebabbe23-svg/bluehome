@@ -13,23 +13,23 @@ const Header = () => {
           <div className="flex items-center gap-2">
             <Home className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              Shabbes Real Estate
+              Bluehome
             </span>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <a href="#" className="text-foreground hover:text-primary transition-colors">
-              Buy
+              Köp
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors">
-              Rent
+              Hyra
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors">
-              Sell
+              Sälj
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors">
-              About
+              Om oss
             </a>
           </nav>
 
@@ -42,7 +42,7 @@ const Header = () => {
               <User className="w-5 h-5" />
             </Button>
             <Button className="bg-hero-gradient hover:scale-105 transition-transform">
-              Sign In
+              Logga in
             </Button>
           </div>
 
@@ -62,16 +62,16 @@ const Header = () => {
           <div className="md:hidden py-4 border-t border-white/20 bg-white/95 backdrop-blur-md animate-fade-in">
             <nav className="flex flex-col gap-4">
               <a href="#" className="text-foreground hover:text-primary transition-colors px-4 py-2">
-                Buy
+                Köp
               </a>
               <a href="#" className="text-foreground hover:text-primary transition-colors px-4 py-2">
-                Rent
+                Hyra
               </a>
               <a href="#" className="text-foreground hover:text-primary transition-colors px-4 py-2">
-                Sell
+                Sälj
               </a>
               <a href="#" className="text-foreground hover:text-primary transition-colors px-4 py-2">
-                About
+                Om oss
               </a>
               <div className="flex items-center gap-4 px-4 pt-4 border-t border-white/20">
                 <Button variant="ghost" size="icon">
@@ -81,7 +81,7 @@ const Header = () => {
                   <User className="w-5 h-5" />
                 </Button>
                 <Button className="bg-hero-gradient flex-1">
-                  Sign In
+                  Logga in
                 </Button>
               </div>
             </nav>

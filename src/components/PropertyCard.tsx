@@ -45,7 +45,7 @@ const PropertyCard = ({
         <div className="absolute top-4 left-4 flex gap-2">
           {isNew && (
             <Badge className="bg-success text-white">
-              New
+              Ny
             </Badge>
           )}
           <Badge variant="secondary" className="bg-white/90 text-foreground">
@@ -98,12 +98,12 @@ const PropertyCard = ({
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
-            <span>Today</span>
+            <span>Idag</span>
           </div>
         </div>
 
         <Button className="w-full bg-primary hover:bg-primary-glow transition-colors">
-          View Details
+          Visa detaljer
         </Button>
       </CardContent>
     </Card>

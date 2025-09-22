@@ -11,19 +11,19 @@ const PropertyGrid = () => {
   const properties = [
     {
       id: 1,
-      title: "Modern City Apartment",
+      title: "Modern lägenhet i city",
       price: "3.2M SEK",
       location: "Södermalm, Stockholm",
       bedrooms: 2,
       bathrooms: 1,
       area: 75,
       image: property1,
-      type: "Apartment",
+      type: "Lägenhet",
       isNew: true,
     },
     {
       id: 2,
-      title: "Charming Swedish Villa",
+      title: "Charmig svensk villa",
       price: "4.8M SEK",
       location: "Djursholm, Stockholm",
       bedrooms: 4,
@@ -35,50 +35,50 @@ const PropertyGrid = () => {
     },
     {
       id: 3,
-      title: "Contemporary Townhouse",
+      title: "Modernt radhus",
       price: "2.9M SEK",
       location: "Vasastan, Stockholm",
       bedrooms: 3,
       bathrooms: 2,
       area: 110,
       image: property3,
-      type: "Townhouse",
+      type: "Radhus",
       isNew: true,
     },
     {
       id: 4,
-      title: "Luxury Penthouse",
+      title: "Lyxig takvåning",
       price: "8.5M SEK",
       location: "Östermalm, Stockholm",
       bedrooms: 3,
       bathrooms: 2,
       area: 120,
       image: property1,
-      type: "Apartment",
+      type: "Lägenhet",
       isNew: false,
     },
     {
       id: 5,
-      title: "Family House",
+      title: "Familjehus",
       price: "5.2M SEK",
       location: "Lidingö, Stockholm",
       bedrooms: 5,
       bathrooms: 3,
       area: 180,
       image: property2,
-      type: "House",
+      type: "Villa",
       isNew: false,
     },
     {
       id: 6,
-      title: "Studio Apartment",
+      title: "Studioappartement",
       price: "1.8M SEK",
       location: "Norrmalm, Stockholm",
       bedrooms: 1,
       bathrooms: 1,
       area: 45,
       image: property3,
-      type: "Apartment",
+      type: "Lägenhet",
       isNew: true,
     },
   ];
@@ -96,10 +96,10 @@ const PropertyGrid = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-4xl font-bold mb-4 text-foreground">
-            Featured Properties
+            Utvalda fastigheter
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover our handpicked selection of premium properties across Sweden
+            Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige
           </p>
         </div>
 
@@ -121,7 +121,7 @@ const PropertyGrid = () => {
 
         <div className="text-center">
           <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
-            View All Properties
+            Visa alla fastigheter
           </Button>
         </div>
       </div>
