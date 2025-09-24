@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 216 12% 8%;
 
-    --primary: 200 98% 39%;
+    --primary: 200 98% 35%;
     --primary-foreground: 0 0% 100%;
     --primary-glow: 200 100% 50%;
 
@@ -28,24 +28,24 @@ All colors MUST be HSL.
     --muted-foreground: 215 16% 47%;
 
     --accent: 200 95% 92%;
-    --accent-foreground: 200 98% 39%;
+    --accent-foreground: 200 98% 35%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 200 98% 39%;
+    --ring: 200 98% 35%;
 
     --radius: 0.75rem;
 
     /* Custom Real Estate Colors */
-    --hero-gradient: linear-gradient(135deg, hsl(200 98% 39%), hsl(142 76% 36%));
-    --property-shadow: 0 10px 40px -10px hsl(200 98% 39% / 0.1);
-    --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 39% / 0.2);
+    --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%));
+    --property-shadow: 0 10px 40px -10px hsl(200 98% 35% / 0.1);
+    --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 35% / 0.2);
     --glass-bg: hsl(0 0% 100% / 0.8);
     --property-bg: hsl(0 0% 100%);
-    --success: 142 76% 36%;
+    --success: 142 76% 30%;
     --warning: 43 96% 56%;
 
     --sidebar-background: 0 0% 98%;
