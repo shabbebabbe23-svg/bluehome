@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Home, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -41,9 +42,11 @@ const Header = () => {
             <Button variant="ghost" size="icon">
               <User className="w-5 h-5" />
             </Button>
-            <Button className="bg-hero-gradient hover:scale-105 transition-transform">
-              Logga in
-            </Button>
+            <Link to="/logga-in">
+              <Button className="bg-hero-gradient hover:scale-105 transition-transform">
+                Logga in
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -80,9 +83,11 @@ const Header = () => {
                 <Button variant="ghost" size="icon">
                   <User className="w-5 h-5" />
                 </Button>
-                <Button className="bg-hero-gradient flex-1">
-                  Logga in
-                </Button>
+                <Link to="/logga-in" className="flex-1">
+                  <Button className="bg-hero-gradient w-full">
+                    Logga in
+                  </Button>
+                </Link>
               </div>
             </nav>
           </div>
