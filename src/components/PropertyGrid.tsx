@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import PropertyCard from "./PropertyCard";
 import { Button } from "@/components/ui/button";
 import property1 from "@/assets/property-1.jpg";
@@ -123,9 +124,11 @@ const PropertyGrid = () => {
         </div>
 
         <div className="text-center">
-          <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
-            Visa alla fastigheter
-          </Button>
+          <Link to="/fastigheter">
+            <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
+              Visa alla fastigheter
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
