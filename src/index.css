@@ -47,6 +47,7 @@ All colors MUST be HSL.
     --property-bg: hsl(0 0% 100%);
     --success: 142 76% 30%;
     --warning: 43 96% 56%;
+    --main-gradient: linear-gradient(135deg, hsl(135, 70%, 91%), hsl(198, 78%, 84%));
 
     --sidebar-background: 0 0% 98%;
 

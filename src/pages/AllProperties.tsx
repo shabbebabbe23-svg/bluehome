@@ -151,7 +151,7 @@ const AllProperties = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{background: 'var(--main-gradient)'}}>
       <Header />
       <main className="pt-16">
         <section className="py-16 px-4">
