@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
+import property4 from "@/assets/property-4.jpg";
+import property5 from "@/assets/property-5.jpg";
+import property6 from "@/assets/property-6.jpg";
 
 const PropertyGrid = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -53,7 +56,7 @@ const PropertyGrid = () => {
       bedrooms: 3,
       bathrooms: 2,
       area: 120,
-      image: property1,
+      image: property4,
       type: "Lägenhet",
       isNew: false,
     },
@@ -65,7 +68,7 @@ const PropertyGrid = () => {
       bedrooms: 5,
       bathrooms: 3,
       area: 180,
-      image: property2,
+      image: property5,
       type: "Villa",
       isNew: false,
     },
@@ -77,7 +80,7 @@ const PropertyGrid = () => {
       bedrooms: 1,
       bathrooms: 1,
       area: 45,
-      image: property3,
+      image: property6,
       type: "Lägenhet",
       isNew: true,
     },
