@@ -93,36 +93,44 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <Facebook className="w-5 h-5" />
+                <div className="w-5 h-5">
+                  <Facebook className="w-5 h-5" style={{ color: 'hsl(200 98% 35%)' }} />
+                </div>
                 <span>Facebook</span>
               </a>
               <a 
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <Instagram className="w-5 h-5" />
+                <div className="w-5 h-5">
+                  <Instagram className="w-5 h-5" style={{ color: 'hsl(200 100% 50%)' }} />
+                </div>
                 <span>Instagram</span>
               </a>
               <a 
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <Linkedin className="w-5 h-5" />
+                <div className="w-5 h-5">
+                  <Linkedin className="w-5 h-5" style={{ color: 'hsl(142 76% 45%)' }} />
+                </div>
                 <span>LinkedIn</span>
               </a>
               <a 
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <Twitter className="w-5 h-5" />
+                <div className="w-5 h-5">
+                  <Twitter className="w-5 h-5" style={{ color: 'hsl(142 76% 36%)' }} />
+                </div>
                 <span>X (Twitter)</span>
               </a>
             </div>
