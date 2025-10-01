@@ -92,6 +92,8 @@ const Hero = () => {
             <button className="text-primary hover:text-primary-glow transition-colors">Malmö</button>
             <span className="text-muted-foreground">•</span>
             <button className="text-primary hover:text-primary-glow transition-colors">Uppsala</button>
+            <span className="text-muted-foreground">•</span>
+            <button className="text-primary hover:text-primary-glow transition-colors">Spanien</button>
           </div>
         </Card>
       </div>
