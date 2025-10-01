@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-white">
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -84,67 +84,65 @@ const Footer = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="border-t border-white/20 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-white/60">
-              © 2024 Bluehome. Alla rättigheter förbehållna.
-            </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
-                Integritet
-              </a>
-              <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
-                Villkor
-              </a>
-              <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
-                Cookies
-              </a>
-            </div>
-          </div>
-
-          {/* Social Media Section */}
-          <div className="mt-8 pt-8 border-t border-white/20">
-            <h3 className="text-lg font-semibold mb-4 text-center">Följ oss</h3>
-            <div className="flex flex-col items-center gap-3">
+          {/* Social Media */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Följ oss</h3>
+            <div className="flex flex-col gap-3">
               <a 
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 w-48 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all hover:scale-105"
+                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
               >
-                <Facebook className="w-5 h-5 text-primary-glow" />
-                <span className="text-white/80">Facebook</span>
+                <Facebook className="w-5 h-5" />
+                <span>Facebook</span>
               </a>
               <a 
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 w-48 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all hover:scale-105"
+                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
               >
-                <Instagram className="w-5 h-5 text-primary-glow" />
-                <span className="text-white/80">Instagram</span>
+                <Instagram className="w-5 h-5" />
+                <span>Instagram</span>
               </a>
               <a 
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 w-48 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all hover:scale-105"
+                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
               >
-                <Linkedin className="w-5 h-5 text-primary-glow" />
-                <span className="text-white/80">LinkedIn</span>
+                <Linkedin className="w-5 h-5" />
+                <span>LinkedIn</span>
               </a>
               <a 
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 w-48 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all hover:scale-105"
+                className="flex items-center gap-3 text-white/80 hover:text-primary-glow transition-colors"
               >
-                <Twitter className="w-5 h-5 text-primary-glow" />
-                <span className="text-white/80">X (Twitter)</span>
+                <Twitter className="w-5 h-5" />
+                <span>X (Twitter)</span>
               </a>
             </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-white/60 mb-4 md:mb-0">
+            © 2024 Bluehome. Alla rättigheter förbehållna.
+          </p>
+          <div className="flex gap-6">
+            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+              Integritet
+            </a>
+            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+              Villkor
+            </a>
+            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+              Cookies
+            </a>
           </div>
         </div>
       </div>
