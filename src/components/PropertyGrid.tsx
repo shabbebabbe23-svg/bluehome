@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import PropertyCard from "./PropertyCard";
 import { Button } from "@/components/ui/button";
 import property1 from "@/assets/property-1.jpg";
@@ -8,9 +7,14 @@ import property3 from "@/assets/property-3.jpg";
 import property4 from "@/assets/property-4.jpg";
 import property5 from "@/assets/property-5.jpg";
 import property6 from "@/assets/property-6.jpg";
+import property7 from "@/assets/property-7.jpg";
+import property8 from "@/assets/property-8.jpg";
+import property9 from "@/assets/property-9.jpg";
+import property10 from "@/assets/property-10.jpg";
 
 const PropertyGrid = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [showAll, setShowAll] = useState(false);
 
   const properties = [
     {
@@ -85,7 +89,57 @@ const PropertyGrid = () => {
       type: "Lägenhet",
       isNew: true,
     },
+    {
+      id: 7,
+      title: "Elegant stadslägeneht",
+      price: "4.1M SEK",
+      location: "Gamla Stan, Stockholm",
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 85,
+      image: property7,
+      type: "Lägenhet",
+      isNew: false,
+    },
+    {
+      id: 8,
+      title: "Klassiskt radhus",
+      price: "6.3M SEK",
+      location: "Bromma, Stockholm",
+      bedrooms: 4,
+      bathrooms: 3,
+      area: 140,
+      image: property8,
+      type: "Radhus",
+      isNew: true,
+    },
+    {
+      id: 9,
+      title: "Exklusiv skogsvilla",
+      price: "9.2M SEK",
+      location: "Nacka, Stockholm",
+      bedrooms: 5,
+      bathrooms: 4,
+      area: 220,
+      image: property9,
+      type: "Villa",
+      isNew: false,
+    },
+    {
+      id: 10,
+      title: "Sjönära lägenhet",
+      price: "7.8M SEK",
+      location: "Strandvägen, Stockholm",
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 130,
+      image: property10,
+      type: "Lägenhet",
+      isNew: true,
+    },
   ];
+
+  const displayedProperties = showAll ? properties : properties.slice(0, 6);
 
   const handleFavoriteToggle = (id: number) => {
     setFavorites(prev => 
@@ -108,7 +162,7 @@ const PropertyGrid = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {properties.map((property, index) => (
+          {displayedProperties.map((property, index) => (
             <div
               key={property.id}
               className="animate-slide-up"
@@ -124,11 +178,14 @@ const PropertyGrid = () => {
         </div>
 
         <div className="text-center">
-          <Link to="/fastigheter">
-            <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
-              Visa alla fastigheter
-            </Button>
-          </Link>
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="hover:scale-105 transition-transform"
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? "Visa färre fastigheter" : "Visa alla fastigheter"}
+          </Button>
         </div>
       </div>
     </section>
