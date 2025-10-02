@@ -71,15 +71,21 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Kontakt</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary-glow" />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Phone className="w-full h-full text-white" />
+                </div>
                 <span className="text-white/80">+46 8 123 456 78</span>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary-glow" />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Mail className="w-full h-full text-white" />
+                </div>
                 <span className="text-white/80">info@bluehome.se</span>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary-glow" />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <MapPin className="w-full h-full text-white" />
+                </div>
                 <span className="text-white/80">Stockholm, Sverige</span>
               </div>
             </div>
