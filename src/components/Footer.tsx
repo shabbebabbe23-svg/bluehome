@@ -95,8 +95,8 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5">
-                  <Facebook className="w-5 h-5" style={{ color: 'hsl(200 98% 35%)' }} />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Facebook className="w-full h-full text-white" />
                 </div>
                 <span>Facebook</span>
               </a>
@@ -106,8 +106,8 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5">
-                  <Instagram className="w-5 h-5" style={{ color: 'hsl(200 100% 50%)' }} />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,100%,50%)] to-[hsl(142,76%,45%)] rounded p-0.5">
+                  <Instagram className="w-full h-full text-white" />
                 </div>
                 <span>Instagram</span>
               </a>
@@ -117,8 +117,8 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5">
-                  <Linkedin className="w-5 h-5" style={{ color: 'hsl(142 76% 45%)' }} />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Linkedin className="w-full h-full text-white" />
                 </div>
                 <span>LinkedIn</span>
               </a>
@@ -128,8 +128,8 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5">
-                  <Twitter className="w-5 h-5" style={{ color: 'hsl(142 76% 36%)' }} />
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Twitter className="w-full h-full text-white" />
                 </div>
                 <span>X (Twitter)</span>
               </a>
