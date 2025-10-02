@@ -35,39 +35,68 @@ const Hero = () => {
         </div>
 
         {/* Search Card */}
-        <Card className="bg-glass backdrop-blur-md border-white/20 p-6 md:p-8 animate-slide-up">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-              <Input
-                placeholder="Plats"
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                className="pl-10 bg-white/90 border-white/30"
-              />
-            </div>
-            
-            <div className="relative">
-              <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-              <select 
-                value={propertyType}
-                onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
-              >
-                <option value="">Bostadstyp</option>
-                <option value="apartment">Lägenhet</option>
-                <option value="house">Villa</option>
-                <option value="villa">Radhus</option>
-                <option value="townhouse">Bostadsrätt</option>
-              </select>
+        <Card className="bg-white/95 backdrop-blur-md border-white/20 p-8 md:p-10 animate-slide-up max-w-5xl mx-auto">
+          <div className="space-y-6">
+            {/* Område Section */}
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Område</h2>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6" />
+                <Input
+                  placeholder="Skriv område eller adress"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                  className="pl-14 h-14 text-lg border-2 border-primary/30 focus:border-primary"
+                />
+              </div>
             </div>
 
+            {/* Property Type Buttons */}
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Bostadstyp</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Button
+                  variant={propertyType === "" ? "default" : "outline"}
+                  onClick={() => setPropertyType("")}
+                  className="h-14 text-base justify-start"
+                >
+                  <Home className="w-5 h-5 mr-2" />
+                  Alla typer
+                </Button>
+                <Button
+                  variant={propertyType === "house" ? "default" : "outline"}
+                  onClick={() => setPropertyType("house")}
+                  className="h-14 text-base justify-start"
+                >
+                  <Home className="w-5 h-5 mr-2" />
+                  Villor
+                </Button>
+                <Button
+                  variant={propertyType === "villa" ? "default" : "outline"}
+                  onClick={() => setPropertyType("villa")}
+                  className="h-14 text-base justify-start"
+                >
+                  <Home className="w-5 h-5 mr-2" />
+                  Par/Kedje/Radhus
+                </Button>
+                <Button
+                  variant={propertyType === "apartment" ? "default" : "outline"}
+                  onClick={() => setPropertyType("apartment")}
+                  className="h-14 text-base justify-start"
+                >
+                  <Home className="w-5 h-5 mr-2" />
+                  Lägenheter
+                </Button>
+              </div>
+            </div>
+
+            {/* Price Filter */}
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
               <select 
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-md border border-white/30 bg-white/90 text-foreground"
+                className="w-full pl-12 pr-4 py-3 rounded-md border-2 border-primary/30 bg-white text-foreground h-12 text-base cursor-pointer hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 <option value="">Prisintervall</option>
                 <option value="0-2000000">Under 2 miljoner SEK</option>
@@ -77,23 +106,10 @@ const Hero = () => {
               </select>
             </div>
 
-            <Button size="lg" className="bg-hero-gradient hover:scale-105 transition-transform">
-              <Search className="w-5 h-5 mr-2" />
-              Sök
+            {/* Search Button */}
+            <Button size="lg" className="w-full h-14 text-lg bg-hero-gradient hover:scale-[1.02] transition-transform">
+              Hitta bostäder
             </Button>
-          </div>
-
-          <div className="flex flex-wrap gap-2 justify-center text-sm">
-            <span className="text-muted-foreground">Populära sökningar:</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Stockholm</button>
-            <span className="text-muted-foreground">•</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Göteborg</button>
-            <span className="text-muted-foreground">•</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Malmö</button>
-            <span className="text-muted-foreground">•</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Uppsala</button>
-            <span className="text-muted-foreground">•</span>
-            <button className="text-primary hover:text-primary-glow transition-colors">Spanien</button>
           </div>
         </Card>
       </div>
