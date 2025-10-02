@@ -35,7 +35,7 @@ const Hero = () => {
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/95 backdrop-blur-md border-white/20 p-8 md:p-10 animate-slide-up max-w-5xl mx-auto">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-8 md:p-10 animate-slide-up max-w-5xl mx-auto">
           <div className="space-y-6">
             {/* Område Section */}
             <div>
@@ -107,7 +107,7 @@ const Hero = () => {
             </div>
 
             {/* Price Filter */}
-            <div className="relative w-64">
+            <div className="relative w-52">
               <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
               <select 
                 value={priceRange}
