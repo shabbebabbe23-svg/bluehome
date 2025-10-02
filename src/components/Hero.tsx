@@ -58,7 +58,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("")}
-                  className={`h-14 text-base justify-start ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Alla typer
@@ -66,7 +66,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("house")}
-                  className={`h-14 text-base justify-start ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Villor
@@ -74,7 +74,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("villa")}
-                  className={`h-14 text-base justify-start ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Par/Radhus
@@ -82,7 +82,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("apartment")}
-                  className={`h-14 text-base justify-start ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Lägenheter
@@ -90,7 +90,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("cottage")}
-                  className={`h-14 text-base justify-start ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Fritidshus
@@ -98,7 +98,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("plot")}
-                  className={`h-14 text-base justify-start ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:opacity-90" : ""}`}
+                  className={`h-14 text-base justify-start ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
                   <Home className="w-5 h-5 mr-2" />
                   Tomt
@@ -107,7 +107,7 @@ const Hero = () => {
             </div>
 
             {/* Price Filter */}
-            <div className="relative max-w-xs">
+            <div className="relative w-64">
               <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
               <select 
                 value={priceRange}
