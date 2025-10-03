@@ -9,6 +9,8 @@ import heroImage from "@/assets/hero-image.jpg";
 const Hero = () => {
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
+  const [areaRange, setAreaRange] = useState([0, 200]);
+  const [roomRange, setRoomRange] = useState([0, 7]);
   const [propertyType, setPropertyType] = useState("");
 
   const formatPrice = (value: number) => {
@@ -136,6 +138,50 @@ const Hero = () => {
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>0 kr</span>
                 <span>20+ milj kr</span>
+              </div>
+            </div>
+
+            {/* Area Filter */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Yta</h3>
+                <div className="text-sm text-muted-foreground">
+                  {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                </div>
+              </div>
+              <Slider
+                min={0}
+                max={200}
+                step={5}
+                value={areaRange}
+                onValueChange={setAreaRange}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0 kvm</span>
+                <span>200+ kvm</span>
+              </div>
+            </div>
+
+            {/* Room Filter */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Antal rum</h3>
+                <div className="text-sm text-muted-foreground">
+                  {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                </div>
+              </div>
+              <Slider
+                min={0}
+                max={7}
+                step={1}
+                value={roomRange}
+                onValueChange={setRoomRange}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0 rum</span>
+                <span>7+ rum</span>
               </div>
             </div>
 
