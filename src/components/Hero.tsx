@@ -76,7 +76,10 @@ const Hero = () => {
                   onClick={() => setPropertyType("villa")}
                   className={`h-14 text-base justify-start ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Building2 className="w-5 h-5 mr-2" />
+                  <div className="flex mr-2">
+                    <Home className="w-5 h-5 -mr-1" />
+                    <Home className="w-5 h-5" />
+                  </div>
                   Par/Radhus
                 </Button>
                 <Button
