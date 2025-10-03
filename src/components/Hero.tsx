@@ -3,12 +3,20 @@ import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Hero = () => {
   const [searchLocation, setSearchLocation] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [propertyType, setPropertyType] = useState("");
+
+  const formatPrice = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)} milj kr`;
+    }
+    return `${(value / 1000).toFixed(0)} tkr`;
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -110,19 +118,25 @@ const Hero = () => {
             </div>
 
             {/* Price Filter */}
-            <div className="relative w-52">
-              <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
-              <select 
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Prisintervall</h3>
+                <div className="text-sm text-muted-foreground">
+                  {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                </div>
+              </div>
+              <Slider
+                min={0}
+                max={20000000}
+                step={100000}
                 value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-md border-2 border-primary/30 bg-white text-foreground h-12 text-base cursor-pointer hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              >
-                <option value="">Prisintervall</option>
-                <option value="0-2000000">Under 2 miljoner SEK</option>
-                <option value="2000000-4000000">2 - 4 miljoner SEK</option>
-                <option value="4000000-6000000">4 - 6 miljoner SEK</option>
-                <option value="6000000+">Över 6 miljoner SEK</option>
-              </select>
+                onValueChange={setPriceRange}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0 kr</span>
+                <span>20+ milj kr</span>
+              </div>
             </div>
 
             {/* Search Button */}
