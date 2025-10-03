@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Home, Filter } from "lucide-react";
+import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -76,7 +76,7 @@ const Hero = () => {
                   onClick={() => setPropertyType("villa")}
                   className={`h-14 text-base justify-start ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <Building2 className="w-5 h-5 mr-2" />
                   Par/Radhus
                 </Button>
                 <Button
@@ -84,7 +84,7 @@ const Hero = () => {
                   onClick={() => setPropertyType("apartment")}
                   className={`h-14 text-base justify-start ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <Building className="w-5 h-5 mr-2" />
                   Lägenheter
                 </Button>
                 <Button
@@ -92,7 +92,7 @@ const Hero = () => {
                   onClick={() => setPropertyType("cottage")}
                   className={`h-14 text-base justify-start ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <TreePine className="w-5 h-5 mr-2" />
                   Fritidshus
                 </Button>
                 <Button
@@ -100,7 +100,7 @@ const Hero = () => {
                   onClick={() => setPropertyType("plot")}
                   className={`h-14 text-base justify-start ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <Square className="w-5 h-5 mr-2" />
                   Tomt
                 </Button>
               </div>
