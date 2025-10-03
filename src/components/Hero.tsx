@@ -12,6 +12,7 @@ const Hero = () => {
   const [areaRange, setAreaRange] = useState([0, 200]);
   const [roomRange, setRoomRange] = useState([0, 7]);
   const [propertyType, setPropertyType] = useState("");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const formatPrice = (value: number) => {
     if (value >= 1000000) {
@@ -119,71 +120,86 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Price Filter */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Prisintervall</h3>
-                <div className="text-sm text-muted-foreground">
-                  {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
-                </div>
-              </div>
-              <Slider
-                min={0}
-                max={20000000}
-                step={100000}
-                value={priceRange}
-                onValueChange={setPriceRange}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0 kr</span>
-                <span>20+ milj kr</span>
-              </div>
-            </div>
+            {/* More Filters Button */}
+            <Button
+              variant="outline"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="w-full h-12"
+            >
+              <Filter className="w-5 h-5 mr-2" />
+              {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
+            </Button>
 
-            {/* Area Filter */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Yta</h3>
-                <div className="text-sm text-muted-foreground">
-                  {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+            {/* Advanced Filters */}
+            {showAdvancedFilters && (
+              <>
+                {/* Price Filter */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground">Prisintervall</h3>
+                    <div className="text-sm text-muted-foreground">
+                      {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                    </div>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={20000000}
+                    step={100000}
+                    value={priceRange}
+                    onValueChange={setPriceRange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>0 kr</span>
+                    <span>20+ milj kr</span>
+                  </div>
                 </div>
-              </div>
-              <Slider
-                min={0}
-                max={200}
-                step={5}
-                value={areaRange}
-                onValueChange={setAreaRange}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0 kvm</span>
-                <span>200+ kvm</span>
-              </div>
-            </div>
 
-            {/* Room Filter */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Antal rum</h3>
-                <div className="text-sm text-muted-foreground">
-                  {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                {/* Area Filter */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground">Yta</h3>
+                    <div className="text-sm text-muted-foreground">
+                      {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                    </div>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={200}
+                    step={5}
+                    value={areaRange}
+                    onValueChange={setAreaRange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>0 kvm</span>
+                    <span>200+ kvm</span>
+                  </div>
                 </div>
-              </div>
-              <Slider
-                min={0}
-                max={7}
-                step={1}
-                value={roomRange}
-                onValueChange={setRoomRange}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0 rum</span>
-                <span>7+ rum</span>
-              </div>
-            </div>
+
+                {/* Room Filter */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground">Antal rum</h3>
+                    <div className="text-sm text-muted-foreground">
+                      {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                    </div>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={7}
+                    step={1}
+                    value={roomRange}
+                    onValueChange={setRoomRange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>0 rum</span>
+                    <span>7+ rum</span>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Search Button */}
             <Button size="lg" className="w-full h-14 text-lg bg-hero-gradient hover:scale-[1.02] transition-transform">
