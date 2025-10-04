@@ -66,13 +66,24 @@ const PropertyCard = ({
         <Button
           variant="secondary"
           size="icon"
-          className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors"
+          className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart"
           onClick={() => onFavoriteToggle?.(id)}
         >
           <Heart
-            className={`w-4 h-4 transition-colors ${
-              isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+            className={`w-4 h-4 transition-all duration-300 ${
+              isFavorite 
+                ? "fill-red-500 text-red-500" 
+                : "text-muted-foreground group-hover/heart:text-transparent group-hover/heart:bg-gradient-to-r group-hover/heart:from-primary group-hover/heart:to-secondary group-hover/heart:bg-clip-text"
             }`}
+            style={
+              !isFavorite 
+                ? {
+                    backgroundImage: "linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 36%))",
+                    WebkitBackgroundClip: "text",
+                    backgroundClip: "text",
+                  }
+                : undefined
+            }
           />
         </Button>
       </div>
