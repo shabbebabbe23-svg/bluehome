@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart, MapPin, Bed, Bath, Square, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ interface PropertyCardProps {
   bathrooms: number;
   area: number;
   image: string;
+  hoverImage?: string;
   type: string;
   isNew?: boolean;
   isFavorite?: boolean;
@@ -27,18 +29,25 @@ const PropertyCard = ({
   bathrooms,
   area,
   image,
+  hoverImage,
   type,
   isNew = false,
   isFavorite = false,
   onFavoriteToggle,
 }: PropertyCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <Card className="group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in">
-      <div className="relative overflow-hidden">
+      <div 
+        className="relative overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <img
-          src={image}
+          src={isHovered && hoverImage ? hoverImage : image}
           alt={title}
-          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-48 object-cover transition-all duration-500 group-hover:scale-105"
         />
         
         {/* Overlay with badges */}
