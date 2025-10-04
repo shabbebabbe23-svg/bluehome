@@ -3,6 +3,7 @@ import { Heart, MapPin, Bed, Bath, Square, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface PropertyCardProps {
   id: number;
@@ -122,9 +123,11 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <Button className="w-full bg-primary hover:bg-primary-glow transition-colors">
-          Visa detaljer
-        </Button>
+        <Link to={`/fastighet/${id}`}>
+          <Button className="w-full bg-primary hover:bg-primary-glow transition-colors">
+            Visa detaljer
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );
