@@ -16,6 +16,7 @@ import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
+import PropertyMap from "@/components/PropertyMap";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -365,6 +366,9 @@ const PropertyDetail = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Map */}
+            <PropertyMap address={property.address} location={property.location} />
           </div>
 
           {/* Sidebar */}
