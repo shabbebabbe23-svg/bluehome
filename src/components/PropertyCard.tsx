@@ -106,11 +106,11 @@ const PropertyCard = ({
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <Bed className="w-4 h-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{bedrooms}</span>
+              <span className="font-semibold text-foreground">{bedrooms} rum</span>
             </div>
             <div className="flex items-center gap-1">
               <Bath className="w-4 h-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{bathrooms}</span>
+              <span className="font-semibold text-foreground">{bathrooms} badrum</span>
             </div>
             <div className="flex items-center gap-1">
               <Square className="w-4 h-4 text-muted-foreground" />
