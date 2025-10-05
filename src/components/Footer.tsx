@@ -15,11 +15,6 @@ const Footer = () => {
               Sveriges ledande plattform för att köpa, sälja och hyra fastigheter. 
               Hitta ditt perfekta hem idag.
             </p>
-            <div className="flex gap-4">
-              <Facebook className="w-5 h-5 text-white/60 hover:text-primary-glow cursor-pointer transition-colors" />
-              <Twitter className="w-5 h-5 text-white/60 hover:text-primary-glow cursor-pointer transition-colors" />
-              <Instagram className="w-5 h-5 text-white/60 hover:text-primary-glow cursor-pointer transition-colors" />
-            </div>
           </div>
 
           {/* Quick Links */}

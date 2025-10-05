@@ -15,6 +15,7 @@ import property7 from "@/assets/property-7.jpg";
 import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
+import DetailAdBanner from "@/components/DetailAdBanner";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -408,6 +409,11 @@ const PropertyDetail = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Ad Banner Below */}
+        <div className="mt-8">
+          <DetailAdBanner />
         </div>
       </div>
     </div>
