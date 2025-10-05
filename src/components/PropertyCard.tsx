@@ -102,22 +102,22 @@ const PropertyCard = ({
           <span className="text-sm">{location}</span>
         </div>
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+        <div className="flex items-center justify-between text-sm mb-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
-              <Bed className="w-4 h-4" />
-              <span>{bedrooms}</span>
+              <Bed className="w-4 h-4 text-muted-foreground" />
+              <span className="font-semibold text-foreground">{bedrooms}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Bath className="w-4 h-4" />
-              <span>{bathrooms}</span>
+              <Bath className="w-4 h-4 text-muted-foreground" />
+              <span className="font-semibold text-foreground">{bathrooms}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Square className="w-4 h-4" />
-              <span>{area}m²</span>
+              <Square className="w-4 h-4 text-muted-foreground" />
+              <span className="font-semibold text-foreground">{area}m²</span>
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <span>Idag</span>
           </div>
