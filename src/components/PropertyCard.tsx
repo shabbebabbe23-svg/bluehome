@@ -74,18 +74,31 @@ const PropertyCard = ({
             className={`w-4 h-4 transition-all duration-300 ${
               isFavorite 
                 ? "fill-red-500 text-red-500" 
-                : "text-muted-foreground group-hover/heart:text-transparent group-hover/heart:bg-gradient-to-r group-hover/heart:from-primary group-hover/heart:to-secondary group-hover/heart:bg-clip-text"
+                : "text-muted-foreground"
             }`}
             style={
               !isFavorite 
-                ? {
-                    backgroundImage: "linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 36%))",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                  }
+                ? undefined
                 : undefined
             }
           />
+          {!isFavorite && (
+            <Heart
+              className="w-4 h-4 absolute inset-0 opacity-0 group-hover/heart:opacity-100 transition-opacity duration-300"
+              style={{
+                stroke: "url(#heart-gradient)",
+                fill: "none",
+              }}
+            />
+          )}
+          <svg width="0" height="0" style={{ position: 'absolute' }}>
+            <defs>
+              <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+          </svg>
         </Button>
       </div>
 
