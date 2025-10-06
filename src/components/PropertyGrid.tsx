@@ -249,12 +249,12 @@ const PropertyGrid = () => {
         {/* Sort Dropdown */}
         <div className="flex justify-end mb-8">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[280px] bg-card border-border">
+            <SelectTrigger className="w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
               <SelectValue placeholder="Sortera efter" />
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
-              <SelectItem value="default">Standard</SelectItem>
+              <SelectItem value="default">Sortera efter</SelectItem>
               <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
               <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
               <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
