@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import property7 from "@/assets/property-7.jpg";
 import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
+import floorplan from "@/assets/floorplan-1.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import PropertyMap from "@/components/PropertyMap";
 
@@ -33,7 +34,7 @@ const PropertyDetail = () => {
       bedrooms: 2,
       bathrooms: 1,
       area: 75,
-      images: [property1, property2],
+      images: [property1, property2, property3, property4],
       type: "Lägenhet",
       isNew: true,
       buildYear: 2018,
@@ -51,7 +52,7 @@ const PropertyDetail = () => {
       bedrooms: 4,
       bathrooms: 2,
       area: 150,
-      images: [property2, property3],
+      images: [property2, property3, property4, property5],
       type: "Villa",
       isNew: false,
       buildYear: 1985,
@@ -69,7 +70,7 @@ const PropertyDetail = () => {
       bedrooms: 3,
       bathrooms: 2,
       area: 110,
-      images: [property3, property4],
+      images: [property3, property4, property5, property6],
       type: "Radhus",
       isNew: true,
       buildYear: 2020,
@@ -87,7 +88,7 @@ const PropertyDetail = () => {
       bedrooms: 3,
       bathrooms: 2,
       area: 120,
-      images: [property4, property5],
+      images: [property4, property5, property6, property7],
       type: "Lägenhet",
       isNew: false,
       buildYear: 1910,
@@ -105,7 +106,7 @@ const PropertyDetail = () => {
       bedrooms: 5,
       bathrooms: 3,
       area: 180,
-      images: [property5, property6],
+      images: [property5, property6, property7, property8],
       type: "Villa",
       isNew: false,
       buildYear: 1992,
@@ -123,7 +124,7 @@ const PropertyDetail = () => {
       bedrooms: 1,
       bathrooms: 1,
       area: 45,
-      images: [property6, property7],
+      images: [property6, property7, property8, property9],
       type: "Lägenhet",
       isNew: true,
       buildYear: 2021,
@@ -141,7 +142,7 @@ const PropertyDetail = () => {
       bedrooms: 2,
       bathrooms: 1,
       area: 85,
-      images: [property7, property8],
+      images: [property7, property8, property9, property10],
       type: "Lägenhet",
       isNew: false,
       buildYear: 1650,
@@ -159,7 +160,7 @@ const PropertyDetail = () => {
       bedrooms: 4,
       bathrooms: 3,
       area: 140,
-      images: [property8, property9],
+      images: [property8, property9, property10, property1],
       type: "Radhus",
       isNew: true,
       buildYear: 2022,
@@ -177,7 +178,7 @@ const PropertyDetail = () => {
       bedrooms: 5,
       bathrooms: 4,
       area: 220,
-      images: [property9, property10],
+      images: [property9, property10, property1, property2],
       type: "Villa",
       isNew: false,
       buildYear: 2010,
@@ -195,7 +196,7 @@ const PropertyDetail = () => {
       bedrooms: 3,
       bathrooms: 2,
       area: 130,
-      images: [property10, property1],
+      images: [property10, property1, property2, property3],
       type: "Lägenhet",
       isNew: true,
       buildYear: 2019,
@@ -222,6 +223,14 @@ const PropertyDetail = () => {
   }
 
   const images = property.images || [property1];
+
+  const handlePreviousImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -262,23 +271,56 @@ const PropertyDetail = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Image Gallery */}
             <Card className="overflow-hidden">
-              <div className="relative h-[500px]">
+              <div className="relative h-[500px] group">
                 <img
                   src={images[currentImageIndex]}
                   alt={property.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-4 left-4 flex gap-2">
-                  {images.map((_, index) => (
+                
+                {/* Navigation Buttons */}
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+                  onClick={handlePreviousImage}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+                  onClick={handleNextImage}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </Button>
+                
+                {/* Image Counter */}
+                <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {images.length}
+                </div>
+              </div>
+              
+              {/* Thumbnail Gallery */}
+              <div className="p-4 bg-muted/30">
+                <div className="flex gap-2 overflow-x-auto">
+                  {images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                         currentImageIndex === index
-                          ? "bg-white w-8"
-                          : "bg-white/50 hover:bg-white/75"
+                          ? "border-primary scale-105"
+                          : "border-transparent hover:border-primary/50"
                       }`}
-                    />
+                    >
+                      <img
+                        src={image}
+                        alt={`${property.title} - bild ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -348,6 +390,20 @@ const PropertyDetail = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {property.description}
                   </p>
+                </div>
+
+                <Separator className="my-6" />
+
+                {/* Floor Plan */}
+                <div>
+                  <h2 className="text-xl font-bold mb-3">Planritning</h2>
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <img
+                      src={floorplan}
+                      alt="Planritning"
+                      className="w-full h-auto rounded-lg"
+                    />
+                  </div>
                 </div>
 
                 <Separator className="my-6" />
