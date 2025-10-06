@@ -7,7 +7,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-white/20">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{background: 'var(--main-gradient)'}}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -62,7 +62,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 bg-white/95 backdrop-blur-md animate-fade-in">
+          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" style={{background: 'var(--main-gradient)'}}>
             <nav className="flex flex-col gap-4">
               <a href="#" className="text-foreground hover:text-primary transition-colors px-4 py-2">
                 Köp
