@@ -70,27 +70,6 @@ const PropertyCard = ({
           className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart"
           onClick={() => onFavoriteToggle?.(id)}
         >
-          <Heart
-            className={`w-4 h-4 transition-all duration-300 ${
-              isFavorite 
-                ? "fill-red-500 text-red-500" 
-                : "text-muted-foreground"
-            }`}
-            style={
-              !isFavorite 
-                ? undefined
-                : undefined
-            }
-          />
-          {!isFavorite && (
-            <Heart
-              className="w-4 h-4 absolute inset-0 opacity-0 group-hover/heart:opacity-100 transition-opacity duration-300"
-              style={{
-                stroke: "url(#heart-gradient)",
-                fill: "none",
-              }}
-            />
-          )}
           <svg width="0" height="0" style={{ position: 'absolute' }}>
             <defs>
               <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -99,6 +78,18 @@ const PropertyCard = ({
               </linearGradient>
             </defs>
           </svg>
+          <Heart
+            className={`w-4 h-4 transition-all duration-300 ${
+              isFavorite 
+                ? "fill-red-500 text-red-500" 
+                : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
+            }`}
+            style={
+              !isFavorite 
+                ? { stroke: 'currentColor' }
+                : undefined
+            }
+          />
         </Button>
       </div>
 
