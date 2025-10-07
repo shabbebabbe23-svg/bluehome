@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import heroImage from "@/assets/hero-image.jpg";
+import { filterMunicipalities } from "@/data/swedishMunicipalities";
 
 const Hero = () => {
   const [searchLocation, setSearchLocation] = useState("");
@@ -13,6 +14,37 @@ const Hero = () => {
   const [roomRange, setRoomRange] = useState([0, 7]);
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchChange = (value: string) => {
+    setSearchLocation(value);
+    if (value.trim()) {
+      const filteredSuggestions = filterMunicipalities(value);
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(filteredSuggestions.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (municipality: { name: string; county: string }) => {
+    setSearchLocation(municipality.name);
+    setShowSuggestions(false);
+  };
 
   const formatPrice = (value: number) => {
     if (value >= 1000000) {
@@ -51,14 +83,38 @@ const Hero = () => {
             {/* Område Section */}
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Område</h2>
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6" />
+              <div className="relative" ref={searchRef}>
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6 z-10" />
                 <Input
                   placeholder="Skriv område eller adress"
                   value={searchLocation}
-                  onChange={(e) => setSearchLocation(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onFocus={() => {
+                    if (searchLocation.trim() && suggestions.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
                   className="pl-14 h-14 text-lg border-2 border-primary/30 focus:border-primary"
                 />
+                
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
+                    {suggestions.map((municipality, index) => (
+                      <button
+                        key={`${municipality.name}-${index}`}
+                        onClick={() => handleSuggestionClick(municipality)}
+                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                      >
+                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-foreground">{municipality.name}</p>
+                          <p className="text-sm text-muted-foreground">{municipality.county}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -1,10 +1,12 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { downloadICS } from "@/lib/icsGenerator";
+import { toast } from "sonner";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -232,6 +234,35 @@ const PropertyDetail = () => {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  const handleDownloadViewing = (date: string, time: string) => {
+    // Parse datum och tid för att skapa en riktig Date
+    const [day, month] = date.split(' ').slice(1, 3);
+    const [startTime] = time.split(' - ');
+    
+    // Skapa datum (använder 2025 som år för nu)
+    const monthMap: { [key: string]: number } = {
+      'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'maj': 4, 'jun': 5,
+      'jul': 6, 'aug': 7, 'sep': 8, 'okt': 9, 'nov': 10, 'dec': 11
+    };
+    
+    const monthNum = monthMap[month.toLowerCase()];
+    const [hours, minutes] = startTime.split(':').map(Number);
+    
+    const startDate = new Date(2025, monthNum, parseInt(day), hours, minutes);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 timme
+    
+    downloadICS(
+      `Visning: ${property.title}`,
+      `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`,
+      `${property.address}, ${property.location}`,
+      startDate,
+      endDate,
+      `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`
+    );
+    
+    toast.success('Kalenderaktivitet sparad!');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -450,20 +481,28 @@ const PropertyDetail = () => {
                 <div>
                   <h4 className="font-semibold mb-3">Visningar</h4>
                   <div className="space-y-2">
-                    <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Ons 15 okt</p>
+                    <button
+                      onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')}
+                      className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                    >
+                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                      <div className="flex-1 text-left">
+                        <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
                         <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="font-medium">Fre 17 okt</p>
+                      <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')}
+                      className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                    >
+                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                      <div className="flex-1 text-left">
+                        <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
                         <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
                       </div>
-                    </div>
+                      <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                    </button>
                   </div>
                 </div>
               </CardContent>
