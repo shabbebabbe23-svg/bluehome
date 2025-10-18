@@ -13,7 +13,7 @@ const AdBanner = () => {
           />
           <div className="p-6 space-y-4">
             <h3 className="text-2xl font-bold text-foreground">
-              Badrums-renovering
+              Sovrums-renovering
             </h3>
             <p className="text-muted-foreground">
               Drömmer du om ett nytt badrum? Vi hjälper dig från idé till verklighet.
