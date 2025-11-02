@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserCheck, Building2, Home } from "lucide-react";
 import Header from "@/components/Header";
+import loginHero from "@/assets/login-hero.jpg";
 
 type UserRole = "mäklare" | "säljare" | "köpare" | null;
 
@@ -51,15 +52,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'var(--main-gradient)'}}>
-      <Header />
-      <main className="pt-16">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${loginHero})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Header />
+        <main className="pt-16">
         <div className="container max-w-4xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
+            <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-4">
               Logga in på Bluehome
             </h1>
-            <p className="text-xl text-foreground/80">
+            <p className="text-xl text-white/90 drop-shadow-md">
               Välj din användarroll för att fortsätta
             </p>
           </div>
@@ -71,7 +82,7 @@ const Login = () => {
                 return (
                   <Card 
                     key={role.id}
-                    className="cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-lg border-2 hover:border-primary/50 bg-white/80 backdrop-blur-sm"
+                    className="cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-xl border-2 hover:border-primary/50 bg-white/90 backdrop-blur-md"
                     onClick={() => setSelectedRole(role.id)}
                   >
                     <CardHeader className="text-center">
@@ -94,7 +105,7 @@ const Login = () => {
             </div>
           ) : (
             <div className="max-w-md mx-auto">
-              <Card className="bg-white/80 backdrop-blur-sm border-2">
+              <Card className="bg-white/90 backdrop-blur-md border-2 shadow-xl">
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl mb-2">
                     Logga in som {selectedRole}
@@ -158,6 +169,7 @@ const Login = () => {
           )}
         </div>
       </main>
+      </div>
     </div>
   );
 };
