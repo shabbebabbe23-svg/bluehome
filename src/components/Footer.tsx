@@ -3,8 +3,8 @@ import { Home, Facebook, Twitter, Instagram, Mail, Phone, MapPin, Linkedin } fro
 const Footer = () => {
   return (
     <footer className="bg-foreground text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -138,11 +138,11 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-white/60 mb-4 md:mb-0">
+        <div className="border-t border-white/20 mt-8 md:mt-12 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-white/60 text-sm md:text-base text-center md:text-left">
             © 2024 Bluehome. Alla rättigheter förbehållna.
           </p>
-          <div className="flex gap-6">
+          <div className="flex gap-4 md:gap-6 text-sm md:text-base">
             <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
               Integritet
             </a>

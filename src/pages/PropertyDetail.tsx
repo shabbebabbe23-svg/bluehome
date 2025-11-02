@@ -278,14 +278,14 @@ const PropertyDetail = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <Link to="/">
-            <Button variant="ghost" size="sm" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Tillbaka
+            <Button variant="ghost" size="sm" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform text-xs sm:text-sm">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Tillbaka</span>
             </Button>
           </Link>
-            <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2">
             <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Share2 className="w-4 h-4" />
             </Button>
@@ -308,18 +308,18 @@ const PropertyDetail = () => {
         </div>
       </header>
 
-  <div className="w-full max-w-none px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="w-full max-w-none px-3 sm:px-4 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
           {/* Left Ad */}
           <div className="hidden lg:block">
             <AdBanner className="order-1" />
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Image Gallery */}
             <Card className="overflow-hidden">
-              <div className="relative h-[500px] group">
+              <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
                 <img
                   src={images[currentImageIndex]}
                   alt={property.title}
@@ -330,34 +330,34 @@ const PropertyDetail = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10"
                   onClick={handlePreviousImage}
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10"
                   onClick={handleNextImage}
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
                 
                 {/* Image Counter */}
-                <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               </div>
               
               {/* Thumbnail Gallery */}
-              <div className="p-4 bg-muted/30">
-                <div className="flex gap-2 overflow-x-auto">
+              <div className="p-2 sm:p-4 bg-muted/30">
+                <div className="flex gap-1 sm:gap-2 overflow-x-auto">
                   {images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
                         currentImageIndex === index
                           ? "border-primary scale-105"
                           : "border-transparent hover:border-primary/50"
@@ -376,30 +376,30 @@ const PropertyDetail = () => {
 
             {/* Property Info */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-4">
+                  <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary">{property.type}</Badge>
                       {property.isNew && (
                         <Badge className="bg-success text-white">Ny</Badge>
                       )}
                     </div>
-                    <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-2">{property.title}</h1>
                     <div className="flex items-center text-muted-foreground mb-2">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span>{property.address}, {property.location}</span>
+                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">{property.address}, {property.location}</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-3xl font-bold text-primary">{property.price}</p>
+                  <div className="text-left sm:text-right">
+                    <p className="text-2xl sm:text-3xl font-bold text-primary">{property.price}</p>
                   </div>
                 </div>
 
                 <Separator className="my-6" />
 
                 {/* Quick Facts */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <div className="flex items-center gap-2">
                     <Bed className="w-5 h-5 text-muted-foreground" />
                     <div>

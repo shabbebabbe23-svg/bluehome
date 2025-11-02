@@ -120,58 +120,59 @@ const PropertyCard = ({
         </Button>
       </div>
 
-  <CardContent className="p-8 flex-1 flex flex-col justify-between">
+      <CardContent className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-between">
         {/* Address and price on the same line */}
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="font-semibold text-xl text-foreground group-hover:text-primary transition-colors truncate pr-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
+          <h3 className="font-semibold text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors truncate sm:pr-4">
             {title}
           </h3>
-          <span className="text-xl md:text-2xl font-bold text-primary whitespace-nowrap leading-tight min-w-[6rem] text-right">
+          <span className="text-xl sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap leading-tight sm:min-w-[6rem] sm:text-right">
             {price}
           </span>
         </div>
 
-        <div className="flex items-center text-muted-foreground mb-4">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span className="text-sm">{location}</span>
+        <div className="flex items-center text-muted-foreground mb-3 md:mb-4">
+          <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+          <span className="text-sm truncate">{location}</span>
         </div>
 
-        <div className="mb-4">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Bed className="w-4 h-4 text-muted-foreground" />
+        <div className="mb-3 md:mb-4">
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Bed className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex items-baseline gap-1">
-                <span className="text-lg md:text-xl font-semibold text-foreground">{bedrooms}</span>
-                <span className="text-sm text-muted-foreground">rum</span>
+                <span className="text-base sm:text-lg md:text-xl font-semibold text-foreground">{bedrooms}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Bath className="w-4 h-4 text-muted-foreground" />
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Bath className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex items-baseline gap-1">
-                <span className="text-lg md:text-xl font-semibold text-foreground">{bathrooms}</span>
-                <span className="text-sm text-muted-foreground">badrum</span>
+                <span className="text-base sm:text-lg md:text-xl font-semibold text-foreground">{bathrooms}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">badrum</span>
+                <span className="text-xs sm:text-sm text-muted-foreground sm:hidden">bad</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Square className="w-4 h-4 text-muted-foreground" />
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Square className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex items-baseline gap-1">
-                <span className="text-lg md:text-xl font-semibold text-foreground">{area}</span>
-                <span className="text-sm text-muted-foreground">m²</span>
+                <span className="text-base sm:text-lg md:text-xl font-semibold text-foreground">{area}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-end text-foreground mt-2">
-            <Calendar className="w-4 h-4 mr-1 text-foreground" />
-            <span className="text-sm text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+            <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
+            <span className="text-xs sm:text-sm text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-3 md:mt-4">
           <Link to={`/fastighet/${id}`}>
-            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors">
+            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-sm sm:text-base">
               Visa detaljer
             </Button>
           </Link>

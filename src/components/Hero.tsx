@@ -54,7 +54,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-8 md:pt-0 md:pb-0">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -64,27 +64,27 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-  <div className="relative z-10 w-full max-w-none px-4 text-center text-white">
+      <div className="relative z-10 w-full max-w-none px-3 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
             </span>
           </h1>
-          <p className="text-xl md:text-2xl mb-12 text-white/90 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-12 text-white/90 max-w-2xl mx-auto px-4">
             Upptäck tusentals fastigheter över hela Sverige med Bluehome
           </p>
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-8 md:p-10 animate-slide-up max-w-5xl mx-auto">
-          <div className="space-y-6">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-4 sm:p-6 md:p-8 lg:p-10 animate-slide-up max-w-5xl mx-auto">
+          <div className="space-y-4 md:space-y-6">
             {/* Område Section */}
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Område</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">Område</h2>
               <div className="relative" ref={searchRef}>
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6 z-10" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
                 <Input
                   placeholder="Skriv område eller adress"
                   value={searchLocation}
@@ -94,7 +94,7 @@ const Hero = () => {
                       setShowSuggestions(true);
                     }
                   }}
-                  className="pl-14 h-14 text-lg border-2 border-primary/30 focus:border-primary"
+                  className="pl-11 sm:pl-14 h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
                 />
                 
                 {/* Autocomplete Suggestions */}
@@ -120,15 +120,15 @@ const Hero = () => {
 
             {/* Property Type Buttons */}
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Bostadstyp</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 md:mb-4">Bostadstyp</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("")}
-                  className={`h-14 text-base justify-start ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-11 sm:h-14 text-sm sm:text-base justify-start ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
-                  Alla typer
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                  <span className="truncate">Alla typer</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -180,9 +180,9 @@ const Hero = () => {
             <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="w-full h-12 text-base md:text-lg"
+              className="w-full h-11 sm:h-12 text-sm sm:text-base md:text-lg"
             >
-              <Filter className="w-5 h-5 mr-2" />
+              <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
             </Button>
 
@@ -190,10 +190,10 @@ const Hero = () => {
             {showAdvancedFilters && (
               <>
                 {/* Price Filter */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground">Prisintervall</h3>
-                    <div className="text-lg md:text-xl font-bold text-black">
+                <div className="space-y-3 md:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground">Prisintervall</h3>
+                    <div className="text-base sm:text-lg md:text-xl font-bold text-black">
                       {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
                     </div>
                   </div>
@@ -258,7 +258,7 @@ const Hero = () => {
             )}
 
             {/* Search Button */}
-            <Button size="lg" className="w-full h-14 text-lg bg-hero-gradient hover:scale-[1.02] transition-transform">
+            <Button size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg bg-hero-gradient hover:scale-[1.02] transition-transform">
               Hitta bostäder
             </Button>
           </div>

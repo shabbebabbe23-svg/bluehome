@@ -424,21 +424,21 @@ const PropertyGrid = () => {
   };
 
   return (
-    <section className="py-16 px-4 bg-muted/30">
+    <section className="py-8 md:py-16 px-3 sm:px-4">
       <div className="w-full">
-        <div className="text-center mb-8 animate-fade-in">
-          <h2 className="text-4xl font-bold mb-4 text-foreground">
+        <div className="text-center mb-6 md:mb-8 animate-fade-in">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-foreground">
             Utvalda fastigheter
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige
           </p>
         </div>
 
         {/* Sort Dropdown */}
-        <div className="flex justify-end mb-8">
+        <div className="flex justify-end mb-6 md:mb-8">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[280px] bg-hero-gradient text-white border-transparent">
+            <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
               <SelectValue placeholder="Sortera efter" />
             </SelectTrigger>
@@ -456,7 +456,7 @@ const PropertyGrid = () => {
           </Select>
         </div>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 md:mb-12">
           {displayedProperties.map((property, index) => (
             <div
               key={property.id}
@@ -477,7 +477,7 @@ const PropertyGrid = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="hover:scale-105 transition-transform"
+            className="hover:scale-105 transition-transform w-full sm:w-auto"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "Visa färre fastigheter" : "Visa alla fastigheter"}
