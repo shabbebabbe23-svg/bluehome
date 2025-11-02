@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import heroImage from "@/assets/hero-image.jpg";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
 
@@ -16,6 +18,7 @@ const Hero = () => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const [showFinalPrices, setShowFinalPrices] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,6 +119,19 @@ const Hero = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Slutpriser Toggle */}
+            <div className="flex items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-lg">
+              <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
+                Slutpriser
+              </Label>
+              <Switch
+                id="final-prices"
+                checked={showFinalPrices}
+                onCheckedChange={setShowFinalPrices}
+                className="data-[state=checked]:bg-success"
+              />
             </div>
 
             {/* Property Type Buttons */}
