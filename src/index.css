@@ -41,6 +41,8 @@ All colors MUST be HSL.
 
     /* Custom Real Estate Colors */
     --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%));
+  /* Dark variant of the hero gradient (used in .dark mode) */
+  --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(142 50% 14%));
     --property-shadow: 0 10px 40px -10px hsl(200 98% 35% / 0.1);
     --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 35% / 0.2);
     --glass-bg: hsl(0 0% 100% / 0.8);
@@ -102,6 +104,8 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark mode hero gradient (slightly different stops for better contrast) */
+    --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 12%), hsl(142 50% 10%));
   }
 }
 
@@ -110,7 +114,28 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  /* Make the entire site use the blue→green diagonal hero gradient by default */
   body {
-    @apply bg-background text-foreground;
+    background: var(--hero-gradient);
+    color: hsl(var(--foreground));
+  }
+
+  /* Dark mode uses a darker variant of the same diagonal gradient */
+  .dark body {
+    background: var(--hero-gradient-dark);
+  }
+
+  /* Make common card/background utilities slightly translucent so the page gradient shows through.
+     We target common classes used across components: bg-card, bg-muted and bg-white. */
+  .bg-card {
+    background-color: hsl(var(--card) / 0.92) !important;
+  }
+
+  .bg-muted {
+    background-color: hsl(var(--muted) / 0.8) !important;
+  }
+
+  .bg-white {
+    background-color: hsl(0 0% 100% / 0.92) !important;
   }
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropertyCard from "./PropertyCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -370,6 +370,23 @@ const PropertyGrid = () => {
     },
   ];
 
+  // Preload hover images to avoid flicker when user hovers
+  useEffect(() => {
+    properties.forEach((p) => {
+      try {
+        const img = new Image();
+        img.src = p.hoverImage ?? p.image;
+        // Preload vendor logo if present (SVG or image path)
+        if (p.vendorLogo) {
+          const logo = new Image();
+          logo.src = p.vendorLogo;
+        }
+      } catch (e) {
+        // noop - if preload fails we silently ignore
+      }
+    });
+  }, []);
+
   const sortProperties = (props: typeof properties) => {
     const sorted = [...props];
     
@@ -408,7 +425,7 @@ const PropertyGrid = () => {
 
   return (
     <section className="py-16 px-4 bg-muted/30">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="text-center mb-8 animate-fade-in">
           <h2 className="text-4xl font-bold mb-4 text-foreground">
             Utvalda fastigheter
@@ -443,11 +460,12 @@ const PropertyGrid = () => {
           {displayedProperties.map((property, index) => (
             <div
               key={property.id}
-              className="animate-slide-up"
+              className="animate-slide-up h-full"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <PropertyCard
                 {...property}
+                title={property.address}
                 isFavorite={favorites.includes(property.id)}
                 onFavoriteToggle={handleFavoriteToggle}
               />

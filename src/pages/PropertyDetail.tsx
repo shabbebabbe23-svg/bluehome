@@ -19,6 +19,7 @@ import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
 import floorplan from "@/assets/floorplan-1.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
+import AdBanner from "@/components/AdBanner";
 import PropertyMap from "@/components/PropertyMap";
 
 const PropertyDetail = () => {
@@ -33,6 +34,7 @@ const PropertyDetail = () => {
       price: "3.2M SEK",
       location: "Södermalm, Stockholm",
       address: "Götgatan 45",
+        vendor: "Fastighetsbyrån",
       bedrooms: 2,
       bathrooms: 1,
       area: 75,
@@ -51,6 +53,7 @@ const PropertyDetail = () => {
       price: "4.8M SEK",
       location: "Djursholm, Stockholm",
       address: "Vendevägen 12",
+        vendor: "Mäklarhuset",
       bedrooms: 4,
       bathrooms: 2,
       area: 150,
@@ -69,6 +72,7 @@ const PropertyDetail = () => {
       price: "2.9M SEK",
       location: "Vasastan, Stockholm",
       address: "Odengatan 78",
+        vendor: "ERA Mäkleri",
       bedrooms: 3,
       bathrooms: 2,
       area: 110,
@@ -87,6 +91,7 @@ const PropertyDetail = () => {
       price: "8.5M SEK",
       location: "Östermalm, Stockholm",
       address: "Strandvägen 23",
+        vendor: "Länsförsäkringar Fastighetsförmedling",
       bedrooms: 3,
       bathrooms: 2,
       area: 120,
@@ -105,6 +110,7 @@ const PropertyDetail = () => {
       price: "5.2M SEK",
       location: "Lidingö, Stockholm",
       address: "Kyrkviken 8",
+        vendor: "Mäklarbyrån Lidingö",
       bedrooms: 5,
       bathrooms: 3,
       area: 180,
@@ -123,6 +129,7 @@ const PropertyDetail = () => {
       price: "1.8M SEK",
       location: "Norrmalm, Stockholm",
       address: "Drottninggatan 56",
+        vendor: "Svensk Fastighetsförmedling",
       bedrooms: 1,
       bathrooms: 1,
       area: 45,
@@ -141,6 +148,7 @@ const PropertyDetail = () => {
       price: "4.1M SEK",
       location: "Gamla Stan, Stockholm",
       address: "Prästgatan 21",
+        vendor: "Stockholm City Mäkleri",
       bedrooms: 2,
       bathrooms: 1,
       area: 85,
@@ -159,6 +167,7 @@ const PropertyDetail = () => {
       price: "6.3M SEK",
       location: "Bromma, Stockholm",
       address: "Åkeshovsvägen 34",
+        vendor: "Bromma Mäklaren",
       bedrooms: 4,
       bathrooms: 3,
       area: 140,
@@ -177,6 +186,7 @@ const PropertyDetail = () => {
       price: "9.2M SEK",
       location: "Nacka, Stockholm",
       address: "Skogsbacken 7",
+        vendor: "Skärgårdsmäklaren",
       bedrooms: 5,
       bathrooms: 4,
       area: 220,
@@ -195,6 +205,7 @@ const PropertyDetail = () => {
       price: "7.8M SEK",
       location: "Strandvägen, Stockholm",
       address: "Strandvägen 89",
+        vendor: "Strandvägens Mäklare",
       bedrooms: 3,
       bathrooms: 2,
       area: 130,
@@ -217,7 +228,7 @@ const PropertyDetail = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Fastighet hittades inte</h1>
           <Link to="/">
-            <Button>Tillbaka till startsidan</Button>
+            <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
           </Link>
         </div>
       </div>
@@ -269,22 +280,23 @@ const PropertyDetail = () => {
       <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka
             </Button>
           </Link>
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon">
+            <div className="flex gap-2">
+            <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Share2 className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Printer className="w-4 h-4" />
             </Button>
             <Button
               variant={isFavorite ? "default" : "outline"}
               size="icon"
               onClick={() => setIsFavorite(!isFavorite)}
+              className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform"
             >
               <Heart
                 className={`w-4 h-4 ${
@@ -296,8 +308,13 @@ const PropertyDetail = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div className="w-full max-w-none px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left Ad */}
+          <div className="hidden lg:block">
+            <AdBanner className="order-1" />
+          </div>
+
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Image Gallery */}
@@ -313,7 +330,7 @@ const PropertyDetail = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105"
                   onClick={handlePreviousImage}
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -321,7 +338,7 @@ const PropertyDetail = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105"
                   onClick={handleNextImage}
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -418,7 +435,7 @@ const PropertyDetail = () => {
                 {/* Description */}
                 <div>
                   <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-xl text-muted-foreground leading-relaxed">
                     {property.description}
                   </p>
                 </div>
@@ -428,11 +445,11 @@ const PropertyDetail = () => {
                 {/* Floor Plan */}
                 <div>
                   <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                  <div className="bg-muted/30 rounded-lg p-4">
+                  <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
                     <img
                       src={floorplan}
                       alt="Planritning"
-                      className="w-full h-auto rounded-lg"
+                      className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
                     />
                   </div>
                 </div>
@@ -463,17 +480,21 @@ const PropertyDetail = () => {
             {/* Contact Card */}
             <Card className="sticky top-24">
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-4">Kontakta mäklaren</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  {/* Simple avatar with initials as placeholder */}
+                  <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
+                    SB
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Kontakta mäklaren</p>
+                    <p className="text-lg font-semibold">Shahab Barani</p>
+                    <p className="text-sm text-muted-foreground">{property.vendor}</p>
+                  </div>
+                </div>
                 <div className="space-y-4">
-                  <Button className="w-full" size="lg">
-                    Visa telefonnummer
-                  </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    Skicka meddelande
-                  </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    Boka visning
-                  </Button>
+                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Visa telefonnummer</Button>
+                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
+                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
                 </div>
 
                 <Separator className="my-6" />
@@ -488,7 +509,8 @@ const PropertyDetail = () => {
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
                       <div className="flex-1 text-left">
                         <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
-                        <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
+                <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
+                <p className="text-sm text-muted-foreground mt-1">Mäklare: {property.vendor}</p>
                       </div>
                       <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
                     </button>
@@ -498,8 +520,9 @@ const PropertyDetail = () => {
                     >
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
                       <div className="flex-1 text-left">
-                        <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
-                        <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
+              <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
+              <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
+              <p className="text-sm text-muted-foreground mt-1">Mäklare: {property.vendor}</p>
                       </div>
                       <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
                     </button>

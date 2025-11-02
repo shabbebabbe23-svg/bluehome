@@ -32,7 +32,7 @@ const Index = () => {
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
           className="lg:order-1 order-3"
         />
-        <main className="order-1 lg:order-2 flex-1 max-w-7xl w-full">
+        <main className="order-1 lg:order-2 flex-1 w-full">
           <Hero />
           <PropertyGrid />
         </main>

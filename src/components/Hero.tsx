@@ -64,7 +64,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
+  <div className="relative z-10 w-full max-w-none px-4 text-center text-white">
         <div className="animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Hitta ditt

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import { Heart, MapPin, Bed, Bath, Square, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ interface PropertyCardProps {
   image: string;
   hoverImage?: string;
   type: string;
+  viewingDate?: Date | string;
   isNew?: boolean;
   isFavorite?: boolean;
   onFavoriteToggle?: (id: number) => void;
@@ -32,26 +33,42 @@ const PropertyCard = ({
   area,
   image,
   hoverImage,
+  viewingDate,
   type,
   isNew = false,
   isFavorite = false,
   onFavoriteToggle,
   vendorLogo,
 }: PropertyCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+  // Normalize viewing date and prepare label/time
+  const viewDate = viewingDate ? new Date(viewingDate) : null;
+  const isSameDay = (d1: Date, d2: Date) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  const now = new Date();
+  const dayLabel = viewDate ? (isSameDay(viewDate, now) ? "Idag" : viewDate.toLocaleDateString("sv-SE", { day: "numeric", month: "short" })) : "Idag";
+  const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
   return (
-    <Card className="group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in">
-      <div 
-        className="relative overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <img
-          src={isHovered && hoverImage ? hoverImage : image}
-          alt={title}
-          className="w-full h-56 sm:h-64 md:h-72 lg:h-64 xl:h-72 object-cover transition-all duration-500 group-hover:scale-105"
-        />
+  <Card className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col">
+      {/* Full-card clickable overlay (keeps favorite button above) */}
+      <Link to={`/fastighet/${id}`} className="absolute inset-0 z-10" aria-label={`Visa ${title}`} />
+      <div className="relative overflow-hidden">
+        {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
+        <div className="w-full h-56 sm:h-64 md:h-72 lg:h-64 xl:h-72 relative">
+          <img
+            src={image}
+            alt={title}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 transform opacity-100 group-hover:opacity-0 group-hover:scale-105"
+          />
+          <img
+            src={hoverImage ?? image}
+            alt={`${title} - alternativ bild`}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 transform opacity-0 group-hover:opacity-100 group-hover:scale-105"
+          />
+        </div>
         {/* Agency logo area (right side, slightly offset from favorite button) */}
         <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
           {vendorLogo ? (
@@ -77,8 +94,8 @@ const PropertyCard = ({
         <Button
           variant="secondary"
           size="icon"
-          className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart"
-          onClick={() => onFavoriteToggle?.(id)}
+          className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
+          onClick={(e: React.MouseEvent) => { e.stopPropagation(); onFavoriteToggle?.(id); }}
         >
           <svg width="0" height="0" style={{ position: 'absolute' }}>
             <defs>
@@ -103,12 +120,15 @@ const PropertyCard = ({
         </Button>
       </div>
 
-      <CardContent className="p-8">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="font-semibold text-xl text-foreground group-hover:text-primary transition-colors">
+  <CardContent className="p-8 flex-1 flex flex-col justify-between">
+        {/* Address and price on the same line */}
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-semibold text-xl text-foreground group-hover:text-primary transition-colors truncate pr-4">
             {title}
           </h3>
-          <span className="text-3xl font-bold text-primary">{price}</span>
+          <span className="text-xl md:text-2xl font-bold text-primary whitespace-nowrap leading-tight min-w-[6rem] text-right">
+            {price}
+          </span>
         </div>
 
         <div className="flex items-center text-muted-foreground mb-4">
@@ -116,32 +136,46 @@ const PropertyCard = ({
           <span className="text-sm">{location}</span>
         </div>
 
-        <div className="flex items-center justify-between text-sm mb-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
+        <div className="mb-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
               <Bed className="w-4 h-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{bedrooms} rum</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg md:text-xl font-semibold text-foreground">{bedrooms}</span>
+                <span className="text-sm text-muted-foreground">rum</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+
+            <div className="flex items-center gap-2">
               <Bath className="w-4 h-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{bathrooms} badrum</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg md:text-xl font-semibold text-foreground">{bathrooms}</span>
+                <span className="text-sm text-muted-foreground">badrum</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+
+            <div className="flex items-center gap-2">
               <Square className="w-4 h-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{area}m²</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg md:text-xl font-semibold text-foreground">{area}</span>
+                <span className="text-sm text-muted-foreground">m²</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Calendar className="w-4 h-4" />
-            <span>Idag</span>
+
+          <div className="flex items-center justify-end text-foreground mt-2">
+            <Calendar className="w-4 h-4 mr-1 text-foreground" />
+            <span className="text-sm text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
           </div>
         </div>
 
-        <Link to={`/fastighet/${id}`}>
-          <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors">
-            Visa detaljer
-          </Button>
-        </Link>
+        <div className="mt-4">
+          <Link to={`/fastighet/${id}`}>
+            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors">
+              Visa detaljer
+            </Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
