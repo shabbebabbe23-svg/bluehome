@@ -19,6 +19,7 @@ interface PropertyCardProps {
   isNew?: boolean;
   isFavorite?: boolean;
   onFavoriteToggle?: (id: number) => void;
+  vendorLogo?: string;
 }
 
 const PropertyCard = ({
@@ -35,6 +36,7 @@ const PropertyCard = ({
   isNew = false,
   isFavorite = false,
   onFavoriteToggle,
+  vendorLogo,
 }: PropertyCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -48,8 +50,16 @@ const PropertyCard = ({
         <img
           src={isHovered && hoverImage ? hoverImage : image}
           alt={title}
-          className="w-full h-48 object-cover transition-all duration-500 group-hover:scale-105"
+          className="w-full h-56 sm:h-64 md:h-72 lg:h-64 xl:h-72 object-cover transition-all duration-500 group-hover:scale-105"
         />
+        {/* Agency logo area (right side, slightly offset from favorite button) */}
+        <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
+          {vendorLogo ? (
+            <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
+          ) : (
+            <span>Mäklarlogo</span>
+          )}
+        </div>
         
         {/* Overlay with badges */}
         <div className="absolute top-4 left-4 flex gap-2">
@@ -93,12 +103,12 @@ const PropertyCard = ({
         </Button>
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-8">
         <div className="flex justify-between items-start mb-3">
-          <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
+          <h3 className="font-semibold text-xl text-foreground group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <span className="text-2xl font-bold text-primary">{price}</span>
+          <span className="text-3xl font-bold text-primary">{price}</span>
         </div>
 
         <div className="flex items-center text-muted-foreground mb-4">
@@ -128,7 +138,7 @@ const PropertyCard = ({
         </div>
 
         <Link to={`/fastighet/${id}`}>
-          <Button className="w-full bg-primary hover:bg-primary-glow transition-colors">
+          <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors">
             Visa detaljer
           </Button>
         </Link>

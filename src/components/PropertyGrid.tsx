@@ -19,6 +19,24 @@ import property7 from "@/assets/property-7.jpg";
 import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
+import logo1 from "@/assets/logo-1.svg";
+import logo2 from "@/assets/logo-2.svg";
+import logo3 from "@/assets/logo-3.svg";
+import logo4 from "@/assets/logo-4.svg";
+import logo5 from "@/assets/logo-5.svg";
+import logo6 from "@/assets/logo-6.svg";
+import logo7 from "@/assets/logo-7.svg";
+import logo8 from "@/assets/logo-8.svg";
+import logo9 from "@/assets/logo-9.svg";
+import logo10 from "@/assets/logo-10.svg";
+import logo11 from "@/assets/logo-11.svg";
+import logo12 from "@/assets/logo-12.svg";
+import logo13 from "@/assets/logo-13.svg";
+import logo14 from "@/assets/logo-14.svg";
+import logo15 from "@/assets/logo-15.svg";
+import logo16 from "@/assets/logo-16.svg";
+import logo17 from "@/assets/logo-17.svg";
+import logo18 from "@/assets/logo-18.svg";
 
 const PropertyGrid = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -42,6 +60,7 @@ const PropertyGrid = () => {
       hoverImage: property2,
       type: "Lägenhet",
       isNew: true,
+      vendorLogo: logo1,
     },
     {
       id: 2,
@@ -59,6 +78,7 @@ const PropertyGrid = () => {
       hoverImage: property3,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo2,
     },
     {
       id: 3,
@@ -76,6 +96,7 @@ const PropertyGrid = () => {
       hoverImage: property4,
       type: "Radhus",
       isNew: true,
+      vendorLogo: logo3,
     },
     {
       id: 4,
@@ -93,6 +114,7 @@ const PropertyGrid = () => {
       hoverImage: property5,
       type: "Lägenhet",
       isNew: false,
+      vendorLogo: logo4,
     },
     {
       id: 5,
@@ -110,6 +132,7 @@ const PropertyGrid = () => {
       hoverImage: property6,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo5,
     },
     {
       id: 6,
@@ -127,6 +150,7 @@ const PropertyGrid = () => {
       hoverImage: property7,
       type: "Lägenhet",
       isNew: true,
+      vendorLogo: logo6,
     },
     {
       id: 7,
@@ -144,6 +168,7 @@ const PropertyGrid = () => {
       hoverImage: property8,
       type: "Lägenhet",
       isNew: false,
+      vendorLogo: logo7,
     },
     {
       id: 8,
@@ -161,6 +186,7 @@ const PropertyGrid = () => {
       hoverImage: property9,
       type: "Radhus",
       isNew: true,
+      vendorLogo: logo8,
     },
     {
       id: 9,
@@ -178,6 +204,7 @@ const PropertyGrid = () => {
       hoverImage: property10,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo9,
     },
     {
       id: 10,
@@ -195,6 +222,7 @@ const PropertyGrid = () => {
       hoverImage: property1,
       type: "Lägenhet",
       isNew: true,
+      vendorLogo: logo10,
     },
     {
       id: 11,
@@ -212,6 +240,7 @@ const PropertyGrid = () => {
       hoverImage: property5,
       type: "Lägenhet",
       isNew: true,
+      vendorLogo: logo11,
     },
     {
       id: 12,
@@ -229,6 +258,7 @@ const PropertyGrid = () => {
       hoverImage: property9,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo12,
     },
     {
       id: 13,
@@ -246,6 +276,7 @@ const PropertyGrid = () => {
       hoverImage: property8,
       type: "Lägenhet",
       isNew: true,
+      vendorLogo: logo13,
     },
     {
       id: 14,
@@ -263,6 +294,7 @@ const PropertyGrid = () => {
       hoverImage: property2,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo14,
     },
     {
       id: 15,
@@ -280,6 +312,7 @@ const PropertyGrid = () => {
       hoverImage: property6,
       type: "Radhus",
       isNew: true,
+      vendorLogo: logo15,
     },
     {
       id: 16,
@@ -297,6 +330,7 @@ const PropertyGrid = () => {
       hoverImage: property4,
       type: "Villa",
       isNew: true,
+      vendorLogo: logo16,
     },
     {
       id: 17,
@@ -314,6 +348,7 @@ const PropertyGrid = () => {
       hoverImage: property10,
       type: "Lägenhet",
       isNew: false,
+      vendorLogo: logo17,
     },
     {
       id: 18,
@@ -331,6 +366,7 @@ const PropertyGrid = () => {
       hoverImage: property3,
       type: "Villa",
       isNew: false,
+      vendorLogo: logo18,
     },
   ];
 
@@ -403,7 +439,7 @@ const PropertyGrid = () => {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
           {displayedProperties.map((property, index) => (
             <div
               key={property.id}

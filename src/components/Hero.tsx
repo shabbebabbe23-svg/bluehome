@@ -180,7 +180,7 @@ const Hero = () => {
             <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="w-full h-12"
+              className="w-full h-12 text-base md:text-lg"
             >
               <Filter className="w-5 h-5 mr-2" />
               {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
@@ -193,7 +193,7 @@ const Hero = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground">Prisintervall</h3>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-lg md:text-xl font-bold text-black">
                       {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
                     </div>
                   </div>
@@ -205,7 +205,7 @@ const Hero = () => {
                     onValueChange={setPriceRange}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                  <div className="flex justify-between text-sm md:text-base text-muted-foreground font-medium">
                     <span>0 kr</span>
                     <span>20+ milj kr</span>
                   </div>
@@ -214,8 +214,8 @@ const Hero = () => {
                 {/* Area Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground">Yta</h3>
-                    <div className="text-sm text-muted-foreground">
+                    <h3 className="text-lg md:text-xl font-semibold text-foreground">Yta</h3>
+                    <div className="text-lg md:text-xl font-bold text-black">
                       {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
                     </div>
                   </div>
@@ -227,7 +227,7 @@ const Hero = () => {
                     onValueChange={setAreaRange}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                  <div className="flex justify-between text-sm md:text-base text-muted-foreground">
                     <span>0 kvm</span>
                     <span>200+ kvm</span>
                   </div>
@@ -236,8 +236,8 @@ const Hero = () => {
                 {/* Room Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground">Antal rum</h3>
-                    <div className="text-sm text-muted-foreground">
+                    <h3 className="text-lg md:text-xl font-semibold text-foreground">Antal rum</h3>
+                    <div className="text-lg md:text-xl font-bold text-black">
                       {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
                     </div>
                   </div>
@@ -249,7 +249,7 @@ const Hero = () => {
                     onValueChange={setRoomRange}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                  <div className="flex justify-between text-sm md:text-base text-muted-foreground">
                     <span>0 rum</span>
                     <span>7+ rum</span>
                   </div>
