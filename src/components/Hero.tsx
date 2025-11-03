@@ -122,8 +122,8 @@ const Hero = () => {
             </div>
 
             {/* Slutpriser Toggle */}
-            <div className="flex items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-lg">
-              <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
+            <div className="flex items-center justify-end gap-3 px-2 py-1.5">
+              <Label htmlFor="final-prices" className="text-sm font-medium text-foreground cursor-pointer">
                 Slutpriser
               </Label>
               <Switch
