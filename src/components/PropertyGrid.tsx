@@ -38,7 +38,11 @@ import logo16 from "@/assets/logo-16.svg";
 import logo17 from "@/assets/logo-17.svg";
 import logo18 from "@/assets/logo-18.svg";
 
-const PropertyGrid = () => {
+interface PropertyGridProps {
+  showFinalPrices?: boolean;
+}
+
+const PropertyGrid = ({ showFinalPrices = false }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState<string>("default");
@@ -47,7 +51,7 @@ const PropertyGrid = () => {
     {
       id: 1,
       title: "Modern lägenhet i city",
-      price: "3.2M SEK",
+      price: "3 200 000 kr",
       priceValue: 3200000,
       location: "Södermalm, Stockholm",
       address: "Götgatan 45",
@@ -65,7 +69,7 @@ const PropertyGrid = () => {
     {
       id: 2,
       title: "Charmig svensk villa",
-      price: "4.8M SEK",
+      price: "4 800 000 kr",
       priceValue: 4800000,
       location: "Djursholm, Stockholm",
       address: "Vendevägen 12",
@@ -83,7 +87,7 @@ const PropertyGrid = () => {
     {
       id: 3,
       title: "Modernt radhus",
-      price: "2.9M SEK",
+      price: "2 900 000 kr",
       priceValue: 2900000,
       location: "Vasastan, Stockholm",
       address: "Odengatan 78",
@@ -101,7 +105,7 @@ const PropertyGrid = () => {
     {
       id: 4,
       title: "Lyxig takvåning",
-      price: "8.5M SEK",
+      price: "8 500 000 kr",
       priceValue: 8500000,
       location: "Östermalm, Stockholm",
       address: "Strandvägen 23",
@@ -119,7 +123,7 @@ const PropertyGrid = () => {
     {
       id: 5,
       title: "Familjehus",
-      price: "5.2M SEK",
+      price: "5 200 000 kr",
       priceValue: 5200000,
       location: "Lidingö, Stockholm",
       address: "Kyrkviken 8",
@@ -137,7 +141,7 @@ const PropertyGrid = () => {
     {
       id: 6,
       title: "Studioappartement",
-      price: "1.8M SEK",
+      price: "1 800 000 kr",
       priceValue: 1800000,
       location: "Norrmalm, Stockholm",
       address: "Drottninggatan 56",
@@ -155,7 +159,7 @@ const PropertyGrid = () => {
     {
       id: 7,
       title: "Elegant stadslägeneht",
-      price: "4.1M SEK",
+      price: "4 100 000 kr",
       priceValue: 4100000,
       location: "Gamla Stan, Stockholm",
       address: "Prästgatan 21",
@@ -173,7 +177,7 @@ const PropertyGrid = () => {
     {
       id: 8,
       title: "Klassiskt radhus",
-      price: "6.3M SEK",
+      price: "6 300 000 kr",
       priceValue: 6300000,
       location: "Bromma, Stockholm",
       address: "Åkeshovsvägen 34",
@@ -191,7 +195,7 @@ const PropertyGrid = () => {
     {
       id: 9,
       title: "Exklusiv skogsvilla",
-      price: "9.2M SEK",
+      price: "9 200 000 kr",
       priceValue: 9200000,
       location: "Nacka, Stockholm",
       address: "Skogsbacken 7",
@@ -209,7 +213,7 @@ const PropertyGrid = () => {
     {
       id: 10,
       title: "Sjönära lägenhet",
-      price: "7.8M SEK",
+      price: "7 800 000 kr",
       priceValue: 7800000,
       location: "Strandvägen, Stockholm",
       address: "Strandvägen 89",
@@ -227,7 +231,7 @@ const PropertyGrid = () => {
     {
       id: 11,
       title: "Penthouse med takterrass",
-      price: "12.5M SEK",
+      price: "12 500 000 kr",
       priceValue: 12500000,
       location: "Östermalm, Stockholm",
       address: "Karlavägen 56",
@@ -245,7 +249,7 @@ const PropertyGrid = () => {
     {
       id: 12,
       title: "Lantlig gård",
-      price: "6.9M SEK",
+      price: "6 900 000 kr",
       priceValue: 6900000,
       location: "Ekerö, Stockholm",
       address: "Lantvägen 3",
@@ -263,7 +267,7 @@ const PropertyGrid = () => {
     {
       id: 13,
       title: "Moderne bostadsrätt",
-      price: "3.6M SEK",
+      price: "3 600 000 kr",
       priceValue: 3600000,
       location: "Kungsholmen, Stockholm",
       address: "Hantverkargatan 82",
@@ -281,7 +285,7 @@ const PropertyGrid = () => {
     {
       id: 14,
       title: "Strandnära villa",
-      price: "11.2M SEK",
+      price: "11 200 000 kr",
       priceValue: 11200000,
       location: "Saltsjöbaden, Stockholm",
       address: "Strandpromenaden 15",
@@ -299,7 +303,7 @@ const PropertyGrid = () => {
     {
       id: 15,
       title: "Centralt parhus",
-      price: "4.5M SEK",
+      price: "4 500 000 kr",
       priceValue: 4500000,
       location: "Hägersten, Stockholm",
       address: "Fruängsgatan 44",
@@ -317,7 +321,7 @@ const PropertyGrid = () => {
     {
       id: 16,
       title: "Designervilla",
-      price: "15.8M SEK",
+      price: "15 800 000 kr",
       priceValue: 15800000,
       location: "Danderyd, Stockholm",
       address: "Mörbyvägen 88",
@@ -335,7 +339,7 @@ const PropertyGrid = () => {
     {
       id: 17,
       title: "Kompakt ettan",
-      price: "2.1M SEK",
+      price: "2 100 000 kr",
       priceValue: 2100000,
       location: "Farsta, Stockholm",
       address: "Farstaplan 7",
@@ -353,7 +357,7 @@ const PropertyGrid = () => {
     {
       id: 18,
       title: "Skärgårdshus",
-      price: "8.9M SEK",
+      price: "8 900 000 kr",
       priceValue: 8900000,
       location: "Vaxholm, Stockholm",
       address: "Skärgårdsvägen 22",
@@ -370,9 +374,241 @@ const PropertyGrid = () => {
     },
   ];
 
+  const soldProperties = [
+    {
+      id: 101,
+      title: "Såld villa i Danderyd",
+      price: "8 750 000 kr",
+      priceValue: 8750000,
+      location: "Danderyd, Stockholm",
+      address: "Enebyvägen 22",
+      bedrooms: 5,
+      bathrooms: 3,
+      area: 185,
+      fee: 0,
+      viewingDate: new Date("2024-09-20"),
+      image: property1,
+      hoverImage: property2,
+      type: "Villa",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo1,
+    },
+    {
+      id: 102,
+      title: "Såld lägenhet Södermalm",
+      price: "4 200 000 kr",
+      priceValue: 4200000,
+      location: "Södermalm, Stockholm",
+      address: "Folkungagatan 88",
+      bedrooms: 3,
+      bathrooms: 1,
+      area: 82,
+      fee: 3800,
+      viewingDate: new Date("2024-09-18"),
+      image: property3,
+      hoverImage: property4,
+      type: "Lägenhet",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo2,
+    },
+    {
+      id: 103,
+      title: "Såld radhus Bromma",
+      price: "6 950 000 kr",
+      priceValue: 6950000,
+      location: "Bromma, Stockholm",
+      address: "Ulvsundavägen 12",
+      bedrooms: 4,
+      bathrooms: 2,
+      area: 135,
+      fee: 3200,
+      viewingDate: new Date("2024-09-15"),
+      image: property5,
+      hoverImage: property6,
+      type: "Radhus",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo3,
+    },
+    {
+      id: 104,
+      title: "Såld takvåning Östermalm",
+      price: "12 300 000 kr",
+      priceValue: 12300000,
+      location: "Östermalm, Stockholm",
+      address: "Karlavägen 92",
+      bedrooms: 4,
+      bathrooms: 3,
+      area: 145,
+      fee: 7200,
+      viewingDate: new Date("2024-09-12"),
+      image: property7,
+      hoverImage: property8,
+      type: "Lägenhet",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo4,
+    },
+    {
+      id: 105,
+      title: "Såld villa Lidingö",
+      price: "9 850 000 kr",
+      priceValue: 9850000,
+      location: "Lidingö, Stockholm",
+      address: "Käppalavägen 45",
+      bedrooms: 5,
+      bathrooms: 3,
+      area: 195,
+      fee: 0,
+      viewingDate: new Date("2024-09-10"),
+      image: property9,
+      hoverImage: property10,
+      type: "Villa",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo5,
+    },
+    {
+      id: 106,
+      title: "Såld lägenhet Vasastan",
+      price: "3 650 000 kr",
+      priceValue: 3650000,
+      location: "Vasastan, Stockholm",
+      address: "Upplandsgatan 34",
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 68,
+      fee: 2900,
+      viewingDate: new Date("2024-09-08"),
+      image: property2,
+      hoverImage: property1,
+      type: "Lägenhet",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo6,
+    },
+    {
+      id: 107,
+      title: "Såld villa Täby",
+      price: "11 200 000 kr",
+      priceValue: 11200000,
+      location: "Täby, Stockholm",
+      address: "Näsbyparksvägen 78",
+      bedrooms: 6,
+      bathrooms: 4,
+      area: 220,
+      fee: 0,
+      viewingDate: new Date("2024-09-05"),
+      image: property4,
+      hoverImage: property3,
+      type: "Villa",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo7,
+    },
+    {
+      id: 108,
+      title: "Såld radhus Kungsholmen",
+      price: "5 450 000 kr",
+      priceValue: 5450000,
+      location: "Kungsholmen, Stockholm",
+      address: "Fleminggatan 56",
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 105,
+      fee: 3500,
+      viewingDate: new Date("2024-09-02"),
+      image: property6,
+      hoverImage: property5,
+      type: "Radhus",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo8,
+    },
+    {
+      id: 109,
+      title: "Såld lägenhet Norrmalm",
+      price: "7 100 000 kr",
+      priceValue: 7100000,
+      location: "Norrmalm, Stockholm",
+      address: "Hamngatan 12",
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 115,
+      fee: 5100,
+      viewingDate: new Date("2024-08-28"),
+      image: property8,
+      hoverImage: property7,
+      type: "Lägenhet",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo9,
+    },
+    {
+      id: 110,
+      title: "Såld villa Saltsjöbaden",
+      price: "14 500 000 kr",
+      priceValue: 14500000,
+      location: "Saltsjöbaden, Stockholm",
+      address: "Strandvägen 88",
+      bedrooms: 6,
+      bathrooms: 4,
+      area: 265,
+      fee: 0,
+      viewingDate: new Date("2024-08-25"),
+      image: property10,
+      hoverImage: property9,
+      type: "Villa",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo10,
+    },
+    {
+      id: 111,
+      title: "Såld lägenhet Gamla Stan",
+      price: "5 900 000 kr",
+      priceValue: 5900000,
+      location: "Gamla Stan, Stockholm",
+      address: "Stora Nygatan 18",
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 72,
+      fee: 3400,
+      viewingDate: new Date("2024-08-20"),
+      image: property1,
+      hoverImage: property3,
+      type: "Lägenhet",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo11,
+    },
+    {
+      id: 112,
+      title: "Såld villa Djursholm",
+      price: "16 800 000 kr",
+      priceValue: 16800000,
+      location: "Djursholm, Stockholm",
+      address: "Djursholmsvägen 125",
+      bedrooms: 7,
+      bathrooms: 5,
+      area: 310,
+      fee: 0,
+      viewingDate: new Date("2024-08-15"),
+      image: property5,
+      hoverImage: property8,
+      type: "Villa",
+      isNew: false,
+      isSold: true,
+      vendorLogo: logo12,
+    },
+  ];
+
   // Preload hover images to avoid flicker when user hovers
   useEffect(() => {
-    properties.forEach((p) => {
+    const allProperties = [...properties, ...soldProperties];
+    allProperties.forEach((p) => {
       try {
         const img = new Image();
         img.src = p.hoverImage ?? p.image;
@@ -412,7 +648,8 @@ const PropertyGrid = () => {
     }
   };
 
-  const sortedProperties = sortProperties(properties);
+  const currentProperties = showFinalPrices ? soldProperties : properties;
+  const sortedProperties = sortProperties(currentProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: number) => {
@@ -428,10 +665,12 @@ const PropertyGrid = () => {
       <div className="w-full">
         <div className="text-center mb-6 md:mb-8 animate-fade-in">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-foreground">
-            Utvalda fastigheter
+            {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-            Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige
+            {showFinalPrices 
+              ? "Se slutpriser på nyligen sålda fastigheter" 
+              : "Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige"}
           </p>
         </div>
 
@@ -468,6 +707,7 @@ const PropertyGrid = () => {
                 title={property.address}
                 isFavorite={favorites.includes(property.id)}
                 onFavoriteToggle={handleFavoriteToggle}
+                isSold={showFinalPrices}
               />
             </div>
           ))}

@@ -8,6 +8,7 @@ import sofaAd from "@/assets/sofa-ad.svg";
 
 const Index = () => {
   const [userSofaSrc, setUserSofaSrc] = useState<string | null>(null);
+  const [showFinalPrices, setShowFinalPrices] = useState(false);
 
   useEffect(() => {
     // Try to load a user-provided PNG at runtime without causing build errors.
@@ -33,8 +34,8 @@ const Index = () => {
           className="lg:order-1 order-3"
         />
         <main className="order-1 lg:order-2 flex-1 w-full">
-          <Hero />
-          <PropertyGrid />
+          <Hero onFinalPricesChange={setShowFinalPrices} />
+          <PropertyGrid showFinalPrices={showFinalPrices} />
         </main>
   <AdBanner
     note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}

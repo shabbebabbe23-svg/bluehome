@@ -21,6 +21,7 @@ interface PropertyCardProps {
   isFavorite?: boolean;
   onFavoriteToggle?: (id: number) => void;
   vendorLogo?: string;
+  isSold?: boolean;
 }
 
 const PropertyCard = ({
@@ -39,6 +40,7 @@ const PropertyCard = ({
   isFavorite = false,
   onFavoriteToggle,
   vendorLogo,
+  isSold = false,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -80,7 +82,12 @@ const PropertyCard = ({
         
         {/* Overlay with badges */}
         <div className="absolute top-4 left-4 flex gap-2">
-          {isNew && (
+          {isSold && (
+            <Badge className="bg-destructive text-white">
+              Såld
+            </Badge>
+          )}
+          {isNew && !isSold && (
             <Badge className="bg-success text-white">
               Ny
             </Badge>

@@ -9,7 +9,11 @@ import { Label } from "@/components/ui/label";
 import heroImage from "@/assets/hero-image.jpg";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
 
-const Hero = () => {
+interface HeroProps {
+  onFinalPricesChange?: (value: boolean) => void;
+}
+
+const Hero = ({ onFinalPricesChange }: HeroProps) => {
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
@@ -129,7 +133,10 @@ const Hero = () => {
               <Switch
                 id="final-prices"
                 checked={showFinalPrices}
-                onCheckedChange={setShowFinalPrices}
+                onCheckedChange={(value) => {
+                  setShowFinalPrices(value);
+                  onFinalPricesChange?.(value);
+                }}
                 className="data-[state=checked]:bg-success"
               />
             </div>
