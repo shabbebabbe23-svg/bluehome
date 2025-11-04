@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  userType: "private" | "agent" | null;
   signOut: () => Promise<void>;
 }
 
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [userType, setUserType] = useState<"private" | "agent" | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,6 +26,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Fetch user type after auth state changes
+        if (session?.user) {
+          setTimeout(() => {
+            supabase
+              .from("user_roles")
+              .select("user_type")
+              .eq("user_id", session.user.id)
+              .single()
+              .then(({ data }) => {
+                setUserType(data?.user_type ?? null);
+              });
+          }, 0);
+        } else {
+          setUserType(null);
+        }
       }
     );
 
@@ -32,6 +50,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Fetch user type for existing session
+      if (session?.user) {
+        supabase
+          .from("user_roles")
+          .select("user_type")
+          .eq("user_id", session.user.id)
+          .single()
+          .then(({ data }) => {
+            setUserType(data?.user_type ?? null);
+          });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -47,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, signOut }}>
+    <AuthContext.Provider value={{ user, session, userType, signOut }}>
       {children}
     </AuthContext.Provider>
   );

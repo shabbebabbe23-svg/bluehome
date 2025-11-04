@@ -12,14 +12,27 @@ import loginHero from "@/assets/login-hero.jpg";
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255),
   password: z.string().min(6, { message: "Lösenordet måste vara minst 6 tecken" }).max(100),
+  confirmPassword: z.string().optional(),
   fullName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
+  userType: z.enum(["private", "agent"]).optional(),
+}).refine((data) => {
+  // Only validate confirmPassword during signup
+  if (data.fullName && data.password !== data.confirmPassword) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Lösenorden matchar inte",
+  path: ["confirmPassword"],
 });
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [userType, setUserType] = useState<"private" | "agent">("private");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -41,7 +54,7 @@ const Login = () => {
       // Validate input
       const validationData = isLogin 
         ? { email, password }
-        : { email, password, fullName };
+        : { email, password, confirmPassword, fullName, userType };
       
       authSchema.parse(validationData);
 
@@ -84,6 +97,7 @@ const Login = () => {
             emailRedirectTo: redirectUrl,
             data: {
               full_name: fullName,
+              user_type: userType,
             },
           },
         });
@@ -105,7 +119,7 @@ const Login = () => {
         } else {
           toast({
             title: "Konto skapat!",
-            description: "Du kan nu logga in med dina uppgifter.",
+            description: "Kontrollera din e-post för att bekräfta ditt konto.",
           });
           setIsLogin(true);
         }
@@ -148,17 +162,32 @@ const Login = () => {
           <CardContent>
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Fullständigt namn</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Ditt namn"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
-                  />
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Fullständigt namn</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="Ditt namn"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required={!isLogin}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="userType">Jag är</Label>
+                    <select
+                      id="userType"
+                      value={userType}
+                      onChange={(e) => setUserType(e.target.value as "private" | "agent")}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      required={!isLogin}
+                    >
+                      <option value="private">Privatperson</option>
+                      <option value="agent">Mäklare</option>
+                    </select>
+                  </div>
+                </>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email">E-post</Label>
@@ -182,6 +211,19 @@ const Login = () => {
                   required
                 />
               </div>
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Upprepa lösenord</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Laddar..." : (isLogin ? "Logga in" : "Skapa konto")}
               </Button>

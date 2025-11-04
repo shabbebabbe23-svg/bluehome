@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, userType, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{background: 'var(--main-gradient)'}}>
@@ -38,9 +38,16 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Heart className="w-7 h-7" />
-            </Button>
+            {user && userType === "private" ? (
+              <Button variant="ghost">
+                <Heart className="w-5 h-5 mr-2" />
+                Mina favoriter
+              </Button>
+            ) : (
+              <Button variant="ghost" size="icon">
+                <Heart className="w-7 h-7" />
+              </Button>
+            )}
             <Button variant="ghost" size="icon">
               <User className="w-7 h-7" />
             </Button>
@@ -88,10 +95,17 @@ const Header = () => {
               <a href="#" className="text-foreground text-xl hover:text-primary transition-colors px-4 py-2">
                 Om oss
               </a>
-              <div className="flex items-center gap-4 px-4 pt-4 border-t border-white/20">
-                <Button variant="ghost" size="icon">
-                  <Heart className="w-7 h-7" />
-                </Button>
+              <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
+                {user && userType === "private" ? (
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Heart className="w-5 h-5 mr-2" />
+                    Mina favoriter
+                  </Button>
+                ) : (
+                  <Button variant="ghost" size="icon">
+                    <Heart className="w-7 h-7" />
+                  </Button>
+                )}
                 <Button variant="ghost" size="icon">
                   <User className="w-7 h-7" />
                 </Button>
