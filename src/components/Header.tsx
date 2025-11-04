@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Home, Heart, User, Menu, X } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{background: 'var(--main-gradient)'}}>
@@ -42,11 +44,21 @@ const Header = () => {
             <Button variant="ghost" size="icon">
               <User className="w-7 h-7" />
             </Button>
-            <Link to="/logga-in">
-              <Button className="text-xl bg-hero-gradient hover:scale-105 transition-transform">
-                Logga in
+            {user ? (
+              <Button 
+                onClick={signOut}
+                className="text-xl bg-hero-gradient hover:scale-105 transition-transform"
+              >
+                <LogOut className="w-5 h-5 mr-2" />
+                Logga ut
               </Button>
-            </Link>
+            ) : (
+              <Link to="/logga-in">
+                <Button className="text-xl bg-hero-gradient hover:scale-105 transition-transform">
+                  Logga in
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -83,11 +95,21 @@ const Header = () => {
                 <Button variant="ghost" size="icon">
                   <User className="w-7 h-7" />
                 </Button>
-                <Link to="/logga-in" className="flex-1">
-                  <Button className="text-xl bg-hero-gradient w-full">
-                    Logga in
+                {user ? (
+                  <Button 
+                    onClick={signOut}
+                    className="text-xl bg-hero-gradient w-full"
+                  >
+                    <LogOut className="w-5 h-5 mr-2" />
+                    Logga ut
                   </Button>
-                </Link>
+                ) : (
+                  <Link to="/logga-in" className="flex-1">
+                    <Button className="text-xl bg-hero-gradient w-full">
+                      Logga in
+                    </Button>
+                  </Link>
+                )}
               </div>
             </nav>
           </div>

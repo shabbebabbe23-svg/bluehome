@@ -1,54 +1,126 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCheck, Building2, Home } from "lucide-react";
-import Header from "@/components/Header";
+import { Label } from "@/components/ui/label";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 import loginHero from "@/assets/login-hero.jpg";
 
-type UserRole = "mäklare" | "säljare" | "köpare" | null;
+const authSchema = z.object({
+  email: z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255),
+  password: z.string().min(6, { message: "Lösenordet måste vara minst 6 tecken" }).max(100),
+  fullName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
+});
 
 const Login = () => {
-  const [selectedRole, setSelectedRole] = useState<UserRole>(null);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: ""
-  });
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const roles = [
-    {
-      id: "mäklare" as const,
-      title: "Mäklare",
-      description: "För fastighetsmäklare",
-      icon: Building2
-    },
-    {
-      id: "säljare" as const,
-      title: "Säljare",
-      description: "För dig som vill sälja",
-      icon: Home
-    },
-    {
-      id: "köpare" as const,
-      title: "Köpare",
-      description: "För dig som vill köpa",
-      icon: UserCheck
-    }
-  ];
+  useEffect(() => {
+    // Check if user is already logged in and redirect
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+  }, [navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic with Supabase
-    console.log("Login attempt:", { role: selectedRole, ...formData });
-  };
+    setLoading(true);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    try {
+      // Validate input
+      const validationData = isLogin 
+        ? { email, password }
+        : { email, password, fullName };
+      
+      authSchema.parse(validationData);
+
+      if (isLogin) {
+        // Login
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            toast({
+              title: "Fel e-post eller lösenord",
+              description: "Kontrollera dina uppgifter och försök igen.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Inloggningen misslyckades",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: "Välkommen tillbaka!",
+            description: "Du är nu inloggad.",
+          });
+          navigate("/");
+        }
+      } else {
+        // Signup
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              full_name: fullName,
+            },
+          },
+        });
+
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            toast({
+              title: "Kontot finns redan",
+              description: "Ett konto med denna e-post finns redan. Försök logga in istället.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Registreringen misslyckades",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: "Konto skapat!",
+            description: "Du kan nu logga in med dina uppgifter.",
+          });
+          setIsLogin(true);
+        }
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Valideringsfel",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,114 +133,77 @@ const Login = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       </div>
       
-      {/* Content */}
-      <div className="relative z-10">
-        <Header />
-        <main className="pt-16">
-        <div className="container max-w-4xl mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-4">
-              Logga in på Bluehome
-            </h1>
-            <p className="text-xl text-white/90 drop-shadow-md">
-              Välj din användarroll för att fortsätta
-            </p>
-          </div>
-
-          {!selectedRole ? (
-            <div className="grid md:grid-cols-3 gap-6">
-              {roles.map((role) => {
-                const IconComponent = role.icon;
-                return (
-                  <Card 
-                    key={role.id}
-                    className="cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-xl border-2 hover:border-primary/50 bg-white/90 backdrop-blur-md"
-                    onClick={() => setSelectedRole(role.id)}
-                  >
-                    <CardHeader className="text-center">
-                      <div className="mx-auto mb-4 p-4 rounded-full bg-primary/10">
-                        <IconComponent className="w-8 h-8 text-primary" />
-                      </div>
-                      <CardTitle className="text-2xl">{role.title}</CardTitle>
-                      <CardDescription className="text-lg">
-                        {role.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                      <Button className="w-full bg-hero-gradient hover:scale-105 transition-transform">
-                        Välj {role.title}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="max-w-md mx-auto">
-              <Card className="bg-white/90 backdrop-blur-md border-2 shadow-xl">
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl mb-2">
-                    Logga in som {selectedRole}
-                  </CardTitle>
-                  <CardDescription>
-                    Ange dina inloggningsuppgifter
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Användarnamn</Label>
-                      <Input
-                        id="username"
-                        name="username"
-                        type="text"
-                        value={formData.username}
-                        onChange={handleInputChange}
-                        placeholder="Ange ditt användarnamn"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Lösenord</Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder="Ange ditt lösenord"
-                        required
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-hero-gradient hover:scale-105 transition-transform"
-                    >
-                      Logga in
-                    </Button>
-                  </form>
-                  
-                  <div className="text-center mt-6 space-y-2">
-                    <p className="text-sm text-foreground/60">
-                      Har du inget konto?{" "}
-                      <Link to="/registrera" className="text-primary hover:underline font-medium">
-                        Skapa konto
-                      </Link>
-                    </p>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setSelectedRole(null)}
-                      className="text-sm"
-                    >
-                      Välj annan roll
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      </main>
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">
+              {isLogin ? "Logga in" : "Skapa konto"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {isLogin 
+                ? "Ange dina uppgifter för att logga in" 
+                : "Fyll i formuläret för att skapa ett konto"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAuth} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Fullständigt namn</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Ditt namn"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">E-post</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="namn@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Lösenord</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Laddar..." : (isLogin ? "Logga in" : "Skapa konto")}
+              </Button>
+              <div className="text-center text-sm space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-primary hover:underline"
+                >
+                  {isLogin 
+                    ? "Har du inget konto? Registrera dig här" 
+                    : "Har du redan ett konto? Logga in här"}
+                </button>
+                <div>
+                  <Link to="/" className="text-muted-foreground hover:underline">
+                    Tillbaka till startsidan
+                  </Link>
+                </div>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
