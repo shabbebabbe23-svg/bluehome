@@ -23,6 +23,7 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
+  const [keywords, setKeywords] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -276,6 +277,17 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                     <span>0 rum</span>
                     <span>7+ rum</span>
                   </div>
+                </div>
+
+                {/* Keywords Filter */}
+                <div className="space-y-3 md:space-y-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-foreground">Nyckelord</h3>
+                  <Input
+                    placeholder="T.ex. balkong, garage, nybyggt..."
+                    value={keywords}
+                    onChange={(e) => setKeywords(e.target.value)}
+                    className="h-11 sm:h-12 text-base border-2 border-primary/30 focus:border-primary"
+                  />
                 </div>
               </>
             )}
