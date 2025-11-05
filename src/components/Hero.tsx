@@ -24,6 +24,7 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const [showNewConstruction, setShowNewConstruction] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -288,6 +289,21 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                     onChange={(e) => setKeywords(e.target.value)}
                     className="h-11 sm:h-12 text-base border-2 border-primary/30 focus:border-primary"
                   />
+                </div>
+
+                {/* New Construction Filter */}
+                <div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowNewConstruction(!showNewConstruction)}
+                    className={`w-full h-11 sm:h-12 text-sm sm:text-base ${
+                      showNewConstruction 
+                        ? "bg-hero-gradient text-white border-transparent hover:text-black" 
+                        : "bg-white"
+                    }`}
+                  >
+                    Endast nyproduktion
+                  </Button>
                 </div>
               </>
             )}
