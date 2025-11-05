@@ -35,7 +35,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               .select("user_type")
               .eq("user_id", session.user.id)
               .single()
-              .then(({ data }) => {
+              .then(({ data, error }) => {
+                if (error) {
+                  console.error('Failed to fetch user type:', error);
+                }
                 setUserType(data?.user_type ?? null);
               });
           }, 0);
@@ -58,7 +61,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .select("user_type")
           .eq("user_id", session.user.id)
           .single()
-          .then(({ data }) => {
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('Failed to fetch user type:', error);
+            }
             setUserType(data?.user_type ?? null);
           });
       }
