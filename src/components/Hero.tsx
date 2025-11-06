@@ -292,18 +292,16 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </div>
 
                 {/* New Construction Filter */}
-                <div>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowNewConstruction(!showNewConstruction)}
-                    className={`w-full h-11 sm:h-12 text-sm sm:text-base ${
-                      showNewConstruction 
-                        ? "bg-hero-gradient text-white border-transparent hover:text-black" 
-                        : "bg-white"
-                    }`}
-                  >
+                <div className="flex items-center justify-end gap-3 px-2 py-1.5">
+                  <Label htmlFor="new-construction" className="text-sm font-medium text-foreground cursor-pointer">
                     Endast nyproduktion
-                  </Button>
+                  </Label>
+                  <Switch
+                    id="new-construction"
+                    checked={showNewConstruction}
+                    onCheckedChange={setShowNewConstruction}
+                    className="data-[state=checked]:bg-success"
+                  />
                 </div>
               </>
             )}
