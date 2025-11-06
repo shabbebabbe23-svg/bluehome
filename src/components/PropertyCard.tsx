@@ -128,12 +128,12 @@ const PropertyCard = ({
       </div>
 
       <CardContent className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-between">
-        {/* Address and price on the same line */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
-          <h3 className="font-semibold text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors truncate sm:pr-4">
+        {/* Address and price stacked */}
+        <div className="flex flex-col gap-1 mb-3">
+          <h3 className="font-semibold text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <span className="text-xl sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap leading-tight sm:min-w-[6rem] sm:text-right">
+          <span className="text-xl sm:text-2xl md:text-2xl font-bold text-primary">
             {price}
           </span>
         </div>
