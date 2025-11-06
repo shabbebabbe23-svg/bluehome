@@ -22,6 +22,7 @@ interface PropertyCardProps {
   onFavoriteToggle?: (id: number) => void;
   vendorLogo?: string;
   isSold?: boolean;
+  listedDate?: Date | string;
 }
 
 const PropertyCard = ({
@@ -41,6 +42,7 @@ const PropertyCard = ({
   onFavoriteToggle,
   vendorLogo,
   isSold = false,
+  listedDate,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -52,6 +54,11 @@ const PropertyCard = ({
   const now = new Date();
   const dayLabel = viewDate ? (isSameDay(viewDate, now) ? "Idag" : viewDate.toLocaleDateString("sv-SE", { day: "numeric", month: "short" })) : "Idag";
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
+
+  // Calculate days on bluehome
+  const daysOnMarket = listedDate 
+    ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
 
   return (
   <Card className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col">
@@ -183,6 +190,9 @@ const PropertyCard = ({
               Visa detaljer
             </Button>
           </Link>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`}
+          </p>
         </div>
       </CardContent>
     </Card>
