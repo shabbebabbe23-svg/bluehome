@@ -91,7 +91,7 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
           <div className="space-y-4 md:space-y-6">
             {/* Område Section */}
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">Område</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-5">Område</h2>
               <div className="relative" ref={searchRef}>
                 <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
                 <Input
@@ -128,8 +128,8 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
             </div>
 
             {/* Slutpriser Toggle */}
-            <div className="flex items-center justify-end gap-3 px-2 py-1.5">
-              <Label htmlFor="final-prices" className="text-sm font-medium text-foreground cursor-pointer">
+            <div className="flex items-center justify-end gap-3 px-2 py-2">
+              <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
                 Slutpriser
               </Label>
               <Switch
@@ -145,57 +145,57 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
 
             {/* Property Type Buttons */}
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 md:mb-4">Bostadstyp</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4">Bostadstyp</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("")}
-                  className={`h-11 sm:h-14 text-sm sm:text-base justify-start ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                  <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                   <span className="truncate">Alla typer</span>
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("house")}
-                  className={`h-14 text-base justify-start ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                   Villor
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("villa")}
-                  className={`h-14 text-base justify-start ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <div className="flex mr-2">
-                    <Home className="w-5 h-5 -mr-1" />
-                    <Home className="w-5 h-5" />
+                    <Home className="w-5 h-5 sm:w-6 sm:h-6 -mr-1" />
+                    <Home className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   Par/Radhus
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("apartment")}
-                  className={`h-14 text-base justify-start ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Building className="w-5 h-5 mr-2" />
+                  <Building className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                   Lägenheter
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("cottage")}
-                  className={`h-14 text-base justify-start ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <TreePine className="w-5 h-5 mr-2" />
+                  <TreePine className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                   Fritidshus
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setPropertyType("plot")}
-                  className={`h-14 text-base justify-start ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : ""}`}
+                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Square className="w-5 h-5 mr-2" />
+                  <Square className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                   Tomt
                 </Button>
               </div>
@@ -205,9 +205,9 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
             <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="w-full h-11 sm:h-12 text-sm sm:text-base md:text-lg"
+              className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold border-2 hover:border-primary"
             >
-              <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Filter className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
               {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
             </Button>
 
@@ -217,8 +217,8 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 {/* Price Filter */}
                 <div className="space-y-3 md:space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-foreground">Prisintervall</h3>
-                    <div className="text-base sm:text-lg md:text-xl font-bold text-black">
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
+                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
                       {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
                     </div>
                   </div>
@@ -239,8 +239,8 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 {/* Area Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg md:text-xl font-semibold text-foreground">Yta</h3>
-                    <div className="text-lg md:text-xl font-bold text-black">
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
+                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
                       {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
                     </div>
                   </div>
@@ -261,8 +261,8 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 {/* Room Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg md:text-xl font-semibold text-foreground">Antal rum</h3>
-                    <div className="text-lg md:text-xl font-bold text-black">
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
+                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
                       {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
                     </div>
                   </div>
@@ -282,18 +282,18 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
 
                 {/* Keywords Filter */}
                 <div className="space-y-3 md:space-y-4">
-                  <h3 className="text-base sm:text-lg font-semibold text-foreground">Nyckelord</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyckelord</h3>
                   <Input
                     placeholder="T.ex. balkong, garage, nybyggt..."
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
-                    className="h-11 sm:h-12 text-base border-2 border-primary/30 focus:border-primary"
+                    className="h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
                   />
                 </div>
 
                 {/* New Construction Filter */}
-                <div className="flex items-center justify-end gap-3 px-2 py-1.5">
-                  <Label htmlFor="new-construction" className="text-sm font-medium text-foreground cursor-pointer">
+                <div className="flex items-center justify-end gap-3 px-2 py-2">
+                  <Label htmlFor="new-construction" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
                     Endast nyproduktion
                   </Label>
                   <Switch
@@ -307,7 +307,7 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
             )}
 
             {/* Search Button */}
-            <Button size="lg" className="w-full h-12 sm:h-14 text-base sm:text-lg bg-hero-gradient hover:scale-[1.02] transition-transform">
+            <Button size="lg" className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform">
               Hitta bostäder
             </Button>
           </div>
