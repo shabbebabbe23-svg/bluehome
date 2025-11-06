@@ -11,9 +11,10 @@ import { filterMunicipalities } from "@/data/swedishMunicipalities";
 
 interface HeroProps {
   onFinalPricesChange?: (value: boolean) => void;
+  onPropertyTypeChange?: (value: string) => void;
 }
 
-const Hero = ({ onFinalPricesChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange }: HeroProps) => {
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
@@ -149,7 +150,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("")}
+                  onClick={() => {
+                    setPropertyType("");
+                    onPropertyTypeChange?.("");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
@@ -157,7 +161,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("house")}
+                  onClick={() => {
+                    setPropertyType("house");
+                    onPropertyTypeChange?.("house");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
@@ -165,7 +172,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("villa")}
+                  onClick={() => {
+                    setPropertyType("villa");
+                    onPropertyTypeChange?.("villa");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <div className="flex mr-2">
@@ -176,7 +186,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("apartment")}
+                  onClick={() => {
+                    setPropertyType("apartment");
+                    onPropertyTypeChange?.("apartment");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <Building className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
@@ -184,7 +197,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("cottage")}
+                  onClick={() => {
+                    setPropertyType("cottage");
+                    onPropertyTypeChange?.("cottage");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <TreePine className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
@@ -192,7 +208,10 @@ const Hero = ({ onFinalPricesChange }: HeroProps) => {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setPropertyType("plot")}
+                  onClick={() => {
+                    setPropertyType("plot");
+                    onPropertyTypeChange?.("plot");
+                  }}
                   className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
                   <Square className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />

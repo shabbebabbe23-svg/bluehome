@@ -40,9 +40,10 @@ import logo18 from "@/assets/logo-18.svg";
 
 interface PropertyGridProps {
   showFinalPrices?: boolean;
+  propertyType?: string;
 }
 
-const PropertyGrid = ({ showFinalPrices = false }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState<string>("default");
@@ -623,6 +624,24 @@ const PropertyGrid = ({ showFinalPrices = false }: PropertyGridProps) => {
     });
   }, []);
 
+  const filterByType = (props: typeof properties) => {
+    if (!propertyType) return props;
+    
+    // Map Hero propertyType values to PropertyGrid type values
+    const typeMap: Record<string, string> = {
+      "house": "Villa",
+      "villa": "Radhus",
+      "apartment": "Lägenhet",
+      "cottage": "Fritidshus",
+      "plot": "Tomt"
+    };
+    
+    const targetType = typeMap[propertyType];
+    if (!targetType) return props;
+    
+    return props.filter(property => property.type === targetType);
+  };
+
   const sortProperties = (props: typeof properties) => {
     const sorted = [...props];
     
@@ -649,7 +668,8 @@ const PropertyGrid = ({ showFinalPrices = false }: PropertyGridProps) => {
   };
 
   const currentProperties = showFinalPrices ? soldProperties : properties;
-  const sortedProperties = sortProperties(currentProperties);
+  const filteredProperties = filterByType(currentProperties);
+  const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: number) => {
