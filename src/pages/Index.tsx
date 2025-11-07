@@ -44,14 +44,14 @@ const Index = () => {
             showFinalPrices={showFinalPrices} 
             propertyType={propertyType}
           />
-          <div className="mt-8">
-            <AllPropertiesMap properties={allProperties} />
-          </div>
         </main>
   <AdBanner
     note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
     className="lg:order-3 order-2"
   />
+      </div>
+      <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">
+        <AllPropertiesMap properties={allProperties} />
       </div>
       <Footer />
     </div>
