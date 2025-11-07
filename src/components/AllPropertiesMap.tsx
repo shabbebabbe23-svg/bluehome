@@ -90,8 +90,14 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         case 'Radhus':
           color = '#a855f7'; // Purple
           break;
+        case 'Tomt':
+          color = '#f59e0b'; // Orange
+          break;
+        case 'Fritidshus':
+          color = '#ec4899'; // Pink
+          break;
         default:
-          color = '#f59e0b'; // Orange for others
+          color = '#6b7280'; // Gray for others
       }
 
       const svgIcon = `
@@ -170,7 +176,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold">Kartvy över alla fastigheter</h2>
-          <div className="flex gap-4 text-sm">
+          <div className="flex gap-3 text-sm flex-wrap">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-blue-500"></div>
               <span>Villa</span>
@@ -182,6 +188,14 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-purple-500"></div>
               <span>Radhus</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+              <span>Tomt</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-pink-500"></div>
+              <span>Fritidshus</span>
             </div>
           </div>
         </div>
