@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Property } from "@/components/PropertyGrid";
+import { Home, Building, TreePine, Square } from "lucide-react";
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -174,27 +175,40 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h2 className="text-2xl font-bold">Kartvy över alla fastigheter</h2>
           <div className="flex gap-3 text-sm flex-wrap">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+              <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" />
+              </div>
               <span>Villa</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-green-500"></div>
+              <div className="w-6 h-6 rounded bg-green-500 flex items-center justify-center">
+                <Building className="w-4 h-4 text-white" />
+              </div>
               <span>Lägenhet</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-purple-500"></div>
+              <div className="w-6 h-6 rounded bg-purple-500 flex items-center justify-center">
+                <div className="flex -ml-0.5">
+                  <Home className="w-3 h-3 text-white -mr-0.5" />
+                  <Home className="w-3 h-3 text-white" />
+                </div>
+              </div>
               <span>Radhus</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+              <div className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center">
+                <Square className="w-4 h-4 text-white" />
+              </div>
               <span>Tomt</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-pink-500"></div>
+              <div className="w-6 h-6 rounded bg-pink-500 flex items-center justify-center">
+                <TreePine className="w-4 h-4 text-white" />
+              </div>
               <span>Fritidshus</span>
             </div>
           </div>
