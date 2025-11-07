@@ -1,8 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import PropertyMarkers from './PropertyMarkers';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -43,36 +42,6 @@ interface PropertyWithCoords extends Property {
 const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Center map on Stockholm by default or first property
-  const center: [number, number] = useMemo(() => {
-    return propertiesWithCoords.length > 0 
-      ? [propertiesWithCoords[0].lat, propertiesWithCoords[0].lng]
-      : [59.3293, 18.0686];
-  }, [propertiesWithCoords]);
-
-  const markers = useMemo(() => {
-    return propertiesWithCoords.map((property) => (
-      <Marker key={property.id} position={[property.lat, property.lng]}>
-        <Popup>
-          <div className="p-2">
-            <h3 className="font-bold text-sm mb-1">{property.title}</h3>
-            <p className="text-xs text-muted-foreground mb-1">{property.address}</p>
-            <p className="text-xs text-muted-foreground mb-2">{property.location}</p>
-            <p className="font-semibold text-sm mb-2">{property.price}</p>
-            <p className="text-xs mb-2">
-              {property.bedrooms} rum • {property.bathrooms} badrum • {property.area} m²
-            </p>
-            <Link to={`/fastighet/${property.id}`}>
-              <Button size="sm" className="w-full">
-                Visa detaljer
-              </Button>
-            </Link>
-          </div>
-        </Popup>
-      </Marker>
-    ));
-  }, [propertiesWithCoords]);
 
   useEffect(() => {
     const geocodeProperties = async () => {
@@ -121,6 +90,10 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     );
   }
 
+  const center: [number, number] = propertiesWithCoords.length > 0 
+    ? [propertiesWithCoords[0].lat, propertiesWithCoords[0].lng]
+    : [59.3293, 18.0686];
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -136,7 +109,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {markers}
+            <PropertyMarkers properties={propertiesWithCoords} />
           </MapContainer>
         </div>
       </CardContent>
