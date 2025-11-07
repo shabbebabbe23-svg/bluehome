@@ -43,12 +43,27 @@ interface PropertyGridProps {
   propertyType?: string;
 }
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGridProps) => {
-  const [favorites, setFavorites] = useState<number[]>([]);
-  const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState<string>("default");
+export interface Property {
+  id: number;
+  title: string;
+  price: string;
+  priceValue: number;
+  location: string;
+  address: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  fee: number;
+  viewingDate: Date;
+  image: string;
+  hoverImage: string;
+  type: string;
+  isNew: boolean;
+  vendorLogo: string;
+  isSold?: boolean;
+}
 
-  const properties = [
+export const allProperties: Property[] = [
     {
       id: 1,
       title: "Modern lägenhet i city",
@@ -375,7 +390,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     },
   ];
 
-  const soldProperties = [
+export const soldProperties: Property[] = [
     {
       id: 101,
       title: "Såld villa i Danderyd",
@@ -606,10 +621,15 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     },
   ];
 
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGridProps) => {
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("default");
+
   // Preload hover images to avoid flicker when user hovers
   useEffect(() => {
-    const allProperties = [...properties, ...soldProperties];
-    allProperties.forEach((p) => {
+    const allPropertiesWithSold = [...allProperties, ...soldProperties];
+    allPropertiesWithSold.forEach((p) => {
       try {
         const img = new Image();
         img.src = p.hoverImage ?? p.image;
@@ -624,7 +644,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     });
   }, []);
 
-  const filterByType = (props: typeof properties) => {
+  const filterByType = (props: Property[]) => {
     if (!propertyType) return props;
     
     // Map Hero propertyType values to PropertyGrid type values
@@ -642,7 +662,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     return props.filter(property => property.type === targetType);
   };
 
-  const sortProperties = (props: typeof properties) => {
+  const sortProperties = (props: Property[]) => {
     const sorted = [...props];
     
     switch (sortBy) {
@@ -667,7 +687,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     }
   };
 
-  const currentProperties = showFinalPrices ? soldProperties : properties;
+  const currentProperties = showFinalPrices ? soldProperties : allProperties;
   const filteredProperties = filterByType(currentProperties);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);

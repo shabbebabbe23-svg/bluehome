@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import PropertyGrid from "@/components/PropertyGrid";
+import PropertyGrid, { allProperties } from "@/components/PropertyGrid";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
+import AllPropertiesMap from "@/components/AllPropertiesMap";
 import sofaAd from "@/assets/sofa-ad.svg";
 
 const Index = () => {
@@ -43,6 +44,9 @@ const Index = () => {
             showFinalPrices={showFinalPrices} 
             propertyType={propertyType}
           />
+          <div className="mt-8">
+            <AllPropertiesMap properties={allProperties} />
+          </div>
         </main>
   <AdBanner
     note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
