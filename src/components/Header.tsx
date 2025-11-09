@@ -15,7 +15,7 @@ const Header = () => {
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" 
       style={{
         background: isCommercialPage 
-          ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%)' 
+          ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
           : 'var(--main-gradient)'
       }}
     >
@@ -112,7 +112,7 @@ const Header = () => {
             className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" 
             style={{
               background: isCommercialPage 
-                ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%)' 
+                ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
                 : 'var(--main-gradient)'
             }}
           >
