@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Building, MapPin, Square } from "lucide-react";
+import { Building, MapPin, Square, Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { filterMunicipalities } from "@/data/swedishMunicipalities";
 import commercial1 from "@/assets/commercial-1.jpg";
 import commercial2 from "@/assets/commercial-2.jpg";
 import commercial3 from "@/assets/commercial-3.jpg";
@@ -60,12 +64,52 @@ const commercialProperties = [{
 }];
 const CommercialProperties = () => {
   const [selectedType, setSelectedType] = useState<string>("Alla");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [rentRange, setRentRange] = useState([0, 100000]);
+  const [areaRange, setAreaRange] = useState([0, 1000]);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
   const propertyTypes = ["Alla", "Kontor", "Butik", "Lager", "Restaurang", "Industri"];
   const filteredProperties = selectedType === "Alla" ? commercialProperties : commercialProperties.filter(p => p.type === selectedType);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchChange = (value: string) => {
+    setSearchLocation(value);
+    if (value.trim()) {
+      const filteredSuggestions = filterMunicipalities(value);
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(filteredSuggestions.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (municipality: { name: string; county: string }) => {
+    setSearchLocation(municipality.name);
+    setShowSuggestions(false);
+  };
+
+  const formatRent = (value: number) => {
+    return `${(value / 1000).toFixed(0)} tkr`;
+  };
   return <div className="min-h-screen dark bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Header />
       <main className="pt-20 px-4 max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             <Building className="w-12 h-12 text-primary" />
             Kommersiella Lokaler
@@ -73,12 +117,129 @@ const CommercialProperties = () => {
           <p className="text-slate-300 text-xl">Hitta den perfekta lokalen för ert företag</p>
         </div>
 
-        {/* Filter buttons */}
-        <div className="flex flex-wrap gap-3 justify-center mb-8">
-          {propertyTypes.map(type => <button key={type} onClick={() => setSelectedType(type)} className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedType === type ? "bg-primary text-white shadow-lg scale-105" : "bg-slate-700/50 text-slate-300 hover:bg-slate-700"}`}>
-              {type}
-            </button>)}
-        </div>
+        {/* Search Card */}
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-6 md:p-8 mb-8 max-w-5xl mx-auto">
+          <div className="space-y-6">
+            {/* Område Section */}
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Område</h2>
+              <div className="relative" ref={searchRef}>
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6 z-10" />
+                <Input
+                  placeholder="Skriv område eller stad"
+                  value={searchLocation}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onFocus={() => {
+                    if (searchLocation.trim() && suggestions.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
+                  className="pl-14 h-14 text-lg border-2 border-primary/30 focus:border-primary"
+                />
+                
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
+                    {suggestions.map((municipality, index) => (
+                      <button
+                        key={`${municipality.name}-${index}`}
+                        onClick={() => handleSuggestionClick(municipality)}
+                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                      >
+                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-foreground">{municipality.name}</p>
+                          <p className="text-sm text-muted-foreground">{municipality.county}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Property Type Buttons */}
+            <div>
+              <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">Lokaltyp</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {propertyTypes.map(type => (
+                  <Button
+                    key={type}
+                    variant="outline"
+                    onClick={() => setSelectedType(type)}
+                    className={`h-14 text-lg font-semibold border-2 ${selectedType === type ? "bg-primary text-white border-transparent" : "hover:border-primary"}`}
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* More Filters Button */}
+            <Button
+              variant="outline"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="w-full h-14 text-lg font-semibold border-2 hover:border-primary"
+            >
+              <Filter className="w-6 h-6 mr-2" />
+              {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
+            </Button>
+
+            {/* Advanced Filters */}
+            {showAdvancedFilters && (
+              <>
+                {/* Rent Filter */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-foreground">Hyra per månad</h3>
+                    <div className="text-xl md:text-2xl font-bold text-black">
+                      {formatRent(rentRange[0])} - {rentRange[1] >= 100000 ? '100+ tkr' : formatRent(rentRange[1])}
+                    </div>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={100000}
+                    step={5000}
+                    value={rentRange}
+                    onValueChange={setRentRange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-base text-muted-foreground font-medium">
+                    <span>0 kr</span>
+                    <span>100+ tkr</span>
+                  </div>
+                </div>
+
+                {/* Area Filter */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-foreground">Yta</h3>
+                    <div className="text-xl md:text-2xl font-bold text-black">
+                      {areaRange[0]} kvm - {areaRange[1] >= 1000 ? '1000+ kvm' : `${areaRange[1]} kvm`}
+                    </div>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={1000}
+                    step={50}
+                    value={areaRange}
+                    onValueChange={setAreaRange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-base text-muted-foreground">
+                    <span>0 kvm</span>
+                    <span>1000+ kvm</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Search Button */}
+            <Button size="lg" className="w-full h-14 text-xl font-bold bg-primary hover:scale-[1.02] transition-transform">
+              Hitta lokaler
+            </Button>
+          </div>
+        </Card>
 
         {/* Property grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
