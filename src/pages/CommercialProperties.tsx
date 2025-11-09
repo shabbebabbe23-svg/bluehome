@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AdBanner from "@/components/AdBanner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, MapPin, Square, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
+import heroImage from "@/assets/hero-image.jpg";
 import commercial1 from "@/assets/commercial-1.jpg";
 import commercial2 from "@/assets/commercial-2.jpg";
 import commercial3 from "@/assets/commercial-3.jpg";
@@ -106,7 +108,16 @@ const CommercialProperties = () => {
   const formatRent = (value: number) => {
     return `${(value / 1000).toFixed(0)} tkr`;
   };
-  return <div className="min-h-screen dark bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+  return (
+    <div className="min-h-screen relative">
+      {/* Background Image with Overlay */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40" />
+      </div>
+
       <Header />
       <main className="pt-20 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-8">
@@ -167,7 +178,7 @@ const CommercialProperties = () => {
                     key={type}
                     variant="outline"
                     onClick={() => setSelectedType(type)}
-                    className={`h-14 text-lg font-semibold border-2 ${selectedType === type ? "bg-primary text-white border-transparent" : "hover:border-primary"}`}
+                    className={`h-14 text-lg font-semibold border-2 ${selectedType === type ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
                   >
                     {type}
                   </Button>
@@ -241,8 +252,26 @@ const CommercialProperties = () => {
           </div>
         </Card>
 
-        {/* Property grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {/* Main content with side ads */}
+        <div className="flex gap-6 items-start">
+          {/* Left Ad Banner */}
+          <AdBanner
+            imageSrc={commercial1}
+            alt="Kontorslösningar"
+            title="Kontorslösningar"
+            description="Vi hjälper dig hitta den perfekta kontorslokalen för ditt företag."
+            bullets={[
+              "✓ Flexibla avtal",
+              "✓ Professionell service",
+              "✓ Centrala lägen",
+              "✓ Konkurrenskraftiga priser",
+            ]}
+            buttonText="Kontakta oss"
+            note="Specialerbjudande för nya kunder"
+          />
+
+          {/* Property grid */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/50 border-slate-700">
               <div className="relative h-48 bg-slate-700">
                 <img 
@@ -278,9 +307,27 @@ const CommercialProperties = () => {
                 </div>
               </CardContent>
             </Card>)}
+          </div>
+
+          {/* Right Ad Banner */}
+          <AdBanner
+            imageSrc={commercial2}
+            alt="Butikslokaler"
+            title="Butikslokaler"
+            description="Hitta den perfekta butikslokalen för din verksamhet."
+            bullets={[
+              "✓ Högt trafikerade lägen",
+              "✓ Flexibla ytor",
+              "✓ Professionellt stöd",
+              "✓ Attraktiva villkor",
+            ]}
+            buttonText="Boka visning"
+            note="Nya objekt varje vecka"
+          />
         </div>
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
 export default CommercialProperties;
