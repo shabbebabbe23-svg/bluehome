@@ -319,9 +319,9 @@ const CommercialProperties = () => {
           />
 
           {/* Property grid */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700">
-              <div className="relative h-64 bg-slate-700">
+          <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
+          {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
+              <div className="relative w-80 flex-shrink-0 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
@@ -334,24 +334,26 @@ const CommercialProperties = () => {
                   {property.type}
                 </div>
               </div>
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  {property.title}
-                </h3>
-                <div className="space-y-3 text-slate-300 text-lg">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    <span>{property.location}</span>
+              <CardContent className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    {property.title}
+                  </h3>
+                  <div className="space-y-3 text-slate-300 text-lg">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-primary" />
+                      <span>{property.location}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Square className="w-5 h-5 text-primary" />
+                      <span>{property.area}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Square className="w-5 h-5 text-primary" />
-                    <span>{property.area}</span>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-slate-700">
-                    <p className="text-3xl font-bold text-white">
-                      {property.price}
-                    </p>
-                  </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-slate-700">
+                  <p className="text-3xl font-bold text-white">
+                    {property.price}
+                  </p>
                 </div>
               </CardContent>
             </Card>)}
