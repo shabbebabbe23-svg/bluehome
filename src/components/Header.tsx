@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, userType, signOut } = useAuth();
+  const location = useLocation();
+  const isCommercialPage = location.pathname === "/foretag";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{background: 'var(--main-gradient)'}}>
@@ -38,9 +40,14 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Link to="/foretag">
-              <Button variant="outline" className="text-xl border-primary/50 hover:bg-primary/10">
-                Företag
+            <Link to={isCommercialPage ? "/" : "/foretag"}>
+              <Button 
+                variant="outline" 
+                className="text-xl bg-black border-black hover:bg-black/90"
+              >
+                <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                  {isCommercialPage ? "Privat" : "Företag"}
+                </span>
               </Button>
             </Link>
             {user && userType === "private" ? (
@@ -100,9 +107,14 @@ const Header = () => {
               <a href="#" className="text-foreground text-xl hover:text-primary transition-colors px-4 py-2">
                 Om oss
               </a>
-              <Link to="/foretag" className="px-4">
-                <Button variant="outline" className="text-xl border-primary/50 hover:bg-primary/10 w-full">
-                  Företag
+              <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
+                <Button 
+                  variant="outline" 
+                  className="text-xl bg-black border-black hover:bg-black/90 w-full"
+                >
+                  <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                    {isCommercialPage ? "Privat" : "Företag"}
+                  </span>
                 </Button>
               </Link>
               <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
