@@ -1,9 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Property } from "@/components/PropertyGrid";
-import { Home, Building, TreePine, Square } from "lucide-react";
+import { Home, Building, TreePine, Square, Navigation } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import L from 'leaflet';
+import 'leaflet-routing-machine';
 
 interface AllPropertiesMapProps {
   properties: Property[];
@@ -17,8 +21,11 @@ interface PropertyWithCoords extends Property {
 const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fromAddress, setFromAddress] = useState('');
+  const [toAddress, setToAddress] = useState('');
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const routingControlRef = useRef<any>(null);
 
   useEffect(() => {
     const geocodeProperties = async () => {
@@ -72,9 +79,10 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     // Create map
     const map = L.map(mapRef.current).setView(center, 11);
 
-    // Add tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    // Add satellite tile layer from Esri
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxZoom: 19
     }).addTo(map);
 
     // Function to create colored icons based on property type
@@ -152,12 +160,72 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
 
     // Cleanup
     return () => {
+      if (routingControlRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
   }, [propertiesWithCoords, loading, properties]);
+
+  const handleRouteSearch = async () => {
+    if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
+
+    try {
+      // Geocode from address
+      const fromResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fromAddress + ', Sverige')}`
+      );
+      const fromData = await fromResponse.json();
+
+      // Geocode to address
+      const toResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress + ', Sverige')}`
+      );
+      const toData = await toResponse.json();
+
+      if (fromData[0] && toData[0]) {
+        const fromLatLng = L.latLng(parseFloat(fromData[0].lat), parseFloat(fromData[0].lon));
+        const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
+
+        // Remove existing routing control if any
+        if (routingControlRef.current) {
+          mapInstanceRef.current.removeControl(routingControlRef.current);
+        }
+
+        // Create routing control
+        routingControlRef.current = (L as any).Routing.control({
+          waypoints: [fromLatLng, toLatLng],
+          routeWhileDragging: true,
+          showAlternatives: true,
+          lineOptions: {
+            styles: [{ color: 'hsl(var(--primary))', opacity: 0.8, weight: 6 }]
+          },
+          createMarker: function(i: number, waypoint: any, n: number) {
+            const marker = L.marker(waypoint.latLng, {
+              draggable: true,
+              icon: L.divIcon({
+                html: `<div style="background: hsl(var(--primary)); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white;">${i === 0 ? 'A' : 'B'}</div>`,
+                className: 'custom-route-marker',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+              })
+            });
+            return marker;
+          }
+        }).addTo(mapInstanceRef.current);
+
+        // Fit map to route
+        const bounds = L.latLngBounds([fromLatLng, toLatLng]);
+        mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+      }
+    } catch (error) {
+      console.error('Routing error:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -175,8 +243,40 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   return (
     <Card className="w-full">
       <CardContent className="p-6">
+        <h2 className="text-2xl font-bold mb-4">Kartvy över alla fastigheter</h2>
+        
+        {/* Route Search */}
+        <div className="mb-4 p-4 bg-muted rounded-lg">
+          <div className="flex items-center gap-2 mb-3">
+            <Navigation className="w-5 h-5 text-primary" />
+            <h3 className="font-semibold">Vägbeskrivning och avstånd</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Input
+              placeholder="Från adress..."
+              value={fromAddress}
+              onChange={(e) => setFromAddress(e.target.value)}
+              className="bg-background"
+            />
+            <Input
+              placeholder="Till adress..."
+              value={toAddress}
+              onChange={(e) => setToAddress(e.target.value)}
+              className="bg-background"
+            />
+            <Button 
+              onClick={handleRouteSearch}
+              disabled={!fromAddress || !toAddress}
+              className="w-full"
+            >
+              Beräkna rutt
+            </Button>
+          </div>
+        </div>
+
+        {/* Legend */}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h2 className="text-2xl font-bold">Kartvy över alla fastigheter</h2>
+          <div className="font-semibold">Fastighetstyper:</div>
           <div className="flex gap-3 text-sm flex-wrap">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center">
