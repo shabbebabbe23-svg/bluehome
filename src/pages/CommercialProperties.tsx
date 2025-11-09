@@ -321,7 +321,7 @@ const CommercialProperties = () => {
           {/* Property grid */}
           <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
           {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
-              <div className="relative w-[700px] flex-shrink-0 bg-slate-700">
+              <div className="relative w-[700px] h-48 flex-shrink-0 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
@@ -336,22 +336,22 @@ const CommercialProperties = () => {
               </div>
               <CardContent className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     {property.title}
                   </h3>
-                  <div className="space-y-3 text-slate-300 text-lg">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-primary" />
+                  <div className="space-y-2 text-slate-300 text-base">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-primary" />
                       <span>{property.location}</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Square className="w-5 h-5 text-primary" />
+                    <div className="flex items-center gap-2">
+                      <Square className="w-4 h-4 text-primary" />
                       <span>{property.area}</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 pt-4 border-t border-slate-700">
-                  <p className="text-3xl font-bold text-white">
+                <div className="mt-4 pt-3 border-t border-slate-700">
+                  <p className="text-2xl font-bold text-white">
                     {property.price}
                   </p>
                 </div>
