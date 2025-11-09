@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
-import heroImage from "@/assets/hero-image.jpg";
+import commercialHero from "@/assets/commercial-hero.jpg";
 import commercial1 from "@/assets/commercial-1.jpg";
 import commercial2 from "@/assets/commercial-2.jpg";
 import commercial3 from "@/assets/commercial-3.jpg";
@@ -63,6 +63,54 @@ const commercialProperties = [{
   price: "42 000 kr/mån",
   image: commercial6,
   type: "Industri"
+}, {
+  id: "c7",
+  title: "Showroom i centrala läget",
+  location: "Stockholm, Kungsholmen",
+  area: "250 m²",
+  price: "38 000 kr/mån",
+  image: commercial1,
+  type: "Butik"
+}, {
+  id: "c8",
+  title: "Kontorslandskap med havsutsikt",
+  location: "Göteborg, Lindholmen",
+  area: "650 m²",
+  price: "52 000 kr/mån",
+  image: commercial2,
+  type: "Kontor"
+}, {
+  id: "c9",
+  title: "Lagerlokal nära motorväg",
+  location: "Stockholm, Sollentuna",
+  area: "1200 m²",
+  price: "68 000 kr/mån",
+  image: commercial3,
+  type: "Lager"
+}, {
+  id: "c10",
+  title: "Café och restaurang",
+  location: "Malmö, Möllevången",
+  area: "150 m²",
+  price: "32 000 kr/mån",
+  image: commercial4,
+  type: "Restaurang"
+}, {
+  id: "c11",
+  title: "Produktionslokal med overhead crane",
+  location: "Linköping, Tornby",
+  area: "950 m²",
+  price: "58 000 kr/mån",
+  image: commercial5,
+  type: "Industri"
+}, {
+  id: "c12",
+  title: "Prestigefyllt kontor i skyskrapa",
+  location: "Stockholm, City",
+  area: "380 m²",
+  price: "72 000 kr/mån",
+  image: commercial6,
+  type: "Kontor"
 }];
 const CommercialProperties = () => {
   const [selectedType, setSelectedType] = useState<string>("Alla");
@@ -113,9 +161,9 @@ const CommercialProperties = () => {
       {/* Background Image with Overlay */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        style={{ backgroundImage: `url(${commercialHero})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50" />
       </div>
 
       <Header />
@@ -253,7 +301,7 @@ const CommercialProperties = () => {
         </Card>
 
         {/* Main content with side ads */}
-        <div className="flex gap-6 items-start">
+        <div className="flex gap-12 items-start">
           {/* Left Ad Banner */}
           <AdBanner
             imageSrc={commercial1}
@@ -272,7 +320,7 @@ const CommercialProperties = () => {
 
           {/* Property grid */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/50 border-slate-700">
+          {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700">
               <div className="relative h-48 bg-slate-700">
                 <img 
                   src={property.image} 
