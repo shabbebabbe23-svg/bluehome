@@ -31,16 +31,16 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-white text-xl hover:text-primary transition-colors">
+            <a href="#" className={`text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
               Köp
             </a>
-            <a href="#" className="text-white text-xl hover:text-primary transition-colors">
+            <a href="#" className={`text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
               Hyra
             </a>
-            <a href="#" className="text-white text-xl hover:text-primary transition-colors">
+            <a href="#" className={`text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
               Sälj
             </a>
-            <a href="#" className="text-white text-xl hover:text-primary transition-colors">
+            <a href="#" className={`text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </a>
           </nav>
@@ -117,16 +117,16 @@ const Header = () => {
             }}
           >
             <nav className="flex flex-col gap-4">
-              <a href="#" className="text-white text-xl hover:text-primary transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
                 Köp
               </a>
-              <a href="#" className="text-white text-xl hover:text-primary transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
                 Hyra
               </a>
-              <a href="#" className="text-white text-xl hover:text-primary transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
                 Sälj
               </a>
-              <a href="#" className="text-white text-xl hover:text-primary transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
                 Om oss
               </a>
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
