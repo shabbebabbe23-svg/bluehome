@@ -81,7 +81,7 @@ const CommercialProperties = () => {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Building className="w-20 h-20 text-slate-600" />
                 </div>
-                <div className="absolute top-4 right-4 bg-primary px-3 py-1 rounded-full text-white font-semibold text-sm">
+                <div className="absolute top-4 right-4 bg-primary px-3 py-1 rounded-full text-foreground font-semibold text-sm">
                   {property.type}
                 </div>
               </div>
