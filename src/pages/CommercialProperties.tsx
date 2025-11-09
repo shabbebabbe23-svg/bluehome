@@ -92,7 +92,7 @@ const CommercialProperties = () => {
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
                   VR Funktion
                 </div>
-                <div className="absolute top-4 right-4 bg-primary px-3 py-1 rounded-full text-white font-semibold text-sm">
+                <div className="absolute top-4 right-4 bg-black px-3 py-1 rounded-full text-white font-semibold text-sm">
                   {property.type}
                 </div>
               </div>
