@@ -3,13 +3,19 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, MapPin, Square } from "lucide-react";
+import commercial1 from "@/assets/commercial-1.jpg";
+import commercial2 from "@/assets/commercial-2.jpg";
+import commercial3 from "@/assets/commercial-3.jpg";
+import commercial4 from "@/assets/commercial-4.jpg";
+import commercial5 from "@/assets/commercial-5.jpg";
+import commercial6 from "@/assets/commercial-6.jpg";
 const commercialProperties = [{
   id: "c1",
   title: "Modern kontorslokal i city",
   location: "Stockholm, Vasastan",
   area: "450 m²",
   price: "45 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial1,
   type: "Kontor"
 }, {
   id: "c2",
@@ -17,7 +23,7 @@ const commercialProperties = [{
   location: "Stockholm, Centrum",
   area: "120 m²",
   price: "35 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial2,
   type: "Butik"
 }, {
   id: "c3",
@@ -25,7 +31,7 @@ const commercialProperties = [{
   location: "Göteborg, Hisingen",
   area: "800 m²",
   price: "55 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial3,
   type: "Lager"
 }, {
   id: "c4",
@@ -33,7 +39,7 @@ const commercialProperties = [{
   location: "Stockholm, Östermalm",
   area: "200 m²",
   price: "65 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial4,
   type: "Restaurang"
 }, {
   id: "c5",
@@ -41,7 +47,7 @@ const commercialProperties = [{
   location: "Malmö, Västra Hamnen",
   area: "300 m²",
   price: "28 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial5,
   type: "Kontor"
 }, {
   id: "c6",
@@ -49,7 +55,7 @@ const commercialProperties = [{
   location: "Uppsala, Fyrislund",
   area: "600 m²",
   price: "42 000 kr/mån",
-  image: "/placeholder.svg",
+  image: commercial6,
   type: "Industri"
 }];
 const CommercialProperties = () => {
@@ -78,8 +84,13 @@ const CommercialProperties = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/50 border-slate-700">
               <div className="relative h-48 bg-slate-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Building className="w-20 h-20 text-slate-600" />
+                <img 
+                  src={property.image} 
+                  alt={property.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
+                  VR Funktion
                 </div>
                 <div className="absolute top-4 right-4 bg-primary px-3 py-1 rounded-full text-foreground font-semibold text-sm">
                   {property.type}
