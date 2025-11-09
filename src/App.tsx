@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import PropertyDetail from "./pages/PropertyDetail";
+import CommercialProperties from "./pages/CommercialProperties";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/logga-in" element={<Login />} />
         <Route path="/fastighet/:id" element={<PropertyDetail />} />
+        <Route path="/foretag" element={<CommercialProperties />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

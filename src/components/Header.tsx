@@ -38,6 +38,11 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
+            <Link to="/foretag">
+              <Button variant="outline" className="text-xl border-primary/50 hover:bg-primary/10">
+                Företag
+              </Button>
+            </Link>
             {user && userType === "private" ? (
               <Button variant="ghost">
                 <Heart className="w-5 h-5 mr-2" />
@@ -95,6 +100,11 @@ const Header = () => {
               <a href="#" className="text-foreground text-xl hover:text-primary transition-colors px-4 py-2">
                 Om oss
               </a>
+              <Link to="/foretag" className="px-4">
+                <Button variant="outline" className="text-xl border-primary/50 hover:bg-primary/10 w-full">
+                  Företag
+                </Button>
+              </Link>
               <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
                 {user && userType === "private" ? (
                   <Button variant="ghost" className="w-full justify-start">
