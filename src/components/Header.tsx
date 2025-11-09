@@ -88,7 +88,7 @@ const Header = () => {
               </Button>
             ) : (
               <Link to="/logga-in">
-                <Button className="text-xl bg-hero-gradient hover:scale-105 transition-transform">
+                <Button className="text-xl text-white bg-hero-gradient hover:scale-105 transition-transform">
                   Logga in
                 </Button>
               </Link>
@@ -171,7 +171,7 @@ const Header = () => {
                   </Button>
                 ) : (
                   <Link to="/logga-in" className="flex-1">
-                    <Button className="text-xl bg-hero-gradient w-full">
+                    <Button className="text-xl text-white bg-hero-gradient w-full">
                       Logga in
                     </Button>
                   </Link>
