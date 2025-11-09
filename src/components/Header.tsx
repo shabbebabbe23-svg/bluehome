@@ -11,7 +11,14 @@ const Header = () => {
   const isCommercialPage = location.pathname === "/foretag";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{background: 'var(--main-gradient)'}}>
+    <header 
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" 
+      style={{
+        background: isCommercialPage 
+          ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%)' 
+          : 'var(--main-gradient)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -43,11 +50,19 @@ const Header = () => {
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button 
                 variant="outline" 
-                className="text-xl bg-black border-black hover:bg-black/90"
+                className={`text-xl ${
+                  isCommercialPage 
+                    ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
+                    : 'bg-black border-black hover:bg-black/90'
+                }`}
               >
-                <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
-                  {isCommercialPage ? "Privat" : "Företag"}
-                </span>
+                {isCommercialPage ? (
+                  "Privat"
+                ) : (
+                  <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                    Företag
+                  </span>
+                )}
               </Button>
             </Link>
             {user && userType === "private" ? (
@@ -93,7 +108,14 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" style={{background: 'var(--main-gradient)'}}>
+          <div 
+            className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" 
+            style={{
+              background: isCommercialPage 
+                ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%)' 
+                : 'var(--main-gradient)'
+            }}
+          >
             <nav className="flex flex-col gap-4">
               <a href="#" className="text-foreground text-xl hover:text-primary transition-colors px-4 py-2">
                 Köp
@@ -110,11 +132,19 @@ const Header = () => {
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
                 <Button 
                   variant="outline" 
-                  className="text-xl bg-black border-black hover:bg-black/90 w-full"
+                  className={`text-xl w-full ${
+                    isCommercialPage 
+                      ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
+                      : 'bg-black border-black hover:bg-black/90'
+                  }`}
                 >
-                  <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
-                    {isCommercialPage ? "Privat" : "Företag"}
-                  </span>
+                  {isCommercialPage ? (
+                    "Privat"
+                  ) : (
+                    <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                      Företag
+                    </span>
+                  )}
                 </Button>
               </Link>
               <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
