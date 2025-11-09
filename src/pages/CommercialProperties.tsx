@@ -336,24 +336,32 @@ const CommercialProperties = () => {
               </div>
               <CardContent className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-3">
+                  <h3 className="text-xl font-bold text-white mb-4">
                     {property.title}
                   </h3>
-                  <div className="space-y-2 text-slate-300 text-base">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <span>{property.location}</span>
+                  <div className="space-y-3 text-slate-300 text-base">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Plats</p>
+                        <p className="text-white font-medium">{property.location}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Square className="w-4 h-4 text-primary" />
-                      <span>{property.area}</span>
+                    <div className="flex items-start gap-2">
+                      <Square className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Yta</p>
+                        <p className="text-white font-medium">{property.area}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Building className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Månadshyra</p>
+                        <p className="text-2xl font-bold text-white">{property.price}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-700">
-                  <p className="text-2xl font-bold text-white">
-                    {property.price}
-                  </p>
                 </div>
               </CardContent>
             </Card>)}
