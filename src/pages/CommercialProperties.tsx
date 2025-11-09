@@ -321,7 +321,7 @@ const CommercialProperties = () => {
           {/* Property grid */}
           <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
           {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
-              <div className="relative w-[700px] h-48 flex-shrink-0 bg-slate-700">
+              <div className="relative w-[900px] h-48 flex-shrink-0 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
