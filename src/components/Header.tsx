@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
@@ -21,13 +27,34 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Home className="w-10 h-10 text-primary" />
-            <span className="text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              Bluehome
-            </span>
-          </Link>
+          <div className="flex items-center gap-4">
+            {/* Agent Menu Button */}
+            {user && userType === "maklare" && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                    <Menu className="w-6 h-6" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem asChild>
+                    <Link to="/maklare" className="flex items-center gap-2 cursor-pointer">
+                      <Briefcase className="w-4 h-4" />
+                      Mäklarpanel
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Home className="w-10 h-10 text-primary" />
+              <span className="text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                Bluehome
+              </span>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
