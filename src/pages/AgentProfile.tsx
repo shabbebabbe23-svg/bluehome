@@ -85,44 +85,59 @@ const AgentProfile = () => {
         {/* Agent Profile Header */}
         <Card className="mb-8">
           <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <Avatar className="w-32 h-32 border-4 border-border">
-                <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
-                <AvatarFallback className="bg-primary text-white text-2xl">
-                  <User className="w-16 h-16" />
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex flex-col md:flex-row items-start gap-8">
+              {/* Avatar - larger size */}
+              <div className="flex-shrink-0">
+                <Avatar className="w-48 h-48 md:w-64 md:h-64 border-4 border-border">
+                  <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
+                  <AvatarFallback className="bg-primary text-white text-4xl">
+                    <User className="w-24 h-24 md:w-32 md:h-32" />
+                  </AvatarFallback>
+                </Avatar>
+              </div>
               
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold mb-2">
-                  {agentProfile.full_name || "Mäklare"}
-                </h1>
-                
-                <div className="space-y-2 text-muted-foreground mb-4">
+              {/* Right side - Bio and info moved up */}
+              <div className="flex-1 space-y-6">
+                {/* Name and Agency */}
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">
+                    {agentProfile.full_name || "Mäklare"}
+                  </h1>
+                  
                   {agentProfile.agency && (
-                    <div className="flex items-center justify-center md:justify-start gap-2">
-                      <Building2 className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-lg text-muted-foreground">
+                      <Building2 className="w-5 h-5" />
                       <span>{agentProfile.agency}</span>
                     </div>
                   )}
-                  
+                </div>
+
+                {/* Bio Section - moved up and to the right */}
+                {agentProfile.bio && (
+                  <div className="text-foreground leading-relaxed">
+                    <p className="text-base">{agentProfile.bio}</p>
+                  </div>
+                )}
+
+                {/* Contact Info */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {agentProfile.area && (
-                    <div className="flex items-center justify-center md:justify-start gap-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="w-4 h-4" />
                       <span>{agentProfile.area}</span>
                     </div>
                   )}
                   
                   {agentProfile.office && (
-                    <div className="flex items-center justify-center md:justify-start gap-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Building2 className="w-4 h-4" />
                       <span>Kontor: {agentProfile.office}</span>
                     </div>
                   )}
                   
                   {agentProfile.email && (
-                    <div className="flex items-center justify-center md:justify-start gap-2">
-                      <Mail className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${agentProfile.email}`}
                         className="hover:text-primary transition-colors"
@@ -133,8 +148,8 @@ const AgentProfile = () => {
                   )}
                   
                   {agentProfile.phone && (
-                    <div className="flex items-center justify-center md:justify-start gap-2">
-                      <Phone className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
                       <a 
                         href={`tel:${agentProfile.phone}`}
                         className="hover:text-primary transition-colors"
@@ -144,13 +159,6 @@ const AgentProfile = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Bio Section */}
-                {agentProfile.bio && (
-                  <div className="mt-4 text-foreground leading-relaxed max-w-2xl">
-                    <p>{agentProfile.bio}</p>
-                  </div>
-                )}
               </div>
               
               <div className="text-center md:text-right">
