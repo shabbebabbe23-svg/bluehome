@@ -143,63 +143,63 @@ const PropertyCard = ({
         </Button>
       </div>
 
-      <CardContent className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-between">
+      <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 flex-1 flex flex-col justify-between">
         {/* Address and price stacked */}
-        <div className="flex flex-col gap-1 mb-3">
-          <h3 className="font-semibold text-[1.688rem] sm:text-[1.875rem] text-foreground group-hover:text-primary transition-colors">
+        <div className="flex flex-col gap-0.5 sm:gap-1 mb-2 sm:mb-3">
+          <h3 className="font-semibold text-base sm:text-lg md:text-xl lg:text-[1.688rem] xl:text-[1.875rem] text-foreground group-hover:text-primary transition-colors line-clamp-2">
             {title}
           </h3>
-          <span className="text-[1.875rem] sm:text-[2.25rem] md:text-[2.25rem] font-bold text-primary">
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-[1.875rem] xl:text-[2.25rem] font-bold text-primary">
             {price}
           </span>
         </div>
 
-        <div className="flex items-center text-muted-foreground mb-3 md:mb-4">
-          <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-          <span className="text-[1.313rem] truncate">{location}</span>
+        <div className="flex items-center text-muted-foreground mb-2 sm:mb-3 md:mb-4">
+          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+          <span className="text-xs sm:text-sm md:text-base lg:text-[1.313rem] truncate">{location}</span>
         </div>
 
-        <div className="mb-3 md:mb-4">
-          <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Bed className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-1">
-                <span className="text-[1.5rem] sm:text-[1.688rem] md:text-[1.875rem] font-semibold text-foreground">{bedrooms}</span>
-                <span className="text-[1.125rem] sm:text-[1.313rem] text-muted-foreground">rum</span>
+        <div className="mb-2 sm:mb-3 md:mb-4">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+              <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex items-baseline gap-0.5 sm:gap-1">
+                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{bedrooms}</span>
+                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground">rum</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Bath className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-1">
-                <span className="text-[1.5rem] sm:text-[1.688rem] md:text-[1.875rem] font-semibold text-foreground">{bathrooms}</span>
-                <span className="text-[1.125rem] sm:text-[1.313rem] text-muted-foreground hidden sm:inline">badrum</span>
-                <span className="text-[1.125rem] sm:text-[1.313rem] text-muted-foreground sm:hidden">bad</span>
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+              <Bath className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex items-baseline gap-0.5 sm:gap-1">
+                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{bathrooms}</span>
+                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground hidden sm:inline">badrum</span>
+                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground sm:hidden">bad</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Square className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-1">
-                <span className="text-[1.5rem] sm:text-[1.688rem] md:text-[1.875rem] font-semibold text-foreground">{area}</span>
-                <span className="text-[1.125rem] sm:text-[1.313rem] text-muted-foreground">m²</span>
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+              <Square className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex items-baseline gap-0.5 sm:gap-1">
+                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{area}</span>
+                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground">m²</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-end text-foreground mt-2">
-            <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
-            <span className="text-[1.125rem] sm:text-[1.313rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+          <div className="flex items-center justify-end text-foreground mt-1.5 sm:mt-2">
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
+            <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
           </div>
         </div>
 
-        <div className="mt-3 md:mt-4">
+        <div className="mt-2 sm:mt-3 md:mt-4">
           <Link to={`/fastighet/${id}`}>
-            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[1.313rem] sm:text-[1.5rem]">
+            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base lg:text-[1.313rem] py-2 sm:py-3">
               Visa detaljer
             </Button>
           </Link>
-          <p className="text-[1.125rem] text-muted-foreground text-center mt-2">
+          <p className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground text-center mt-1.5 sm:mt-2">
             {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`}
           </p>
         </div>
