@@ -65,7 +65,7 @@ const Header = () => {
                 )}
               </Button>
             </Link>
-            {user && userType === "private" ? (
+            {user && userType === "user" ? (
               <Button variant="ghost">
                 <Heart className="w-5 h-5 mr-2" />
                 Mina favoriter
@@ -148,7 +148,7 @@ const Header = () => {
                 </Button>
               </Link>
               <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
-                {user && userType === "private" ? (
+                {user && userType === "user" ? (
                   <Button variant="ghost" className="w-full justify-start">
                     <Heart className="w-5 h-5 mr-2" />
                     Mina favoriter

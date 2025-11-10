@@ -38,24 +38,99 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          address: string
+          area: number
+          bathrooms: number
+          bedrooms: number
+          created_at: string | null
+          description: string | null
+          fee: number | null
+          has_vr: boolean | null
+          hover_image_url: string | null
+          id: string
+          image_url: string | null
+          is_deleted: boolean | null
+          is_sold: boolean | null
+          listed_date: string | null
+          location: string
+          price: number
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          vendor_logo_url: string | null
+          viewing_date: string | null
+        }
+        Insert: {
+          address: string
+          area: number
+          bathrooms: number
+          bedrooms: number
+          created_at?: string | null
+          description?: string | null
+          fee?: number | null
+          has_vr?: boolean | null
+          hover_image_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_deleted?: boolean | null
+          is_sold?: boolean | null
+          listed_date?: string | null
+          location: string
+          price: number
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+          vendor_logo_url?: string | null
+          viewing_date?: string | null
+        }
+        Update: {
+          address?: string
+          area?: number
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string | null
+          description?: string | null
+          fee?: number | null
+          has_vr?: boolean | null
+          hover_image_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_deleted?: boolean | null
+          is_sold?: boolean | null
+          listed_date?: string | null
+          location?: string
+          price?: number
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          vendor_logo_url?: string | null
+          viewing_date?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
           id: string
           user_id: string
-          user_type: Database["public"]["Enums"]["user_type"]
+          user_type: Database["public"]["Enums"]["app_role"]
         }
         Insert: {
           created_at?: string
           id?: string
           user_id: string
-          user_type: Database["public"]["Enums"]["user_type"]
+          user_type: Database["public"]["Enums"]["app_role"]
         }
         Update: {
           created_at?: string
           id?: string
           user_id?: string
-          user_type?: Database["public"]["Enums"]["user_type"]
+          user_type?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
       }
@@ -68,8 +143,16 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user" | "maklare"
       user_type: "private" | "agent"
     }
     CompositeTypes: {
@@ -198,6 +281,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user", "maklare"],
       user_type: ["private", "agent"],
     },
   },

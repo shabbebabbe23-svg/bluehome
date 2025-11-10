@@ -14,7 +14,7 @@ const authSchema = z.object({
   password: z.string().min(6, { message: "Lösenordet måste vara minst 6 tecken" }).max(100),
   confirmPassword: z.string().optional(),
   fullName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
-  userType: z.enum(["private", "agent"]).optional(),
+  userType: z.enum(["user", "maklare"]).optional(),
 }).refine((data) => {
   // Only validate confirmPassword during signup
   if (data.fullName && data.password !== data.confirmPassword) {
@@ -32,7 +32,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userType, setUserType] = useState<"private" | "agent">("private");
+  const [userType, setUserType] = useState<"user" | "maklare">("user");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -179,16 +179,16 @@ const Login = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <Button
                         type="button"
-                        variant={userType === "private" ? "default" : "outline"}
-                        onClick={() => setUserType("private")}
+                        variant={userType === "user" ? "default" : "outline"}
+                        onClick={() => setUserType("user")}
                         className="w-full"
                       >
                         Privatperson
                       </Button>
                       <Button
                         type="button"
-                        variant={userType === "agent" ? "default" : "outline"}
-                        onClick={() => setUserType("agent")}
+                        variant={userType === "maklare" ? "default" : "outline"}
+                        onClick={() => setUserType("maklare")}
                         className="w-full"
                       >
                         Mäklare
