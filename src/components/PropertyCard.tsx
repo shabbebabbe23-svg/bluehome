@@ -72,7 +72,7 @@ const PropertyCard = ({
       <Link to={`/fastighet/${id}`} className="absolute inset-0 z-10" aria-label={`Visa ${title}`} />
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
-        <div className="w-full h-64 sm:h-72 md:h-80 lg:h-72 xl:h-80 relative">
+        <div className="w-full h-48 sm:h-52 md:h-56 lg:h-52 xl:h-56 relative">
           <img
             src={image}
             alt={title}
