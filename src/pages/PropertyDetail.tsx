@@ -1,13 +1,15 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -27,9 +29,48 @@ const PropertyDetail = () => {
   const { id } = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [dbProperty, setDbProperty] = useState<any>(null);
+  const [agentProfile, setAgentProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   // Track property view
   usePropertyViewTracking(id || "");
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      if (!id) return;
+      
+      try {
+        // Try to fetch from database first
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (data) {
+          setDbProperty(data);
+          
+          // Fetch agent profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.user_id)
+            .maybeSingle();
+          
+          if (profile) {
+            setAgentProfile(profile);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [id]);
 
   const properties = [
     {
@@ -224,7 +265,22 @@ const PropertyDetail = () => {
     },
   ];
 
-  const property = properties.find((p) => p.id === Number(id));
+  // Use database property if available, otherwise fallback to hardcoded
+  let property = dbProperty;
+  
+  if (!property) {
+    property = properties.find((p) => p.id === Number(id));
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg">Laddar fastighet...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -239,7 +295,14 @@ const PropertyDetail = () => {
     );
   }
 
-  const images = property.images || [property1];
+  // Handle images for both database and hardcoded properties
+  const images = dbProperty 
+    ? [
+        dbProperty.image_url,
+        dbProperty.hover_image_url,
+        ...(dbProperty.additional_images || [])
+      ].filter(Boolean)
+    : property.images || [property1];
 
   const handlePreviousImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -396,7 +459,9 @@ const PropertyDetail = () => {
                     </div>
                   </div>
                   <div className="text-left sm:text-right">
-                    <p className="text-2xl sm:text-3xl font-bold text-primary">{property.price}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-primary">
+                      {dbProperty ? `${(property.price / 1000000).toFixed(1)}M SEK` : property.price}
+                    </p>
                   </div>
                 </div>
 
@@ -429,7 +494,7 @@ const PropertyDetail = () => {
                     <Home className="w-5 h-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">Byggår</p>
-                      <p className="font-semibold">{property.buildYear}</p>
+                      <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
                     </div>
                   </div>
                 </div>
@@ -440,38 +505,58 @@ const PropertyDetail = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
                   <p className="text-xl text-muted-foreground leading-relaxed">
-                    {property.description}
+                    {property.description || 'Ingen beskrivning tillgänglig'}
                   </p>
                 </div>
 
-                <Separator className="my-6" />
-
-                {/* Floor Plan */}
-                <div>
-                  <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                  <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                    <img
-                      src={floorplan}
-                      alt="Planritning"
-                      className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
-                    />
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                {/* Features */}
-                <div>
-                  <h2 className="text-xl font-bold mb-3">Highlights</h2>
-                  <div className="grid grid-cols-2 gap-2">
-                    {property.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span className="text-muted-foreground">{feature}</span>
+                {property.floorplan_url && (
+                  <>
+                    <Separator className="my-6" />
+                    <div>
+                      <h2 className="text-xl font-bold mb-3">Planritning</h2>
+                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                        <img
+                          src={property.floorplan_url}
+                          alt="Planritning"
+                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
+                        />
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  </>
+                )}
+
+                {!dbProperty && (
+                  <>
+                    <Separator className="my-6" />
+
+                    {/* Floor Plan */}
+                    <div>
+                      <h2 className="text-xl font-bold mb-3">Planritning</h2>
+                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                        <img
+                          src={floorplan}
+                          alt="Planritning"
+                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <Separator className="my-6" />
+
+                    {/* Features */}
+                    <div>
+                      <h2 className="text-xl font-bold mb-3">Highlights</h2>
+                      <div className="grid grid-cols-2 gap-2">
+                        {property.features.map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="text-muted-foreground">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -484,22 +569,93 @@ const PropertyDetail = () => {
             {/* Contact Card */}
             <Card className="sticky top-24">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  {/* Simple avatar with initials as placeholder */}
-                  <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
-                    SB
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Kontakta mäklaren</p>
-                    <p className="text-lg font-semibold">Shahab Barani</p>
-                    <p className="text-sm text-muted-foreground">{property.vendor}</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Visa telefonnummer</Button>
-                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
-                  <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
-                </div>
+                {agentProfile ? (
+                  // Show real agent profile
+                  <>
+                    <div className="flex flex-col items-center gap-4 mb-6">
+                      <Avatar className="w-32 h-32 border-4 border-border">
+                        <AvatarImage src={agentProfile.avatar_url || undefined} className="object-cover" />
+                        <AvatarFallback className="bg-primary text-white text-2xl">
+                          <User className="w-16 h-16" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-1">Kontakta mäklaren</p>
+                        <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
+                        {agentProfile.agency && (
+                          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                            <Building2 className="w-3 h-3" />
+                            {agentProfile.agency}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Agent Info */}
+                    <div className="space-y-3 mb-6 bg-muted/30 rounded-lg p-4">
+                      {agentProfile.phone && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Phone className="w-4 h-4 text-muted-foreground" />
+                          <span>{agentProfile.phone}</span>
+                        </div>
+                      )}
+                      {agentProfile.email && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Mail className="w-4 h-4 text-muted-foreground" />
+                          <span className="truncate">{agentProfile.email}</span>
+                        </div>
+                      )}
+                      {agentProfile.office && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span>{agentProfile.office}</span>
+                        </div>
+                      )}
+                      {agentProfile.area && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Home className="w-4 h-4 text-muted-foreground" />
+                          <span>{agentProfile.area}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      {agentProfile.phone && (
+                        <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                          <Phone className="w-4 h-4 mr-2" />
+                          Ring mig
+                        </Button>
+                      )}
+                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                        <Mail className="w-4 h-4 mr-2" />
+                        Skicka meddelande
+                      </Button>
+                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Boka visning
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  // Show placeholder for hardcoded properties
+                  <>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
+                        SB
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Kontakta mäklaren</p>
+                        <p className="text-lg font-semibold">Shahab Barani</p>
+                        <p className="text-sm text-muted-foreground">{property.vendor}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Visa telefonnummer</Button>
+                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
+                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
+                    </div>
+                  </>
+                )}
 
                 <Separator className="my-6" />
 
@@ -514,7 +670,7 @@ const PropertyDetail = () => {
                       <div className="flex-1 text-left">
                         <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
                 <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
-                <p className="text-sm text-muted-foreground mt-1">Mäklare: {property.vendor}</p>
+                <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
                       </div>
                       <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
                     </button>
@@ -526,7 +682,7 @@ const PropertyDetail = () => {
                       <div className="flex-1 text-left">
               <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
               <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
-              <p className="text-sm text-muted-foreground mt-1">Mäklare: {property.vendor}</p>
+              <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
                       </div>
                       <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
                     </button>
