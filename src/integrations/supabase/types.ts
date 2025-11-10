@@ -119,6 +119,41 @@ export type Database = {
         }
         Relationships: []
       }
+      property_views: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          session_id: string
+          time_spent_seconds: number | null
+          view_started_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          session_id: string
+          time_spent_seconds?: number | null
+          view_started_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          session_id?: string
+          time_spent_seconds?: number | null
+          view_started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string

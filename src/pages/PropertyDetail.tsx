@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
+import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -26,6 +27,9 @@ const PropertyDetail = () => {
   const { id } = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Track property view
+  usePropertyViewTracking(id || "");
 
   const properties = [
     {

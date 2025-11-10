@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { PropertyForm } from "@/components/PropertyForm";
+import { AgentStatistics } from "@/components/AgentStatistics";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -140,13 +141,7 @@ const AgentDashboard = () => {
               </TabsContent>
 
               <TabsContent value="statistics" className="mt-6">
-                <div className="text-center py-12">
-                  <BarChart3 className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Din statistik</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Statistik och analys av dina fastigheter kommer här
-                  </p>
-                </div>
+                <AgentStatistics />
               </TabsContent>
             </Tabs>
           </CardContent>
