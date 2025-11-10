@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PropertyGrid from "@/components/PropertyGrid";
+import AgentGrid from "@/components/AgentGrid";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import AllPropertiesMap from "@/components/AllPropertiesMap";
@@ -18,6 +19,7 @@ const Index = () => {
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
   const [allProperties, setAllProperties] = useState<Property[]>([]);
+  const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -89,12 +91,17 @@ const Index = () => {
             onFinalPricesChange={setShowFinalPrices} 
             onPropertyTypeChange={setPropertyType}
             onSearchAddressChange={setSearchAddress}
+            onSearchModeChange={setSearchMode}
           />
-          <PropertyGrid 
-            showFinalPrices={showFinalPrices} 
-            propertyType={propertyType}
-            searchAddress={searchAddress}
-          />
+          {searchMode === 'property' ? (
+            <PropertyGrid 
+              showFinalPrices={showFinalPrices} 
+              propertyType={propertyType}
+              searchAddress={searchAddress}
+            />
+          ) : (
+            <AgentGrid searchQuery={searchAddress} />
+          )}
         </main>
   <AdBanner
     note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
