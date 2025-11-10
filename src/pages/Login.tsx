@@ -15,6 +15,7 @@ const authSchema = z.object({
   confirmPassword: z.string().optional(),
   fullName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
   userType: z.enum(["user", "maklare"]).optional(),
+  organizationNumber: z.string().optional(),
 }).refine((data) => {
   // Only validate confirmPassword during signup
   if (data.fullName && data.password !== data.confirmPassword) {
@@ -24,6 +25,20 @@ const authSchema = z.object({
 }, {
   message: "Lösenorden matchar inte",
   path: ["confirmPassword"],
+}).refine((data) => {
+  // Validate organizationNumber for maklare
+  if (data.userType === "maklare" && data.fullName) {
+    if (!data.organizationNumber) {
+      return false;
+    }
+    // Swedish organization number format: XXXXXX-XXXX (10 digits)
+    const orgNumberRegex = /^\d{6}-?\d{4}$/;
+    return orgNumberRegex.test(data.organizationNumber);
+  }
+  return true;
+}, {
+  message: "Organisationsnummer måste vara i formatet XXXXXX-XXXX",
+  path: ["organizationNumber"],
 });
 
 const Login = () => {
@@ -33,6 +48,7 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [userType, setUserType] = useState<"user" | "maklare">("user");
+  const [organizationNumber, setOrganizationNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,7 +70,7 @@ const Login = () => {
       // Validate input
       const validationData = isLogin 
         ? { email, password }
-        : { email, password, confirmPassword, fullName, userType };
+        : { email, password, confirmPassword, fullName, userType, organizationNumber };
       
       authSchema.parse(validationData);
 
@@ -104,6 +120,7 @@ const Login = () => {
             data: {
               full_name: fullName,
               user_type: userType,
+              organization_number: userType === "maklare" ? organizationNumber : undefined,
             },
           },
         });
@@ -201,6 +218,22 @@ const Login = () => {
                       </Button>
                     </div>
                   </div>
+                  {userType === "maklare" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="organizationNumber">Organisationsnummer</Label>
+                      <Input
+                        id="organizationNumber"
+                        type="text"
+                        placeholder="XXXXXX-XXXX"
+                        value={organizationNumber}
+                        onChange={(e) => setOrganizationNumber(e.target.value)}
+                        required={userType === "maklare"}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Ange ditt företags organisationsnummer (10 siffror)
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
               <div className="space-y-2">
