@@ -147,9 +147,9 @@ const PropertyCard = ({
         </Button>
       </div>
 
-      <CardContent className="p-2 sm:p-3 md:p-4 flex-1 flex flex-col justify-between">
+      <CardContent className="p-1.5 sm:p-2 md:p-3 flex-1 flex flex-col justify-between">
         {/* Address and price on same row */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-1 sm:mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-0.5 sm:mb-1">
           <h3 className="font-semibold text-lg sm:text-xl md:text-2xl lg:text-[1.75rem] xl:text-[2rem] text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
@@ -158,12 +158,12 @@ const PropertyCard = ({
           </span>
         </div>
 
-        <div className="flex items-center text-muted-foreground mb-1 sm:mb-2">
+        <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
           <span className="text-xs sm:text-sm md:text-base lg:text-[1.313rem] truncate">{location}</span>
         </div>
 
-        <div className="mb-1 sm:mb-2">
+        <div className="mb-0.5 sm:mb-1">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
               <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
@@ -206,13 +206,13 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mt-1 sm:mt-2">
+        <div className="mt-0.5 sm:mt-1">
           <Link to={`/fastighet/${id}`}>
             <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base lg:text-[1.313rem] py-1.5 sm:py-2">
               Visa detaljer
             </Button>
           </Link>
-          <p className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground text-center mt-1">
+          <p className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground text-center mt-0.5">
             {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`}
           </p>
         </div>
