@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square } from "lucide-react";
+import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -98,25 +98,33 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             {/* Search Mode Toggle */}
             <div className="flex gap-3">
               <Button
-                variant={searchMode === 'property' ? 'default' : 'outline'}
+                variant="outline"
                 onClick={() => {
                   setSearchMode('property');
                   onSearchModeChange?.('property');
                 }}
-                className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
+                className={`flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 ${
+                  searchMode === 'property' 
+                    ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
+                    : 'hover:border-primary'
+                }`}
               >
                 <Home className="w-5 h-5 mr-2" />
                 Sök bostad
               </Button>
               <Button
-                variant={searchMode === 'agent' ? 'default' : 'outline'}
+                variant="outline"
                 onClick={() => {
                   setSearchMode('agent');
                   onSearchModeChange?.('agent');
                 }}
-                className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
+                className={`flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 ${
+                  searchMode === 'agent' 
+                    ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
+                    : 'hover:border-primary'
+                }`}
               >
-                <Building2 className="w-5 h-5 mr-2" />
+                <User className="w-5 h-5 mr-2" />
                 Sök mäklare
               </Button>
             </div>
