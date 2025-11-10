@@ -13,9 +13,11 @@ interface HeroProps {
   onFinalPricesChange?: (value: boolean) => void;
   onPropertyTypeChange?: (value: string) => void;
   onSearchAddressChange?: (value: string) => void;
+  onSearchModeChange?: (mode: 'property' | 'agent') => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange }: HeroProps) => {
+  const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
@@ -93,13 +95,41 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         {/* Search Card */}
         <Card className="bg-white/85 backdrop-blur-md border-white/20 p-4 sm:p-6 md:p-8 lg:p-10 animate-slide-up max-w-5xl mx-auto">
           <div className="space-y-4 md:space-y-6">
+            {/* Search Mode Toggle */}
+            <div className="flex gap-3">
+              <Button
+                variant={searchMode === 'property' ? 'default' : 'outline'}
+                onClick={() => {
+                  setSearchMode('property');
+                  onSearchModeChange?.('property');
+                }}
+                className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
+              >
+                <Home className="w-5 h-5 mr-2" />
+                Sök bostad
+              </Button>
+              <Button
+                variant={searchMode === 'agent' ? 'default' : 'outline'}
+                onClick={() => {
+                  setSearchMode('agent');
+                  onSearchModeChange?.('agent');
+                }}
+                className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
+              >
+                <Building2 className="w-5 h-5 mr-2" />
+                Sök mäklare
+              </Button>
+            </div>
+
             {/* Område Section */}
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-5">Område</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-5">
+                {searchMode === 'property' ? 'Område' : 'Sök mäklare'}
+              </h2>
               <div className="relative" ref={searchRef}>
                 <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
                 <Input
-                  placeholder="Skriv område eller adress"
+                  placeholder={searchMode === 'property' ? 'Skriv område eller adress' : 'Sök på namn, byrå eller område'}
                   value={searchLocation}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => {
@@ -131,24 +161,26 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               </div>
             </div>
 
-            {/* Slutpriser Toggle */}
-            <div className="flex items-center justify-end gap-3 px-2 py-2">
-              <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
-                Slutpriser
-              </Label>
-              <Switch
-                id="final-prices"
-                checked={showFinalPrices}
-                onCheckedChange={(value) => {
-                  setShowFinalPrices(value);
-                  onFinalPricesChange?.(value);
-                }}
-                className="data-[state=checked]:bg-success"
-              />
-            </div>
+            {searchMode === 'property' && (
+              <>
+                {/* Slutpriser Toggle */}
+                <div className="flex items-center justify-end gap-3 px-2 py-2">
+                  <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
+                    Slutpriser
+                  </Label>
+                  <Switch
+                    id="final-prices"
+                    checked={showFinalPrices}
+                    onCheckedChange={(value) => {
+                      setShowFinalPrices(value);
+                      onFinalPricesChange?.(value);
+                    }}
+                    className="data-[state=checked]:bg-success"
+                  />
+                </div>
 
-            {/* Property Type Buttons */}
-            <div>
+                {/* Property Type Buttons */}
+                <div>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4">Bostadstyp</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <Button
@@ -223,8 +255,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               </div>
             </div>
 
-            {/* More Filters Button */}
-            <Button
+                {/* More Filters Button */}
+                <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold border-2 hover:border-primary"
@@ -233,8 +265,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
             </Button>
 
-            {/* Advanced Filters */}
-            {showAdvancedFilters && (
+                {/* Advanced Filters */}
+                {showAdvancedFilters && (
               <>
                 {/* Price Filter */}
                 <div className="space-y-3 md:space-y-4">
@@ -326,11 +358,13 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   />
                 </div>
               </>
+                )}
+              </>
             )}
 
             {/* Search Button */}
             <Button size="lg" className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform">
-              Hitta bostäder
+              {searchMode === 'property' ? 'Hitta bostäder' : 'Hitta mäklare'}
             </Button>
           </div>
         </Card>
