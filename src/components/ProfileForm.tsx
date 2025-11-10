@@ -171,7 +171,7 @@ export const ProfileForm = () => {
           </div>
 
           {/* Form Fields */}
-          <div className="grid gap-3">
+          <div className="grid gap-3 max-w-2xl">
             <div className="space-y-1">
               <Label htmlFor="full_name">Fullständigt namn *</Label>
               <Input
