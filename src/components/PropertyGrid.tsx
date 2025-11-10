@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Grid3x3, List } from "lucide-react";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -630,6 +630,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
   const [favorites, setFavorites] = useState<number[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState<string>("default");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Preload hover images to avoid flicker when user hovers
   useEffect(() => {
@@ -719,8 +720,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
           </p>
         </div>
 
-        {/* Sort Dropdown */}
-        <div className="flex justify-end mb-6 md:mb-8">
+        {/* Sort Dropdown and View Toggle */}
+        <div className="flex flex-col sm:flex-row justify-end gap-3 mb-6 md:mb-8">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
@@ -738,9 +739,31 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
               <SelectItem value="address-za">Adress: Ö-A</SelectItem>
             </SelectContent>
           </Select>
+          
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            className="w-full sm:w-auto gap-2"
+          >
+            {viewMode === "grid" ? (
+              <>
+                <List className="w-4 h-4" />
+                Listvy
+              </>
+            ) : (
+              <>
+                <Grid3x3 className="w-4 h-4" />
+                Rutnätsvy
+              </>
+            )}
+          </Button>
         </div>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 md:mb-12">
+  <div className={viewMode === "grid" 
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 md:mb-12"
+          : "flex flex-col gap-4 mb-8 md:mb-12"
+        }>
           {displayedProperties.map((property, index) => (
             <div
               key={property.id}
