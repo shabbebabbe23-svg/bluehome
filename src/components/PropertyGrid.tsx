@@ -721,7 +721,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
         </div>
 
         {/* Sort Dropdown and View Toggle */}
-        <div className="flex flex-col sm:flex-row justify-end gap-3 mb-6 md:mb-8">
+        <div className="flex flex-col items-end gap-3 mb-6 md:mb-8">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
