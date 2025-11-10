@@ -573,15 +573,19 @@ const PropertyDetail = () => {
                   // Show real agent profile
                   <>
                     <div className="flex flex-col items-center gap-4 mb-6">
-                      <Avatar className="w-32 h-32 border-4 border-border">
-                        <AvatarImage src={agentProfile.avatar_url || undefined} className="object-cover" />
-                        <AvatarFallback className="bg-primary text-white text-2xl">
-                          <User className="w-16 h-16" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <Link to={`/maklare`} className="z-20 hover:scale-105 transition-transform">
+                        <Avatar className="w-32 h-32 border-4 border-border cursor-pointer">
+                          <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
+                          <AvatarFallback className="bg-primary text-white text-2xl">
+                            <User className="w-16 h-16" />
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
                       <div className="text-center">
                         <p className="text-sm text-muted-foreground mb-1">Kontakta mäklaren</p>
-                        <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
+                        <Link to={`/maklare`} className="hover:text-primary transition-colors">
+                          <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
+                        </Link>
                         {agentProfile.agency && (
                           <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                             <Building2 className="w-3 h-3" />
