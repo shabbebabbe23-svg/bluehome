@@ -52,7 +52,7 @@ const AdBanner = ({
                 <li key={b}>{b}</li>
               ))}
             </ul>
-            <Button className="w-full bg-primary hover:bg-primary-glow">
+            <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors">
               {buttonText}
             </Button>
             <p className="text-xs text-muted-foreground text-center">

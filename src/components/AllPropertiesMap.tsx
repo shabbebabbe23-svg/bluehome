@@ -267,7 +267,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
             <Button 
               onClick={handleRouteSearch}
               disabled={!fromAddress || !toAddress}
-              className="w-full"
+              className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors"
             >
               Beräkna rutt
             </Button>

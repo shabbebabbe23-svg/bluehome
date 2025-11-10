@@ -24,7 +24,7 @@ const DetailAdBanner = () => {
               <li>✓ 15 års garanti på stommar</li>
               <li>✓ Professionell installation</li>
             </ul>
-            <Button className="w-full bg-primary hover:bg-primary-glow">
+            <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors">
               Boka kostnadsfri konsultation
             </Button>
             <p className="text-xs text-muted-foreground text-center">
