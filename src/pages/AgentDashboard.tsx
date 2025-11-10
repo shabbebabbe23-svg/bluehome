@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Home, Plus, Archive, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,15 @@ import { PropertyForm } from "@/components/PropertyForm";
 const AgentDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("add");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["add", "existing", "removed"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const handleSignOut = async () => {
     try {

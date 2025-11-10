@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Briefcase } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,15 +32,27 @@ const Header = () => {
             {user && userType === "maklare" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex">
-                    <Menu className="w-6 h-6" />
+                  <Button variant="ghost" size="lg" className="hidden md:flex h-12 w-12">
+                    <Menu className="w-8 h-8" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
+                <DropdownMenuContent align="start" className="w-56 bg-card z-50">
                   <DropdownMenuItem asChild>
-                    <Link to="/maklare" className="flex items-center gap-2 cursor-pointer">
-                      <Briefcase className="w-4 h-4" />
-                      Mäklarpanel
+                    <Link to="/maklare?tab=add" className="flex items-center gap-3 cursor-pointer py-3">
+                      <Plus className="w-5 h-5" />
+                      Lägg till ny bostad
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/maklare?tab=existing" className="flex items-center gap-3 cursor-pointer py-3">
+                      <Home className="w-5 h-5" />
+                      Befintliga bostäder
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/maklare?tab=removed" className="flex items-center gap-3 cursor-pointer py-3">
+                      <Archive className="w-5 h-5" />
+                      Borttagna bostäder
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
