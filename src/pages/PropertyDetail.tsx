@@ -21,6 +21,7 @@ import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
 import floorplan from "@/assets/floorplan-1.jpg";
+import storgatanFloorplan from "@/assets/storgatan-floorplan.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import PropertyMap from "@/components/PropertyMap";
@@ -505,14 +506,14 @@ const PropertyDetail = () => {
                   </p>
                 </div>
 
-                {property.floorplan_url && (
+                {(property.floorplan_url || dbProperty) && (
                   <>
                     <Separator className="my-6" />
                     <div>
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
                       <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
                         <img
-                          src={property.floorplan_url}
+                          src={property.floorplan_url || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)}
                           alt="Planritning"
                           className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
                         />
