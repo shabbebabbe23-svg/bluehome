@@ -23,6 +23,7 @@ interface PropertyCardProps {
   vendorLogo?: string;
   isSold?: boolean;
   listedDate?: Date | string;
+  hasVR?: boolean;
 }
 
 const PropertyCard = ({
@@ -43,6 +44,7 @@ const PropertyCard = ({
   vendorLogo,
   isSold = false,
   listedDate,
+  hasVR = false,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -86,6 +88,13 @@ const PropertyCard = ({
             <span>Mäklarlogo</span>
           )}
         </div>
+        
+        {/* VR Badge - Bottom Left */}
+        {hasVR && (
+          <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-foreground font-semibold text-xs">
+            VR
+          </div>
+        )}
         
         {/* Overlay with badges */}
         <div className="absolute top-4 left-4 flex gap-2">

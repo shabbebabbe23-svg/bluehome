@@ -61,6 +61,7 @@ export interface Property {
   isNew: boolean;
   vendorLogo: string;
   isSold?: boolean;
+  hasVR?: boolean;
 }
 
 export const allProperties: Property[] = [
@@ -81,6 +82,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: true,
       vendorLogo: logo1,
+      hasVR: true,
     },
     {
       id: 2,
@@ -135,6 +137,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       vendorLogo: logo4,
+      hasVR: true,
     },
     {
       id: 5,
@@ -207,6 +210,7 @@ export const allProperties: Property[] = [
       type: "Radhus",
       isNew: true,
       vendorLogo: logo8,
+      hasVR: true,
     },
     {
       id: 9,
@@ -243,6 +247,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: true,
       vendorLogo: logo10,
+      hasVR: true,
     },
     {
       id: 11,
