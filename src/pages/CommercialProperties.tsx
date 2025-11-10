@@ -322,7 +322,7 @@ const CommercialProperties = () => {
           <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
           {filteredProperties.map(property => (
             <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
-              <div className="relative w-80 sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem] h-64 flex-shrink-0 bg-slate-700">
+              <div className="relative w-[500px] sm:w-[600px] md:w-[700px] lg:w-[800px] h-64 flex-shrink-0 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
@@ -340,19 +340,27 @@ const CommercialProperties = () => {
                   <h3 className="font-semibold text-2xl sm:text-3xl md:text-4xl text-white mb-3">
                     {property.title}
                   </h3>
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6">{property.price}</p>
                   <div className="space-y-4 text-slate-300">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
-                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.location}</span>
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-sm text-slate-400 uppercase tracking-wide mb-1">Plats</p>
+                        <p className="text-white text-lg sm:text-xl font-medium">{property.location}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Square className="w-6 h-6 text-primary flex-shrink-0" />
-                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.area}</span>
+                    <div className="flex items-start gap-3">
+                      <Square className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-sm text-slate-400 uppercase tracking-wide mb-1">Yta</p>
+                        <p className="text-white text-lg sm:text-xl font-medium">{property.area}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Building className="w-6 h-6 text-primary flex-shrink-0" />
-                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.type}</span>
+                    <div className="flex items-start gap-3">
+                      <Building className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-sm text-slate-400 uppercase tracking-wide mb-1">Månadshyra</p>
+                        <p className="text-3xl sm:text-4xl font-bold text-white">{property.price}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
