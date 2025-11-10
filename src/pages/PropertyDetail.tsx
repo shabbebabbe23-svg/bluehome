@@ -519,6 +519,16 @@ const PropertyDetail = () => {
 
                 <Separator className="my-6" />
 
+                {/* Description */}
+                <div>
+                  <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+                  <p className="text-xl text-muted-foreground leading-relaxed">
+                    {property.description || 'Ingen beskrivning tillgänglig'}
+                  </p>
+                </div>
+
+                <Separator className="my-6" />
+
                 {/* Detailed Information */}
                 <div>
                   <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
@@ -572,16 +582,6 @@ const PropertyDetail = () => {
                       <span className="font-semibold">3 130</span>
                     </div>
                   </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                {/* Description */}
-                <div>
-                  <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-                  <p className="text-xl text-muted-foreground leading-relaxed">
-                    {property.description || 'Ingen beskrivning tillgänglig'}
-                  </p>
                 </div>
 
                 {(property.floorplan_url || dbProperty) && (
