@@ -519,6 +519,63 @@ const PropertyDetail = () => {
 
                 <Separator className="my-6" />
 
+                {/* Detailed Information */}
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Pris per kvadratmeter</span>
+                      <span className="font-semibold">{dbProperty ? `${Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²` : '143 137 kr/m²'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Utgångspris</span>
+                      <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Prisutveckling</span>
+                      <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Bostadstyp</span>
+                      <span className="font-semibold">Lägenhet</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Upplåtelseform</span>
+                      <span className="font-semibold">{property.type || 'Bostadsrätt'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Antal rum</span>
+                      <span className="font-semibold">{property.bedrooms} rum</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Boarea</span>
+                      <span className="font-semibold">{property.area} m²</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Våning</span>
+                      <span className="font-semibold">{property.floor !== undefined ? `${property.floor} av 5` : '1 av 5'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Byggår</span>
+                      <span className="font-semibold">{property.buildYear || '1925'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Avgift</span>
+                      <span className="font-semibold">{dbProperty && property.fee ? `${property.fee.toLocaleString('sv-SE')} kr/mån` : '2 641 kr/mån'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Driftskostnad</span>
+                      <span className="font-semibold">5 650 kr/år</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Antal besök</span>
+                      <span className="font-semibold">3 130</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-6" />
+
                 {/* Description */}
                 <div>
                   <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
