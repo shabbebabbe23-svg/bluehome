@@ -19,6 +19,7 @@ export type Database = {
           agency: string | null
           area: string | null
           avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -31,6 +32,7 @@ export type Database = {
           agency?: string | null
           area?: string | null
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -43,6 +45,7 @@ export type Database = {
           agency?: string | null
           area?: string | null
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null

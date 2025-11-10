@@ -98,7 +98,7 @@ const AgentProfile = () => {
                   {agentProfile.full_name || "Mäklare"}
                 </h1>
                 
-                <div className="space-y-2 text-muted-foreground">
+                <div className="space-y-2 text-muted-foreground mb-4">
                   {agentProfile.agency && (
                     <div className="flex items-center justify-center md:justify-start gap-2">
                       <Building2 className="w-4 h-4" />
@@ -144,6 +144,13 @@ const AgentProfile = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Bio Section */}
+                {agentProfile.bio && (
+                  <div className="mt-4 text-foreground leading-relaxed max-w-2xl">
+                    <p>{agentProfile.bio}</p>
+                  </div>
+                )}
               </div>
               
               <div className="text-center md:text-right">

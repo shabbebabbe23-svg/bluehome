@@ -5,6 +5,7 @@ import * as z from "zod";
 import { User, Upload, Eye, Building2, MapPin, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,6 +22,7 @@ const profileSchema = z.object({
   agency: z.string().max(100, "Mäklarbyrå får vara max 100 tecken").optional(),
   office: z.string().max(100, "Kontor får vara max 100 tecken").optional(),
   area: z.string().max(100, "Område får vara max 100 tecken").optional(),
+  bio: z.string().max(1000, "Presentation får vara max 1000 tecken").optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -67,6 +69,7 @@ export const ProfileForm = () => {
       setValue("agency", data.agency || "");
       setValue("office", data.office || "");
       setValue("area", data.area || "");
+      setValue("bio", data.bio || "");
       setAvatarUrl(data.avatar_url);
     }
   };
@@ -124,6 +127,7 @@ export const ProfileForm = () => {
           agency: data.agency || null,
           office: data.office || null,
           area: data.area || null,
+          bio: data.bio || null,
         })
         .eq("id", user.id);
 
@@ -339,6 +343,35 @@ export const ProfileForm = () => {
                 )}
                 <p className="text-xs text-muted-foreground">Områden där du är verksam</p>
               </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* About Me Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Om mig
+            </h3>
+            <div className="space-y-1 max-w-2xl">
+              <Label htmlFor="bio" className="flex items-center gap-2">
+                Presentation
+                <Badge variant="secondary" className="text-xs">Rekommenderad</Badge>
+              </Label>
+              <Textarea
+                id="bio"
+                {...register("bio")}
+                placeholder="Ett stort engagemang, hög service och kvalité kännetecknar Elisabets arbetssätt som fastighetsmäklare på Wrede. Hon är idag främst verksam på Lidingö där hon bor med sin familj men har även en stark anknytning till Östermalm. Elisabet har en bakgrund som utbildad Civilekonom från Handelshögskolan i Stockholm samt ledande befattningar inom kundservice och marknadsföring, senast på iZettle."
+                rows={6}
+                className="resize-none"
+              />
+              {errors.bio && (
+                <p className="text-sm text-destructive">{errors.bio.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Din presentation visas på din publika mäklarprofil. Max 1000 tecken.
+              </p>
             </div>
           </div>
 
