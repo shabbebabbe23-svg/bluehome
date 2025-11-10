@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,30 +32,36 @@ const Header = () => {
             {user && userType === "maklare" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="lg" className="hidden md:flex h-12 w-12 hover:scale-110 transition-all duration-300">
-                    <Menu className="w-8 h-8" />
+                  <Button variant="ghost" size="lg" className="hidden md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                    <Menu className="w-10 h-10" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="start" 
-                  className="w-56 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
+                  className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
                 >
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=add" className="flex items-center gap-3 cursor-pointer py-3">
-                      <Plus className="w-5 h-5" />
-                      <span className="font-medium">Lägg till ny bostad</span>
+                    <Link to="/maklare?tab=add" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Plus className="w-6 h-6" />
+                      <span className="font-medium text-lg">Lägg till ny bostad</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=existing" className="flex items-center gap-3 cursor-pointer py-3">
-                      <Home className="w-5 h-5" />
-                      <span className="font-medium">Befintliga bostäder</span>
+                    <Link to="/maklare?tab=existing" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Home className="w-6 h-6" />
+                      <span className="font-medium text-lg">Befintliga bostäder</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=removed" className="flex items-center gap-3 cursor-pointer py-3">
-                      <Archive className="w-5 h-5" />
-                      <span className="font-medium">Borttagna bostäder</span>
+                    <Link to="/maklare?tab=removed" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Archive className="w-6 h-6" />
+                      <span className="font-medium text-lg">Borttagna bostäder</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/maklare?tab=statistics" className="flex items-center gap-3 cursor-pointer py-4">
+                      <BarChart3 className="w-6 h-6" />
+                      <span className="font-medium text-lg">Din statistik</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

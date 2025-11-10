@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,7 @@ const AgentDashboard = () => {
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["add", "existing", "removed"].includes(tab)) {
+    if (tab && ["add", "existing", "removed", "statistics"].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -62,7 +62,7 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="add" className="gap-2">
                   <Plus className="w-4 h-4" />
                   Lägg till ny bostad
@@ -74,6 +74,10 @@ const AgentDashboard = () => {
                 <TabsTrigger value="removed" className="gap-2">
                   <Archive className="w-4 h-4" />
                   Borttagna bostäder
+                </TabsTrigger>
+                <TabsTrigger value="statistics" className="gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Din statistik
                 </TabsTrigger>
               </TabsList>
 
@@ -102,6 +106,16 @@ const AgentDashboard = () => {
                   <h3 className="text-xl font-semibold mb-2">Borttagna fastigheter</h3>
                   <p className="text-muted-foreground mb-6">
                     Lista över borttagna fastigheter kommer här
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="statistics" className="mt-6">
+                <div className="text-center py-12">
+                  <BarChart3 className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Din statistik</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Statistik och analys av dina fastigheter kommer här
                   </p>
                 </div>
               </TabsContent>
