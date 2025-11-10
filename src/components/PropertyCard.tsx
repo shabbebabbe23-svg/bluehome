@@ -68,16 +68,16 @@ const PropertyCard = ({
       <Link to={`/fastighet/${id}`} className="absolute inset-0 z-10" aria-label={`Visa ${title}`} />
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
-        <div className="w-full h-56 sm:h-64 md:h-72 lg:h-64 xl:h-72 relative">
+        <div className="w-full h-64 sm:h-72 md:h-80 lg:h-72 xl:h-80 relative">
           <img
             src={image}
             alt={title}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 transform opacity-100 group-hover:opacity-0 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
           />
           <img
             src={hoverImage ?? image}
             alt={`${title} - alternativ bild`}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 transform opacity-0 group-hover:opacity-100 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
           />
         </div>
         {/* Agency logo area (right side, slightly offset from favorite button) */}
@@ -145,11 +145,11 @@ const PropertyCard = ({
 
       <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 flex-1 flex flex-col justify-between">
         {/* Address and price stacked */}
-        <div className="flex flex-col gap-0.5 sm:gap-1 mb-2 sm:mb-3">
-          <h3 className="font-semibold text-base sm:text-lg md:text-xl lg:text-[1.688rem] xl:text-[1.875rem] text-foreground group-hover:text-primary transition-colors line-clamp-2">
+        <div className="flex flex-col gap-1 sm:gap-1.5 mb-2 sm:mb-3">
+          <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-[1.25rem] xl:text-[1.375rem] text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {title}
           </h3>
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-[1.875rem] xl:text-[2.25rem] font-bold text-primary">
+          <span className="text-xl sm:text-2xl md:text-3xl lg:text-[2.125rem] xl:text-[2.5rem] font-bold text-primary">
             {price}
           </span>
         </div>
