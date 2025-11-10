@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { PropertyForm } from "@/components/PropertyForm";
 import { AgentStatistics } from "@/components/AgentStatistics";
+import { ProfileForm } from "@/components/ProfileForm";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const AgentDashboard = () => {
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["add", "existing", "removed", "statistics"].includes(tab)) {
+    if (tab && ["add", "existing", "removed", "statistics", "profile"].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -72,7 +73,7 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="add" className="gap-2">
                   <Plus className="w-4 h-4" />
                   Lägg till ny bostad
@@ -88,6 +89,10 @@ const AgentDashboard = () => {
                 <TabsTrigger value="statistics" className="gap-2">
                   <BarChart3 className="w-4 h-4" />
                   Din statistik
+                </TabsTrigger>
+                <TabsTrigger value="profile" className="gap-2">
+                  <UserCircle className="w-4 h-4" />
+                  Min profil
                 </TabsTrigger>
               </TabsList>
 
@@ -142,6 +147,10 @@ const AgentDashboard = () => {
 
               <TabsContent value="statistics" className="mt-6">
                 <AgentStatistics />
+              </TabsContent>
+
+              <TabsContent value="profile" className="mt-6">
+                <ProfileForm />
               </TabsContent>
             </Tabs>
           </CardContent>
