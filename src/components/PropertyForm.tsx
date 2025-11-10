@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,8 +34,12 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [hoverImage, setHoverImage] = useState<File | null>(null);
+  const [additionalImages, setAdditionalImages] = useState<File[]>([]);
+  const [floorplan, setFloorplan] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string>("");
   const [hoverImagePreview, setHoverImagePreview] = useState<string>("");
+  const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
+  const [floorplanPreview, setFloorplanPreview] = useState<string>("");
 
   const {
     register,
@@ -49,7 +53,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    type: "main" | "hover"
+    type: "main" | "hover" | "floorplan"
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -63,13 +67,57 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         if (type === "main") {
           setMainImage(file);
           setMainImagePreview(reader.result as string);
-        } else {
+        } else if (type === "hover") {
           setHoverImage(file);
           setHoverImagePreview(reader.result as string);
+        } else if (type === "floorplan") {
+          setFloorplan(file);
+          setFloorplanPreview(reader.result as string);
         }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAdditionalImagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    // Check if adding these files would exceed the limit of 6 additional images
+    if (additionalImages.length + files.length > 6) {
+      toast.error("Du kan lägga till max 6 extra bilder");
+      return;
+    }
+
+    // Check file sizes
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Varje bild får max vara 5MB");
+        return;
+      }
+    }
+
+    // Read all files and create previews
+    const newPreviews: string[] = [];
+    let filesRead = 0;
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        filesRead++;
+        
+        if (filesRead === files.length) {
+          setAdditionalImages([...additionalImages, ...files]);
+          setAdditionalImagesPreviews([...additionalImagesPreviews, ...newPreviews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeAdditionalImage = (index: number) => {
+    setAdditionalImages(additionalImages.filter((_, i) => i !== index));
+    setAdditionalImagesPreviews(additionalImagesPreviews.filter((_, i) => i !== index));
   };
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
@@ -115,6 +163,26 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         );
       }
 
+      // Upload additional images
+      const additionalImageUrls: string[] = [];
+      for (let i = 0; i < additionalImages.length; i++) {
+        const file = additionalImages[i];
+        const url = await uploadImage(
+          file,
+          `${user.id}/${timestamp}-additional-${i}-${file.name}`
+        );
+        additionalImageUrls.push(url);
+      }
+
+      // Upload floorplan
+      let floorplanUrl = null;
+      if (floorplan) {
+        floorplanUrl = await uploadImage(
+          floorplan,
+          `${user.id}/${timestamp}-floorplan-${floorplan.name}`
+        );
+      }
+
       // Insert property
       const { error } = await supabase.from("properties").insert({
         user_id: user.id,
@@ -130,6 +198,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         description: data.description,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,
+        additional_images: additionalImageUrls,
+        floorplan_url: floorplanUrl,
         viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
       });
 
@@ -139,8 +209,12 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       reset();
       setMainImage(null);
       setHoverImage(null);
+      setAdditionalImages([]);
+      setFloorplan(null);
       setMainImagePreview("");
       setHoverImagePreview("");
+      setAdditionalImagesPreviews([]);
+      setFloorplanPreview("");
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -357,6 +431,80 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, "hover")}
+                className="cursor-pointer"
+              />
+              <p className="text-sm text-muted-foreground">Max 5MB</p>
+            </div>
+          </Card>
+        </div>
+
+        {/* Fler bilder */}
+        <div className="md:col-span-2">
+          <Label>Fler bilder (valfritt, max 6 st)</Label>
+          <Card className="p-4">
+            <div className="space-y-4">
+              {additionalImagesPreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {additionalImagesPreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={preview}
+                        alt={`Additional ${index + 1}`}
+                        className="w-full h-32 object-cover rounded"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6"
+                        onClick={() => removeAdditionalImage(index)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-full h-32 bg-muted rounded flex items-center justify-center">
+                  <Upload className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAdditionalImagesChange}
+                  className="cursor-pointer"
+                  disabled={additionalImages.length >= 6}
+                />
+                <p className="text-sm text-muted-foreground">
+                  {additionalImages.length}/6 bilder uppladdade • Max 5MB per bild
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Ritning */}
+        <div className="md:col-span-2">
+          <Label>Ritning/Planlösning (valfritt)</Label>
+          <Card className="p-4">
+            <div className="flex flex-col items-center gap-4">
+              {floorplanPreview ? (
+                <img
+                  src={floorplanPreview}
+                  alt="Ritning preview"
+                  className="w-full h-48 object-contain rounded bg-muted"
+                />
+              ) : (
+                <div className="w-full h-48 bg-muted rounded flex items-center justify-center">
+                  <FileText className="w-12 h-12 text-muted-foreground" />
+                </div>
+              )}
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, "floorplan")}
                 className="cursor-pointer"
               />
               <p className="text-sm text-muted-foreground">Max 5MB</p>

@@ -40,6 +40,7 @@ export type Database = {
       }
       properties: {
         Row: {
+          additional_images: string[] | null
           address: string
           area: number
           bathrooms: number
@@ -47,6 +48,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           fee: number | null
+          floorplan_url: string | null
           has_vr: boolean | null
           hover_image_url: string | null
           id: string
@@ -64,6 +66,7 @@ export type Database = {
           viewing_date: string | null
         }
         Insert: {
+          additional_images?: string[] | null
           address: string
           area: number
           bathrooms: number
@@ -71,6 +74,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           fee?: number | null
+          floorplan_url?: string | null
           has_vr?: boolean | null
           hover_image_url?: string | null
           id?: string
@@ -88,6 +92,7 @@ export type Database = {
           viewing_date?: string | null
         }
         Update: {
+          additional_images?: string[] | null
           address?: string
           area?: number
           bathrooms?: number
@@ -95,6 +100,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           fee?: number | null
+          floorplan_url?: string | null
           has_vr?: boolean | null
           hover_image_url?: string | null
           id?: string
