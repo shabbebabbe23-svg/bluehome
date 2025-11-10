@@ -64,6 +64,7 @@ export interface Property {
   vendorLogo: string;
   isSold?: boolean;
   hasVR?: boolean;
+  description?: string;
 }
 
 export const allProperties: Property[] = [
@@ -85,6 +86,7 @@ export const allProperties: Property[] = [
       isNew: true,
       vendorLogo: logo1,
       hasVR: true,
+      description: "Ljus och modern lägenhet i hjärtat av Södermalm med högt i tak och stora fönster. Nyrenoverat kök och badrum med exklusiva materialval.",
     },
     {
       id: 2,
@@ -103,6 +105,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo2,
+      description: "Charmig villa i klassisk stil med vacker trädgård och generösa gemensamma ytor. Perfekt för familjen som söker lugn och närhet till natur.",
     },
     {
       id: 3,
@@ -121,6 +124,7 @@ export const allProperties: Property[] = [
       type: "Radhus",
       isNew: true,
       vendorLogo: logo3,
+      description: "Modernt radhus med smart planlösning och egen uteplats. Nära till kommunikationer och stadens alla bekvämligheter.",
     },
     {
       id: 4,
@@ -140,6 +144,7 @@ export const allProperties: Property[] = [
       isNew: false,
       vendorLogo: logo4,
       hasVR: true,
+      description: "Exklusiv takvåning med fantastisk utsikt över vattnet. Stor takterrass och högklassigt kök från Miele. Lyxigt boende i stadens finaste läge.",
     },
     {
       id: 5,
@@ -158,6 +163,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo5,
+      description: "Rymlig familjehus med många sovrum och badrum. Stor tomt med möjlighet till pool. Nära till skolor och förskolor.",
     },
     {
       id: 6,
@@ -176,6 +182,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: true,
       vendorLogo: logo6,
+      description: "Perfekt studioappartement för singeln eller studenten. Smidigt läge mitt i city med gångavstånd till allt.",
     },
     {
       id: 7,
@@ -194,6 +201,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       vendorLogo: logo7,
+      description: "Elegant lägenhet i autentisk miljö med spår från 1600-talet. Synliga bjälkar och moderna bekvämligheter i perfekt harmoni.",
     },
     {
       id: 8,
@@ -213,6 +221,7 @@ export const allProperties: Property[] = [
       isNew: true,
       vendorLogo: logo8,
       hasVR: true,
+      description: "Välplanerat radhus i toppskick med stor trädgård och altan. Nära till grönområden och bra kommunikationer in till stan.",
     },
     {
       id: 9,
@@ -231,6 +240,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo9,
+      description: "Arkitektritad villa omgiven av skog med panoramafönster och exklusiva materialval. Privat och naturnära boende i lugnt område.",
     },
     {
       id: 10,
@@ -250,6 +260,7 @@ export const allProperties: Property[] = [
       isNew: true,
       vendorLogo: logo10,
       hasVR: true,
+      description: "Elegant lägenhet med öppen planlösning och utsikt över vattnet. Balkong i västerläge och klassiska sekelskiftesdetaljer.",
     },
     {
       id: 11,
@@ -268,6 +279,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: true,
       vendorLogo: logo11,
+      description: "Spektakulär penthouse med privat takterrass på över 100 kvm. Hiss direkt in i lägenheten och utsikt i alla väderstreck.",
     },
     {
       id: 12,
@@ -286,6 +298,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo12,
+      description: "Charmig lantgård med ursprungliga detaljer bevarade. Stor tomt med ekonomibyggnader och vacker trädgård. Lantliv nära stan.",
     },
     {
       id: 13,
@@ -304,6 +317,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: true,
       vendorLogo: logo13,
+      description: "Modern bostadsrätt med smart planlösning och fräsch stil. Balkong i söderläge och nära till Kungsholmens alla restauranger.",
     },
     {
       id: 14,
@@ -322,6 +336,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo14,
+      description: "Magnifik strandvilla med egen brygga och badplats. Öppen planlösning med stora glaspartier mot havet. Drömboende vid vattnet.",
     },
     {
       id: 15,
@@ -340,6 +355,7 @@ export const allProperties: Property[] = [
       type: "Radhus",
       isNew: true,
       vendorLogo: logo15,
+      description: "Mysigt parhus i barnvänligt område. Egen trädgård och carport. Perfekt för den som söker villaboende med lägenhetsbekvämlighet.",
     },
     {
       id: 16,
@@ -358,6 +374,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: true,
       vendorLogo: logo16,
+      description: "Nybyggd designervilla av erkänd arkitekt. Toppmoderna installationer, hög teknisk standard och exklusiva material genomgående.",
     },
     {
       id: 17,
@@ -376,6 +393,7 @@ export const allProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       vendorLogo: logo17,
+      description: "Kompakt ettrummare med bra planlösning. Nära till tunnelbana och köpcentrum. Bra investeringsobjekt eller första boende.",
     },
     {
       id: 18,
@@ -394,6 +412,7 @@ export const allProperties: Property[] = [
       type: "Villa",
       isNew: false,
       vendorLogo: logo18,
+      description: "Idylliskt skärgårdshus med sjöutsikt och egen strand. Stor altan och utomhusdusch. Perfekt för sommarsemestern och året-runt-boende.",
     },
   ];
 
@@ -416,6 +435,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo1,
+      description: "Vacker villa i attraktivt läge som såldes snabbt till ett konkurrenskraftigt pris. Renoverad och i utmärkt skick.",
     },
     {
       id: 102,
@@ -435,6 +455,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo2,
+      description: "Eftertraktad lägenhet i populärt område. Många intressenter och snabb försäljning över utgångspris.",
     },
     {
       id: 103,
@@ -454,6 +475,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo3,
+      description: "Attraktivt radhus som såldes efter budgivning. Perfekt läge nära skolor och grönområden lockade många familjer.",
     },
     {
       id: 104,
@@ -473,6 +495,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo4,
+      description: "Exklusiv takvåning som såldes till ett rekordpris. Stor takterrass och fantastisk utsikt var de stora dragplåstren.",
     },
     {
       id: 105,
@@ -492,6 +515,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo5,
+      description: "Attraktiv familjehus på Lidingö som såldes över utgångspris. Stor tomt och nära till skolor och kommunikationer.",
     },
     {
       id: 106,
@@ -511,6 +535,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo6,
+      description: "Charmig lägenhet i centrala Vasastan. Såldes snabbt till en nöjd köpare efter visning med stort intresse.",
     },
     {
       id: 107,
@@ -530,6 +555,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo7,
+      description: "Stor och rymlig villa i eftertraktat läge. Såldes till slutpris efter intensiv budgivning mellan flera intressenter.",
     },
     {
       id: 108,
@@ -549,6 +575,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo8,
+      description: "Populärt radhus i centrala Kungsholmen. Perfekt planlösning och centralt läge lockade många budgivare.",
     },
     {
       id: 109,
@@ -568,6 +595,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo9,
+      description: "Representativ lägenhet mitt i city. Såldes till ett attraktivt pris till en köpare som sökte centralt boende.",
     },
     {
       id: 110,
@@ -587,6 +615,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo10,
+      description: "Drömvilla vid havet i Saltsjöbaden. Egen brygga och badstrand gjorde att försäljningen gick snabbt över utgångspris.",
     },
     {
       id: 111,
@@ -606,6 +635,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo11,
+      description: "Autentisk Gamlastan-lägenhet med historiskt värde. Såldes till en köpare som sökte den speciella charmen.",
     },
     {
       id: 112,
@@ -625,6 +655,7 @@ export const soldProperties: Property[] = [
       isNew: false,
       isSold: true,
       vendorLogo: logo12,
+      description: "Exklusiv herrgårdsliknande villa i Djursholms finaste kvarter. Såldes till rekordpris efter budgivning bland flera intressenter.",
     },
   ];
 
@@ -669,6 +700,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             vendorLogo: prop.vendor_logo_url || logo1,
             isSold: prop.is_sold || false,
             hasVR: prop.has_vr || false,
+            description: prop.description || '',
           }));
           setDbProperties(formattedProperties);
         }
@@ -856,6 +888,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 isFavorite={favorites.includes(property.id)}
                 onFavoriteToggle={handleFavoriteToggle}
                 isSold={showFinalPrices}
+                viewMode={viewMode}
               />
             </div>
           ))}

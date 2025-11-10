@@ -24,6 +24,8 @@ interface PropertyCardProps {
   isSold?: boolean;
   listedDate?: Date | string;
   hasVR?: boolean;
+  description?: string;
+  viewMode?: "grid" | "list";
 }
 
 const PropertyCard = ({
@@ -45,6 +47,8 @@ const PropertyCard = ({
   isSold = false,
   listedDate,
   hasVR = false,
+  description,
+  viewMode = "grid",
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -192,6 +196,15 @@ const PropertyCard = ({
             <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
           </div>
         </div>
+
+        {/* Description - Only show in list view */}
+        {viewMode === "list" && description && (
+          <div className="mb-3 sm:mb-4">
+            <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
+              {description}
+            </p>
+          </div>
+        )}
 
         <div className="mt-2 sm:mt-3 md:mt-4">
           <Link to={`/fastighet/${id}`}>
