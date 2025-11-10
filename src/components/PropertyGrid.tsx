@@ -768,7 +768,11 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
             <div
               key={property.id}
               className="animate-slide-up h-full"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              style={{ 
+                animationDelay: `${index * 0.1}s`,
+                transform: 'scale(0.75)',
+                transformOrigin: 'center top'
+              }}
             >
               <PropertyCard
                 {...property}
