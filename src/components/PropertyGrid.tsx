@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowUpDown, Grid3x3, List } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -41,10 +42,11 @@ import logo18 from "@/assets/logo-18.svg";
 interface PropertyGridProps {
   showFinalPrices?: boolean;
   propertyType?: string;
+  searchAddress?: string;
 }
 
 export interface Property {
-  id: number;
+  id: string | number;
   title: string;
   price: string;
   priceValue: number;
@@ -66,7 +68,7 @@ export interface Property {
 
 export const allProperties: Property[] = [
     {
-      id: 1,
+      id: "1",
       title: "Modern lägenhet i city",
       price: "3 200 000 kr",
       priceValue: 3200000,
@@ -626,15 +628,63 @@ export const soldProperties: Property[] = [
     },
   ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGridProps) => {
-  const [favorites, setFavorites] = useState<number[]>([]);
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "" }: PropertyGridProps) => {
+  const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState<string>("default");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [dbProperties, setDbProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch properties from database
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedProperties: Property[] = data.map((prop) => ({
+            id: prop.id,
+            title: prop.title,
+            price: `${prop.price.toLocaleString('sv-SE')} kr`,
+            priceValue: prop.price,
+            location: prop.location,
+            address: prop.address,
+            bedrooms: prop.bedrooms,
+            bathrooms: prop.bathrooms,
+            area: prop.area,
+            fee: prop.fee || 0,
+            viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+            image: prop.image_url || property1,
+            hoverImage: prop.hover_image_url || prop.image_url || property2,
+            type: prop.type,
+            isNew: false,
+            vendorLogo: prop.vendor_logo_url || logo1,
+            isSold: prop.is_sold || false,
+            hasVR: prop.has_vr || false,
+          }));
+          setDbProperties(formattedProperties);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   // Preload hover images to avoid flicker when user hovers
   useEffect(() => {
-    const allPropertiesWithSold = [...allProperties, ...soldProperties];
+    const allPropertiesWithSold = [...allProperties, ...soldProperties, ...dbProperties];
     allPropertiesWithSold.forEach((p) => {
       try {
         const img = new Image();
@@ -648,24 +698,38 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
         // noop - if preload fails we silently ignore
       }
     });
-  }, []);
+  }, [dbProperties]);
 
   const filterByType = (props: Property[]) => {
-    if (!propertyType) return props;
+    let filtered = props;
     
-    // Map Hero propertyType values to PropertyGrid type values
-    const typeMap: Record<string, string> = {
-      "house": "Villa",
-      "villa": "Radhus",
-      "apartment": "Lägenhet",
-      "cottage": "Fritidshus",
-      "plot": "Tomt"
-    };
+    // Filter by property type
+    if (propertyType) {
+      // Map Hero propertyType values to PropertyGrid type values
+      const typeMap: Record<string, string> = {
+        "house": "Villa",
+        "villa": "Radhus",
+        "apartment": "Lägenhet",
+        "cottage": "Fritidshus",
+        "plot": "Tomt"
+      };
+      
+      const targetType = typeMap[propertyType];
+      if (targetType) {
+        filtered = filtered.filter(property => property.type === targetType);
+      }
+    }
     
-    const targetType = typeMap[propertyType];
-    if (!targetType) return props;
+    // Filter by address search
+    if (searchAddress && searchAddress.trim()) {
+      const searchLower = searchAddress.toLowerCase().trim();
+      filtered = filtered.filter(property => 
+        property.address.toLowerCase().includes(searchLower) ||
+        property.location.toLowerCase().includes(searchLower)
+      );
+    }
     
-    return props.filter(property => property.type === targetType);
+    return filtered;
   };
 
   const sortProperties = (props: Property[]) => {
@@ -693,18 +757,30 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
     }
   };
 
-  const currentProperties = showFinalPrices ? soldProperties : allProperties;
+  const currentProperties = showFinalPrices 
+    ? soldProperties 
+    : [...allProperties, ...dbProperties];
   const filteredProperties = filterByType(currentProperties);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
-  const handleFavoriteToggle = (id: number) => {
+  const handleFavoriteToggle = (id: string | number) => {
     setFavorites(prev => 
       prev.includes(id) 
         ? prev.filter(fav => fav !== id)
         : [...prev, id]
     );
   };
+
+  if (loading) {
+    return (
+      <section className="py-8 md:py-16 px-3 sm:px-4">
+        <div className="text-center">
+          <p className="text-lg text-muted-foreground">Laddar fastigheter...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-8 md:py-16 px-3 sm:px-4">

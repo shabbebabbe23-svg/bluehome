@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
 interface PropertyCardProps {
-  id: number;
+  id: string | number;
   title: string;
   price: string;
   location: string;
@@ -19,7 +19,7 @@ interface PropertyCardProps {
   viewingDate?: Date | string;
   isNew?: boolean;
   isFavorite?: boolean;
-  onFavoriteToggle?: (id: number) => void;
+  onFavoriteToggle?: (id: string | number) => void;
   vendorLogo?: string;
   isSold?: boolean;
   listedDate?: Date | string;

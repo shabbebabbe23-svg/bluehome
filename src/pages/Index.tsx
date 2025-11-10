@@ -1,16 +1,65 @@
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import PropertyGrid, { allProperties } from "@/components/PropertyGrid";
+import PropertyGrid from "@/components/PropertyGrid";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import AllPropertiesMap from "@/components/AllPropertiesMap";
+import { Property } from "@/components/PropertyGrid";
+import { supabase } from "@/integrations/supabase/client";
 import sofaAd from "@/assets/sofa-ad.svg";
+import property1 from "@/assets/property-1.jpg";
+import property2 from "@/assets/property-2.jpg";
+import logo1 from "@/assets/logo-1.svg";
 
 const Index = () => {
   const [userSofaSrc, setUserSofaSrc] = useState<string | null>(null);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [propertyType, setPropertyType] = useState("");
+  const [searchAddress, setSearchAddress] = useState("");
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedProperties: Property[] = data.map((prop) => ({
+            id: prop.id,
+            title: prop.title,
+            price: `${prop.price.toLocaleString('sv-SE')} kr`,
+            priceValue: prop.price,
+            location: prop.location,
+            address: prop.address,
+            bedrooms: prop.bedrooms,
+            bathrooms: prop.bathrooms,
+            area: prop.area,
+            fee: prop.fee || 0,
+            viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+            image: prop.image_url || property1,
+            hoverImage: prop.hover_image_url || prop.image_url || property2,
+            type: prop.type,
+            isNew: false,
+            vendorLogo: prop.vendor_logo_url || logo1,
+            isSold: prop.is_sold || false,
+            hasVR: prop.has_vr || false,
+          }));
+          setAllProperties(formattedProperties);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   useEffect(() => {
     // Try to load a user-provided PNG at runtime without causing build errors.
@@ -39,10 +88,12 @@ const Index = () => {
           <Hero 
             onFinalPricesChange={setShowFinalPrices} 
             onPropertyTypeChange={setPropertyType}
+            onSearchAddressChange={setSearchAddress}
           />
           <PropertyGrid 
             showFinalPrices={showFinalPrices} 
             propertyType={propertyType}
+            searchAddress={searchAddress}
           />
         </main>
   <AdBanner

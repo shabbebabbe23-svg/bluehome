@@ -12,9 +12,10 @@ import { filterMunicipalities } from "@/data/swedishMunicipalities";
 interface HeroProps {
   onFinalPricesChange?: (value: boolean) => void;
   onPropertyTypeChange?: (value: string) => void;
+  onSearchAddressChange?: (value: string) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange }: HeroProps) => {
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
@@ -41,6 +42,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange }: HeroProps) => {
 
   const handleSearchChange = (value: string) => {
     setSearchLocation(value);
+    onSearchAddressChange?.(value);
     if (value.trim()) {
       const filteredSuggestions = filterMunicipalities(value);
       setSuggestions(filteredSuggestions);
@@ -53,6 +55,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange }: HeroProps) => {
 
   const handleSuggestionClick = (municipality: { name: string; county: string }) => {
     setSearchLocation(municipality.name);
+    onSearchAddressChange?.(municipality.name);
     setShowSuggestions(false);
   };
 
