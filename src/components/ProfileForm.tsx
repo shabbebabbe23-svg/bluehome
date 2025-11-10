@@ -145,9 +145,9 @@ export const ProfileForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Avatar Upload */}
-          <div className="flex flex-col items-center gap-6 py-6">
+          <div className="flex flex-col items-end gap-4 -mt-4 mr-4">
             <Avatar className="w-56 h-56 sm:w-72 sm:h-72 md:w-84 md:h-84 border-4 border-border">
               <AvatarImage src={avatarUrl || undefined} className="object-contain" />
               <AvatarFallback className="bg-muted">
@@ -171,8 +171,8 @@ export const ProfileForm = () => {
           </div>
 
           {/* Form Fields */}
-          <div className="grid gap-4">
-            <div className="space-y-2">
+          <div className="grid gap-3">
+            <div className="space-y-1">
               <Label htmlFor="full_name">Fullständigt namn *</Label>
               <Input
                 id="full_name"
@@ -184,7 +184,7 @@ export const ProfileForm = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="email">E-postadress *</Label>
               <Input
                 id="email"
@@ -197,7 +197,7 @@ export const ProfileForm = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="phone">Telefonnummer</Label>
               <Input
                 id="phone"
@@ -209,7 +209,7 @@ export const ProfileForm = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="agency">Mäklarbyrå</Label>
               <Input
                 id="agency"
@@ -221,7 +221,7 @@ export const ProfileForm = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="office">Kontor</Label>
               <Input
                 id="office"
@@ -233,7 +233,7 @@ export const ProfileForm = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="area">Område</Label>
               <Input
                 id="area"
