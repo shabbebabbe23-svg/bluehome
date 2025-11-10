@@ -319,10 +319,10 @@ const CommercialProperties = () => {
           />
 
           {/* Property grid */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+          <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
           {filteredProperties.map(property => (
-            <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 h-full flex flex-col">
-              <div className="relative w-full h-64 sm:h-72 md:h-80 lg:h-72 xl:h-80 bg-slate-700">
+            <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
+              <div className="relative w-80 sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem] h-64 flex-shrink-0 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
@@ -335,23 +335,25 @@ const CommercialProperties = () => {
                   {property.type}
                 </div>
               </div>
-              <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
-                <h3 className="font-semibold text-xl sm:text-2xl md:text-3xl lg:text-[2rem] xl:text-[2.25rem] text-white mb-3">
-                  {property.title}
-                </h3>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] xl:text-[3rem] font-bold text-primary mb-4">{property.price}</p>
-                <div className="space-y-3 text-slate-300 flex-1">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0" />
-                    <span className="text-white text-base sm:text-lg md:text-xl lg:text-[1.5rem]">{property.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Square className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0" />
-                    <span className="text-white text-base sm:text-lg md:text-xl lg:text-[1.5rem]">{property.area}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Building className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0" />
-                    <span className="text-white text-base sm:text-lg md:text-xl lg:text-[1.5rem]">{property.type}</span>
+              <CardContent className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-semibold text-2xl sm:text-3xl md:text-4xl text-white mb-3">
+                    {property.title}
+                  </h3>
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6">{property.price}</p>
+                  <div className="space-y-4 text-slate-300">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
+                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.location}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Square className="w-6 h-6 text-primary flex-shrink-0" />
+                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.area}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Building className="w-6 h-6 text-primary flex-shrink-0" />
+                      <span className="text-white text-lg sm:text-xl md:text-2xl">{property.type}</span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
