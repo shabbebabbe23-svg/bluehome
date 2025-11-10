@@ -149,7 +149,7 @@ export const ProfileForm = () => {
           {/* Avatar Upload */}
           <div className="flex flex-col items-center gap-6 py-6">
             <Avatar className="w-56 h-56 sm:w-72 sm:h-72 md:w-84 md:h-84 border-4 border-border">
-              <AvatarImage src={avatarUrl || undefined} className="object-cover" />
+              <AvatarImage src={avatarUrl || undefined} className="object-contain" />
               <AvatarFallback className="bg-muted">
                 <User className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 text-muted-foreground" />
               </AvatarFallback>
