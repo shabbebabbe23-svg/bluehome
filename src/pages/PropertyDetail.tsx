@@ -22,6 +22,11 @@ import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
 import floorplan from "@/assets/floorplan-1.jpg";
 import storgatanFloorplan from "@/assets/storgatan-floorplan.jpg";
+import storgatan1 from "@/assets/storgatan-1.jpg";
+import storgatan2 from "@/assets/storgatan-2.jpg";
+import storgatan3 from "@/assets/storgatan-3.jpg";
+import storgatan4 from "@/assets/storgatan-4.jpg";
+import storgatan5 from "@/assets/storgatan-5.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import PropertyMap from "@/components/PropertyMap";
@@ -72,6 +77,20 @@ const PropertyDetail = () => {
 
     fetchProperty();
   }, [id]);
+
+  // Map database image paths to imported images
+  const getImageUrl = (url: string | null) => {
+    if (!url) return null;
+    const imageMap: Record<string, string> = {
+      '/src/assets/storgatan-1.jpg': storgatan1,
+      '/src/assets/storgatan-2.jpg': storgatan2,
+      '/src/assets/storgatan-3.jpg': storgatan3,
+      '/src/assets/storgatan-4.jpg': storgatan4,
+      '/src/assets/storgatan-5.jpg': storgatan5,
+      '/src/assets/storgatan-floorplan.jpg': storgatanFloorplan,
+    };
+    return imageMap[url] || url;
+  };
 
   const properties = [
     {
@@ -299,9 +318,9 @@ const PropertyDetail = () => {
   // Handle images for both database and hardcoded properties
   const images = dbProperty 
     ? [
-        dbProperty.image_url,
-        dbProperty.hover_image_url,
-        ...(dbProperty.additional_images || [])
+        getImageUrl(dbProperty.image_url),
+        getImageUrl(dbProperty.hover_image_url),
+        ...(dbProperty.additional_images || []).map(getImageUrl)
       ].filter(Boolean)
     : property.images || [property1];
 
@@ -513,7 +532,7 @@ const PropertyDetail = () => {
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
                       <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
                         <img
-                          src={property.floorplan_url || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)}
+                          src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)}
                           alt="Planritning"
                           className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
                         />
