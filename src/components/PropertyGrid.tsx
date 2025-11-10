@@ -789,7 +789,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "" }: PropertyGr
           <Button 
             size="lg" 
             variant="outline" 
-            className="hover:scale-105 transition-transform w-full sm:w-auto"
+            className="hover:scale-105 hover:bg-green-600 hover:text-white hover:border-green-600 transition-all w-full sm:w-auto"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "Visa färre fastigheter" : "Visa alla fastigheter"}
