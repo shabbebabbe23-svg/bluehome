@@ -23,6 +23,7 @@ interface PropertyCardProps {
   vendorLogo?: string;
   isSold?: boolean;
   listedDate?: Date | string;
+  soldDate?: Date | string;
   hasVR?: boolean;
   description?: string;
   viewMode?: "grid" | "list";
@@ -46,6 +47,7 @@ const PropertyCard = ({
   vendorLogo,
   isSold = false,
   listedDate,
+  soldDate,
   hasVR = false,
   description,
   viewMode = "grid",
@@ -191,10 +193,13 @@ const PropertyCard = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-end text-foreground mt-1">
-            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
-            <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
-          </div>
+          {/* Show viewing date only for non-sold properties */}
+          {!isSold && (
+            <div className="flex items-center justify-end text-foreground mt-1">
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
+              <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+            </div>
+          )}
         </div>
 
         {/* Description - Only show in list view */}
@@ -213,7 +218,12 @@ const PropertyCard = ({
             </Button>
           </Link>
           <p className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground text-center mt-0.5">
-            {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`}
+            {isSold && soldDate 
+              ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
+              : daysOnMarket === 0 
+              ? "Ny idag" 
+              : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`
+            }
           </p>
         </div>
       </CardContent>

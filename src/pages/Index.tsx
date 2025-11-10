@@ -51,6 +51,7 @@ const Index = () => {
             isNew: false,
             vendorLogo: prop.vendor_logo_url || logo1,
             isSold: prop.is_sold || false,
+            soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
           }));
           setAllProperties(formattedProperties);

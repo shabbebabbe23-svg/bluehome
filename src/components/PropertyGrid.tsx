@@ -63,6 +63,7 @@ export interface Property {
   isNew: boolean;
   vendorLogo: string;
   isSold?: boolean;
+  soldDate?: Date | string;
   hasVR?: boolean;
   description?: string;
 }
@@ -434,6 +435,7 @@ export const soldProperties: Property[] = [
       type: "Villa",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-10-02"),
       vendorLogo: logo1,
       description: "Vacker villa i attraktivt läge som såldes snabbt till ett konkurrenskraftigt pris. Renoverad och i utmärkt skick.",
     },
@@ -454,6 +456,7 @@ export const soldProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-28"),
       vendorLogo: logo2,
       description: "Eftertraktad lägenhet i populärt område. Många intressenter och snabb försäljning över utgångspris.",
     },
@@ -474,6 +477,7 @@ export const soldProperties: Property[] = [
       type: "Radhus",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-25"),
       vendorLogo: logo3,
       description: "Attraktivt radhus som såldes efter budgivning. Perfekt läge nära skolor och grönområden lockade många familjer.",
     },
@@ -494,6 +498,7 @@ export const soldProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-22"),
       vendorLogo: logo4,
       description: "Exklusiv takvåning som såldes till ett rekordpris. Stor takterrass och fantastisk utsikt var de stora dragplåstren.",
     },
@@ -514,6 +519,7 @@ export const soldProperties: Property[] = [
       type: "Villa",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-20"),
       vendorLogo: logo5,
       description: "Attraktiv familjehus på Lidingö som såldes över utgångspris. Stor tomt och nära till skolor och kommunikationer.",
     },
@@ -534,6 +540,7 @@ export const soldProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-18"),
       vendorLogo: logo6,
       description: "Charmig lägenhet i centrala Vasastan. Såldes snabbt till en nöjd köpare efter visning med stort intresse.",
     },
@@ -554,6 +561,7 @@ export const soldProperties: Property[] = [
       type: "Villa",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-15"),
       vendorLogo: logo7,
       description: "Stor och rymlig villa i eftertraktat läge. Såldes till slutpris efter intensiv budgivning mellan flera intressenter.",
     },
@@ -574,6 +582,7 @@ export const soldProperties: Property[] = [
       type: "Radhus",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-12"),
       vendorLogo: logo8,
       description: "Populärt radhus i centrala Kungsholmen. Perfekt planlösning och centralt läge lockade många budgivare.",
     },
@@ -594,6 +603,7 @@ export const soldProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-08"),
       vendorLogo: logo9,
       description: "Representativ lägenhet mitt i city. Såldes till ett attraktivt pris till en köpare som sökte centralt boende.",
     },
@@ -614,6 +624,7 @@ export const soldProperties: Property[] = [
       type: "Villa",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-09-05"),
       vendorLogo: logo10,
       description: "Drömvilla vid havet i Saltsjöbaden. Egen brygga och badstrand gjorde att försäljningen gick snabbt över utgångspris.",
     },
@@ -634,6 +645,7 @@ export const soldProperties: Property[] = [
       type: "Lägenhet",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-08-30"),
       vendorLogo: logo11,
       description: "Autentisk Gamlastan-lägenhet med historiskt värde. Såldes till en köpare som sökte den speciella charmen.",
     },
@@ -654,6 +666,7 @@ export const soldProperties: Property[] = [
       type: "Villa",
       isNew: false,
       isSold: true,
+      soldDate: new Date("2024-08-25"),
       vendorLogo: logo12,
       description: "Exklusiv herrgårdsliknande villa i Djursholms finaste kvarter. Såldes till rekordpris efter budgivning bland flera intressenter.",
     },
@@ -699,6 +712,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             isNew: false,
             vendorLogo: prop.vendor_logo_url || logo1,
             isSold: prop.is_sold || false,
+            soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
             description: prop.description || '',
           }));
