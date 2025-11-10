@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import heroImage from "@/assets/hero-image.jpg";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
+import { supabase } from "@/integrations/supabase/client";
 
 interface HeroProps {
   onFinalPricesChange?: (value: boolean) => void;
@@ -26,6 +27,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [showNewConstruction, setShowNewConstruction] = useState(false);
@@ -42,22 +44,67 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearchChange = (value: string) => {
+  const handleSearchChange = async (value: string) => {
     setSearchLocation(value);
     onSearchAddressChange?.(value);
-    if (value.trim()) {
-      const filteredSuggestions = filterMunicipalities(value);
-      setSuggestions(filteredSuggestions);
-      setShowSuggestions(filteredSuggestions.length > 0);
+    
+    if (searchMode === 'property') {
+      if (value.trim()) {
+        const filteredSuggestions = filterMunicipalities(value);
+        setSuggestions(filteredSuggestions);
+        setShowSuggestions(filteredSuggestions.length > 0);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
     } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
+      // Agent mode
+      if (value.trim()) {
+        try {
+          // Fetch all agents
+          const { data: agentRoles } = await supabase
+            .from('user_roles')
+            .select('user_id')
+            .eq('user_type', 'maklare');
+
+          if (agentRoles && agentRoles.length > 0) {
+            const agentIds = agentRoles.map(role => role.user_id);
+            
+            const { data: agents } = await supabase
+              .from('profiles')
+              .select('id, full_name, agency, area')
+              .in('id', agentIds)
+              .or(
+                `full_name.ilike.%${value}%,` +
+                `agency.ilike.%${value}%,` +
+                `area.ilike.%${value}%`
+              )
+              .limit(5);
+
+            if (agents) {
+              setAgentSuggestions(agents);
+              setShowSuggestions(agents.length > 0);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching agent suggestions:', error);
+        }
+      } else {
+        setAgentSuggestions([]);
+        setShowSuggestions(false);
+      }
     }
   };
 
   const handleSuggestionClick = (municipality: { name: string; county: string }) => {
     setSearchLocation(municipality.name);
     onSearchAddressChange?.(municipality.name);
+    setShowSuggestions(false);
+  };
+
+  const handleAgentSuggestionClick = (agent: { id: string; full_name: string; agency: string | null; area: string | null }) => {
+    setSearchLocation(agent.full_name);
+    onSearchAddressChange?.(agent.full_name);
     setShowSuggestions(false);
   };
 
@@ -149,7 +196,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 />
                 
                 {/* Autocomplete Suggestions */}
-                {showSuggestions && suggestions.length > 0 && (
+                {showSuggestions && searchMode === 'property' && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
                     {suggestions.map((municipality, index) => (
                       <button
@@ -161,6 +208,29 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         <div>
                           <p className="font-medium text-foreground">{municipality.name}</p>
                           <p className="text-sm text-muted-foreground">{municipality.county}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Agent Suggestions */}
+                {showSuggestions && searchMode === 'agent' && agentSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
+                    {agentSuggestions.map((agent) => (
+                      <button
+                        key={agent.id}
+                        onClick={() => handleAgentSuggestionClick(agent)}
+                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                      >
+                        <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-foreground">{agent.full_name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {agent.agency && agent.area 
+                              ? `${agent.agency} • ${agent.area}`
+                              : agent.agency || agent.area || 'Mäklare'}
+                          </p>
                         </div>
                       </button>
                     ))}
