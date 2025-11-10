@@ -146,28 +146,49 @@ export const ProfileForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Avatar Upload */}
-          <div className="flex flex-col items-end gap-4 -mt-4 mr-4">
-            <Avatar className="w-72 h-72 sm:w-96 sm:h-96 md:w-[420px] md:h-[420px] border-4 border-border">
-              <AvatarImage src={avatarUrl || undefined} className="object-contain" />
-              <AvatarFallback className="bg-muted">
-                <User className="w-24 h-24 sm:w-36 sm:h-36 md:w-44 md:h-44 text-muted-foreground" />
-              </AvatarFallback>
-            </Avatar>
-            <Label htmlFor="avatar-upload" className="cursor-pointer">
-              <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
-                <Upload className="w-4 h-4" />
-                <span>{uploading ? "Laddar upp..." : "Ladda upp profilbild"}</span>
+          {/* Profile Header with Text and Avatar */}
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* About Text */}
+            <div className="flex-1 space-y-4">
+              <div className="space-y-3">
+                <p className="text-foreground leading-relaxed">
+                  Vill du samarbeta med en mäklare som är effektiv, gillar att se resultat, med en rak kommunikation samt har nära till skratt? Då är jag rätt mäklare för dig!
+                </p>
+                <p className="text-foreground leading-relaxed">
+                  Jag gillar att leda mina kunder i viktiga beslut. Att överträffa mina egna samt mina kunders mål är också något som ständigt driver mig framåt.
+                </p>
+                <p className="text-foreground font-semibold">
+                  Kommunikation behöver inte vara krångligt!
+                </p>
+                <p className="text-foreground leading-relaxed">
+                  Med mig som mäklare får du tydlighet, ordning och engagemang genom hela affären.
+                </p>
               </div>
-              <Input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarUpload}
-                disabled={uploading}
-              />
-            </Label>
+            </div>
+
+            {/* Avatar Upload */}
+            <div className="flex flex-col items-center lg:items-end gap-4">
+              <Avatar className="w-72 h-72 sm:w-96 sm:h-96 md:w-[420px] md:h-[420px] border-4 border-border">
+                <AvatarImage src={avatarUrl || undefined} className="object-contain" />
+                <AvatarFallback className="bg-muted">
+                  <User className="w-24 h-24 sm:w-36 sm:h-36 md:w-44 md:h-44 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <Label htmlFor="avatar-upload" className="cursor-pointer">
+                <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  <span>{uploading ? "Laddar upp..." : "Ladda upp profilbild"}</span>
+                </div>
+                <Input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                  disabled={uploading}
+                />
+              </Label>
+            </div>
           </div>
 
           {/* Form Fields */}
