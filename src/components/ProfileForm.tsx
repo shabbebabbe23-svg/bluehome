@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Upload } from "lucide-react";
+import { User, Upload, Eye, Building2, MapPin, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -141,133 +143,206 @@ export const ProfileForm = () => {
       <CardHeader>
         <CardTitle>Min profil</CardTitle>
         <CardDescription>
-          Uppdatera dina profiluppgifter som visas för kunder
+          Uppdatera dina profiluppgifter som visas för kunder på fastighetsannonser
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Profile Header with Text and Avatar */}
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* About Text */}
-            <div className="flex-1 space-y-4">
-              <div className="space-y-3">
-                <p className="text-foreground leading-relaxed">
-                  Vill du samarbeta med en mäklare som är effektiv, gillar att se resultat, med en rak kommunikation samt har nära till skratt? Då är jag rätt mäklare för dig!
-                </p>
-                <p className="text-foreground leading-relaxed">
-                  Jag gillar att leda mina kunder i viktiga beslut. Att överträffa mina egna samt mina kunders mål är också något som ständigt driver mig framåt.
-                </p>
-                <p className="text-foreground font-semibold">
-                  Kommunikation behöver inte vara krångligt!
-                </p>
-                <p className="text-foreground leading-relaxed">
-                  Med mig som mäklare får du tydlighet, ordning och engagemang genom hela affären.
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Public Profile Preview Section */}
+          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4">
+            <div className="flex items-start gap-3 mb-3">
+              <Eye className="w-5 h-5 text-primary mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Publik profil</h3>
+                <p className="text-sm text-muted-foreground">
+                  Detta är informationen som visas för kunder på dina fastighetsannonser och din mäklarprofil
                 </p>
               </div>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="font-medium">Profilbild:</span>
+                  <Badge variant={avatarUrl ? "default" : "destructive"}>
+                    {avatarUrl ? "Uppladdad" : "Saknas"}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  <span className="font-medium">Mäklarbyrå:</span>
+                  <Badge variant="outline">Viktigt!</Badge>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span className="font-medium">Kontor:</span>
+                  <Badge variant="secondary">Visas</Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Home className="w-4 h-4 text-primary" />
+                  <span className="font-medium">Område:</span>
+                  <Badge variant="secondary">Visas</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            {/* Avatar Upload */}
-            <div className="flex flex-col items-center lg:items-end gap-4">
-              <Avatar className="w-72 h-72 sm:w-96 sm:h-96 md:w-[420px] md:h-[420px] border-4 border-border">
-                <AvatarImage src={avatarUrl || undefined} className="object-contain" />
+          {/* Avatar Upload Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Profilbild
+              <Badge variant="destructive" className="ml-2">Obligatorisk</Badge>
+            </h3>
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <Avatar className="w-32 h-32 border-4 border-border">
+                <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
                 <AvatarFallback className="bg-muted">
-                  <User className="w-24 h-24 sm:w-36 sm:h-36 md:w-44 md:h-44 text-muted-foreground" />
+                  <User className="w-16 h-16 text-muted-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <Label htmlFor="avatar-upload" className="cursor-pointer">
-                <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
-                  <Upload className="w-4 h-4" />
-                  <span>{uploading ? "Laddar upp..." : "Ladda upp profilbild"}</span>
-                </div>
+              <div className="flex-1">
+                <Label htmlFor="avatar-upload" className="cursor-pointer">
+                  <div className="flex items-center gap-2 px-4 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors border-2 border-dashed border-border hover:border-primary">
+                    <Upload className="w-5 h-5" />
+                    <span className="font-medium">{uploading ? "Laddar upp..." : "Ladda upp profilbild"}</span>
+                  </div>
+                  <Input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                    disabled={uploading}
+                  />
+                </Label>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Din profilbild visas på alla dina fastighetsannonser. Rekommenderat format: kvadratisk bild.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Basic Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Grundläggande information</h3>
+            <div className="grid gap-4 max-w-2xl">
+              <div className="space-y-1">
+                <Label htmlFor="full_name" className="flex items-center gap-2">
+                  Fullständigt namn
+                  <Badge variant="destructive" className="text-xs">Obligatorisk</Badge>
+                </Label>
                 <Input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                  disabled={uploading}
+                  id="full_name"
+                  {...register("full_name")}
+                  placeholder="Ditt fullständiga namn"
                 />
-              </Label>
+                {errors.full_name && (
+                  <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Visas på alla dina fastighetsannonser</p>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="email" className="flex items-center gap-2">
+                  E-postadress
+                  <Badge variant="destructive" className="text-xs">Obligatorisk</Badge>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="din.email@exempel.se"
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Kontaktuppgift för intresserade kunder</p>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="phone" className="flex items-center gap-2">
+                  Telefonnummer
+                  <Badge variant="secondary" className="text-xs">Rekommenderad</Badge>
+                </Label>
+                <Input
+                  id="phone"
+                  {...register("phone")}
+                  placeholder="070-123 45 67"
+                />
+                {errors.phone && (
+                  <p className="text-sm text-destructive">{errors.phone.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Visas på fastighetsannonser för direktkontakt</p>
+              </div>
             </div>
           </div>
 
-          {/* Form Fields */}
-          <div className="grid gap-3 max-w-2xl">
-            <div className="space-y-1">
-              <Label htmlFor="full_name">Fullständigt namn *</Label>
-              <Input
-                id="full_name"
-                {...register("full_name")}
-                placeholder="Ditt namn"
-              />
-              {errors.full_name && (
-                <p className="text-sm text-destructive">{errors.full_name.message}</p>
-              )}
-            </div>
+          <Separator />
 
-            <div className="space-y-1">
-              <Label htmlFor="email">E-postadress *</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="din.email@exempel.se"
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
-            </div>
+          {/* Business Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
+              Företagsinformation
+            </h3>
+            <div className="grid gap-4 max-w-2xl">
+              <div className="space-y-1">
+                <Label htmlFor="agency" className="flex items-center gap-2">
+                  Mäklarbyrå
+                  <Badge variant="destructive" className="text-xs">Viktigt!</Badge>
+                </Label>
+                <Input
+                  id="agency"
+                  {...register("agency")}
+                  placeholder="t.ex. Hemnet Mäkleri AB"
+                />
+                {errors.agency && (
+                  <p className="text-sm text-destructive">{errors.agency.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Visas direkt under ditt namn på fastighetsannonser</p>
+              </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="phone">Telefonnummer</Label>
-              <Input
-                id="phone"
-                {...register("phone")}
-                placeholder="070-123 45 67"
-              />
-              {errors.phone && (
-                <p className="text-sm text-destructive">{errors.phone.message}</p>
-              )}
-            </div>
+              <div className="space-y-1">
+                <Label htmlFor="office" className="flex items-center gap-2">
+                  Kontor
+                  <Badge variant="secondary" className="text-xs">Rekommenderad</Badge>
+                </Label>
+                <Input
+                  id="office"
+                  {...register("office")}
+                  placeholder="t.ex. Stockholm City"
+                />
+                {errors.office && (
+                  <p className="text-sm text-destructive">{errors.office.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Kontorets plats eller namn</p>
+              </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="agency">Mäklarbyrå</Label>
-              <Input
-                id="agency"
-                {...register("agency")}
-                placeholder="Din mäklarbyrå"
-              />
-              {errors.agency && (
-                <p className="text-sm text-destructive">{errors.agency.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="office">Kontor</Label>
-              <Input
-                id="office"
-                {...register("office")}
-                placeholder="Kontorsort"
-              />
-              {errors.office && (
-                <p className="text-sm text-destructive">{errors.office.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="area">Område</Label>
-              <Input
-                id="area"
-                {...register("area")}
-                placeholder="Områden du arbetar i"
-              />
-              {errors.area && (
-                <p className="text-sm text-destructive">{errors.area.message}</p>
-              )}
+              <div className="space-y-1">
+                <Label htmlFor="area" className="flex items-center gap-2">
+                  Område
+                  <Badge variant="outline" className="text-xs">Valfri</Badge>
+                </Label>
+                <Input
+                  id="area"
+                  {...register("area")}
+                  placeholder="t.ex. Stockholm, Södermalm, Vasastan"
+                />
+                {errors.area && (
+                  <p className="text-sm text-destructive">{errors.area.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Områden där du är verksam</p>
+              </div>
             </div>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full" size="lg">
             {loading ? "Sparar..." : "Spara profil"}
           </Button>
         </form>
