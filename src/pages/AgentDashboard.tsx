@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3 } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -14,6 +16,13 @@ const AgentDashboard = () => {
   const { user, signOut } = useAuth();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("add");
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
+  // Generate array of years from 2020 to current year
+  const years = Array.from(
+    { length: new Date().getFullYear() - 2019 },
+    (_, i) => (2020 + i).toString()
+  ).reverse();
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -107,6 +116,26 @@ const AgentDashboard = () => {
                   <p className="text-muted-foreground mb-6">
                     Lista över borttagna fastigheter kommer här
                   </p>
+                  
+                  {/* Year selector */}
+                  <div className="max-w-xs mx-auto">
+                    <Label htmlFor="year-select" className="text-base mb-2 block">
+                      Filtrera efter år
+                    </Label>
+                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                      <SelectTrigger id="year-select" className="w-full">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        <SelectValue placeholder="Välj år" />
+                      </SelectTrigger>
+                      <SelectContent className="animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
+                        {years.map((year) => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </TabsContent>
 
