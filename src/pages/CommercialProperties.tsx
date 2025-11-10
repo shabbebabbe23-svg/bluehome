@@ -319,9 +319,10 @@ const CommercialProperties = () => {
           />
 
           {/* Property grid */}
-          <div className="flex-1 grid grid-cols-1 gap-6 mb-12">
-          {filteredProperties.map(property => <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-row">
-              <div className="relative w-[900px] h-48 flex-shrink-0 bg-slate-700">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {filteredProperties.map(property => (
+            <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700">
+              <div className="relative w-full h-64 bg-slate-700">
                 <img 
                   src={property.image} 
                   alt={property.title}
@@ -334,37 +335,28 @@ const CommercialProperties = () => {
                   {property.type}
                 </div>
               </div>
-              <CardContent className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    {property.title}
-                  </h3>
-                  <div className="space-y-3 text-slate-300 text-base">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Plats</p>
-                        <p className="text-white font-medium">{property.location}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Square className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Yta</p>
-                        <p className="text-white font-medium">{property.area}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Building className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Månadshyra</p>
-                        <p className="text-2xl font-bold text-white">{property.price}</p>
-                      </div>
-                    </div>
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {property.title}
+                </h3>
+                <p className="text-3xl font-bold text-primary mb-4">{property.price}</p>
+                <div className="space-y-3 text-slate-300 text-base">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-white">{property.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Square className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-white">{property.area}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-white">{property.type}</span>
                   </div>
                 </div>
               </CardContent>
-            </Card>)}
+            </Card>
+          ))}
           </div>
 
           {/* Right Ad Banner */}
