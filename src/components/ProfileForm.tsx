@@ -148,10 +148,10 @@ export const ProfileForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Avatar Upload */}
           <div className="flex flex-col items-center gap-4">
-            <Avatar style={{ width: '200px', height: '200px' }}>
+            <Avatar className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48">
               <AvatarImage src={avatarUrl || undefined} />
               <AvatarFallback>
-                <User className="w-20 h-20" />
+                <User className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" />
               </AvatarFallback>
             </Avatar>
             <Label htmlFor="avatar-upload" className="cursor-pointer">
