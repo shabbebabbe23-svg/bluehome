@@ -194,9 +194,9 @@ const AgentProfile = () => {
                 <PropertyCard
                   key={property.id}
                   id={property.id}
-                  title={property.title}
+                  title={property.address}
                   location={property.location}
-                  price={property.price.toString()}
+                  price={`${property.price.toLocaleString('sv-SE')} kr`}
                   type={property.type}
                   bedrooms={property.bedrooms}
                   bathrooms={property.bathrooms}
@@ -207,6 +207,7 @@ const AgentProfile = () => {
                   listedDate={property.listed_date || undefined}
                   isSold={property.is_sold || false}
                   vendorLogo={property.vendor_logo_url || undefined}
+                  viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
                 />
               ))}
             </div>
