@@ -649,10 +649,10 @@ const PropertyDetail = () => {
                   <>
                     <div className="flex flex-col items-center gap-4 mb-6">
                       <Link to={`/agent/${property.user_id}`} className="z-20 hover:scale-105 transition-transform">
-                        <Avatar className="w-32 h-32 border-4 border-border cursor-pointer">
+                        <Avatar className="w-40 h-40 border-4 border-border cursor-pointer">
                           <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
                           <AvatarFallback className="bg-primary text-white text-2xl">
-                            <User className="w-16 h-16" />
+                            <User className="w-20 h-20" />
                           </AvatarFallback>
                         </Avatar>
                       </Link>
