@@ -66,7 +66,13 @@ const Login = () => {
         });
 
         if (error) {
-          if (error.message.includes("Invalid login credentials")) {
+          if (error.message.includes("Email not confirmed")) {
+            toast({
+              title: "E-post ej bekräftad",
+              description: "Du måste bekräfta din e-postadress innan du kan logga in. Kontrollera din inkorg.",
+              variant: "destructive",
+            });
+          } else if (error.message.includes("Invalid login credentials")) {
             toast({
               title: "Fel e-post eller lösenord",
               description: "Kontrollera dina uppgifter och försök igen.",
