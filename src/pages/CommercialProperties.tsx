@@ -301,7 +301,7 @@ const CommercialProperties = () => {
         </Card>
 
         {/* Main content with side ads */}
-        <div className="flex gap-20 items-start">
+        <div className="flex gap-40 items-start">
           {/* Left Ad Banner */}
           <AdBanner
             imageSrc={commercial1}
