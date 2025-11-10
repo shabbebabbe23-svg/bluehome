@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3 } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -62,6 +62,12 @@ const Header = () => {
                     <Link to="/maklare?tab=statistics" className="flex items-center gap-3 cursor-pointer py-4">
                       <BarChart3 className="w-6 h-6" />
                       <span className="font-medium text-lg">Din statistik</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/maklare?tab=profile" className="flex items-center gap-3 cursor-pointer py-4">
+                      <UserCircle className="w-6 h-6" />
+                      <span className="font-medium text-lg">Min profil</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
