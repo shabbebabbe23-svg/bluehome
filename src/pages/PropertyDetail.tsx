@@ -464,20 +464,24 @@ const PropertyDetail = () => {
             {/* Property Info */}
             <Card>
               <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{property.type}</Badge>
-                    {property.isNew && (
-                      <Badge className="bg-success text-white">Ny</Badge>
-                    )}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="secondary">{property.type}</Badge>
+                      {property.isNew && (
+                        <Badge className="bg-success text-white">Ny</Badge>
+                      )}
+                    </div>
+                    <h1 className="text-base sm:text-lg font-semibold mb-2">{dbProperty ? property.address : property.title}</h1>
+                    <div className="flex items-center text-muted-foreground">
+                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">{property.location}</span>
+                    </div>
                   </div>
-                  <h1 className="text-base sm:text-lg font-semibold">{dbProperty ? property.address : property.title}</h1>
-                  <p className="text-2xl sm:text-3xl font-bold text-primary">
-                    {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                  </p>
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">{property.location}</span>
+                  <div className="text-left sm:text-right">
+                    <p className="text-2xl sm:text-3xl font-bold text-primary">
+                      {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                    </p>
                   </div>
                 </div>
 
