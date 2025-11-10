@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { PropertyForm } from "@/components/PropertyForm";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -69,13 +70,12 @@ const AgentDashboard = () => {
               </TabsList>
 
               <TabsContent value="add" className="mt-6">
-                <div className="text-center py-12">
-                  <Plus className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Lägg till ny fastighet</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Formulär för att lägga till nya fastigheter kommer här
-                  </p>
-                </div>
+                <PropertyForm
+                  onSuccess={() => {
+                    setActiveTab("existing");
+                    toast.success("Fastighet tillagd!");
+                  }}
+                />
               </TabsContent>
 
               <TabsContent value="existing" className="mt-6">
