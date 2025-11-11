@@ -365,7 +365,10 @@ const PropertyDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <header 
+        className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" 
+        style={{ background: 'var(--main-gradient)' }}
+      >
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <Button 
             variant="ghost" 
