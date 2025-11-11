@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { PropertyForm } from "@/components/PropertyForm";
 import { AgentStatistics } from "@/components/AgentStatistics";
 import { ProfileForm } from "@/components/ProfileForm";
+import PropertyCard from "@/components/PropertyCard";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +35,39 @@ const AgentDashboard = () => {
       setActiveTab(tab);
     }
   }, [searchParams]);
+
+  // Fetch agent's active properties
+  const { data: properties, isLoading: isLoadingProperties, refetch } = useQuery({
+    queryKey: ["agent-properties", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const handleDeleteProperty = async (propertyId: string) => {
+    try {
+      const { error } = await supabase
+        .from("properties")
+        .update({ is_deleted: true })
+        .eq("id", propertyId);
+
+      if (error) throw error;
+      
+      toast.success("Fastighet borttagen");
+      refetch();
+    } catch (error) {
+      toast.error("Kunde inte ta bort fastighet");
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -106,13 +142,55 @@ const AgentDashboard = () => {
               </TabsContent>
 
               <TabsContent value="existing" className="mt-6">
-                <div className="text-center py-12">
-                  <Home className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Befintliga fastigheter</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Lista över dina aktiva fastigheter kommer här
-                  </p>
-                </div>
+                {isLoadingProperties ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                      <Skeleton key={i} className="h-96" />
+                    ))}
+                  </div>
+                ) : properties && properties.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {properties.map((property) => (
+                      <div key={property.id} className="relative group">
+                        <PropertyCard
+                          id={property.id}
+                          title={property.address}
+                          location={property.location}
+                          price={`${property.price.toLocaleString('sv-SE')} kr`}
+                          type={property.type}
+                          bedrooms={property.bedrooms}
+                          bathrooms={property.bathrooms}
+                          area={property.area}
+                          image={property.image_url || ""}
+                          hoverImage={property.hover_image_url || undefined}
+                          hasVR={property.has_vr || false}
+                          listedDate={property.listed_date || undefined}
+                          isSold={property.is_sold || false}
+                          soldDate={property.sold_date || undefined}
+                          vendorLogo={property.vendor_logo_url || undefined}
+                          viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
+                        />
+                        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => handleDeleteProperty(property.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Home className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Inga aktiva fastigheter</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Du har inga aktiva fastigheter för tillfället
+                    </p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="removed" className="mt-6">
