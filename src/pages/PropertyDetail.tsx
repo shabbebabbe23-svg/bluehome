@@ -534,8 +534,12 @@ const PropertyDetail = () => {
                   <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Pris per kvadratmeter</span>
-                      <span className="font-semibold">{dbProperty ? `${Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²` : '143 137 kr/m²'}</span>
+                      <span className="text-muted-foreground">Bostadstyp</span>
+                      <span className="font-semibold">{property.type || 'Villa'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Upplåtelseform</span>
+                      <span className="font-semibold">Äganderätt</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Utgångspris</span>
@@ -546,14 +550,6 @@ const PropertyDetail = () => {
                       <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Bostadstyp</span>
-                      <span className="font-semibold">Lägenhet</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Upplåtelseform</span>
-                      <span className="font-semibold">{property.type || 'Bostadsrätt'}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
@@ -562,24 +558,24 @@ const PropertyDetail = () => {
                       <span className="font-semibold">{property.area} m²</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Våning</span>
-                      <span className="font-semibold">{property.floor !== undefined ? `${property.floor} av 5` : '1 av 5'}</span>
+                      <span className="text-muted-foreground">Biarea</span>
+                      <span className="font-semibold">25 m²</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Byggår</span>
-                      <span className="font-semibold">{property.buildYear || '1925'}</span>
+                      <span className="text-muted-foreground">Tomtarea</span>
+                      <span className="font-semibold">850 m²</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Avgift</span>
-                      <span className="font-semibold">{dbProperty && property.fee ? `${property.fee.toLocaleString('sv-SE')} kr/mån` : '2 641 kr/mån'}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Driftskostnad</span>
+                      <span className="text-muted-foreground">Driftkostnad</span>
                       <span className="font-semibold">5 650 kr/år</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Antal besök</span>
-                      <span className="font-semibold">3 130</span>
+                      <span className="text-muted-foreground">Byggår</span>
+                      <span className="font-semibold">{property.buildYear || '2021'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Energiklass</span>
+                      <span className="font-semibold">B</span>
                     </div>
                   </div>
                 </div>
