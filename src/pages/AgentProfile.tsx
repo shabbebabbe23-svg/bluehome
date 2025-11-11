@@ -206,6 +206,7 @@ const AgentProfile = () => {
                   hasVR={property.has_vr || false}
                   listedDate={property.listed_date || undefined}
                   isSold={property.is_sold || false}
+                  soldDate={property.sold_date || undefined}
                   vendorLogo={property.vendor_logo_url || undefined}
                   viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
                 />
