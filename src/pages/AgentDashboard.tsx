@@ -15,6 +15,14 @@ import { ProfileForm } from "@/components/ProfileForm";
 import PropertyCard from "@/components/PropertyCard";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +30,8 @@ const AgentDashboard = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("add");
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+  const [editingProperty, setEditingProperty] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from(
@@ -66,6 +76,46 @@ const AgentDashboard = () => {
       refetch();
     } catch (error) {
       toast.error("Kunde inte ta bort fastighet");
+    }
+  };
+
+  const handleEditProperty = (property: any) => {
+    setEditingProperty(property);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateProperty = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      const { error } = await supabase
+        .from("properties")
+        .update({
+          title: formData.get("title") as string,
+          address: formData.get("address") as string,
+          location: formData.get("location") as string,
+          type: formData.get("type") as string,
+          price: Number(formData.get("price")),
+          bedrooms: Number(formData.get("bedrooms")),
+          bathrooms: Number(formData.get("bathrooms")),
+          area: Number(formData.get("area")),
+          fee: Number(formData.get("fee")),
+          description: formData.get("description") as string,
+          viewing_date: formData.get("viewing_date") 
+            ? new Date(formData.get("viewing_date") as string).toISOString() 
+            : null,
+        })
+        .eq("id", editingProperty.id);
+
+      if (error) throw error;
+      
+      toast.success("Fastighet uppdaterad");
+      setIsEditDialogOpen(false);
+      setEditingProperty(null);
+      refetch();
+    } catch (error) {
+      toast.error("Kunde inte uppdatera fastighet");
     }
   };
 
@@ -173,6 +223,13 @@ const AgentDashboard = () => {
                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             size="icon"
+                            variant="secondary"
+                            onClick={() => handleEditProperty(property)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="icon"
                             variant="destructive"
                             onClick={() => handleDeleteProperty(property.id)}
                           >
@@ -234,6 +291,161 @@ const AgentDashboard = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* Edit Property Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Redigera fastighet</DialogTitle>
+          </DialogHeader>
+          {editingProperty && (
+            <form onSubmit={handleUpdateProperty} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <Label htmlFor="edit-title">Titel</Label>
+                  <Input
+                    id="edit-title"
+                    name="title"
+                    defaultValue={editingProperty.title}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-address">Adress</Label>
+                  <Input
+                    id="edit-address"
+                    name="address"
+                    defaultValue={editingProperty.address}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-location">Ort</Label>
+                  <Input
+                    id="edit-location"
+                    name="location"
+                    defaultValue={editingProperty.location}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-type">Typ</Label>
+                  <Select name="type" defaultValue={editingProperty.type}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Lägenhet">Lägenhet</SelectItem>
+                      <SelectItem value="Villa">Villa</SelectItem>
+                      <SelectItem value="Radhus">Radhus</SelectItem>
+                      <SelectItem value="Parhus">Parhus</SelectItem>
+                      <SelectItem value="Fritidshus">Fritidshus</SelectItem>
+                      <SelectItem value="Tomt">Tomt</SelectItem>
+                      <SelectItem value="Bostadsrätt">Bostadsrätt</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-price">Pris (kr)</Label>
+                  <Input
+                    id="edit-price"
+                    name="price"
+                    type="number"
+                    defaultValue={editingProperty.price}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-bedrooms">Sovrum</Label>
+                  <Input
+                    id="edit-bedrooms"
+                    name="bedrooms"
+                    type="number"
+                    defaultValue={editingProperty.bedrooms}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-bathrooms">Badrum</Label>
+                  <Input
+                    id="edit-bathrooms"
+                    name="bathrooms"
+                    type="number"
+                    defaultValue={editingProperty.bathrooms}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
+                  <Input
+                    id="edit-area"
+                    name="area"
+                    type="number"
+                    defaultValue={editingProperty.area}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-fee">Månadsavgift (kr)</Label>
+                  <Input
+                    id="edit-fee"
+                    name="fee"
+                    type="number"
+                    defaultValue={editingProperty.fee}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-viewing-date">Visningsdatum</Label>
+                  <Input
+                    id="edit-viewing-date"
+                    name="viewing_date"
+                    type="datetime-local"
+                    defaultValue={
+                      editingProperty.viewing_date
+                        ? new Date(editingProperty.viewing_date)
+                            .toISOString()
+                            .slice(0, 16)
+                        : ""
+                    }
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <Label htmlFor="edit-description">Beskrivning</Label>
+                  <Textarea
+                    id="edit-description"
+                    name="description"
+                    defaultValue={editingProperty.description}
+                    rows={6}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Avbryt
+                </Button>
+                <Button type="submit">Spara ändringar</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
