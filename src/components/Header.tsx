@@ -171,6 +171,52 @@ const Header = () => {
             }}
           >
             <nav className="flex flex-col gap-4">
+              {/* Agent Menu Items for Mobile */}
+              {user && userType === "maklare" && (
+                <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
+                  <Link 
+                    to="/maklare?tab=add" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Plus className="w-6 h-6" />
+                    <span className="font-medium text-lg">Lägg till ny bostad</span>
+                  </Link>
+                  <Link 
+                    to="/maklare?tab=existing" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Home className="w-6 h-6" />
+                    <span className="font-medium text-lg">Befintliga bostäder</span>
+                  </Link>
+                  <Link 
+                    to="/maklare?tab=removed" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Archive className="w-6 h-6" />
+                    <span className="font-medium text-lg">Borttagna bostäder</span>
+                  </Link>
+                  <Link 
+                    to="/maklare?tab=statistics" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <BarChart3 className="w-6 h-6" />
+                    <span className="font-medium text-lg">Din statistik</span>
+                  </Link>
+                  <Link 
+                    to="/maklare?tab=profile" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <UserCircle className="w-6 h-6" />
+                    <span className="font-medium text-lg">Min profil</span>
+                  </Link>
+                </div>
+              )}
+              
               <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
                 Köp
               </a>
