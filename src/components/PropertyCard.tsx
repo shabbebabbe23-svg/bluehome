@@ -162,43 +162,43 @@ const PropertyCard = ({
       <CardContent className="p-1.5 sm:p-2 md:p-3 flex-1 flex flex-col justify-between">
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-0.5 sm:mb-1">
-          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl lg:text-[1.75rem] xl:text-[2rem] text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+          <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
-          <span className="text-xl sm:text-2xl md:text-3xl lg:text-[2.125rem] xl:text-[2.5rem] font-bold text-primary whitespace-nowrap">
+          <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
             {price}
           </span>
         </div>
 
         <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base lg:text-[1.313rem] truncate">{location}</span>
+          <span className="text-xs sm:text-sm md:text-base truncate">{location}</span>
         </div>
 
         <div className="mb-0.5 sm:mb-1">
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5 sm:gap-1">
-                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{bedrooms}</span>
-                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground">rum</span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bedrooms}</span>
+                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">rum</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <Bath className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5 sm:gap-1">
-                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{bathrooms}</span>
-                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground hidden sm:inline">badrum</span>
-                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground sm:hidden">bad</span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bathrooms}</span>
+                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground hidden sm:inline">badrum</span>
+                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground sm:hidden">bad</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <Square className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5 sm:gap-1">
-                <span className="text-sm sm:text-base md:text-lg lg:text-[1.5rem] xl:text-[1.688rem] font-semibold text-foreground">{area}</span>
-                <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground">m²</span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{area}</span>
+                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">m²</span>
               </div>
             </div>
           </div>
@@ -207,7 +207,7 @@ const PropertyCard = ({
           {!isSold && (
             <div className="flex items-center justify-end text-foreground mt-1">
               <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
-              <span className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+              <span className="text-xs sm:text-sm md:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
             </div>
           )}
         </div>
@@ -223,11 +223,11 @@ const PropertyCard = ({
 
         <div className="mt-0.5 sm:mt-1">
           <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base lg:text-[1.313rem] py-1.5 sm:py-2">
+            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2">
               Visa detaljer
             </Button>
           </Link>
-          <p className="text-xs sm:text-sm md:text-base lg:text-[1.125rem] text-muted-foreground text-center mt-0.5">
+          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-center mt-0.5">
             {isSold && soldDate 
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : daysOnMarket === 0 
