@@ -33,7 +33,7 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="lg" className="hidden md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
-                    <Menu className="w-10 h-10" />
+                    <Menu className="w-12 h-12" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
@@ -156,7 +156,7 @@ const Header = () => {
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+            {isMenuOpen ? <X className="w-10 h-10" strokeWidth={2.5} /> : <Menu className="w-10 h-10" strokeWidth={2.5} />}
           </Button>
         </div>
 
