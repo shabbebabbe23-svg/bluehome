@@ -379,6 +379,15 @@ const PropertyDetail = () => {
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Tillbaka</span>
           </Button>
+          
+          {/* Bluehome Logo - Center */}
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
+            <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+            <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+              Bluehome
+            </span>
+          </Link>
+          
           <div className="flex gap-1 sm:gap-2">
             <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Share2 className="w-4 h-4" />
