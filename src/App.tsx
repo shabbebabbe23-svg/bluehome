@@ -12,6 +12,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
+import TopLoadingBar from "@/components/TopLoadingBar";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <TopLoadingBar />
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
