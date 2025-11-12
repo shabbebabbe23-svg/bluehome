@@ -128,35 +128,35 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       {/* Content */}
       <div className="relative z-10 w-full max-w-none px-3 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-5 leading-tight">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
             </span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-12 text-white/90 max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 md:mb-8 text-white/90 max-w-2xl mx-auto px-4">
             Upptäck tusentals fastigheter över hela Sverige med Bluehome
           </p>
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-4 sm:p-6 md:p-8 lg:p-10 animate-slide-up max-w-5xl mx-auto">
-          <div className="space-y-4 md:space-y-6">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 animate-slide-up max-w-5xl mx-auto">
+          <div className="space-y-3 md:space-y-5">
             {/* Search Mode Toggle */}
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearchMode('property');
                   onSearchModeChange?.('property');
                 }}
-                className={`flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 ${
+                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${
                   searchMode === 'property' 
                     ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
                     : 'hover:border-primary'
                 }`}
               >
-                <Home className="w-5 h-5 mr-2" />
+                <Home className="w-4 h-4 mr-1 sm:mr-2" />
                 Sök bostad
               </Button>
               <Button
@@ -165,24 +165,24 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   setSearchMode('agent');
                   onSearchModeChange?.('agent');
                 }}
-                className={`flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 ${
+                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${
                   searchMode === 'agent' 
                     ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
                     : 'hover:border-primary'
                 }`}
               >
-                <User className="w-5 h-5 mr-2" />
+                <User className="w-4 h-4 mr-1 sm:mr-2" />
                 Sök mäklare
               </Button>
             </div>
 
             {/* Område Section */}
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-5">
+              <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">
                 {searchMode === 'property' ? 'Område' : 'Sök mäklare'}
               </h2>
               <div className="relative" ref={searchRef}>
-                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
+                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5 z-10" />
                 <Input
                   placeholder={searchMode === 'property' ? 'Skriv område eller adress' : 'Sök på namn, byrå eller område'}
                   value={searchLocation}
@@ -192,7 +192,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       setShowSuggestions(true);
                     }
                   }}
-                  className="pl-11 sm:pl-14 h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
+                  className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
                 />
                 
                 {/* Autocomplete Suggestions */}
@@ -242,8 +242,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             {searchMode === 'property' && (
               <>
                 {/* Slutpriser Toggle */}
-                <div className="flex items-center justify-end gap-3 px-2 py-2">
-                  <Label htmlFor="final-prices" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
+                <div className="flex items-center justify-end gap-2 px-1 py-1">
+                  <Label htmlFor="final-prices" className="text-sm sm:text-base font-semibold text-foreground cursor-pointer">
                     Slutpriser
                   </Label>
                   <Switch
@@ -259,17 +259,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                 {/* Property Type Buttons */}
                 <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4">Bostadstyp</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <Button
                   variant="outline"
                   onClick={() => {
                     setPropertyType("");
                     onPropertyTypeChange?.("");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                   <span className="truncate">Alla typer</span>
                 </Button>
                 <Button
@@ -278,9 +278,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     setPropertyType("house");
                     onPropertyTypeChange?.("house");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                   Villor
                 </Button>
                 <Button
@@ -289,11 +289,11 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     setPropertyType("villa");
                     onPropertyTypeChange?.("villa");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <div className="flex mr-2">
-                    <Home className="w-5 h-5 sm:w-6 sm:h-6 -mr-1" />
-                    <Home className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <div className="flex mr-1 sm:mr-2">
+                    <Home className="w-4 h-4 sm:w-5 sm:h-5 -mr-1" />
+                    <Home className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   Par/Radhus
                 </Button>
@@ -303,9 +303,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     setPropertyType("apartment");
                     onPropertyTypeChange?.("apartment");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Building className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  <Building className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                   Lägenheter
                 </Button>
                 <Button
@@ -314,9 +314,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     setPropertyType("cottage");
                     onPropertyTypeChange?.("cottage");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <TreePine className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                   Fritidshus
                 </Button>
                 <Button
@@ -325,9 +325,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     setPropertyType("plot");
                     onPropertyTypeChange?.("plot");
                   }}
-                  className={`h-14 sm:h-16 text-base sm:text-lg font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                 >
-                  <Square className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                   Tomt
                 </Button>
               </div>
@@ -337,9 +337,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold border-2 hover:border-primary"
+              className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
             >
-              <Filter className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+              <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
               {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
             </Button>
 
