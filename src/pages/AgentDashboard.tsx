@@ -120,12 +120,12 @@ const AgentDashboard = () => {
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Home className="w-6 h-6 text-white" />
-            <h1 className="text-2xl font-bold text-white">Mäklarpanel</h1>
+            <Home className="w-6 h-6 text-foreground" />
+            <h1 className="text-2xl font-bold text-foreground">Mäklarpanel</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-white/90 text-xl">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-primary hover:bg-white/90 border-white font-semibold">
+            <span className="text-foreground/90 text-xl">{user?.email}</span>
+            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
               Till startsidan
             </Button>
             <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-white text-red-600 hover:bg-white/90 border-white font-semibold">
@@ -144,7 +144,7 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5 p-1" style={{ background: 'var(--main-gradient)' }}>
+              <TabsList className="grid w-full grid-cols-5 p-1 bg-hero-gradient">
                 <TabsTrigger value="add" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
                   <Plus className="w-4 h-4" />
                   Lägg till ny bostad
