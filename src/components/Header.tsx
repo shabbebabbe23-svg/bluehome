@@ -15,6 +15,7 @@ const Header = () => {
   const { user, userType, signOut } = useAuth();
   const location = useLocation();
   const isCommercialPage = location.pathname === "/foretag";
+  const isAgentPage = location.pathname === "/maklare";
 
   return (
     <header 
@@ -22,6 +23,8 @@ const Header = () => {
       style={{
         background: isCommercialPage 
           ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
+          : isAgentPage
+          ? 'linear-gradient(to right, #2563eb, #16a34a)'
           : 'var(--main-gradient)'
       }}
     >
@@ -85,16 +88,16 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4 lg:gap-8">
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Köp
             </a>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Hyra
             </a>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Sälj
             </a>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </a>
           </nav>
@@ -167,6 +170,8 @@ const Header = () => {
             style={{
               background: isCommercialPage 
                 ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
+                : isAgentPage
+                ? 'linear-gradient(to right, #2563eb, #16a34a)'
                 : 'var(--main-gradient)'
             }}
           >
@@ -217,16 +222,16 @@ const Header = () => {
                 </div>
               )}
               
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Köp
               </a>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Hyra
               </a>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Sälj
               </a>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage ? 'text-white' : 'text-black'}`}>
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Om oss
               </a>
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">

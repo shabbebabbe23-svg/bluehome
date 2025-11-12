@@ -132,18 +132,28 @@ const AgentDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="border-b bg-gradient-to-r from-blue-600 to-green-600">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Home className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Mäklarpanel</h1>
+            <Home className="w-6 h-6 text-white" />
+            <h1 className="text-2xl font-bold text-white">Mäklarpanel</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")}>
+            <span className="text-sm text-white/90">{user?.email}</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate("/")}
+              className="bg-white text-primary hover:bg-white/90 border-white font-semibold"
+            >
               Till startsidan
             </Button>
-            <Button variant="destructive" size="sm" onClick={handleSignOut}>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={handleSignOut}
+              className="bg-white text-red-600 hover:bg-white/90 border-white font-semibold"
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Logga ut
             </Button>
@@ -159,24 +169,39 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="add" className="gap-2">
+              <TabsList className="grid w-full grid-cols-5 bg-gradient-to-r from-blue-600 to-green-600 p-1">
+                <TabsTrigger 
+                  value="add" 
+                  className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20"
+                >
                   <Plus className="w-4 h-4" />
                   Lägg till ny bostad
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="gap-2">
+                <TabsTrigger 
+                  value="existing" 
+                  className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20"
+                >
                   <Home className="w-4 h-4" />
                   Befintliga bostäder
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="gap-2">
+                <TabsTrigger 
+                  value="removed" 
+                  className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20"
+                >
                   <Archive className="w-4 h-4" />
                   Borttagna bostäder
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="gap-2">
+                <TabsTrigger 
+                  value="statistics" 
+                  className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20"
+                >
                   <BarChart3 className="w-4 h-4" />
                   Din statistik
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="gap-2">
+                <TabsTrigger 
+                  value="profile" 
+                  className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20"
+                >
                   <UserCircle className="w-4 h-4" />
                   Min profil
                 </TabsTrigger>
