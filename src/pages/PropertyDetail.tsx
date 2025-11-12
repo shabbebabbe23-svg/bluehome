@@ -405,7 +405,7 @@ const PropertyDetail = () => {
       <div className="w-full max-w-none px-3 sm:px-4 py-4 md:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
           {/* Left Ad */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:flex lg:justify-center lg:items-start">
             <AdBanner className="order-1" />
           </div>
 
