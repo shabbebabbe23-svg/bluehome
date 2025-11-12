@@ -68,10 +68,20 @@ const PropertyCard = ({
     ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
+  // Save scroll position before navigating to detail page
+  const handleNavigateToDetail = () => {
+    sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+  };
+
   return (
   <Card className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col">
       {/* Full-card clickable overlay (keeps favorite button above) */}
-      <Link to={`/fastighet/${id}`} className="absolute inset-0 z-10" aria-label={`Visa ${title}`} />
+      <Link 
+        to={`/fastighet/${id}`} 
+        className="absolute inset-0 z-10" 
+        aria-label={`Visa ${title}`}
+        onClick={handleNavigateToDetail}
+      />
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
         <div className="w-full h-48 sm:h-52 md:h-56 lg:h-52 xl:h-56 relative">
@@ -212,7 +222,7 @@ const PropertyCard = ({
         )}
 
         <div className="mt-0.5 sm:mt-1">
-          <Link to={`/fastighet/${id}`}>
+          <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
             <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base lg:text-[1.313rem] py-1.5 sm:py-2">
               Visa detaljer
             </Button>

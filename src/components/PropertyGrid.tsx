@@ -674,11 +674,33 @@ export const soldProperties: Property[] = [
 
 const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "" }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(() => {
+    // Restore showAll state from sessionStorage
+    const saved = sessionStorage.getItem('propertyGridShowAll');
+    return saved === 'true';
+  });
   const [sortBy, setSortBy] = useState<string>("default");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [dbProperties, setDbProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Save showAll state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('propertyGridShowAll', showAll.toString());
+  }, [showAll]);
+
+  // Restore scroll position after properties load
+  useEffect(() => {
+    if (!loading) {
+      const savedScroll = sessionStorage.getItem('scrollPosition');
+      if (savedScroll) {
+        setTimeout(() => {
+          window.scrollTo({ top: parseInt(savedScroll), left: 0, behavior: "auto" });
+          sessionStorage.removeItem('scrollPosition');
+        }, 100);
+      }
+    }
+  }, [loading]);
 
   // Fetch properties from database
   useEffect(() => {
