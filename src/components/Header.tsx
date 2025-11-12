@@ -21,11 +21,7 @@ const Header = () => {
     <header 
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" 
       style={{
-        background: isCommercialPage 
-          ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
-          : isAgentPage
-          ? 'linear-gradient(to right, #2563eb, #16a34a)'
-          : 'var(--main-gradient)'
+        background: 'var(--main-gradient)'
       }}
     >
       <div className="max-w-7xl mx-auto px-4">
@@ -168,11 +164,7 @@ const Header = () => {
           <div 
             className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" 
             style={{
-              background: isCommercialPage 
-                ? 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #134e4a 80%, #065f46 100%)' 
-                : isAgentPage
-                ? 'linear-gradient(to right, #2563eb, #16a34a)'
-                : 'var(--main-gradient)'
+              background: 'var(--main-gradient)'
             }}
           >
             <nav className="flex flex-col gap-4">
