@@ -30,9 +30,10 @@ import storgatan5 from "@/assets/storgatan-5.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import PropertyMap from "@/components/PropertyMap";
-
 const PropertyDetail = () => {
-  const { id } = useParams();
+  const {
+    id
+  } = useParams();
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -42,29 +43,22 @@ const PropertyDetail = () => {
 
   // Track property view
   usePropertyViewTracking(id || "");
-
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
-      
       try {
         // Try to fetch from database first
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('id', id)
-          .maybeSingle();
-
+        const {
+          data,
+          error
+        } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
         if (data) {
           setDbProperty(data);
-          
+
           // Fetch agent profile
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data.user_id)
-            .maybeSingle();
-          
+          const {
+            data: profile
+          } = await supabase.from('profiles').select('*').eq('id', data.user_id).maybeSingle();
           if (profile) {
             setAgentProfile(profile);
           }
@@ -75,7 +69,6 @@ const PropertyDetail = () => {
         setLoading(false);
       }
     };
-
     fetchProperty();
   }, [id]);
 
@@ -88,294 +81,260 @@ const PropertyDetail = () => {
       '/src/assets/storgatan-3.jpg': storgatan3,
       '/src/assets/storgatan-4.jpg': storgatan4,
       '/src/assets/storgatan-5.jpg': storgatan5,
-      '/src/assets/storgatan-floorplan.jpg': storgatanFloorplan,
+      '/src/assets/storgatan-floorplan.jpg': storgatanFloorplan
     };
     return imageMap[url] || url;
   };
-
-  const properties = [
-    {
-      id: 1,
-      title: "Modern lägenhet i city",
-      price: "3.2M SEK",
-      location: "Södermalm, Stockholm",
-      address: "Götgatan 45",
-        vendor: "Fastighetsbyrån",
-      bedrooms: 2,
-      bathrooms: 1,
-      area: 75,
-      images: [property1, property2, property3, property4],
-      type: "Lägenhet",
-      isNew: true,
-      buildYear: 2018,
-      floor: 3,
-      rooms: 2,
-      description: "Välkommen till denna ljusa och moderna lägenhet i hjärtat av Södermalm. Lägenheten erbjuder ett öppet planlösning med stora fönster som ger gott om naturligt ljus. Köket är utrustat med moderna apparater och här finns gott om förvaring.",
-      features: ["Balkong", "Hiss", "Tvättstuga", "Förråd", "Fiber"],
-    },
-    {
-      id: 2,
-      title: "Charmig svensk villa",
-      price: "4.8M SEK",
-      location: "Djursholm, Stockholm",
-      address: "Vendevägen 12",
-        vendor: "Mäklarhuset",
-      bedrooms: 4,
-      bathrooms: 2,
-      area: 150,
-      images: [property2, property3, property4, property5],
-      type: "Villa",
-      isNew: false,
-      buildYear: 1985,
-      floor: 0,
-      rooms: 4,
-      description: "En pärla i Djursholm! Denna charmiga villa erbjuder allt en familj kan önska sig. Huset har genomgått en omfattande renovering men behållit sin ursprungliga charm. Stor trädgård med söderläge och plats för lek och odling.",
-      features: ["Trädgård", "Garage", "Öppen spis", "Uteplats", "Nyrenoverat kök"],
-    },
-    {
-      id: 3,
-      title: "Modernt radhus",
-      price: "2.9M SEK",
-      location: "Vasastan, Stockholm",
-      address: "Odengatan 78",
-        vendor: "ERA Mäkleri",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 110,
-      images: [property3, property4, property5, property6],
-      type: "Radhus",
-      isNew: true,
-      buildYear: 2020,
-      floor: 0,
-      rooms: 3,
-      description: "Nybyggt radhus i populära Vasastan. Moderna materialval och smart planlösning över två plan. Egen ingång och liten uteplats. Perfekt för små familjer eller par som vill bo centralt med eget hus.",
-      features: ["Uteplats", "Parkering", "Vind", "Genomtänkt planlösning", "Energisnålt"],
-    },
-    {
-      id: 4,
-      title: "Lyxig takvåning",
-      price: "8.5M SEK",
-      location: "Östermalm, Stockholm",
-      address: "Strandvägen 23",
-        vendor: "Länsförsäkringar Fastighetsförmedling",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 120,
-      images: [property4, property5, property6, property7],
-      type: "Lägenhet",
-      isNew: false,
-      buildYear: 1910,
-      floor: 5,
-      rooms: 3,
-      description: "Exklusiv takvåning med magisk utsikt över Stockholm. Lägenheten har en unik karaktär med original detaljer i kombination med moderna bekvämligheter. Stor takterrass med 360 graders utsikt.",
-      features: ["Takterrass", "Hiss", "Kakelugn", "Havsutsikt", "Renoverat badrum"],
-    },
-    {
-      id: 5,
-      title: "Familjehus",
-      price: "5.2M SEK",
-      location: "Lidingö, Stockholm",
-      address: "Kyrkviken 8",
-        vendor: "Mäklarbyrån Lidingö",
-      bedrooms: 5,
-      bathrooms: 3,
-      area: 180,
-      images: [property5, property6, property7, property8],
-      type: "Villa",
-      isNew: false,
-      buildYear: 1992,
-      floor: 0,
-      rooms: 5,
-      description: "Rymlig villa med närhet till havet och naturen. Perfekt för stora familjer med generösa ytor både inne och ute. Stort trädeck och vacker trädgård med mogna träd. Garage med plats för två bilar.",
-      features: ["Dubbelgarage", "Pool", "Bastu", "Sjönära", "Stor tomt"],
-    },
-    {
-      id: 6,
-      title: "Studioappartement",
-      price: "1.8M SEK",
-      location: "Norrmalm, Stockholm",
-      address: "Drottninggatan 56",
-        vendor: "Svensk Fastighetsförmedling",
-      bedrooms: 1,
-      bathrooms: 1,
-      area: 45,
-      images: [property6, property7, property8, property9],
-      type: "Lägenhet",
-      isNew: true,
-      buildYear: 2021,
-      floor: 2,
-      rooms: 1,
-      description: "Smart inredd studioapartment mitt i city. Perfekt för singel eller student. Öppen planlösning med kök och sovdel i samma rum. Fräscht badrum med dusch. Nära till kommunikationer och service.",
-      features: ["Hiss", "Tvättstuga", "Fiber", "Nybyggt", "Centralt"],
-    },
-    {
-      id: 7,
-      title: "Elegant stadslägeneht",
-      price: "4.1M SEK",
-      location: "Gamla Stan, Stockholm",
-      address: "Prästgatan 21",
-        vendor: "Stockholm City Mäkleri",
-      bedrooms: 2,
-      bathrooms: 1,
-      area: 85,
-      images: [property7, property8, property9, property10],
-      type: "Lägenhet",
-      isNew: false,
-      buildYear: 1650,
-      floor: 2,
-      rooms: 2,
-      description: "Historisk charm i Gamla Stan. Denna lägenhet erbjuder en unik kombination av medeltida arkitektur och moderna bekvämligheter. Bjälktak, öppen spis och original detaljer. En riktig pärla för den som söker något utöver det vanliga.",
-      features: ["Kakelugn", "Bjälktak", "Centralt", "Historiskt", "Unik"],
-    },
-    {
-      id: 8,
-      title: "Klassiskt radhus",
-      price: "6.3M SEK",
-      location: "Bromma, Stockholm",
-      address: "Åkeshovsvägen 34",
-        vendor: "Bromma Mäklaren",
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 140,
-      images: [property8, property9, property10, property1],
-      type: "Radhus",
-      isNew: true,
-      buildYear: 2022,
-      floor: 0,
-      rooms: 4,
-      description: "Nybyggt radhus i attraktiva Bromma. Modern arkitektur med högt i tak och stora fönsterpartier. Öppen planlösning med kök i direkt anslutning till vardagsrum. Tre sovrum på övervåningen samt master bedroom med egen badrum.",
-      features: ["Uteplats", "Parkering", "Nybyggt", "Walk-in closet", "Tre badrum"],
-    },
-    {
-      id: 9,
-      title: "Exklusiv skogsvilla",
-      price: "9.2M SEK",
-      location: "Nacka, Stockholm",
-      address: "Skogsbacken 7",
-        vendor: "Skärgårdsmäklaren",
-      bedrooms: 5,
-      bathrooms: 4,
-      area: 220,
-      images: [property9, property10, property1, property2],
-      type: "Villa",
-      isNew: false,
-      buildYear: 2010,
-      floor: 0,
-      rooms: 5,
-      description: "Arkitektritad villa i naturskön miljö. Detta unika hus kombinerar modern design med naturens lugn. Stora glaspartier ger fantastisk utsikt över skogen. Pool, bastu och gym i källarplan. Perfekt för den kvalitetsmedvetne köparen.",
-      features: ["Pool", "Bastu", "Gym", "Dubbelgarage", "Skogsnära", "Arkitektritad"],
-    },
-    {
-      id: 10,
-      title: "Sjönära lägenhet",
-      price: "7.8M SEK",
-      location: "Strandvägen, Stockholm",
-      address: "Strandvägen 89",
-        vendor: "Strandvägens Mäklare",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 130,
-      images: [property10, property1, property2, property3],
-      type: "Lägenhet",
-      isNew: true,
-      buildYear: 2019,
-      floor: 4,
-      rooms: 3,
-      description: "Exklusiv lägenhet vid Strandvägen med direktutsikt över vattnet. Högklassig standard med genomtänkta detaljer. Tre sovrum, varav ett är master bedroom med eget badrum. Stor balkong med kvällssol och magisk utsikt.",
-      features: ["Balkong", "Sjöutsikt", "Hiss", "Parkering", "Nybyggt", "Lyxigt"],
-    },
-  ];
+  const properties = [{
+    id: 1,
+    title: "Modern lägenhet i city",
+    price: "3.2M SEK",
+    location: "Södermalm, Stockholm",
+    address: "Götgatan 45",
+    vendor: "Fastighetsbyrån",
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 75,
+    images: [property1, property2, property3, property4],
+    type: "Lägenhet",
+    isNew: true,
+    buildYear: 2018,
+    floor: 3,
+    rooms: 2,
+    description: "Välkommen till denna ljusa och moderna lägenhet i hjärtat av Södermalm. Lägenheten erbjuder ett öppet planlösning med stora fönster som ger gott om naturligt ljus. Köket är utrustat med moderna apparater och här finns gott om förvaring.",
+    features: ["Balkong", "Hiss", "Tvättstuga", "Förråd", "Fiber"]
+  }, {
+    id: 2,
+    title: "Charmig svensk villa",
+    price: "4.8M SEK",
+    location: "Djursholm, Stockholm",
+    address: "Vendevägen 12",
+    vendor: "Mäklarhuset",
+    bedrooms: 4,
+    bathrooms: 2,
+    area: 150,
+    images: [property2, property3, property4, property5],
+    type: "Villa",
+    isNew: false,
+    buildYear: 1985,
+    floor: 0,
+    rooms: 4,
+    description: "En pärla i Djursholm! Denna charmiga villa erbjuder allt en familj kan önska sig. Huset har genomgått en omfattande renovering men behållit sin ursprungliga charm. Stor trädgård med söderläge och plats för lek och odling.",
+    features: ["Trädgård", "Garage", "Öppen spis", "Uteplats", "Nyrenoverat kök"]
+  }, {
+    id: 3,
+    title: "Modernt radhus",
+    price: "2.9M SEK",
+    location: "Vasastan, Stockholm",
+    address: "Odengatan 78",
+    vendor: "ERA Mäkleri",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 110,
+    images: [property3, property4, property5, property6],
+    type: "Radhus",
+    isNew: true,
+    buildYear: 2020,
+    floor: 0,
+    rooms: 3,
+    description: "Nybyggt radhus i populära Vasastan. Moderna materialval och smart planlösning över två plan. Egen ingång och liten uteplats. Perfekt för små familjer eller par som vill bo centralt med eget hus.",
+    features: ["Uteplats", "Parkering", "Vind", "Genomtänkt planlösning", "Energisnålt"]
+  }, {
+    id: 4,
+    title: "Lyxig takvåning",
+    price: "8.5M SEK",
+    location: "Östermalm, Stockholm",
+    address: "Strandvägen 23",
+    vendor: "Länsförsäkringar Fastighetsförmedling",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 120,
+    images: [property4, property5, property6, property7],
+    type: "Lägenhet",
+    isNew: false,
+    buildYear: 1910,
+    floor: 5,
+    rooms: 3,
+    description: "Exklusiv takvåning med magisk utsikt över Stockholm. Lägenheten har en unik karaktär med original detaljer i kombination med moderna bekvämligheter. Stor takterrass med 360 graders utsikt.",
+    features: ["Takterrass", "Hiss", "Kakelugn", "Havsutsikt", "Renoverat badrum"]
+  }, {
+    id: 5,
+    title: "Familjehus",
+    price: "5.2M SEK",
+    location: "Lidingö, Stockholm",
+    address: "Kyrkviken 8",
+    vendor: "Mäklarbyrån Lidingö",
+    bedrooms: 5,
+    bathrooms: 3,
+    area: 180,
+    images: [property5, property6, property7, property8],
+    type: "Villa",
+    isNew: false,
+    buildYear: 1992,
+    floor: 0,
+    rooms: 5,
+    description: "Rymlig villa med närhet till havet och naturen. Perfekt för stora familjer med generösa ytor både inne och ute. Stort trädeck och vacker trädgård med mogna träd. Garage med plats för två bilar.",
+    features: ["Dubbelgarage", "Pool", "Bastu", "Sjönära", "Stor tomt"]
+  }, {
+    id: 6,
+    title: "Studioappartement",
+    price: "1.8M SEK",
+    location: "Norrmalm, Stockholm",
+    address: "Drottninggatan 56",
+    vendor: "Svensk Fastighetsförmedling",
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 45,
+    images: [property6, property7, property8, property9],
+    type: "Lägenhet",
+    isNew: true,
+    buildYear: 2021,
+    floor: 2,
+    rooms: 1,
+    description: "Smart inredd studioapartment mitt i city. Perfekt för singel eller student. Öppen planlösning med kök och sovdel i samma rum. Fräscht badrum med dusch. Nära till kommunikationer och service.",
+    features: ["Hiss", "Tvättstuga", "Fiber", "Nybyggt", "Centralt"]
+  }, {
+    id: 7,
+    title: "Elegant stadslägeneht",
+    price: "4.1M SEK",
+    location: "Gamla Stan, Stockholm",
+    address: "Prästgatan 21",
+    vendor: "Stockholm City Mäkleri",
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 85,
+    images: [property7, property8, property9, property10],
+    type: "Lägenhet",
+    isNew: false,
+    buildYear: 1650,
+    floor: 2,
+    rooms: 2,
+    description: "Historisk charm i Gamla Stan. Denna lägenhet erbjuder en unik kombination av medeltida arkitektur och moderna bekvämligheter. Bjälktak, öppen spis och original detaljer. En riktig pärla för den som söker något utöver det vanliga.",
+    features: ["Kakelugn", "Bjälktak", "Centralt", "Historiskt", "Unik"]
+  }, {
+    id: 8,
+    title: "Klassiskt radhus",
+    price: "6.3M SEK",
+    location: "Bromma, Stockholm",
+    address: "Åkeshovsvägen 34",
+    vendor: "Bromma Mäklaren",
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 140,
+    images: [property8, property9, property10, property1],
+    type: "Radhus",
+    isNew: true,
+    buildYear: 2022,
+    floor: 0,
+    rooms: 4,
+    description: "Nybyggt radhus i attraktiva Bromma. Modern arkitektur med högt i tak och stora fönsterpartier. Öppen planlösning med kök i direkt anslutning till vardagsrum. Tre sovrum på övervåningen samt master bedroom med egen badrum.",
+    features: ["Uteplats", "Parkering", "Nybyggt", "Walk-in closet", "Tre badrum"]
+  }, {
+    id: 9,
+    title: "Exklusiv skogsvilla",
+    price: "9.2M SEK",
+    location: "Nacka, Stockholm",
+    address: "Skogsbacken 7",
+    vendor: "Skärgårdsmäklaren",
+    bedrooms: 5,
+    bathrooms: 4,
+    area: 220,
+    images: [property9, property10, property1, property2],
+    type: "Villa",
+    isNew: false,
+    buildYear: 2010,
+    floor: 0,
+    rooms: 5,
+    description: "Arkitektritad villa i naturskön miljö. Detta unika hus kombinerar modern design med naturens lugn. Stora glaspartier ger fantastisk utsikt över skogen. Pool, bastu och gym i källarplan. Perfekt för den kvalitetsmedvetne köparen.",
+    features: ["Pool", "Bastu", "Gym", "Dubbelgarage", "Skogsnära", "Arkitektritad"]
+  }, {
+    id: 10,
+    title: "Sjönära lägenhet",
+    price: "7.8M SEK",
+    location: "Strandvägen, Stockholm",
+    address: "Strandvägen 89",
+    vendor: "Strandvägens Mäklare",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 130,
+    images: [property10, property1, property2, property3],
+    type: "Lägenhet",
+    isNew: true,
+    buildYear: 2019,
+    floor: 4,
+    rooms: 3,
+    description: "Exklusiv lägenhet vid Strandvägen med direktutsikt över vattnet. Högklassig standard med genomtänkta detaljer. Tre sovrum, varav ett är master bedroom med eget badrum. Stor balkong med kvällssol och magisk utsikt.",
+    features: ["Balkong", "Sjöutsikt", "Hiss", "Parkering", "Nybyggt", "Lyxigt"]
+  }];
 
   // Use database property if available, otherwise fallback to hardcoded
   let property = dbProperty;
-  
   if (!property) {
-    property = properties.find((p) => p.id === Number(id));
+    property = properties.find(p => p.id === Number(id));
   }
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg">Laddar fastighet...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!property) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Fastighet hittades inte</h1>
           <Link to="/">
             <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
           </Link>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Handle images for both database and hardcoded properties
-  const images = dbProperty 
-    ? [
-        getImageUrl(dbProperty.image_url),
-        getImageUrl(dbProperty.hover_image_url),
-        ...(dbProperty.additional_images || []).map(getImageUrl)
-      ].filter(Boolean)
-    : property.images || [property1];
-
+  const images = dbProperty ? [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) : property.images || [property1];
   const handlePreviousImage = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
   };
-
   const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
   };
-
   const handleDownloadViewing = (date: string, time: string) => {
     // Parse datum och tid för att skapa en riktig Date
     const [day, month] = date.split(' ').slice(1, 3);
     const [startTime] = time.split(' - ');
-    
+
     // Skapa datum (använder 2025 som år för nu)
-    const monthMap: { [key: string]: number } = {
-      'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'maj': 4, 'jun': 5,
-      'jul': 6, 'aug': 7, 'sep': 8, 'okt': 9, 'nov': 10, 'dec': 11
+    const monthMap: {
+      [key: string]: number;
+    } = {
+      'jan': 0,
+      'feb': 1,
+      'mar': 2,
+      'apr': 3,
+      'maj': 4,
+      'jun': 5,
+      'jul': 6,
+      'aug': 7,
+      'sep': 8,
+      'okt': 9,
+      'nov': 10,
+      'dec': 11
     };
-    
     const monthNum = monthMap[month.toLowerCase()];
     const [hours, minutes] = startTime.split(':').map(Number);
-    
     const startDate = new Date(2025, monthNum, parseInt(day), hours, minutes);
     const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 timme
-    
-    downloadICS(
-      `Visning: ${property.title}`,
-      `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`,
-      `${property.address}, ${property.location}`,
-      startDate,
-      endDate,
-      `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`
-    );
-    
+
+    downloadICS(`Visning: ${property.title}`, `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`, `${property.address}, ${property.location}`, startDate, endDate, `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`);
     toast.success('Kalenderaktivitet sparad!');
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Header */}
-      <header 
-        className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" 
-        style={{ background: 'var(--main-gradient)' }}
-      >
+      <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
+      background: 'var(--main-gradient)'
+    }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate(-1)}
-            className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform text-xs sm:text-sm"
-          >
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform text-xs sm:text-sm">
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Tillbaka</span>
           </Button>
@@ -395,17 +354,8 @@ const PropertyDetail = () => {
             <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Printer className="w-4 h-4" />
             </Button>
-            <Button
-              variant={isFavorite ? "default" : "outline"}
-              size="icon"
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform"
-            >
-              <Heart
-                className={`w-4 h-4 ${
-                  isFavorite ? "fill-current" : ""
-                }`}
-              />
+            <Button variant={isFavorite ? "default" : "outline"} size="icon" onClick={() => setIsFavorite(!isFavorite)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
+              <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} />
             </Button>
           </div>
         </div>
@@ -423,27 +373,13 @@ const PropertyDetail = () => {
             {/* Image Gallery */}
             <Card className="overflow-hidden">
               <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
-                <img
-                  src={images[currentImageIndex]}
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover" />
                 
                 {/* Navigation Buttons */}
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10"
-                  onClick={handlePreviousImage}
-                >
+                <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10" onClick={handlePreviousImage}>
                   <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10"
-                  onClick={handleNextImage}
-                >
+                <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10" onClick={handleNextImage}>
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
                 
@@ -456,23 +392,9 @@ const PropertyDetail = () => {
               {/* Thumbnail Gallery */}
               <div className="p-2 sm:p-4 bg-muted/30">
                 <div className="flex gap-1 sm:gap-2 overflow-x-auto">
-                  {images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImageIndex === index
-                          ? "border-primary scale-105"
-                          : "border-transparent hover:border-primary/50"
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${property.title} - bild ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+                  {images.map((image, index) => <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
+                      <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
+                    </button>)}
                 </div>
               </div>
             </Card>
@@ -483,9 +405,7 @@ const PropertyDetail = () => {
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Badge variant="secondary">{property.type}</Badge>
-                    {property.isNew && (
-                      <Badge className="bg-success text-white">Ny</Badge>
-                    )}
+                    {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>
@@ -495,7 +415,7 @@ const PropertyDetail = () => {
                   </div>
                   <div className="flex items-center text-muted-foreground mt-2">
                     <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">{property.location}</span>
+                    <span className="text-sm sm:text-2xl">{property.location}</span>
                   </div>
                 </div>
 
@@ -506,28 +426,28 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2">
                     <Bed className="w-5 h-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Sovrum</p>
+                      <p className="text-muted-foreground text-xl">Sovrum</p>
                       <p className="font-semibold">{property.bedrooms}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Bath className="w-5 h-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Badrum</p>
+                      <p className="text-muted-foreground text-xl">Badrum</p>
                       <p className="font-semibold">{property.bathrooms}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Square className="w-5 h-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Boarea</p>
+                      <p className="text-muted-foreground text-xl">Boarea</p>
                       <p className="font-semibold">{property.area} m²</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Byggår</p>
+                      <p className="text-muted-foreground text-xl">Byggår</p>
                       <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
                     </div>
                   </div>
@@ -596,35 +516,24 @@ const PropertyDetail = () => {
                   </div>
                 </div>
 
-                {(property.floorplan_url || dbProperty) && (
-                  <>
+                {(property.floorplan_url || dbProperty) && <>
                     <Separator className="my-6" />
                     <div>
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
                       <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                        <img
-                          src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)}
-                          alt="Planritning"
-                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
-                        />
+                        <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
                       </div>
                     </div>
-                  </>
-                )}
+                  </>}
 
-                {!dbProperty && (
-                  <>
+                {!dbProperty && <>
                     <Separator className="my-6" />
 
                     {/* Floor Plan */}
                     <div>
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
                       <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                        <img
-                          src={floorplan}
-                          alt="Planritning"
-                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg"
-                        />
+                        <img src={floorplan} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
                       </div>
                     </div>
 
@@ -634,16 +543,13 @@ const PropertyDetail = () => {
                     <div>
                       <h2 className="text-xl font-bold mb-3">Highlights</h2>
                       <div className="grid grid-cols-2 gap-2">
-                        {property.features.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                        {property.features.map((feature, index) => <div key={index} className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                             <span className="text-muted-foreground">{feature}</span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
-                  </>
-                )}
+                  </>}
               </CardContent>
             </Card>
 
@@ -656,9 +562,9 @@ const PropertyDetail = () => {
             {/* Contact Card */}
             <Card className="sticky top-24">
               <CardContent className="p-6">
-                {agentProfile ? (
-                  // Show real agent profile
-                  <>
+                {agentProfile ?
+              // Show real agent profile
+              <>
                     <div className="flex flex-col items-center gap-4 mb-6">
                       <Link to={`/agent/${property.user_id}`} className="z-20 hover:scale-105 transition-transform">
                         <Avatar className="w-64 h-64 border-4 border-border cursor-pointer">
@@ -673,50 +579,38 @@ const PropertyDetail = () => {
                         <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
                           <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                         </Link>
-                        {agentProfile.agency && (
-                          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                        {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                             <Building2 className="w-3 h-3" />
                             {agentProfile.agency}
-                          </p>
-                        )}
+                          </p>}
                       </div>
                     </div>
 
                     {/* Agent Info */}
                     <div className="space-y-3 mb-6 bg-muted/30 rounded-lg p-4">
-                      {agentProfile.phone && (
-                        <div className="flex items-center gap-2 text-sm">
+                      {agentProfile.phone && <div className="flex items-center gap-2 text-sm">
                           <Phone className="w-4 h-4 text-muted-foreground" />
                           <span>{agentProfile.phone}</span>
-                        </div>
-                      )}
-                      {agentProfile.email && (
-                        <div className="flex items-center gap-2 text-sm">
+                        </div>}
+                      {agentProfile.email && <div className="flex items-center gap-2 text-sm">
                           <Mail className="w-4 h-4 text-muted-foreground" />
                           <span className="truncate">{agentProfile.email}</span>
-                        </div>
-                      )}
-                      {agentProfile.office && (
-                        <div className="flex items-center gap-2 text-sm">
+                        </div>}
+                      {agentProfile.office && <div className="flex items-center gap-2 text-sm">
                           <MapPin className="w-4 h-4 text-muted-foreground" />
                           <span>{agentProfile.office}</span>
-                        </div>
-                      )}
-                      {agentProfile.area && (
-                        <div className="flex items-center gap-2 text-sm">
+                        </div>}
+                      {agentProfile.area && <div className="flex items-center gap-2 text-sm">
                           <Home className="w-4 h-4 text-muted-foreground" />
                           <span>{agentProfile.area}</span>
-                        </div>
-                      )}
+                        </div>}
                     </div>
 
                     <div className="space-y-3">
-                      {agentProfile.phone && (
-                        <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      {agentProfile.phone && <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
                           <Phone className="w-4 h-4 mr-2" />
                           Ring mig
-                        </Button>
-                      )}
+                        </Button>}
                       <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
                         <Mail className="w-4 h-4 mr-2" />
                         Skicka meddelande
@@ -726,10 +620,9 @@ const PropertyDetail = () => {
                         Boka visning
                       </Button>
                     </div>
-                  </>
-                ) : (
-                  // Show placeholder for hardcoded properties
-                  <>
+                  </> :
+              // Show placeholder for hardcoded properties
+              <>
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
                         SB
@@ -745,18 +638,14 @@ const PropertyDetail = () => {
                       <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
                       <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
                     </div>
-                  </>
-                )}
+                  </>}
 
                 <Separator className="my-6" />
 
                 <div>
                   <h4 className="font-semibold mb-3">Visningar</h4>
                   <div className="space-y-2">
-                    <button
-                      onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')}
-                      className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
-                    >
+                    <button onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
                       <div className="flex-1 text-left">
                         <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
@@ -765,10 +654,7 @@ const PropertyDetail = () => {
                       </div>
                       <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
                     </button>
-                    <button
-                      onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')}
-                      className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
-                    >
+                    <button onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
                       <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
                       <div className="flex-1 text-left">
               <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
@@ -789,8 +675,6 @@ const PropertyDetail = () => {
           <DetailAdBanner />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PropertyDetail;
