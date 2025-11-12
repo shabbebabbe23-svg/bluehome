@@ -29,6 +29,7 @@ import storgatan4 from "@/assets/storgatan-4.jpg";
 import storgatan5 from "@/assets/storgatan-5.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
+import bathroomAd from "@/assets/bathroom-ad.jpg";
 import PropertyMap from "@/components/PropertyMap";
 const PropertyDetail = () => {
   const {
@@ -670,9 +671,40 @@ const PropertyDetail = () => {
           </div>
         </div>
 
-        {/* Ad Banner Below */}
-        <div className="mt-8">
+        {/* Ad Banners Below */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <DetailAdBanner />
+          <aside className="w-full">
+            <div className="p-4">
+              <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                <img 
+                  src={bathroomAd} 
+                  alt="Badrumrenovering" 
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-6 space-y-4">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Drömbadrum?
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Vi hjälper dig från idé till verklighet. Kvalitet och stilren design.
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>✓ Kostnadsfri hembesök</li>
+                    <li>✓ Moderna lösningar</li>
+                    <li>✓ 10 års garanti</li>
+                    <li>✓ Fast pris</li>
+                  </ul>
+                  <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors">
+                    Begär offert
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Kampanj: 15% rabatt på arbetskostnad i april
+                  </p>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </div>;
