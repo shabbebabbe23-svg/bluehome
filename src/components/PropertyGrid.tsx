@@ -440,6 +440,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-10-02"),
       vendorLogo: logo1,
       description: "Vacker villa i attraktivt läge som såldes snabbt till ett konkurrenskraftigt pris. Renoverad och i utmärkt skick.",
+      sold_price: 9250000,
     },
     {
       id: 102,
@@ -461,6 +462,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-28"),
       vendorLogo: logo2,
       description: "Eftertraktad lägenhet i populärt område. Många intressenter och snabb försäljning över utgångspris.",
+      sold_price: 4650000,
     },
     {
       id: 103,
@@ -482,6 +484,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-25"),
       vendorLogo: logo3,
       description: "Attraktivt radhus som såldes efter budgivning. Perfekt läge nära skolor och grönområden lockade många familjer.",
+      sold_price: 7450000,
     },
     {
       id: 104,
@@ -503,6 +506,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-22"),
       vendorLogo: logo4,
       description: "Exklusiv takvåning som såldes till ett rekordpris. Stor takterrass och fantastisk utsikt var de stora dragplåstren.",
+      sold_price: 13100000,
     },
     {
       id: 105,
@@ -524,6 +528,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-20"),
       vendorLogo: logo5,
       description: "Attraktiv familjehus på Lidingö som såldes över utgångspris. Stor tomt och nära till skolor och kommunikationer.",
+      sold_price: 10500000,
     },
     {
       id: 106,
@@ -545,6 +550,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-18"),
       vendorLogo: logo6,
       description: "Charmig lägenhet i centrala Vasastan. Såldes snabbt till en nöjd köpare efter visning med stort intresse.",
+      sold_price: 3850000,
     },
     {
       id: 107,
@@ -566,6 +572,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-15"),
       vendorLogo: logo7,
       description: "Stor och rymlig villa i eftertraktat läge. Såldes till slutpris efter intensiv budgivning mellan flera intressenter.",
+      sold_price: 12100000,
     },
     {
       id: 108,
@@ -587,6 +594,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-12"),
       vendorLogo: logo8,
       description: "Populärt radhus i centrala Kungsholmen. Perfekt planlösning och centralt läge lockade många budgivare.",
+      sold_price: 5950000,
     },
     {
       id: 109,
@@ -608,6 +616,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-08"),
       vendorLogo: logo9,
       description: "Representativ lägenhet mitt i city. Såldes till ett attraktivt pris till en köpare som sökte centralt boende.",
+      sold_price: 7600000,
     },
     {
       id: 110,
@@ -629,6 +638,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-09-05"),
       vendorLogo: logo10,
       description: "Drömvilla vid havet i Saltsjöbaden. Egen brygga och badstrand gjorde att försäljningen gick snabbt över utgångspris.",
+      sold_price: 15800000,
     },
     {
       id: 111,
@@ -650,6 +660,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-08-30"),
       vendorLogo: logo11,
       description: "Autentisk Gamlastan-lägenhet med historiskt värde. Såldes till en köpare som sökte den speciella charmen.",
+      sold_price: 6200000,
     },
     {
       id: 112,
@@ -671,6 +682,7 @@ export const soldProperties: Property[] = [
       soldDate: new Date("2024-08-25"),
       vendorLogo: logo12,
       description: "Exklusiv herrgårdsliknande villa i Djursholms finaste kvarter. Såldes till rekordpris efter budgivning bland flera intressenter.",
+      sold_price: 18500000,
     },
   ];
 
