@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -202,7 +202,8 @@ const PropertyCard = ({
                   {price}
                 </span>
                 {hasActiveBidding && !isSold && (
-                  <span className="text-xs sm:text-sm text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap">
+                  <span className="text-xs sm:text-sm text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap flex items-center gap-1">
+                    <FileSignature className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     Pågående budgivning
                   </span>
                 )}
