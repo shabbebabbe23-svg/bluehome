@@ -36,17 +36,18 @@ const AgentDashboard = () => {
   const [editMainImagePreview, setEditMainImagePreview] = useState<string>("");
   const [editHoverImage, setEditHoverImage] = useState<File | null>(null);
   const [editHoverImagePreview, setEditHoverImagePreview] = useState<string>("");
-  const [editFloorplanImage, setEditFloorplanImage] = useState<File | null>(null);
-  const [editFloorplanImagePreview, setEditFloorplanImagePreview] = useState<string>("");
+  const [editFloorplanImages, setEditFloorplanImages] = useState<File[]>([]);
+  const [editFloorplanImagePreviews, setEditFloorplanImagePreviews] = useState<string[]>([]);
+  const [existingFloorplanImages, setExistingFloorplanImages] = useState<string[]>([]);
   const [editAdditionalImages, setEditAdditionalImages] = useState<File[]>([]);
   const [editAdditionalImagePreviews, setEditAdditionalImagePreviews] = useState<string[]>([]);
   const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
   const [removedImages, setRemovedImages] = useState<{
     main?: boolean;
     hover?: boolean;
-    floorplan?: boolean;
+    floorplan: string[];
     additional: string[];
-  }>({ additional: [] });
+  }>({ floorplan: [], additional: [] });
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -117,17 +118,18 @@ const AgentDashboard = () => {
     setEditMainImagePreview(property.image_url || "");
     setEditHoverImage(null);
     setEditHoverImagePreview(property.hover_image_url || "");
-    setEditFloorplanImage(null);
-    setEditFloorplanImagePreview(property.floorplan_url || "");
+    setEditFloorplanImages([]);
+    setEditFloorplanImagePreviews([]);
+    setExistingFloorplanImages(property.floorplan_images || []);
     setEditAdditionalImages([]);
     setEditAdditionalImagePreviews([]);
     setExistingAdditionalImages(property.additional_images || []);
-    setRemovedImages({ additional: [] });
+    setRemovedImages({ floorplan: [], additional: [] });
   };
 
   const handleEditImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'main' | 'hover' | 'floorplan'
+    type: 'main' | 'hover'
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -147,16 +149,12 @@ const AgentDashboard = () => {
         setEditHoverImage(file);
         setEditHoverImagePreview(reader.result as string);
         setRemovedImages(prev => ({ ...prev, hover: false }));
-      } else {
-        setEditFloorplanImage(file);
-        setEditFloorplanImagePreview(reader.result as string);
-        setRemovedImages(prev => ({ ...prev, floorplan: false }));
       }
     };
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveEditImage = (type: 'main' | 'hover' | 'floorplan') => {
+  const handleRemoveEditImage = (type: 'main' | 'hover') => {
     if (type === 'main') {
       setEditMainImage(null);
       setEditMainImagePreview("");
@@ -165,10 +163,6 @@ const AgentDashboard = () => {
       setEditHoverImage(null);
       setEditHoverImagePreview("");
       setRemovedImages(prev => ({ ...prev, hover: true }));
-    } else {
-      setEditFloorplanImage(null);
-      setEditFloorplanImagePreview("");
-      setRemovedImages(prev => ({ ...prev, floorplan: true }));
     }
   };
 
@@ -203,6 +197,37 @@ const AgentDashboard = () => {
     setRemovedImages(prev => ({ ...prev, additional: [...prev.additional, url] }));
   };
 
+  const handleEditFloorplanImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    const validFiles = files.filter(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} är för stor (max 5MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditFloorplanImages(prev => [...prev, file]);
+        setEditFloorplanImagePreviews(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeEditFloorplanImage = (index: number) => {
+    setEditFloorplanImages(prev => prev.filter((_, i) => i !== index));
+    setEditFloorplanImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingFloorplanImage = (url: string) => {
+    setExistingFloorplanImages(prev => prev.filter(img => img !== url));
+    setRemovedImages(prev => ({ ...prev, floorplan: [...prev.floorplan, url] }));
+  };
+
   const uploadImage = async (file: File, folder: string = 'properties') => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
@@ -229,7 +254,7 @@ const AgentDashboard = () => {
       // Upload new images
       let mainImageUrl = editingProperty.image_url;
       let hoverImageUrl = editingProperty.hover_image_url;
-      let floorplanUrl = editingProperty.floorplan_url;
+      let floorplanImagesUrls = [...existingFloorplanImages];
       let additionalImagesUrls = [...existingAdditionalImages];
 
       // Handle main image
@@ -246,11 +271,10 @@ const AgentDashboard = () => {
         hoverImageUrl = null;
       }
 
-      // Handle floorplan image
-      if (editFloorplanImage) {
-        floorplanUrl = await uploadImage(editFloorplanImage);
-      } else if (removedImages.floorplan) {
-        floorplanUrl = null;
+      // Handle floorplan images
+      for (const file of editFloorplanImages) {
+        const url = await uploadImage(file);
+        floorplanImagesUrls.push(url);
       }
 
       // Handle additional images
@@ -277,7 +301,7 @@ const AgentDashboard = () => {
         viewing_date: viewingDateValue ? new Date(viewingDateValue).toISOString() : null,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,
-        floorplan_url: floorplanUrl,
+        floorplan_images: floorplanImagesUrls,
         additional_images: additionalImagesUrls
       }).eq("id", editingProperty.id);
       
@@ -566,32 +590,62 @@ const AgentDashboard = () => {
                     )}
                   </div>
 
-                  {/* Floorplan */}
+                  {/* Floorplan Images */}
                   <div>
-                    <Label>Planlösning (valfritt)</Label>
-                    {editFloorplanImagePreview && !removedImages.floorplan ? (
-                      <div className="relative mt-2 inline-block">
-                        <img src={editFloorplanImagePreview} alt="Planlösning" className="w-32 h-32 object-cover rounded" />
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="destructive"
-                          className="absolute -top-2 -right-2 h-6 w-6"
-                          onClick={() => handleRemoveEditImage('floorplan')}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="mt-2">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleEditImageChange(e, 'floorplan')}
-                          className="cursor-pointer"
-                        />
+                    <Label>Planlösningar (valfritt)</Label>
+                    
+                    {/* Existing floorplan images */}
+                    {existingFloorplanImages.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {existingFloorplanImages.map((url, index) => (
+                          <div key={`existing-floorplan-${index}`} className="relative">
+                            <img src={url} alt={`Planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="destructive"
+                              className="absolute -top-2 -right-2 h-6 w-6"
+                              onClick={() => removeExistingFloorplanImage(url)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
                     )}
+
+                    {/* New floorplan images */}
+                    {editFloorplanImagePreviews.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {editFloorplanImagePreviews.map((preview, index) => (
+                          <div key={`new-floorplan-${index}`} className="relative">
+                            <img src={preview} alt={`Ny planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="destructive"
+                              className="absolute -top-2 -right-2 h-6 w-6"
+                              onClick={() => removeEditFloorplanImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleEditFloorplanImagesChange}
+                        className="cursor-pointer"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Du kan välja flera ritningar samtidigt
+                      </p>
+                    </div>
                   </div>
 
                   {/* Additional Images */}
