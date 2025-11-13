@@ -927,7 +927,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                 newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                 viewMode={viewMode}
-                hasActiveBidding={true}
+                hasActiveBidding={Math.random() < 0.35}
               />
             </div>
           ))}
