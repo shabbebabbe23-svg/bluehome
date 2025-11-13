@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2 } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +29,24 @@ const AgentDashboard = () => {
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   const [editingProperty, setEditingProperty] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  // Image handling states
+  const [editMainImage, setEditMainImage] = useState<File | null>(null);
+  const [editMainImagePreview, setEditMainImagePreview] = useState<string>("");
+  const [editHoverImage, setEditHoverImage] = useState<File | null>(null);
+  const [editHoverImagePreview, setEditHoverImagePreview] = useState<string>("");
+  const [editFloorplanImage, setEditFloorplanImage] = useState<File | null>(null);
+  const [editFloorplanImagePreview, setEditFloorplanImagePreview] = useState<string>("");
+  const [editAdditionalImages, setEditAdditionalImages] = useState<File[]>([]);
+  const [editAdditionalImagePreviews, setEditAdditionalImagePreviews] = useState<string[]>([]);
+  const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
+  const [removedImages, setRemovedImages] = useState<{
+    main?: boolean;
+    hover?: boolean;
+    floorplan?: boolean;
+    additional: string[];
+  }>({ additional: [] });
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -93,15 +111,158 @@ const AgentDashboard = () => {
   const handleEditProperty = (property: any) => {
     setEditingProperty(property);
     setIsEditDialogOpen(true);
+    
+    // Reset image states
+    setEditMainImage(null);
+    setEditMainImagePreview(property.image_url || "");
+    setEditHoverImage(null);
+    setEditHoverImagePreview(property.hover_image_url || "");
+    setEditFloorplanImage(null);
+    setEditFloorplanImagePreview(property.floorplan_url || "");
+    setEditAdditionalImages([]);
+    setEditAdditionalImagePreviews([]);
+    setExistingAdditionalImages(property.additional_images || []);
+    setRemovedImages({ additional: [] });
+  };
+
+  const handleEditImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'main' | 'hover' | 'floorplan'
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Bilden får inte vara större än 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (type === 'main') {
+        setEditMainImage(file);
+        setEditMainImagePreview(reader.result as string);
+        setRemovedImages(prev => ({ ...prev, main: false }));
+      } else if (type === 'hover') {
+        setEditHoverImage(file);
+        setEditHoverImagePreview(reader.result as string);
+        setRemovedImages(prev => ({ ...prev, hover: false }));
+      } else {
+        setEditFloorplanImage(file);
+        setEditFloorplanImagePreview(reader.result as string);
+        setRemovedImages(prev => ({ ...prev, floorplan: false }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveEditImage = (type: 'main' | 'hover' | 'floorplan') => {
+    if (type === 'main') {
+      setEditMainImage(null);
+      setEditMainImagePreview("");
+      setRemovedImages(prev => ({ ...prev, main: true }));
+    } else if (type === 'hover') {
+      setEditHoverImage(null);
+      setEditHoverImagePreview("");
+      setRemovedImages(prev => ({ ...prev, hover: true }));
+    } else {
+      setEditFloorplanImage(null);
+      setEditFloorplanImagePreview("");
+      setRemovedImages(prev => ({ ...prev, floorplan: true }));
+    }
+  };
+
+  const handleEditAdditionalImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    const validFiles = files.filter(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} är för stor (max 5MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditAdditionalImages(prev => [...prev, file]);
+        setEditAdditionalImagePreviews(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeEditAdditionalImage = (index: number) => {
+    setEditAdditionalImages(prev => prev.filter((_, i) => i !== index));
+    setEditAdditionalImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingAdditionalImage = (url: string) => {
+    setExistingAdditionalImages(prev => prev.filter(img => img !== url));
+    setRemovedImages(prev => ({ ...prev, additional: [...prev.additional, url] }));
+  };
+
+  const uploadImage = async (file: File, folder: string = 'properties') => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('property-images')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('property-images')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
   };
   const handleUpdateProperty = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsUpdating(true);
     const formData = new FormData(e.currentTarget);
+    
     try {
+      // Upload new images
+      let mainImageUrl = editingProperty.image_url;
+      let hoverImageUrl = editingProperty.hover_image_url;
+      let floorplanUrl = editingProperty.floorplan_url;
+      let additionalImagesUrls = [...existingAdditionalImages];
+
+      // Handle main image
+      if (editMainImage) {
+        mainImageUrl = await uploadImage(editMainImage);
+      } else if (removedImages.main) {
+        mainImageUrl = null;
+      }
+
+      // Handle hover image
+      if (editHoverImage) {
+        hoverImageUrl = await uploadImage(editHoverImage);
+      } else if (removedImages.hover) {
+        hoverImageUrl = null;
+      }
+
+      // Handle floorplan image
+      if (editFloorplanImage) {
+        floorplanUrl = await uploadImage(editFloorplanImage);
+      } else if (removedImages.floorplan) {
+        floorplanUrl = null;
+      }
+
+      // Handle additional images
+      for (const file of editAdditionalImages) {
+        const url = await uploadImage(file);
+        additionalImagesUrls.push(url);
+      }
+
       const newPriceValue = formData.get("new_price") as string;
-      const {
-        error
-      } = await supabase.from("properties").update({
+      const viewingDateValue = formData.get("viewing_date") as string;
+      
+      const { error } = await supabase.from("properties").update({
         title: formData.get("title") as string,
         address: formData.get("address") as string,
         location: formData.get("location") as string,
@@ -111,17 +272,25 @@ const AgentDashboard = () => {
         bedrooms: Number(formData.get("bedrooms")),
         bathrooms: Number(formData.get("bathrooms")),
         area: Number(formData.get("area")),
-        fee: Number(formData.get("fee")),
         description: formData.get("description") as string,
-        viewing_date: formData.get("viewing_date") ? new Date(formData.get("viewing_date") as string).toISOString() : null
+        fee: Number(formData.get("fee")),
+        viewing_date: viewingDateValue ? new Date(viewingDateValue).toISOString() : null,
+        image_url: mainImageUrl,
+        hover_image_url: hoverImageUrl,
+        floorplan_url: floorplanUrl,
+        additional_images: additionalImagesUrls
       }).eq("id", editingProperty.id);
+      
       if (error) throw error;
       toast.success("Fastighet uppdaterad");
       setIsEditDialogOpen(false);
       setEditingProperty(null);
       refetch();
     } catch (error) {
+      console.error("Error updating property:", error);
       toast.error("Kunde inte uppdatera fastighet");
+    } finally {
+      setIsUpdating(false);
     }
   };
   const handleSignOut = async () => {
@@ -336,13 +505,160 @@ const AgentDashboard = () => {
                   <Label htmlFor="edit-description">Beskrivning</Label>
                   <Textarea id="edit-description" name="description" defaultValue={editingProperty.description} rows={6} required />
                 </div>
+
+                {/* Image Management Section */}
+                <div className="md:col-span-2 space-y-4 pt-4 border-t">
+                  <h3 className="text-lg font-semibold">Bilder</h3>
+
+                  {/* Main Image */}
+                  <div>
+                    <Label>Huvudbild</Label>
+                    {editMainImagePreview && !removedImages.main ? (
+                      <div className="relative mt-2 inline-block">
+                        <img src={editMainImagePreview} alt="Huvudbild" className="w-32 h-32 object-cover rounded" />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute -top-2 -right-2 h-6 w-6"
+                          onClick={() => handleRemoveEditImage('main')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="mt-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleEditImageChange(e, 'main')}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hover Image */}
+                  <div>
+                    <Label>Hoverbild (valfritt)</Label>
+                    {editHoverImagePreview && !removedImages.hover ? (
+                      <div className="relative mt-2 inline-block">
+                        <img src={editHoverImagePreview} alt="Hoverbild" className="w-32 h-32 object-cover rounded" />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute -top-2 -right-2 h-6 w-6"
+                          onClick={() => handleRemoveEditImage('hover')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="mt-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleEditImageChange(e, 'hover')}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Floorplan */}
+                  <div>
+                    <Label>Planlösning (valfritt)</Label>
+                    {editFloorplanImagePreview && !removedImages.floorplan ? (
+                      <div className="relative mt-2 inline-block">
+                        <img src={editFloorplanImagePreview} alt="Planlösning" className="w-32 h-32 object-cover rounded" />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute -top-2 -right-2 h-6 w-6"
+                          onClick={() => handleRemoveEditImage('floorplan')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="mt-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleEditImageChange(e, 'floorplan')}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Additional Images */}
+                  <div>
+                    <Label>Ytterligare bilder (valfritt)</Label>
+                    
+                    {/* Existing additional images */}
+                    {existingAdditionalImages.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {existingAdditionalImages.map((url, index) => (
+                          <div key={`existing-${index}`} className="relative">
+                            <img src={url} alt={`Bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="destructive"
+                              className="absolute -top-2 -right-2 h-6 w-6"
+                              onClick={() => removeExistingAdditionalImage(url)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* New additional images */}
+                    {editAdditionalImagePreviews.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {editAdditionalImagePreviews.map((preview, index) => (
+                          <div key={`new-${index}`} className="relative">
+                            <img src={preview} alt={`Ny bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="destructive"
+                              className="absolute -top-2 -right-2 h-6 w-6"
+                              onClick={() => removeEditAdditionalImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add more images button */}
+                    <div className="mt-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleEditAdditionalImagesChange}
+                        className="cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating}>
                   Avbryt
                 </Button>
-                <Button type="submit">Spara ändringar</Button>
+                <Button type="submit" disabled={isUpdating}>
+                  {isUpdating ? "Sparar..." : "Spara ändringar"}
+                </Button>
               </div>
             </form>}
         </DialogContent>
