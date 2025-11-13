@@ -98,6 +98,7 @@ const AgentDashboard = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     try {
+      const newPriceValue = formData.get("new_price") as string;
       const {
         error
       } = await supabase.from("properties").update({
@@ -106,6 +107,7 @@ const AgentDashboard = () => {
         location: formData.get("location") as string,
         type: formData.get("type") as string,
         price: Number(formData.get("price")),
+        new_price: newPriceValue ? Number(newPriceValue) : null,
         bedrooms: Number(formData.get("bedrooms")),
         bathrooms: Number(formData.get("bathrooms")),
         area: Number(formData.get("area")),
@@ -195,7 +197,7 @@ const AgentDashboard = () => {
                     {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-96" />)}
                   </div> : properties && properties.length > 0 ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {properties.map(property => <div key={property.id} className="relative group">
-                        <PropertyCard id={property.id} title={property.address} location={property.location} price={`${property.price.toLocaleString('sv-SE')} kr`} type={property.type} bedrooms={property.bedrooms} bathrooms={property.bathrooms} area={property.area} image={property.image_url || ""} hoverImage={property.hover_image_url || undefined} hasVR={property.has_vr || false} listedDate={property.listed_date || undefined} isSold={property.is_sold || false} soldDate={property.sold_date || undefined} soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined} vendorLogo={property.vendor_logo_url || undefined} viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined} />
+                        <PropertyCard id={property.id} title={property.address} location={property.location} price={`${property.price.toLocaleString('sv-SE')} kr`} newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined} type={property.type} bedrooms={property.bedrooms} bathrooms={property.bathrooms} area={property.area} image={property.image_url || ""} hoverImage={property.hover_image_url || undefined} hasVR={property.has_vr || false} listedDate={property.listed_date || undefined} isSold={property.is_sold || false} soldDate={property.sold_date || undefined} soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined} vendorLogo={property.vendor_logo_url || undefined} viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined} />
                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button size="icon" variant="secondary" onClick={() => handleEditProperty(property)}>
                             <Pencil className="w-4 h-4" />
@@ -298,6 +300,11 @@ const AgentDashboard = () => {
                 <div>
                   <Label htmlFor="edit-price">Pris (kr)</Label>
                   <Input id="edit-price" name="price" type="number" defaultValue={editingProperty.price} required />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-new-price">Nytt pris (kr)</Label>
+                  <Input id="edit-new-price" name="new_price" type="number" defaultValue={editingProperty.new_price || ''} placeholder="Ange nytt pris om priset har ändrats" />
                 </div>
 
                 <div>

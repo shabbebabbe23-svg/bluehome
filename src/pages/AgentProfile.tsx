@@ -197,6 +197,7 @@ const AgentProfile = () => {
                   title={property.address}
                   location={property.location}
                   price={`${property.price.toLocaleString('sv-SE')} kr`}
+                  newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                   type={property.type}
                   bedrooms={property.bedrooms}
                   bathrooms={property.bathrooms}

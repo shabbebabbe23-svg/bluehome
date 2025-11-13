@@ -75,6 +75,7 @@ export type Database = {
           is_sold: boolean | null
           listed_date: string | null
           location: string
+          new_price: number | null
           price: number
           sold_date: string | null
           sold_price: number | null
@@ -103,6 +104,7 @@ export type Database = {
           is_sold?: boolean | null
           listed_date?: string | null
           location: string
+          new_price?: number | null
           price: number
           sold_date?: string | null
           sold_price?: number | null
@@ -131,6 +133,7 @@ export type Database = {
           is_sold?: boolean | null
           listed_date?: string | null
           location?: string
+          new_price?: number | null
           price?: number
           sold_date?: string | null
           sold_price?: number | null

@@ -28,6 +28,7 @@ interface PropertyCardProps {
   description?: string;
   viewMode?: "grid" | "list";
   soldPrice?: string;
+  newPrice?: string;
 }
 
 const PropertyCard = ({
@@ -53,6 +54,7 @@ const PropertyCard = ({
   description,
   viewMode = "grid",
   soldPrice,
+  newPrice,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -175,6 +177,15 @@ const PropertyCard = ({
                 </span>
                 <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
+                </span>
+              </>
+            ) : newPrice ? (
+              <>
+                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                  {price}
+                </span>
+                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                  {newPrice}
                 </span>
               </>
             ) : (
