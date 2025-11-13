@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ const PropertyDetail = () => {
   const [dbProperty, setDbProperty] = useState<any>(null);
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Track property view
   usePropertyViewTracking(id || "");
@@ -374,7 +376,12 @@ const PropertyDetail = () => {
             {/* Image Gallery */}
             <Card className="overflow-hidden">
               <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
-                <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover" />
+                <img 
+                  src={images[currentImageIndex]} 
+                  alt={property.title} 
+                  className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" 
+                  onClick={() => setIsImageModalOpen(true)}
+                />
                 
                 {/* Navigation Buttons */}
                 <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
@@ -744,6 +751,46 @@ const PropertyDetail = () => {
           </aside>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+          <div className="relative w-full h-full flex items-center justify-center bg-black/90">
+            <img 
+              src={images[currentImageIndex]} 
+              alt={property.title} 
+              className="max-w-full max-h-[90vh] object-contain"
+            />
+            
+            {/* Navigation Buttons */}
+            {images.length > 1 && (
+              <>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all"
+                  onClick={handlePreviousImage}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all"
+                  onClick={handleNextImage}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </Button>
+              </>
+            )}
+            
+            {/* Image Counter */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default PropertyDetail;
