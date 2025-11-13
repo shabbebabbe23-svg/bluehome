@@ -536,12 +536,30 @@ const PropertyDetail = () => {
                   </div>
                 </div>
 
-                {(property.floorplan_url || dbProperty) && <>
+                {(property?.floorplan_images?.length > 0 || property?.floorplan_url) && <>
                     <Separator className="my-6" />
                     <div>
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                        <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                      <div className="space-y-4">
+                        {property?.floorplan_images?.length > 0 ? (
+                          property.floorplan_images.map((imageUrl: string, index: number) => (
+                            <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                              <img 
+                                src={getImageUrl(imageUrl) || imageUrl} 
+                                alt={`Planritning ${index + 1}`} 
+                                className="w-full max-w-[1200px] h-auto object-contain rounded-lg" 
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                            <img 
+                              src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} 
+                              alt="Planritning" 
+                              className="w-full max-w-[1200px] h-auto object-contain rounded-lg" 
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>}
