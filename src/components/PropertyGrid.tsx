@@ -853,10 +853,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="py-8 md:py-16 px-3 sm:px-4">
+    <section className="py-4 md:py-8 px-3 sm:px-4">
       <div className="w-full">
-        <div className="text-center mb-6 md:mb-8 animate-fade-in">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-foreground">
+        <div className="text-center mb-4 md:mb-6 animate-fade-in">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-foreground">
             {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
@@ -867,7 +867,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         </div>
 
         {/* Sort Dropdown and View Toggle */}
-        <div className="flex flex-col items-end gap-3 mb-6 md:mb-8">
+        <div className="flex flex-col items-end gap-3 mb-4 md:mb-5">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
@@ -907,8 +907,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         </div>
 
   <div className={viewMode === "grid" 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 mb-8 md:mb-12"
-          : "flex flex-col gap-5 mb-8 md:mb-12"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 mb-6 md:mb-8"
+          : "flex flex-col gap-3 mb-6 md:mb-8"
         }>
           {displayedProperties.map((property, index) => (
             <div
