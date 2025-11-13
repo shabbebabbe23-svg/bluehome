@@ -502,16 +502,20 @@ const PropertyDetail = () => {
                       </div>
                     )}
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Prisutveckling</span>
-                      <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Prisutveckling</span>
+                      <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Boarea</span>
                       <span className="font-semibold">{property.area} m²</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Byggår</span>
+                      <span className="font-semibold">{property.buildYear || '2021'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Biarea</span>
@@ -524,10 +528,6 @@ const PropertyDetail = () => {
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Driftkostnad</span>
                       <span className="font-semibold">5 650 kr/år</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Byggår</span>
-                      <span className="font-semibold">{property.buildYear || '2021'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Energiklass</span>
