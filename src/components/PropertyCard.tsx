@@ -10,6 +10,7 @@ interface PropertyCardProps {
   title: string;
   price: string;
   location: string;
+  address?: string;
   bedrooms: number;
   bathrooms: number;
   area: number;
@@ -38,6 +39,7 @@ const PropertyCard = ({
   title,
   price,
   location,
+  address,
   bedrooms,
   bathrooms,
   area,
@@ -214,7 +216,7 @@ const PropertyCard = ({
 
         <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base truncate md:hidden">{title}</span>
+          <span className="text-xs sm:text-sm md:text-base truncate md:hidden">{address || location}</span>
           <span className="text-xs sm:text-sm md:text-base truncate hidden md:inline">{location}</span>
         </div>
 
