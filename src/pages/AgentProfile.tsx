@@ -207,6 +207,7 @@ const AgentProfile = () => {
                   listedDate={property.listed_date || undefined}
                   isSold={property.is_sold || false}
                   soldDate={property.sold_date || undefined}
+                  soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                   vendorLogo={property.vendor_logo_url || undefined}
                   viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
                 />

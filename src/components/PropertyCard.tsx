@@ -27,6 +27,7 @@ interface PropertyCardProps {
   hasVR?: boolean;
   description?: string;
   viewMode?: "grid" | "list";
+  soldPrice?: string;
 }
 
 const PropertyCard = ({
@@ -51,6 +52,7 @@ const PropertyCard = ({
   hasVR = false,
   description,
   viewMode = "grid",
+  soldPrice,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -165,9 +167,22 @@ const PropertyCard = ({
           <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
-          <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
-            {price}
-          </span>
+          <div className="flex flex-col items-end">
+            {isSold && soldPrice ? (
+              <>
+                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                  {price}
+                </span>
+                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                  {soldPrice}
+                </span>
+              </>
+            ) : (
+              <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
+                {price}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">

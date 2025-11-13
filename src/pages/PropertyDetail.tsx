@@ -410,9 +410,22 @@ const PropertyDetail = () => {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>
-                    <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
-                      {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                    </p>
+                    <div className="flex flex-col items-end">
+                      {property.isSold && property.sold_price ? (
+                        <>
+                          <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
+                            {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                          </p>
+                          <p className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                            {`${property.sold_price.toLocaleString('sv-SE')} kr`}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
+                          {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center text-muted-foreground mt-2">
                     <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
@@ -482,6 +495,12 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Utgångspris</span>
                       <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
                     </div>
+                    {property.isSold && property.sold_price && (
+                      <div className="flex justify-between py-2 border-b border-border">
+                        <span className="text-muted-foreground">Slutpris</span>
+                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Prisutveckling</span>
                       <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>

@@ -77,6 +77,7 @@ export type Database = {
           location: string
           price: number
           sold_date: string | null
+          sold_price: number | null
           title: string
           type: string
           updated_at: string | null
@@ -104,6 +105,7 @@ export type Database = {
           location: string
           price: number
           sold_date?: string | null
+          sold_price?: number | null
           title: string
           type: string
           updated_at?: string | null
@@ -131,6 +133,7 @@ export type Database = {
           location?: string
           price?: number
           sold_date?: string | null
+          sold_price?: number | null
           title?: string
           type?: string
           updated_at?: string | null

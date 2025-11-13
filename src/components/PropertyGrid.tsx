@@ -66,6 +66,7 @@ export interface Property {
   soldDate?: Date | string;
   hasVR?: boolean;
   description?: string;
+  sold_price?: number;
 }
 
 export const allProperties: Property[] = [
@@ -922,6 +923,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 isFavorite={favorites.includes(property.id)}
                 onFavoriteToggle={handleFavoriteToggle}
                 isSold={showFinalPrices}
+                soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                 viewMode={viewMode}
               />
             </div>
