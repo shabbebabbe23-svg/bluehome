@@ -30,6 +30,7 @@ interface PropertyCardProps {
   soldPrice?: string;
   newPrice?: string;
   hideControls?: boolean;
+  hasActiveBidding?: boolean;
 }
 
 const PropertyCard = ({
@@ -57,6 +58,7 @@ const PropertyCard = ({
   soldPrice,
   newPrice,
   hideControls = false,
+  hasActiveBidding = false,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -195,9 +197,16 @@ const PropertyCard = ({
                 </span>
               </>
             ) : (
-              <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
-                {price}
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
+                  {price}
+                </span>
+                {hasActiveBidding && !isSold && (
+                  <span className="text-xs sm:text-sm text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap">
+                    Pågående budgivning
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>
