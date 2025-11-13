@@ -21,6 +21,7 @@ interface PropertyWithCoords extends Property {
 const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
   const [loading, setLoading] = useState(true);
+  const [geocodingProgress, setGeocodingProgress] = useState(0);
   const [fromAddress, setFromAddress] = useState('');
   const [toAddress, setToAddress] = useState('');
   const mapRef = useRef<HTMLDivElement>(null);
@@ -31,7 +32,8 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     const geocodeProperties = async () => {
       const geocoded: PropertyWithCoords[] = [];
       
-      for (const property of properties) {
+      for (let i = 0; i < properties.length; i++) {
+        const property = properties[i];
         const fullAddress = `${property.address}, ${property.location}, Sverige`;
         try {
           const response = await fetch(
@@ -47,18 +49,25 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
             });
           }
           
-          // Rate limiting - wait between requests
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Update progress
+          setGeocodingProgress(Math.round(((i + 1) / properties.length) * 100));
+          
+          // Update map with current geocoded properties
+          setPropertiesWithCoords([...geocoded]);
+          
+          // Rate limiting - reduced to 500ms for faster loading
+          await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
           console.error(`Geocoding error for ${property.address}:`, error);
         }
       }
       
-      setPropertiesWithCoords(geocoded);
       setLoading(false);
     };
 
-    geocodeProperties();
+    if (properties.length > 0) {
+      geocodeProperties();
+    }
   }, [properties]);
 
   // Initialize map when coordinates are loaded
@@ -227,13 +236,20 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     }
   };
 
-  if (loading) {
+  if (loading && propertiesWithCoords.length === 0) {
     return (
       <Card>
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold mb-4">Kartvy</h2>
-          <div className="w-full h-[600px] rounded-lg bg-muted flex items-center justify-center">
-            <p className="text-muted-foreground">Laddar karta...</p>
+          <div className="w-full h-[600px] rounded-lg bg-muted flex flex-col items-center justify-center gap-4">
+            <p className="text-muted-foreground">Laddar kartan och placerar ut fastigheter...</p>
+            <div className="w-64 h-2 bg-background rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${geocodingProgress}%` }}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">{geocodingProgress}% klar</p>
           </div>
         </CardContent>
       </Card>
