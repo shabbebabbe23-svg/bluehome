@@ -120,15 +120,15 @@ const AgentDashboard = () => {
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Home className="w-6 h-6 text-foreground" />
-            <h1 className="text-2xl font-bold text-foreground">Mäklarpanel</h1>
+            <Home className="w-6 h-6 text-primary" />
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-foreground/90 text-xl">{user?.email}</span>
+            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{user?.email}</span>
             <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
               Till startsidan
             </Button>
-            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-white text-red-600 hover:bg-white/90 border-white font-semibold">
+            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold">
               <LogOut className="w-4 h-4 mr-2" />
               Logga ut
             </Button>
