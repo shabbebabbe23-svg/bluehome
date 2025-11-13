@@ -214,10 +214,9 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
+        <div className="hidden md:flex items-center text-muted-foreground mb-0.5 sm:mb-1">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base truncate md:hidden">{address || location}</span>
-          <span className="text-xs sm:text-sm md:text-base truncate hidden md:inline">{location}</span>
+          <span className="text-xs sm:text-sm md:text-base truncate">{location}</span>
         </div>
 
         <div className="mb-0.5 sm:mb-1">
