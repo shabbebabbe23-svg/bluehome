@@ -92,7 +92,7 @@ const PropertyCard = ({
       />
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
-        <div className="w-full h-40 sm:h-44 md:h-48 lg:h-44 xl:h-48 relative">
+        <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
           <img
             src={image}
             alt={title}
@@ -171,9 +171,9 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-2 sm:p-2.5 md:p-3 flex-1 flex flex-col justify-between">
+      <CardContent className="p-1.5 sm:p-2 md:p-2.5 flex-1 flex flex-col justify-between">
         {/* Address and price on same row */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 mb-0.5">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 mb-0">
           <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
