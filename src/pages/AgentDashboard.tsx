@@ -303,13 +303,13 @@ const AgentDashboard = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-new-price">Nytt pris (kr)</Label>
-                  <Input id="edit-new-price" name="new_price" type="number" defaultValue={editingProperty.new_price || ''} placeholder="Ange nytt pris om priset har ändrats" />
+                  <Label htmlFor="edit-bedrooms">Sovrum</Label>
+                  <Input id="edit-bedrooms" name="bedrooms" type="number" defaultValue={editingProperty.bedrooms} required />
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-bedrooms">Sovrum</Label>
-                  <Input id="edit-bedrooms" name="bedrooms" type="number" defaultValue={editingProperty.bedrooms} required />
+                  <Label htmlFor="edit-new-price">Nytt pris (kr)</Label>
+                  <Input id="edit-new-price" name="new_price" type="number" defaultValue={editingProperty.new_price || ''} placeholder="Ange nytt pris om priset har ändrats" />
                 </div>
 
                 <div>
@@ -318,13 +318,13 @@ const AgentDashboard = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
-                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
+                  <Label htmlFor="edit-fee">Månadsavgift (kr)</Label>
+                  <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-fee">Månadsavgift (kr)</Label>
-                  <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
+                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
+                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
                 </div>
 
                 <div>
