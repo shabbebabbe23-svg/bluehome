@@ -522,12 +522,12 @@ const PropertyDetail = () => {
                       <span className="font-semibold">25 m²</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Tomtarea</span>
-                      <span className="font-semibold">850 m²</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Driftkostnad</span>
                       <span className="font-semibold">5 650 kr/år</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Tomtarea</span>
+                      <span className="font-semibold">850 m²</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Energiklass</span>
