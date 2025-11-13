@@ -29,6 +29,7 @@ interface PropertyCardProps {
   viewMode?: "grid" | "list";
   soldPrice?: string;
   newPrice?: string;
+  hideControls?: boolean;
 }
 
 const PropertyCard = ({
@@ -55,6 +56,7 @@ const PropertyCard = ({
   viewMode = "grid",
   soldPrice,
   newPrice,
+  hideControls = false,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -101,13 +103,15 @@ const PropertyCard = ({
           />
         </div>
         {/* Agency logo area (right side, slightly offset from favorite button) */}
-        <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
-          {vendorLogo ? (
-            <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
-          ) : (
-            <span>Mäklarlogo</span>
-          )}
-        </div>
+        {!hideControls && (
+          <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
+            {vendorLogo ? (
+              <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
+            ) : (
+              <span>Mäklarlogo</span>
+            )}
+          </div>
+        )}
         
         {/* VR Badge - Bottom Left */}
         {hasVR && (
@@ -134,33 +138,35 @@ const PropertyCard = ({
         </div>
 
         {/* Favorite button */}
-        <Button
-          variant="secondary"
-          size="icon"
-          className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
-          onClick={(e: React.MouseEvent) => { e.stopPropagation(); onFavoriteToggle?.(id); }}
-        >
-          <svg width="0" height="0" style={{ position: 'absolute' }}>
-            <defs>
-              <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)', stopOpacity: 1 }} />
-              </linearGradient>
-            </defs>
-          </svg>
-          <Heart
-            className={`w-4 h-4 transition-all duration-300 ${
-              isFavorite 
-                ? "fill-red-500 text-red-500" 
-                : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
-            }`}
-            style={
-              !isFavorite 
-                ? { stroke: 'currentColor' }
-                : undefined
-            }
-          />
-        </Button>
+        {!hideControls && (
+          <Button
+            variant="secondary"
+            size="icon"
+            className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onFavoriteToggle?.(id); }}
+          >
+            <svg width="0" height="0" style={{ position: 'absolute' }}>
+              <defs>
+                <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+            </svg>
+            <Heart
+              className={`w-4 h-4 transition-all duration-300 ${
+                isFavorite 
+                  ? "fill-red-500 text-red-500" 
+                  : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
+              }`}
+              style={
+                !isFavorite 
+                  ? { stroke: 'currentColor' }
+                  : undefined
+              }
+            />
+          </Button>
+        )}
       </div>
 
       <CardContent className="p-1.5 sm:p-2 md:p-3 flex-1 flex flex-col justify-between">
