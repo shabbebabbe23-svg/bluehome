@@ -42,6 +42,22 @@ const AgentDashboard = () => {
   }, [searchParams]);
 
   // Fetch agent's active properties
+  // Fetch agent's profile
+  const { data: profile } = useQuery({
+    queryKey: ["agent-profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user?.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch agent's active properties
   const {
     data: properties,
     isLoading: isLoadingProperties,
@@ -124,7 +140,7 @@ const AgentDashboard = () => {
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{user?.email}</span>
+            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
             <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
               Till startsidan
             </Button>
