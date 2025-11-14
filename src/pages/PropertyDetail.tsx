@@ -77,14 +77,16 @@ const PropertyDetail = () => {
             setAgentProfile(profile);
           }
 
-          // Check if property has active bidding
-          const { data: bids } = await supabase
+          // Check if property has active bidding and get count
+          const { data: bids, count } = await supabase
             .from('property_bids')
-            .select('id')
-            .eq('property_id', id)
-            .limit(1);
+            .select('id', { count: 'exact' })
+            .eq('property_id', id);
           
           setHasActiveBidding(bids && bids.length > 0);
+          if (count && count > 0) {
+            setDbProperty((prev: any) => ({ ...prev, bidCount: count }));
+          }
         }
       } catch (error) {
         console.error('Error fetching property:', error);
@@ -485,7 +487,16 @@ const PropertyDetail = () => {
                     <Badge variant="secondary">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
                     {property.isSold && <Badge className="bg-destructive text-white">Såld</Badge>}
-                    {hasActiveBidding && !property.isSold && <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>}
+                    {hasActiveBidding && !property.isSold && (
+                      <>
+                        <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>
+                        {dbProperty?.bidCount && (
+                          <Badge variant="outline">
+                            {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
+                          </Badge>
+                        )}
+                      </>
+                    )}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>

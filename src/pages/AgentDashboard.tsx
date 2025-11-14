@@ -55,6 +55,7 @@ const AgentDashboard = () => {
   const [bidderName, setBidderName] = useState("");
   const [bidderEmail, setBidderEmail] = useState("");
   const [bidderPhone, setBidderPhone] = useState("");
+  const [bidderLabel, setBidderLabel] = useState("");
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -155,6 +156,7 @@ const AgentDashboard = () => {
     setBidderName("");
     setBidderEmail("");
     setBidderPhone("");
+    setBidderLabel("");
   };
 
   const handleAddBid = async (e: React.FormEvent) => {
@@ -171,6 +173,7 @@ const AgentDashboard = () => {
           bidder_name: bidderName || null,
           bidder_email: bidderEmail || null,
           bidder_phone: bidderPhone || null,
+          bidder_label: bidderLabel || null,
         });
 
       if (bidError) throw bidError;
@@ -191,6 +194,7 @@ const AgentDashboard = () => {
       setBidderName("");
       setBidderEmail("");
       setBidderPhone("");
+      setBidderLabel("");
       refetchBids();
       refetch(); // Refresh the properties list
       
@@ -903,6 +907,17 @@ const AgentDashboard = () => {
                               ))}
                             </SelectContent>
                           </Select>
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <Label htmlFor="bidder-label">Budgivare (ex. Budgivare 1, Budgivare 2) *</Label>
+                          <Input
+                            id="bidder-label"
+                            value={bidderLabel}
+                            onChange={(e) => setBidderLabel(e.target.value)}
+                            placeholder="Ex. Budgivare 1"
+                            required
+                          />
                         </div>
 
                         <div>
