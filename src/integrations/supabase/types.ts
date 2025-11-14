@@ -73,6 +73,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_deleted: boolean | null
+          is_manual_price_change: boolean | null
           is_sold: boolean | null
           listed_date: string | null
           location: string
@@ -103,6 +104,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_deleted?: boolean | null
+          is_manual_price_change?: boolean | null
           is_sold?: boolean | null
           listed_date?: string | null
           location: string
@@ -133,6 +135,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_deleted?: boolean | null
+          is_manual_price_change?: boolean | null
           is_sold?: boolean | null
           listed_date?: string | null
           location?: string

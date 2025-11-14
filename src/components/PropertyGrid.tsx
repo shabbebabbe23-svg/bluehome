@@ -70,6 +70,7 @@ export interface Property {
   description?: string;
   sold_price?: number;
   new_price?: number;
+  is_manual_price_change?: boolean;
 }
 
 export const allProperties: Property[] = [
@@ -776,6 +777,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             description: prop.description || '',
             sold_price: prop.sold_price || undefined,
             new_price: prop.new_price || undefined,
+            is_manual_price_change: prop.is_manual_price_change || false,
           }));
           setDbProperties(formattedProperties);
 

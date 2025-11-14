@@ -597,7 +597,7 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
-                    {property.new_price && (
+                    {property.new_price && property.is_manual_price_change && (
                       <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Prisutveckling</span>
                         <span className="font-semibold text-[#FF6B2C]">
