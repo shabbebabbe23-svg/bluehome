@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Twitter, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, X, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -347,7 +347,7 @@ const PropertyDetail = () => {
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
   };
 
-  const handleShareTwitter = () => {
+  const handleShareX = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}`;
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
@@ -813,7 +813,7 @@ const PropertyDetail = () => {
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareFacebook}
               >
                 <Facebook className="w-6 h-6" />
@@ -822,16 +822,16 @@ const PropertyDetail = () => {
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
-                onClick={handleShareTwitter}
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                onClick={handleShareX}
               >
-                <Twitter className="w-6 h-6" />
-                <span className="text-xs">Twitter</span>
+                <X className="w-6 h-6" />
+                <span className="text-xs">X</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareLinkedIn}
               >
                 <Linkedin className="w-6 h-6" />
@@ -840,7 +840,7 @@ const PropertyDetail = () => {
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareWhatsApp}
               >
                 <MessageCircle className="w-6 h-6" />
@@ -849,7 +849,7 @@ const PropertyDetail = () => {
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareEmail}
               >
                 <Mail className="w-6 h-6" />
@@ -858,7 +858,7 @@ const PropertyDetail = () => {
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
+                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleCopyUrl}
               >
                 {copiedUrl ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
