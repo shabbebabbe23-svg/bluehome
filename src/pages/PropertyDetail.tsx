@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2 } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Twitter, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,6 +43,8 @@ const PropertyDetail = () => {
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   // Track property view
   usePropertyViewTracking(id || "");
@@ -331,6 +333,43 @@ const PropertyDetail = () => {
     downloadICS(`Visning: ${property.title}`, `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`, `${property.address}, ${property.location}`, startDate, endDate, `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`);
     toast.success('Kalenderaktivitet sparad!');
   };
+
+  const handleCopyUrl = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(true);
+    toast.success('URL kopierad!');
+    setTimeout(() => setCopiedUrl(false), 2000);
+  };
+
+  const handleShareFacebook = () => {
+    const url = window.location.href;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+  };
+
+  const handleShareTwitter = () => {
+    const url = window.location.href;
+    const text = `${property.title} - ${property.price}`;
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleShareLinkedIn = () => {
+    const url = window.location.href;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = window.location.href;
+    const text = `${property.title} - ${property.price}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+  };
+
+  const handleShareEmail = () => {
+    const url = window.location.href;
+    const subject = `Se denna bostad: ${property.title}`;
+    const body = `Hej!\n\nJag hittade denna intressanta bostad:\n\n${property.title}\n${property.price}\n${property.location}\n\n${url}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
   return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
@@ -351,7 +390,12 @@ const PropertyDetail = () => {
           </Link>
           
           <div className="flex gap-1 sm:gap-2">
-            <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setIsShareDialogOpen(true)}
+              className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform"
+            >
               <Share2 className="w-4 h-4" />
             </Button>
             <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
@@ -751,6 +795,74 @@ const PropertyDetail = () => {
           </aside>
         </div>
       </div>
+
+      {/* Share Dialog */}
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Dela bostad</h3>
+              <p className="text-sm text-muted-foreground">Välj hur du vill dela denna bostad</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleShareFacebook}
+              >
+                <Facebook className="w-6 h-6" />
+                <span className="text-xs">Facebook</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleShareTwitter}
+              >
+                <Twitter className="w-6 h-6" />
+                <span className="text-xs">Twitter</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleShareLinkedIn}
+              >
+                <Linkedin className="w-6 h-6" />
+                <span className="text-xs">LinkedIn</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleShareWhatsApp}
+              >
+                <MessageCircle className="w-6 h-6" />
+                <span className="text-xs">WhatsApp</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleShareEmail}
+              >
+                <Mail className="w-6 h-6" />
+                <span className="text-xs">Email</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-4"
+                onClick={handleCopyUrl}
+              >
+                {copiedUrl ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                <span className="text-xs">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Image Modal */}
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
