@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,6 +49,13 @@ const AgentDashboard = () => {
     additional: string[];
   }>({ floorplan: [], additional: [] });
 
+  // Bidding states
+  const [editDialogTab, setEditDialogTab] = useState("property");
+  const [newBidAmount, setNewBidAmount] = useState<string>("");
+  const [bidderName, setBidderName] = useState("");
+  const [bidderEmail, setBidderEmail] = useState("");
+  const [bidderPhone, setBidderPhone] = useState("");
+
   // Generate array of years from 2020 to current year
   const years = Array.from({
     length: new Date().getFullYear() - 2019
@@ -95,6 +102,22 @@ const AgentDashboard = () => {
     },
     enabled: !!user?.id
   });
+
+  // Fetch bids for the currently editing property
+  const { data: propertyBids, refetch: refetchBids } = useQuery({
+    queryKey: ["property-bids", editingProperty?.id],
+    queryFn: async () => {
+      if (!editingProperty?.id) return [];
+      const { data, error } = await supabase
+        .from("property_bids")
+        .select("*")
+        .eq("property_id", editingProperty.id)
+        .order("bid_amount", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!editingProperty?.id
+  });
   const handleDeleteProperty = async (propertyId: string) => {
     try {
       const {
@@ -112,6 +135,7 @@ const AgentDashboard = () => {
   const handleEditProperty = (property: any) => {
     setEditingProperty(property);
     setIsEditDialogOpen(true);
+    setEditDialogTab("property"); // Reset to property tab when opening
     
     // Reset image states
     setEditMainImage(null);
@@ -125,6 +149,69 @@ const AgentDashboard = () => {
     setEditAdditionalImagePreviews([]);
     setExistingAdditionalImages(property.additional_images || []);
     setRemovedImages({ floorplan: [], additional: [] });
+
+    // Reset bidding states
+    setNewBidAmount("");
+    setBidderName("");
+    setBidderEmail("");
+    setBidderPhone("");
+  };
+
+  const handleAddBid = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProperty?.id || !newBidAmount) return;
+
+    try {
+      const { error } = await supabase
+        .from("property_bids")
+        .insert({
+          property_id: editingProperty.id,
+          bid_amount: parseInt(newBidAmount),
+          bidder_name: bidderName || null,
+          bidder_email: bidderEmail || null,
+          bidder_phone: bidderPhone || null,
+        });
+
+      if (error) throw error;
+
+      toast.success("Bud tillagt!");
+      setNewBidAmount("");
+      setBidderName("");
+      setBidderEmail("");
+      setBidderPhone("");
+      refetchBids();
+    } catch (error) {
+      console.error("Error adding bid:", error);
+      toast.error("Kunde inte lägga till bud");
+    }
+  };
+
+  const handleDeleteBid = async (bidId: string) => {
+    try {
+      const { error } = await supabase
+        .from("property_bids")
+        .delete()
+        .eq("id", bidId);
+
+      if (error) throw error;
+
+      toast.success("Bud borttaget");
+      refetchBids();
+    } catch (error) {
+      console.error("Error deleting bid:", error);
+      toast.error("Kunde inte ta bort bud");
+    }
+  };
+
+  // Generate bid amount options in 5000 kr increments
+  const generateBidOptions = () => {
+    if (!editingProperty?.price) return [];
+    const basePrice = editingProperty.price;
+    const options = [];
+    for (let i = 0; i <= 20; i++) {
+      options.push(basePrice + (i * 5000));
+    }
+    return options;
   };
 
   const handleEditImageChange = (
@@ -455,7 +542,21 @@ const AgentDashboard = () => {
           <DialogHeader>
             <DialogTitle>Redigera fastighet</DialogTitle>
           </DialogHeader>
-          {editingProperty && <form onSubmit={handleUpdateProperty} className="space-y-4">
+          {editingProperty && (
+            <Tabs value={editDialogTab} onValueChange={setEditDialogTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="property" className="gap-2">
+                  <Pencil className="w-4 h-4" />
+                  Fastighetsinfo
+                </TabsTrigger>
+                <TabsTrigger value="bidding" className="gap-2">
+                  <Gavel className="w-4 h-4" />
+                  Budgivning
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="property">
+                <form onSubmit={handleUpdateProperty} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <Label htmlFor="edit-title">Titel</Label>
@@ -530,178 +631,167 @@ const AgentDashboard = () => {
                   <Textarea id="edit-description" name="description" defaultValue={editingProperty.description} rows={6} required />
                 </div>
 
-                {/* Image Management Section */}
-                <div className="md:col-span-2 space-y-4 pt-4 border-t">
-                  <h3 className="text-lg font-semibold">Bilder</h3>
-
-                  {/* Main Image */}
-                  <div>
-                    <Label>Huvudbild</Label>
-                    {editMainImagePreview && !removedImages.main ? (
-                      <div className="relative mt-2 inline-block">
-                        <img src={editMainImagePreview} alt="Huvudbild" className="w-32 h-32 object-cover rounded" />
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="destructive"
-                          className="absolute -top-2 -right-2 h-6 w-6"
-                          onClick={() => handleRemoveEditImage('main')}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="mt-2">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleEditImageChange(e, 'main')}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Hover Image */}
-                  <div>
-                    <Label>Hoverbild (valfritt)</Label>
-                    {editHoverImagePreview && !removedImages.hover ? (
-                      <div className="relative mt-2 inline-block">
-                        <img src={editHoverImagePreview} alt="Hoverbild" className="w-32 h-32 object-cover rounded" />
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="destructive"
-                          className="absolute -top-2 -right-2 h-6 w-6"
-                          onClick={() => handleRemoveEditImage('hover')}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="mt-2">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleEditImageChange(e, 'hover')}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Floorplan Images */}
-                  <div>
-                    <Label>Planlösningar (valfritt)</Label>
-                    
-                    {/* Existing floorplan images */}
-                    {existingFloorplanImages.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {existingFloorplanImages.map((url, index) => (
-                          <div key={`existing-floorplan-${index}`} className="relative">
-                            <img src={url} alt={`Planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6"
-                              onClick={() => removeExistingFloorplanImage(url)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* New floorplan images */}
-                    {editFloorplanImagePreviews.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {editFloorplanImagePreviews.map((preview, index) => (
-                          <div key={`new-floorplan-${index}`} className="relative">
-                            <img src={preview} alt={`Ny planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6"
-                              onClick={() => removeEditFloorplanImage(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="mt-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleEditFloorplanImagesChange}
-                        className="cursor-pointer"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Du kan välja flera ritningar samtidigt
-                      </p>
+                {/* Main Image */}
+                <div>
+                  <Label>Huvudbild</Label>
+                  {editMainImagePreview && (
+                    <div className="relative mt-2 mb-2">
+                      <img src={editMainImagePreview} alt="Huvudbild" className="w-full h-48 object-cover rounded" />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={() => handleRemoveEditImage('main')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleEditImageChange(e, 'main')}
+                    className="cursor-pointer"
+                  />
+                </div>
 
-                  {/* Additional Images */}
-                  <div>
-                    <Label>Ytterligare bilder (valfritt)</Label>
-                    
-                    {/* Existing additional images */}
-                    {existingAdditionalImages.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {existingAdditionalImages.map((url, index) => (
-                          <div key={`existing-${index}`} className="relative">
-                            <img src={url} alt={`Bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6"
-                              onClick={() => removeExistingAdditionalImage(url)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* New additional images */}
-                    {editAdditionalImagePreviews.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {editAdditionalImagePreviews.map((preview, index) => (
-                          <div key={`new-${index}`} className="relative">
-                            <img src={preview} alt={`Ny bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute -top-2 -right-2 h-6 w-6"
-                              onClick={() => removeEditAdditionalImage(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Add more images button */}
-                    <div className="mt-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleEditAdditionalImagesChange}
-                        className="cursor-pointer"
-                      />
+                {/* Hover Image */}
+                <div>
+                  <Label>Hover-bild (valfritt)</Label>
+                  {editHoverImagePreview && (
+                    <div className="relative mt-2 mb-2">
+                      <img src={editHoverImagePreview} alt="Hover-bild" className="w-full h-48 object-cover rounded" />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={() => handleRemoveEditImage('hover')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleEditImageChange(e, 'hover')}
+                    className="cursor-pointer"
+                  />
+                </div>
+
+                {/* Floorplan Images */}
+                <div className="md:col-span-2">
+                  <Label>Planritningar (valfritt)</Label>
+                  
+                  {/* Existing floorplan images */}
+                  {existingFloorplanImages.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {existingFloorplanImages.map((url, index) => (
+                        <div key={`existing-floorplan-${index}`} className="relative">
+                          <img src={url} alt={`Planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => removeExistingFloorplanImage(url)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* New floorplan images */}
+                  {editFloorplanImagePreviews.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {editFloorplanImagePreviews.map((preview, index) => (
+                        <div key={`new-floorplan-${index}`} className="relative">
+                          <img src={preview} alt={`Ny planlösning ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => removeEditFloorplanImage(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleEditFloorplanImagesChange}
+                      className="cursor-pointer"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Du kan välja flera ritningar samtidigt
+                    </p>
+                  </div>
+                </div>
+
+                {/* Additional Images */}
+                <div>
+                  <Label>Ytterligare bilder (valfritt)</Label>
+                  
+                  {/* Existing additional images */}
+                  {existingAdditionalImages.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {existingAdditionalImages.map((url, index) => (
+                        <div key={`existing-${index}`} className="relative">
+                          <img src={url} alt={`Bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => removeExistingAdditionalImage(url)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* New additional images */}
+                  {editAdditionalImagePreviews.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {editAdditionalImagePreviews.map((preview, index) => (
+                        <div key={`new-${index}`} className="relative">
+                          <img src={preview} alt={`Ny bild ${index + 1}`} className="w-24 h-24 object-cover rounded" />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => removeEditAdditionalImage(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add more images button */}
+                  <div className="mt-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleEditAdditionalImagesChange}
+                      className="cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
@@ -714,7 +804,123 @@ const AgentDashboard = () => {
                   {isUpdating ? "Sparar..." : "Spara ändringar"}
                 </Button>
               </div>
-            </form>}
+            </form>
+              </TabsContent>
+
+              <TabsContent value="bidding" className="space-y-6">
+                {/* Add new bid form */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Lägg till nytt bud</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleAddBid} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                          <Label htmlFor="bid-amount">Budbelopp (kr) *</Label>
+                          <Select value={newBidAmount} onValueChange={setNewBidAmount} required>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="Välj budbelopp" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background max-h-[300px]">
+                              {generateBidOptions().map((amount) => (
+                                <SelectItem key={amount} value={amount.toString()}>
+                                  {amount.toLocaleString('sv-SE')} kr
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="bidder-name">Budgivarens namn</Label>
+                          <Input
+                            id="bidder-name"
+                            value={bidderName}
+                            onChange={(e) => setBidderName(e.target.value)}
+                            placeholder="Ex. Anna Andersson"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="bidder-email">E-post</Label>
+                          <Input
+                            id="bidder-email"
+                            type="email"
+                            value={bidderEmail}
+                            onChange={(e) => setBidderEmail(e.target.value)}
+                            placeholder="Ex. anna@example.com"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <Label htmlFor="bidder-phone">Telefonnummer</Label>
+                          <Input
+                            id="bidder-phone"
+                            type="tel"
+                            value={bidderPhone}
+                            onChange={(e) => setBidderPhone(e.target.value)}
+                            placeholder="Ex. 070-123 45 67"
+                          />
+                        </div>
+                      </div>
+
+                      <Button type="submit" className="w-full">
+                        <Gavel className="w-4 h-4 mr-2" />
+                        Lägg till bud
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+
+                {/* List of existing bids */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Registrerade bud ({propertyBids?.length || 0})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!propertyBids || propertyBids.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Gavel className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        <p>Inga bud registrerade ännu</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {propertyBids.map((bid: any) => (
+                          <div key={bid.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="flex-1">
+                              <div className="font-semibold text-lg">
+                                {bid.bid_amount.toLocaleString('sv-SE')} kr
+                              </div>
+                              {bid.bidder_name && (
+                                <div className="text-sm text-muted-foreground">{bid.bidder_name}</div>
+                              )}
+                              {bid.bidder_email && (
+                                <div className="text-xs text-muted-foreground">{bid.bidder_email}</div>
+                              )}
+                              {bid.bidder_phone && (
+                                <div className="text-xs text-muted-foreground">{bid.bidder_phone}</div>
+                              )}
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {new Date(bid.created_at).toLocaleString('sv-SE')}
+                              </div>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={() => handleDeleteBid(bid.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          )}
         </DialogContent>
       </Dialog>
     </div>;
