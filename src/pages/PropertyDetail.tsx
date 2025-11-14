@@ -91,7 +91,7 @@ const PropertyDetail = () => {
   const properties = [{
     id: 1,
     title: "Modern lägenhet i city",
-    price: "3.2M SEK",
+    price: "3 200 000 kr",
     location: "Södermalm, Stockholm",
     address: "Götgatan 45",
     vendor: "Fastighetsbyrån",
@@ -109,7 +109,7 @@ const PropertyDetail = () => {
   }, {
     id: 2,
     title: "Charmig svensk villa",
-    price: "4.8M SEK",
+    price: "4 800 000 kr",
     location: "Djursholm, Stockholm",
     address: "Vendevägen 12",
     vendor: "Mäklarhuset",
@@ -127,7 +127,7 @@ const PropertyDetail = () => {
   }, {
     id: 3,
     title: "Modernt radhus",
-    price: "2.9M SEK",
+    price: "2 900 000 kr",
     location: "Vasastan, Stockholm",
     address: "Odengatan 78",
     vendor: "ERA Mäkleri",
@@ -145,7 +145,7 @@ const PropertyDetail = () => {
   }, {
     id: 4,
     title: "Lyxig takvåning",
-    price: "8.5M SEK",
+    price: "8 500 000 kr",
     location: "Östermalm, Stockholm",
     address: "Strandvägen 23",
     vendor: "Länsförsäkringar Fastighetsförmedling",
@@ -163,7 +163,7 @@ const PropertyDetail = () => {
   }, {
     id: 5,
     title: "Familjehus",
-    price: "5.2M SEK",
+    price: "5 200 000 kr",
     location: "Lidingö, Stockholm",
     address: "Kyrkviken 8",
     vendor: "Mäklarbyrån Lidingö",
@@ -181,7 +181,7 @@ const PropertyDetail = () => {
   }, {
     id: 6,
     title: "Studioappartement",
-    price: "1.8M SEK",
+    price: "1 800 000 kr",
     location: "Norrmalm, Stockholm",
     address: "Drottninggatan 56",
     vendor: "Svensk Fastighetsförmedling",
@@ -199,7 +199,7 @@ const PropertyDetail = () => {
   }, {
     id: 7,
     title: "Elegant stadslägeneht",
-    price: "4.1M SEK",
+    price: "4 100 000 kr",
     location: "Gamla Stan, Stockholm",
     address: "Prästgatan 21",
     vendor: "Stockholm City Mäkleri",
@@ -217,7 +217,7 @@ const PropertyDetail = () => {
   }, {
     id: 8,
     title: "Klassiskt radhus",
-    price: "6.3M SEK",
+    price: "6 300 000 kr",
     location: "Bromma, Stockholm",
     address: "Åkeshovsvägen 34",
     vendor: "Bromma Mäklaren",
@@ -235,7 +235,7 @@ const PropertyDetail = () => {
   }, {
     id: 9,
     title: "Exklusiv skogsvilla",
-    price: "9.2M SEK",
+    price: "9 200 000 kr",
     location: "Nacka, Stockholm",
     address: "Skogsbacken 7",
     vendor: "Skärgårdsmäklaren",
@@ -253,7 +253,7 @@ const PropertyDetail = () => {
   }, {
     id: 10,
     title: "Sjönära lägenhet",
-    price: "7.8M SEK",
+    price: "7 800 000 kr",
     location: "Strandvägen, Stockholm",
     address: "Strandvägen 89",
     vendor: "Strandvägens Mäklare",
