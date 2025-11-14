@@ -136,6 +136,11 @@ const PropertyCard = ({
               Ny
             </Badge>
           )}
+          {hasActiveBidding && !isSold && (
+            <Badge className="bg-orange-500 text-white">
+              Pågående budgivning
+            </Badge>
+          )}
           <Badge variant="secondary" className="bg-white/90 text-foreground">
             {type}
           </Badge>
