@@ -175,10 +175,13 @@ const AgentDashboard = () => {
 
       if (bidError) throw bidError;
 
-      // Update the property's new_price with the new bid amount
+      // Update the property's new_price with the new bid amount (from bidding, not manual)
       const { error: updateError } = await supabase
         .from("properties")
-        .update({ new_price: parseInt(newBidAmount) })
+        .update({ 
+          new_price: parseInt(newBidAmount),
+          is_manual_price_change: false
+        })
         .eq("id", editingProperty.id);
 
       if (updateError) throw updateError;
@@ -229,7 +232,10 @@ const AgentDashboard = () => {
 
       const { error: updateError } = await supabase
         .from("properties")
-        .update({ new_price: newPrice })
+        .update({ 
+          new_price: newPrice,
+          is_manual_price_change: false
+        })
         .eq("id", editingProperty.id);
 
       if (updateError) throw updateError;
@@ -426,6 +432,7 @@ const AgentDashboard = () => {
         type: formData.get("type") as string,
         price: Number(formData.get("price")),
         new_price: newPriceValue ? Number(newPriceValue) : null,
+        is_manual_price_change: !!newPriceValue,
         bedrooms: Number(formData.get("bedrooms")),
         bathrooms: Number(formData.get("bathrooms")),
         area: Number(formData.get("area")),
