@@ -279,9 +279,10 @@ const PropertyCard = ({
             <Button 
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
             >
               {buttonText || "Visa detaljer"}
             </Button>
