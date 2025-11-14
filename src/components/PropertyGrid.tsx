@@ -20,6 +20,8 @@ import property7 from "@/assets/property-7.jpg";
 import property8 from "@/assets/property-8.jpg";
 import property9 from "@/assets/property-9.jpg";
 import property10 from "@/assets/property-10.jpg";
+import storgatan1 from "@/assets/storgatan-1.jpg";
+import storgatan2 from "@/assets/storgatan-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
 import logo2 from "@/assets/logo-2.svg";
 import logo3 from "@/assets/logo-3.svg";
@@ -264,6 +266,26 @@ export const allProperties: Property[] = [
       vendorLogo: logo10,
       hasVR: true,
       description: "Elegant lägenhet med öppen planlösning och utsikt över vattnet. Balkong i västerläge och klassiska sekelskiftesdetaljer.",
+    },
+    {
+      id: "storgatan",
+      title: "Storgatan",
+      price: "5 400 000 kr",
+      priceValue: 5400000,
+      location: "Vasastan, Stockholm",
+      address: "Storgatan 15",
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 95,
+      fee: 4200,
+      viewingDate: new Date("2024-10-22"),
+      image: storgatan1,
+      hoverImage: storgatan2,
+      type: "Lägenhet",
+      isNew: true,
+      vendorLogo: logo11,
+      hasVR: true,
+      description: "Stor och ljus lägenhet på Storgatan med högt i tak och vackra originaldetaljer. Modernt kök och fräscha badrum.",
     },
     {
       id: 11,
