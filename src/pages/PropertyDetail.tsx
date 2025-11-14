@@ -499,6 +499,15 @@ const PropertyDetail = () => {
                             {`${property.sold_price.toLocaleString('sv-SE')} kr`}
                           </p>
                         </>
+                      ) : property.new_price ? (
+                        <>
+                          <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
+                            {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                          </p>
+                          <p className="text-2xl sm:text-3xl font-bold text-[#FF6B2C] whitespace-nowrap">
+                            {dbProperty ? `${property.new_price.toLocaleString('sv-SE')} kr` : property.price}
+                          </p>
+                        </>
                       ) : (
                         <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
                           {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
