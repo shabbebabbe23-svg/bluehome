@@ -66,6 +66,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           fee: number | null
+          floorplan_images: string[] | null
           floorplan_url: string | null
           has_vr: boolean | null
           hover_image_url: string | null
@@ -95,6 +96,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           fee?: number | null
+          floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_vr?: boolean | null
           hover_image_url?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           fee?: number | null
+          floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_vr?: boolean | null
           hover_image_url?: string | null
@@ -145,6 +148,47 @@ export type Database = {
           viewing_date?: string | null
         }
         Relationships: []
+      }
+      property_bids: {
+        Row: {
+          bid_amount: number
+          bidder_email: string | null
+          bidder_name: string | null
+          bidder_phone: string | null
+          created_at: string
+          id: string
+          property_id: string
+          updated_at: string
+        }
+        Insert: {
+          bid_amount: number
+          bidder_email?: string | null
+          bidder_name?: string | null
+          bidder_phone?: string | null
+          created_at?: string
+          id?: string
+          property_id: string
+          updated_at?: string
+        }
+        Update: {
+          bid_amount?: number
+          bidder_email?: string | null
+          bidder_name?: string | null
+          bidder_phone?: string | null
+          created_at?: string
+          id?: string
+          property_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_bids_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       property_views: {
         Row: {
