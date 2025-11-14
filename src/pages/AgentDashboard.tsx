@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, Eye } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -638,7 +638,7 @@ const AgentDashboard = () => {
           </DialogHeader>
           {editingProperty && (
             <Tabs value={editDialogTab} onValueChange={setEditDialogTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-4 p-1 bg-hero-gradient">
+              <TabsList className="grid w-full grid-cols-2 mb-4 p-1 bg-hero-gradient">
                 <TabsTrigger value="property" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
                   <Pencil className="w-4 h-4" />
                   Fastighetsinfo
@@ -646,10 +646,6 @@ const AgentDashboard = () => {
                 <TabsTrigger value="bidding" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
                   <Gavel className="w-4 h-4" />
                   Budgivning
-                </TabsTrigger>
-                <TabsTrigger value="preview" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <Eye className="w-4 h-4" />
-                  Förhandsgranskning
                 </TabsTrigger>
               </TabsList>
 
@@ -894,7 +890,40 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-2 justify-end pt-4 border-t">
+                {!editingProperty.is_sold && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={async () => {
+                      const soldPrice = window.prompt("Ange slutpris för fastigheten (kr):", editingProperty.price.toString());
+                      if (soldPrice && !isNaN(Number(soldPrice))) {
+                        try {
+                          const { error } = await supabase
+                            .from('properties')
+                            .update({
+                              is_sold: true,
+                              sold_price: Number(soldPrice),
+                              sold_date: new Date().toISOString()
+                            })
+                            .eq('id', editingProperty.id);
+
+                          if (error) throw error;
+
+                          toast.success("Fastigheten har markerats som såld");
+                          await refetch();
+                          setIsEditDialogOpen(false);
+                        } catch (error) {
+                          console.error('Error marking property as sold:', error);
+                          toast.error("Kunde inte markera fastighet som såld");
+                        }
+                      }
+                    }}
+                    className="mr-auto"
+                  >
+                    Markera som såld
+                  </Button>
+                )}
                 <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating}>
                   Avbryt
                 </Button>
@@ -1027,41 +1056,6 @@ const AgentDashboard = () => {
                     )}
                   </CardContent>
                 </Card>
-              </TabsContent>
-
-              <TabsContent value="preview" className="space-y-4">
-                <div className="text-center mb-4">
-                  <h3 className="text-lg font-semibold mb-2">Så här kommer fastigheten att visas</h3>
-                  <p className="text-sm text-muted-foreground">Detta är en förhandsgranskning av hur fastigheten kommer att se ut med dina ändringar</p>
-                </div>
-                <div className="max-w-md mx-auto">
-                  <PropertyCard
-                    id={editingProperty.id}
-                    title={editingProperty.title}
-                    price={`${editingProperty.price.toLocaleString('sv-SE')} kr`}
-                    location={editingProperty.location}
-                    address={editingProperty.address}
-                    bedrooms={editingProperty.bedrooms}
-                    bathrooms={editingProperty.bathrooms}
-                    area={editingProperty.area}
-                    image={editMainImagePreview || editingProperty.image_url || "/placeholder.svg"}
-                    hoverImage={editHoverImagePreview || editingProperty.hover_image_url}
-                    type={editingProperty.type}
-                    viewingDate={editingProperty.viewing_date}
-                    isNew={false}
-                    isFavorite={false}
-                    vendorLogo={editingProperty.vendor_logo_url}
-                    isSold={editingProperty.is_sold}
-                    listedDate={editingProperty.listed_date}
-                    soldDate={editingProperty.sold_date}
-                    hasVR={editingProperty.has_vr}
-                    description={editingProperty.description}
-                    soldPrice={editingProperty.sold_price ? `${editingProperty.sold_price.toLocaleString('sv-SE')} kr` : undefined}
-                    newPrice={editingProperty.new_price ? `${editingProperty.new_price.toLocaleString('sv-SE')} kr` : undefined}
-                    hideControls={true}
-                    hasActiveBidding={propertyBids && propertyBids.length > 0}
-                  />
-                </div>
               </TabsContent>
             </Tabs>
           )}
