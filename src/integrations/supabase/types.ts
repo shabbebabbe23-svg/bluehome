@@ -156,6 +156,7 @@ export type Database = {
         Row: {
           bid_amount: number
           bidder_email: string | null
+          bidder_label: string | null
           bidder_name: string | null
           bidder_phone: string | null
           created_at: string
@@ -166,6 +167,7 @@ export type Database = {
         Insert: {
           bid_amount: number
           bidder_email?: string | null
+          bidder_label?: string | null
           bidder_name?: string | null
           bidder_phone?: string | null
           created_at?: string
@@ -176,6 +178,7 @@ export type Database = {
         Update: {
           bid_amount?: number
           bidder_email?: string | null
+          bidder_label?: string | null
           bidder_name?: string | null
           bidder_phone?: string | null
           created_at?: string
