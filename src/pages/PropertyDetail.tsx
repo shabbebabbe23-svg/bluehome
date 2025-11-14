@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -361,9 +361,12 @@ const PropertyDetail = () => {
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const handleShareLinkedIn = () => {
+  const handleShareInstagram = () => {
+    // Instagram doesn't have direct sharing URLs, so we copy to clipboard with a message
     const url = window.location.href;
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+    const text = `${property.title} - ${property.price}\n${url}`;
+    navigator.clipboard.writeText(text);
+    toast.success('Text kopierad! Klistra in i Instagram.');
   };
 
   const handleShareWhatsApp = () => {
@@ -840,10 +843,10 @@ const PropertyDetail = () => {
               <Button
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareLinkedIn}
+                onClick={handleShareInstagram}
               >
-                <Linkedin className="w-8 h-8" />
-                <span className="text-sm">LinkedIn</span>
+                <Instagram className="w-8 h-8" />
+                <span className="text-sm">Instagram</span>
               </Button>
               
               <Button
