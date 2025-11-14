@@ -710,6 +710,36 @@ const AgentDashboard = () => {
                   <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
                 </div>
 
+                {/* Mark as coming soon button */}
+                <div className="md:col-span-2">
+                  <Button
+                    type="button"
+                    variant={editingProperty.is_coming_soon ? "default" : "outline"}
+                    onClick={async () => {
+                      try {
+                        const { error } = await supabase
+                          .from('properties')
+                          .update({
+                            is_coming_soon: !editingProperty.is_coming_soon
+                          })
+                          .eq('id', editingProperty.id);
+
+                        if (error) throw error;
+
+                        toast.success(editingProperty.is_coming_soon ? "Fastigheten är inte längre kommande försäljning" : "Fastigheten är markerad som kommande försäljning");
+                        await refetch();
+                        setEditingProperty({...editingProperty, is_coming_soon: !editingProperty.is_coming_soon});
+                      } catch (error) {
+                        console.error('Error updating coming soon status:', error);
+                        toast.error("Kunde inte uppdatera status");
+                      }
+                    }}
+                    className="w-full"
+                  >
+                    {editingProperty.is_coming_soon ? "Ta bort från kommande försäljning" : "Markera som kommande försäljning"}
+                  </Button>
+                </div>
+
                 <div>
                   <Label htmlFor="edit-area">Boarea (kvm)</Label>
                   <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
