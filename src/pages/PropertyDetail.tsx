@@ -597,10 +597,15 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Prisutveckling</span>
-                      <span className="font-semibold text-destructive">-1 300 000 kr (-15 %)</span>
-                    </div>
+                    {property.new_price && (
+                      <div className="flex justify-between py-2 border-b border-border">
+                        <span className="text-muted-foreground">Prisutveckling</span>
+                        <span className="font-semibold text-[#FF6B2C]">
+                          +{(property.new_price - property.price).toLocaleString('sv-SE')} kr 
+                          ({Math.round(((property.new_price - property.price) / property.price) * 100)}%)
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Boarea</span>
                       <span className="font-semibold">{property.area} m²</span>
