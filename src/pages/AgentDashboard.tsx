@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
+import confetti from 'canvas-confetti';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -771,7 +772,15 @@ const AgentDashboard = () => {
 
                             if (error) throw error;
 
-                            toast.success("Fastigheten har markerats som såld");
+                            // Trigger celebration confetti
+                            confetti({
+                              particleCount: 100,
+                              spread: 70,
+                              origin: { y: 0.6 },
+                              colors: ['#0891b2', '#16a34a', '#22c55e', '#06b6d4']
+                            });
+
+                            toast.success("Grattis! Fastigheten har markerats som såld! 🎉");
                             await refetch();
                             setIsEditDialogOpen(false);
                           } catch (error) {
@@ -780,7 +789,7 @@ const AgentDashboard = () => {
                           }
                         }
                       }}
-                      className="w-full"
+                      className="w-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,36%)] text-white hover:opacity-90 border-0"
                     >
                       Markera som såld
                     </Button>
