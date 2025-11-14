@@ -523,16 +523,158 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
       </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Lägger till...
-          </>
-        ) : (
-          "Lägg till fastighet"
-        )}
-      </Button>
+      <div className="flex gap-4">
+        <Button 
+          type="button"
+          variant="outline"
+          onClick={async () => {
+            const data = watch();
+            if (!user?.id) {
+              toast.error("Du måste vara inloggad");
+              return;
+            }
+
+            if (!data.title || !data.address || !data.location || !data.type || !data.price || !data.bedrooms || !data.bathrooms || !data.area || !data.fee || !data.description) {
+              toast.error("Vänligen fyll i alla obligatoriska fält");
+              return;
+            }
+
+            if (!mainImage) {
+              toast.error("Vänligen ladda upp en huvudbild");
+              return;
+            }
+
+            setIsSubmitting(true);
+            try {
+              // Upload main image
+              const mainImageExt = mainImage.name.split('.').pop();
+              const mainImagePath = `${user.id}/${Date.now()}_main.${mainImageExt}`;
+              const { error: mainImageError } = await supabase.storage
+                .from('property-images')
+                .upload(mainImagePath, mainImage);
+
+              if (mainImageError) throw mainImageError;
+
+              const { data: { publicUrl: mainImageUrl } } = supabase.storage
+                .from('property-images')
+                .getPublicUrl(mainImagePath);
+
+              // Upload hover image if exists
+              let hoverImageUrl = null;
+              if (hoverImage) {
+                const hoverImageExt = hoverImage.name.split('.').pop();
+                const hoverImagePath = `${user.id}/${Date.now()}_hover.${hoverImageExt}`;
+                const { error: hoverImageError } = await supabase.storage
+                  .from('property-images')
+                  .upload(hoverImagePath, hoverImage);
+
+                if (hoverImageError) throw hoverImageError;
+
+                const { data: { publicUrl } } = supabase.storage
+                  .from('property-images')
+                  .getPublicUrl(hoverImagePath);
+                hoverImageUrl = publicUrl;
+              }
+
+              // Upload additional images if exist
+              const additionalImageUrls: string[] = [];
+              for (const image of additionalImages) {
+                const imageExt = image.name.split('.').pop();
+                const imagePath = `${user.id}/${Date.now()}_additional_${Math.random()}.${imageExt}`;
+                const { error: imageError } = await supabase.storage
+                  .from('property-images')
+                  .upload(imagePath, image);
+
+                if (imageError) throw imageError;
+
+                const { data: { publicUrl } } = supabase.storage
+                  .from('property-images')
+                  .getPublicUrl(imagePath);
+                additionalImageUrls.push(publicUrl);
+              }
+
+              // Upload floorplan if exists
+              let floorplanUrl = null;
+              if (floorplan) {
+                const floorplanExt = floorplan.name.split('.').pop();
+                const floorplanPath = `${user.id}/${Date.now()}_floorplan.${floorplanExt}`;
+                const { error: floorplanError } = await supabase.storage
+                  .from('property-images')
+                  .upload(floorplanPath, floorplan);
+
+                if (floorplanError) throw floorplanError;
+
+                const { data: { publicUrl } } = supabase.storage
+                  .from('property-images')
+                  .getPublicUrl(floorplanPath);
+                floorplanUrl = publicUrl;
+              }
+
+              // Create property with is_coming_soon = true
+              const { error } = await supabase.from('properties').insert({
+                user_id: user.id,
+                title: data.title,
+                address: data.address,
+                location: data.location,
+                type: data.type,
+                price: data.price,
+                bedrooms: data.bedrooms,
+                bathrooms: data.bathrooms,
+                area: data.area,
+                fee: data.fee,
+                description: data.description,
+                image_url: mainImageUrl,
+                hover_image_url: hoverImageUrl,
+                additional_images: additionalImageUrls,
+                floorplan_url: floorplanUrl,
+                viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
+                is_coming_soon: true,
+              });
+
+              if (error) throw error;
+
+              toast.success("Fastighet tillagd som kommande försäljning!");
+              reset();
+              setMainImage(null);
+              setHoverImage(null);
+              setAdditionalImages([]);
+              setFloorplan(null);
+              setMainImagePreview("");
+              setHoverImagePreview("");
+              setAdditionalImagesPreviews([]);
+              setFloorplanPreview("");
+              onSuccess?.();
+            } catch (error) {
+              console.error("Error creating property:", error);
+              toast.error("Kunde inte lägga till fastighet");
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
+          disabled={isSubmitting}
+          className="flex-1"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Lägger till...
+            </>
+          ) : (
+            "Kommande försäljning"
+          )}
+        </Button>
+
+        <Button type="submit" disabled={isSubmitting} className="flex-1">
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Lägger till...
+            </>
+          ) : (
+            "Lägg till fastighet"
+          )}
+        </Button>
+      </div>
     </form>
   );
 };
