@@ -720,6 +720,43 @@ const AgentDashboard = () => {
                   <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
                 </div>
 
+                {/* Mark as sold button */}
+                {!editingProperty.is_sold && (
+                  <div className="md:col-span-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        const soldPrice = window.prompt("Ange slutpris för fastigheten (kr):", editingProperty.price.toString());
+                        if (soldPrice && !isNaN(Number(soldPrice))) {
+                          try {
+                            const { error } = await supabase
+                              .from('properties')
+                              .update({
+                                is_sold: true,
+                                sold_price: Number(soldPrice),
+                                sold_date: new Date().toISOString()
+                              })
+                              .eq('id', editingProperty.id);
+
+                            if (error) throw error;
+
+                            toast.success("Fastigheten har markerats som såld");
+                            await refetch();
+                            setIsEditDialogOpen(false);
+                          } catch (error) {
+                            console.error('Error marking property as sold:', error);
+                            toast.error("Kunde inte markera fastighet som såld");
+                          }
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      Markera som såld
+                    </Button>
+                  </div>
+                )}
+
                 <div className="md:col-span-2">
                   <Label htmlFor="edit-description">Beskrivning</Label>
                   <Textarea id="edit-description" name="description" defaultValue={editingProperty.description} rows={6} required />
@@ -891,39 +928,6 @@ const AgentDashboard = () => {
               </div>
 
               <div className="flex gap-2 justify-end pt-4 border-t">
-                {!editingProperty.is_sold && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={async () => {
-                      const soldPrice = window.prompt("Ange slutpris för fastigheten (kr):", editingProperty.price.toString());
-                      if (soldPrice && !isNaN(Number(soldPrice))) {
-                        try {
-                          const { error } = await supabase
-                            .from('properties')
-                            .update({
-                              is_sold: true,
-                              sold_price: Number(soldPrice),
-                              sold_date: new Date().toISOString()
-                            })
-                            .eq('id', editingProperty.id);
-
-                          if (error) throw error;
-
-                          toast.success("Fastigheten har markerats som såld");
-                          await refetch();
-                          setIsEditDialogOpen(false);
-                        } catch (error) {
-                          console.error('Error marking property as sold:', error);
-                          toast.error("Kunde inte markera fastighet som såld");
-                        }
-                      }
-                    }}
-                    className="mr-auto"
-                  >
-                    Markera som såld
-                  </Button>
-                )}
                 <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating}>
                   Avbryt
                 </Button>
