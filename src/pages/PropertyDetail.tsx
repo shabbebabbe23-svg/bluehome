@@ -390,14 +390,6 @@ const PropertyDetail = () => {
           </Link>
           
           <div className="flex gap-1 sm:gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setIsShareDialogOpen(true)}
-              className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform"
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
             <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
               <Printer className="w-4 h-4" />
             </Button>
@@ -450,6 +442,19 @@ const PropertyDetail = () => {
                 </div>
               </div>
             </Card>
+
+            {/* Share Button */}
+            <div className="flex justify-center">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => setIsShareDialogOpen(true)}
+                className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
+              >
+                <Share2 className="w-4 h-4" />
+                Dela bostad
+              </Button>
+            </div>
 
             {/* Property Info */}
             <Card>
