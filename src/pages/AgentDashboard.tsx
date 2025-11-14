@@ -255,14 +255,34 @@ const AgentDashboard = () => {
     }
   };
 
-  // Generate bid amount options in 5000 kr increments
+  // Generate bid amount options with smart increments up to 60 million kr
   const generateBidOptions = () => {
     if (!editingProperty?.price) return [];
     const basePrice = editingProperty.price;
+    const maxPrice = 60000000; // 60 miljoner
     const options = [];
-    for (let i = 0; i <= 20; i++) {
-      options.push(basePrice + (i * 5000));
+    
+    let currentPrice = basePrice;
+    
+    while (currentPrice <= maxPrice) {
+      options.push(currentPrice);
+      
+      // Dynamic increments based on price range
+      if (currentPrice < 2000000) {
+        currentPrice += 5000;      // 5k steg under 2M
+      } else if (currentPrice < 5000000) {
+        currentPrice += 10000;     // 10k steg 2-5M
+      } else if (currentPrice < 10000000) {
+        currentPrice += 25000;     // 25k steg 5-10M
+      } else if (currentPrice < 20000000) {
+        currentPrice += 50000;     // 50k steg 10-20M
+      } else if (currentPrice < 40000000) {
+        currentPrice += 100000;    // 100k steg 20-40M
+      } else {
+        currentPrice += 250000;    // 250k steg 40-60M
+      }
     }
+    
     return options;
   };
 
