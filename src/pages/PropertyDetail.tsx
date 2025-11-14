@@ -53,6 +53,7 @@ const PropertyDetail = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
+  const [hasActiveBidding, setHasActiveBidding] = useState(false);
 
   // Track property view
   usePropertyViewTracking(id || "");
@@ -75,6 +76,15 @@ const PropertyDetail = () => {
           if (profile) {
             setAgentProfile(profile);
           }
+
+          // Check if property has active bidding
+          const { data: bids } = await supabase
+            .from('property_bids')
+            .select('id')
+            .eq('property_id', id)
+            .limit(1);
+          
+          setHasActiveBidding(bids && bids.length > 0);
         }
       } catch (error) {
         console.error('Error fetching property:', error);
@@ -474,6 +484,8 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2 mb-3">
                     <Badge variant="secondary">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
+                    {property.isSold && <Badge className="bg-destructive text-white">Såld</Badge>}
+                    {hasActiveBidding && !property.isSold && <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>

@@ -719,6 +719,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [dbProperties, setDbProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [propertyBids, setPropertyBids] = useState<Record<string, boolean>>({});
 
   // Save showAll state to sessionStorage whenever it changes
   useEffect(() => {
@@ -775,6 +776,21 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             description: prop.description || '',
           }));
           setDbProperties(formattedProperties);
+
+          // Fetch bidding status for all properties
+          const propertyIds = data.map(p => p.id);
+          const { data: bidsData } = await supabase
+            .from('property_bids')
+            .select('property_id')
+            .in('property_id', propertyIds);
+
+          if (bidsData) {
+            const bidsMap: Record<string, boolean> = {};
+            propertyIds.forEach(id => {
+              bidsMap[id] = bidsData.some(bid => bid.property_id === id);
+            });
+            setPropertyBids(bidsMap);
+          }
         }
       } catch (error) {
         console.error('Error fetching properties:', error);
@@ -961,7 +977,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                 newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                 viewMode={viewMode}
-                hasActiveBidding={Math.random() < 0.35}
+                hasActiveBidding={propertyBids[property.id as string] || false}
               />
             </div>
           ))}
