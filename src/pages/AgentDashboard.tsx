@@ -134,7 +134,27 @@ const AgentDashboard = () => {
     }
   };
   const handleEditProperty = (property: any) => {
-    navigate(`/fastighet/${property.id}`);
+    setEditingProperty(property);
+    setIsEditDialogOpen(true);
+    setEditDialogTab("property");
+    
+    setEditMainImage(null);
+    setEditMainImagePreview(property.image_url || "");
+    setEditHoverImage(null);
+    setEditHoverImagePreview(property.hover_image_url || "");
+    setEditFloorplanImages([]);
+    setEditFloorplanImagePreviews([]);
+    setExistingFloorplanImages(property.floorplan_images || []);
+    setEditAdditionalImages([]);
+    setEditAdditionalImagePreviews([]);
+    setExistingAdditionalImages(property.additional_images || []);
+    setRemovedImages({ floorplan: [], additional: [] });
+
+    setNewBidAmount("");
+    setBidderName("");
+    setBidderEmail("");
+    setBidderPhone("");
+    setBidderLabel("");
   };
 
   const handleAddBid = async (e: React.FormEvent) => {
