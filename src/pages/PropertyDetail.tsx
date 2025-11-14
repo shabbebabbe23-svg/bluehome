@@ -569,6 +569,10 @@ const PropertyDetail = () => {
                       </div>
                     )}
                     <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Pris/m²</span>
+                      <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
