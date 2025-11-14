@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, X, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Linkedin, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +32,14 @@ import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import PropertyMap from "@/components/PropertyMap";
+
+// X (Twitter) Logo Component
+const XLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
 const PropertyDetail = () => {
   const {
     id
@@ -813,56 +821,56 @@ const PropertyDetail = () => {
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareFacebook}
               >
-                <Facebook className="w-6 h-6" />
-                <span className="text-xs">Facebook</span>
+                <Facebook className="w-8 h-8" />
+                <span className="text-sm">Facebook</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareX}
               >
-                <X className="w-6 h-6" />
-                <span className="text-xs">X</span>
+                <XLogo className="w-8 h-8" />
+                <span className="text-sm">X</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareLinkedIn}
               >
-                <Linkedin className="w-6 h-6" />
-                <span className="text-xs">LinkedIn</span>
+                <Linkedin className="w-8 h-8" />
+                <span className="text-sm">LinkedIn</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareWhatsApp}
               >
-                <MessageCircle className="w-6 h-6" />
-                <span className="text-xs">WhatsApp</span>
+                <MessageCircle className="w-8 h-8" />
+                <span className="text-sm">WhatsApp</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleShareEmail}
               >
-                <Mail className="w-6 h-6" />
-                <span className="text-xs">Email</span>
+                <Mail className="w-8 h-8" />
+                <span className="text-sm">Email</span>
               </Button>
               
               <Button
                 variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
+                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
                 onClick={handleCopyUrl}
               >
-                {copiedUrl ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
-                <span className="text-xs">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
+                {copiedUrl ? <Check className="w-8 h-8" /> : <Copy className="w-8 h-8" />}
+                <span className="text-sm">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
               </Button>
             </div>
           </div>
