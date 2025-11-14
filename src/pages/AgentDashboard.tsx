@@ -711,8 +711,19 @@ const AgentDashboard = () => {
                   <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
                 </div>
 
+                <div>
+                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
+                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-viewing-date">Visningsdatum</Label>
+                  <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
+                </div>
+
                 {/* Mark as coming soon button */}
-                <div className="md:col-span-2">
+                <div>
+                  <Label className="opacity-0">-</Label>
                   <Button
                     type="button"
                     variant={editingProperty.is_coming_soon ? "default" : "outline"}
@@ -737,18 +748,8 @@ const AgentDashboard = () => {
                     }}
                     className="w-full"
                   >
-                    {editingProperty.is_coming_soon ? "Ta bort från kommande försäljning" : "Markera som kommande försäljning"}
+                    {editingProperty.is_coming_soon ? "Ta bort från kommande" : "Kommande försäljning"}
                   </Button>
-                </div>
-
-                <div>
-                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
-                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
-                </div>
-
-                <div>
-                  <Label htmlFor="edit-viewing-date">Visningsdatum</Label>
-                  <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
                 </div>
 
                 {/* Mark as sold button */}
