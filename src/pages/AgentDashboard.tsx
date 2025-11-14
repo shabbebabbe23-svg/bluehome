@@ -752,8 +752,8 @@ const AgentDashboard = () => {
                 </div>
 
                 {/* Mark as sold button */}
-                {!editingProperty.is_sold && (
-                  <div className="md:col-span-2">
+                <div className="md:col-span-2">
+                  {!editingProperty.is_sold ? (
                     <Button
                       type="button"
                       variant="outline"
@@ -782,7 +782,7 @@ const AgentDashboard = () => {
 
                             toast.success("Grattis! Fastigheten har markerats som såld! 🎉");
                             await refetch();
-                            setIsEditDialogOpen(false);
+                            setEditingProperty({...editingProperty, is_sold: true, sold_price: Number(soldPrice), sold_date: new Date().toISOString()});
                           } catch (error) {
                             console.error('Error marking property as sold:', error);
                             toast.error("Kunde inte markera fastighet som såld");
@@ -793,8 +793,70 @@ const AgentDashboard = () => {
                     >
                       Markera som såld
                     </Button>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={async () => {
+                          const newSoldPrice = window.prompt("Ange nytt slutpris för fastigheten (kr):", editingProperty.sold_price?.toString() || editingProperty.price.toString());
+                          if (newSoldPrice && !isNaN(Number(newSoldPrice))) {
+                            try {
+                              const { error } = await supabase
+                                .from('properties')
+                                .update({
+                                  sold_price: Number(newSoldPrice)
+                                })
+                                .eq('id', editingProperty.id);
+
+                              if (error) throw error;
+
+                              toast.success("Slutpriset har uppdaterats");
+                              await refetch();
+                              setEditingProperty({...editingProperty, sold_price: Number(newSoldPrice)});
+                            } catch (error) {
+                              console.error('Error updating sold price:', error);
+                              toast.error("Kunde inte uppdatera slutpriset");
+                            }
+                          }
+                        }}
+                        className="flex-1"
+                      >
+                        Ändra slutpris
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={async () => {
+                          if (window.confirm("Är du säker på att du vill ta bort såld-markeringen?")) {
+                            try {
+                              const { error } = await supabase
+                                .from('properties')
+                                .update({
+                                  is_sold: false,
+                                  sold_price: null,
+                                  sold_date: null
+                                })
+                                .eq('id', editingProperty.id);
+
+                              if (error) throw error;
+
+                              toast.success("Såld-markeringen har tagits bort");
+                              await refetch();
+                              setEditingProperty({...editingProperty, is_sold: false, sold_price: null, sold_date: null});
+                            } catch (error) {
+                              console.error('Error removing sold status:', error);
+                              toast.error("Kunde inte ta bort såld-markeringen");
+                            }
+                          }
+                        }}
+                        className="flex-1"
+                      >
+                        Ta bort såld
+                      </Button>
+                    </div>
+                  )}
+                </div>
 
                 <div className="md:col-span-2">
                   <Label htmlFor="edit-description">Beskrivning</Label>
