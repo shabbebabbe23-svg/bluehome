@@ -72,6 +72,7 @@ export type Database = {
           hover_image_url: string | null
           id: string
           image_url: string | null
+          is_coming_soon: boolean | null
           is_deleted: boolean | null
           is_manual_price_change: boolean | null
           is_sold: boolean | null
@@ -103,6 +104,7 @@ export type Database = {
           hover_image_url?: string | null
           id?: string
           image_url?: string | null
+          is_coming_soon?: boolean | null
           is_deleted?: boolean | null
           is_manual_price_change?: boolean | null
           is_sold?: boolean | null
@@ -134,6 +136,7 @@ export type Database = {
           hover_image_url?: string | null
           id?: string
           image_url?: string | null
+          is_coming_soon?: boolean | null
           is_deleted?: boolean | null
           is_manual_price_change?: boolean | null
           is_sold?: boolean | null
