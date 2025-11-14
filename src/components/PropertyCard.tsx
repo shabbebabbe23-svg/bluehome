@@ -32,6 +32,8 @@ interface PropertyCardProps {
   newPrice?: string;
   hideControls?: boolean;
   hasActiveBidding?: boolean;
+  buttonText?: string;
+  onButtonClick?: () => void;
 }
 
 const PropertyCard = ({
@@ -61,6 +63,8 @@ const PropertyCard = ({
   newPrice,
   hideControls = false,
   hasActiveBidding = false,
+  buttonText,
+  onButtonClick,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -271,11 +275,23 @@ const PropertyCard = ({
         )}
 
         <div className="mt-0.5 sm:mt-1">
-          <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2">
-              Visa detaljer
+          {onButtonClick ? (
+            <Button 
+              onClick={(e) => {
+                e.preventDefault();
+                onButtonClick();
+              }}
+              className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+            >
+              {buttonText || "Visa detaljer"}
             </Button>
-          </Link>
+          ) : (
+            <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
+              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2">
+                {buttonText || "Visa detaljer"}
+              </Button>
+            </Link>
+          )}
           <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-center mt-0.5">
             {isSold && soldDate 
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
