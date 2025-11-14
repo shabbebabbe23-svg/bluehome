@@ -47,9 +47,14 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     formState: { errors },
     setValue,
     reset,
+    watch,
   } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
   });
+
+  const watchPrice = watch("price");
+  const watchArea = watch("area");
+  const pricePerSqm = watchPrice && watchArea ? Math.round(watchPrice / watchArea) : null;
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -298,6 +303,11 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           />
           {errors.price && (
             <p className="text-sm text-destructive mt-1">{errors.price.message}</p>
+          )}
+          {pricePerSqm && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Pris/m²: {pricePerSqm.toLocaleString('sv-SE')} kr/m²
+            </p>
           )}
         </div>
 
