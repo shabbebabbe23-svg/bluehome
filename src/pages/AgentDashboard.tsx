@@ -617,12 +617,12 @@ const AgentDashboard = () => {
           </DialogHeader>
           {editingProperty && (
             <Tabs value={editDialogTab} onValueChange={setEditDialogTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="property" className="gap-2">
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-hero-gradient p-1">
+                <TabsTrigger value="property" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
                   <Pencil className="w-4 h-4" />
                   Fastighetsinfo
                 </TabsTrigger>
-                <TabsTrigger value="bidding" className="gap-2">
+                <TabsTrigger value="bidding" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
                   <Gavel className="w-4 h-4" />
                   Budgivning
                 </TabsTrigger>
@@ -938,7 +938,7 @@ const AgentDashboard = () => {
                         </div>
                       </div>
 
-                      <Button type="submit" className="w-full">
+                      <Button type="submit" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg">
                         <Gavel className="w-4 h-4 mr-2" />
                         Lägg till bud
                       </Button>
