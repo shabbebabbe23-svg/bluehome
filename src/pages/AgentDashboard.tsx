@@ -162,7 +162,8 @@ const AgentDashboard = () => {
     if (!editingProperty?.id || !newBidAmount) return;
 
     try {
-      const { error } = await supabase
+      // Insert the new bid
+      const { error: bidError } = await supabase
         .from("property_bids")
         .insert({
           property_id: editingProperty.id,
@@ -172,14 +173,29 @@ const AgentDashboard = () => {
           bidder_phone: bidderPhone || null,
         });
 
-      if (error) throw error;
+      if (bidError) throw bidError;
 
-      toast.success("Bud tillagt!");
+      // Update the property's new_price with the new bid amount
+      const { error: updateError } = await supabase
+        .from("properties")
+        .update({ new_price: parseInt(newBidAmount) })
+        .eq("id", editingProperty.id);
+
+      if (updateError) throw updateError;
+
+      toast.success("Bud tillagt och pris uppdaterat!");
       setNewBidAmount("");
       setBidderName("");
       setBidderEmail("");
       setBidderPhone("");
       refetchBids();
+      refetch(); // Refresh the properties list
+      
+      // Update local editing property to reflect the new price
+      setEditingProperty({
+        ...editingProperty,
+        new_price: parseInt(newBidAmount)
+      });
     } catch (error) {
       console.error("Error adding bid:", error);
       toast.error("Kunde inte lägga till bud");
@@ -188,15 +204,45 @@ const AgentDashboard = () => {
 
   const handleDeleteBid = async (bidId: string) => {
     try {
-      const { error } = await supabase
+      // Delete the bid
+      const { error: deleteError } = await supabase
         .from("property_bids")
         .delete()
         .eq("id", bidId);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
 
-      toast.success("Bud borttaget");
+      // Get remaining bids for this property to update the price
+      const { data: remainingBids, error: fetchError } = await supabase
+        .from("property_bids")
+        .select("bid_amount")
+        .eq("property_id", editingProperty.id)
+        .order("bid_amount", { ascending: false })
+        .limit(1);
+
+      if (fetchError) throw fetchError;
+
+      // Update property price based on remaining bids
+      const newPrice = remainingBids && remainingBids.length > 0 
+        ? remainingBids[0].bid_amount 
+        : null;
+
+      const { error: updateError } = await supabase
+        .from("properties")
+        .update({ new_price: newPrice })
+        .eq("id", editingProperty.id);
+
+      if (updateError) throw updateError;
+
+      toast.success("Bud borttaget och pris uppdaterat");
       refetchBids();
+      refetch(); // Refresh the properties list
+      
+      // Update local editing property
+      setEditingProperty({
+        ...editingProperty,
+        new_price: newPrice
+      });
     } catch (error) {
       console.error("Error deleting bid:", error);
       toast.error("Kunde inte ta bort bud");
