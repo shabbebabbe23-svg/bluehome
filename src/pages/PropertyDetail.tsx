@@ -444,10 +444,10 @@ const PropertyDetail = () => {
             </Card>
 
             {/* Share Button */}
-            <div className="flex justify-center">
+            <div className="flex justify-start">
               <Button 
                 variant="outline" 
-                size="lg"
+                size="sm"
                 onClick={() => setIsShareDialogOpen(true)}
                 className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
               >
