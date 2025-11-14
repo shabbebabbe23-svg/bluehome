@@ -774,6 +774,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
             description: prop.description || '',
+            sold_price: prop.sold_price || undefined,
+            new_price: prop.new_price || undefined,
           }));
           setDbProperties(formattedProperties);
 
