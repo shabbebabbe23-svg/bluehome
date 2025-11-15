@@ -977,7 +977,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 title={property.address}
                 isFavorite={favorites.includes(property.id)}
                 onFavoriteToggle={handleFavoriteToggle}
-                isSold={showFinalPrices}
+                isSold={property.isSold || false}
                 soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                 newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                 viewMode={viewMode}

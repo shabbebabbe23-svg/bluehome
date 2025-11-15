@@ -486,8 +486,8 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2 mb-3">
                     <Badge variant="secondary">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
-                    {property.isSold && <Badge className="bg-destructive text-white">Såld</Badge>}
-                    {hasActiveBidding && !property.isSold && (
+                    {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white">Såld</Badge>}
+                    {hasActiveBidding && !(property.is_sold || property.isSold) && (
                       <>
                         <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>
                         {dbProperty?.bidCount && (
@@ -501,7 +501,7 @@ const PropertyDetail = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>
                     <div className="flex flex-col items-end">
-                      {property.isSold && property.sold_price ? (
+                      {(property.is_sold || property.isSold) && property.sold_price ? (
                         <>
                           <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
                             {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
@@ -594,7 +594,7 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Utgångspris</span>
                       <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
                     </div>
-                    {property.isSold && property.sold_price && (
+                    {(property.is_sold || property.isSold) && property.sold_price && (
                       <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Slutpris</span>
                         <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
