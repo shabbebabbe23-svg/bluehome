@@ -122,7 +122,7 @@ const CommercialProperties = () => {
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const propertyTypes = ["Alla", "Kontor", "Butik", "Lager", "Restaurang", "Industri"];
+  const propertyTypes = ["Alla", "Kontor", "Kontorshotell", "Butik", "Lager", "Restaurang", "Industri"];
   const filteredProperties = selectedType === "Alla" ? commercialProperties : commercialProperties.filter(p => p.type === selectedType);
 
   useEffect(() => {
