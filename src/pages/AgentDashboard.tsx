@@ -721,37 +721,6 @@ const AgentDashboard = () => {
                   <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
                 </div>
 
-                {/* Mark as coming soon button */}
-                <div>
-                  <Label className="opacity-0">-</Label>
-                  <Button
-                    type="button"
-                    variant={editingProperty.is_coming_soon ? "default" : "outline"}
-                    onClick={async () => {
-                      try {
-                        const { error } = await supabase
-                          .from('properties')
-                          .update({
-                            is_coming_soon: !editingProperty.is_coming_soon
-                          })
-                          .eq('id', editingProperty.id);
-
-                        if (error) throw error;
-
-                        toast.success(editingProperty.is_coming_soon ? "Fastigheten är inte längre kommande försäljning" : "Fastigheten är markerad som kommande försäljning");
-                        await refetch();
-                        setEditingProperty({...editingProperty, is_coming_soon: !editingProperty.is_coming_soon});
-                      } catch (error) {
-                        console.error('Error updating coming soon status:', error);
-                        toast.error("Kunde inte uppdatera status");
-                      }
-                    }}
-                    className="w-full"
-                  >
-                    {editingProperty.is_coming_soon ? "Ta bort från kommande" : "Kommande försäljning"}
-                  </Button>
-                </div>
-
                 {/* Mark as sold button */}
                 <div className="md:col-span-2">
                   {!editingProperty.is_sold ? (
