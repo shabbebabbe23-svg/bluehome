@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
 import confetti from 'canvas-confetti';
+import agentDashboardBg from "@/assets/agent-dashboard-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -489,7 +490,7 @@ const AgentDashboard = () => {
       toast.error("Kunde inte logga ut");
     }
   };
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(${agentDashboardBg})` }}>
       {/* Header */}
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -511,7 +512,7 @@ const AgentDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 bg-background/80 backdrop-blur-sm rounded-lg my-4">
         <Card>
           <CardHeader>
             <CardTitle>Hantera fastigheter</CardTitle>
