@@ -451,7 +451,7 @@ const PropertyDetail = () => {
               </div>
               
               {/* Thumbnail Gallery */}
-              <div className="p-2 sm:p-4 bg-muted/30">
+              <div className="p-2 sm:p-4 bg-muted/30 mx-0">
                 <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
                   {images.map((image, index) => <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
                       <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
