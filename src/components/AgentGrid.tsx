@@ -89,24 +89,25 @@ const AgentGrid = ({
   return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
       {agents.map(agent => <Card key={agent.id} onClick={() => navigate(`/agent/${agent.id}`)} className="p-6 hover:shadow-lg transition-shadow cursor-pointer mx-0 rounded-none">
           <div className="flex items-start gap-4 mb-4">
-            <Avatar className="w-16 h-16">
+            <Avatar className="w-32 h-32 flex-shrink-0">
               <AvatarImage src={agent.avatar_url || undefined} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                 {getInitials(agent.full_name)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold truncate text-lg text-left">{agent.full_name || "Mäklare"}</h3>
-              {agent.agency && <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1 mx-0 px-[25px]">
-                  <Building className="w-4 h-4" />
-                  <span className="truncate text-right">{agent.agency}</span>
-                </div>}
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
+              <div>
+                <h3 className="font-semibold text-lg text-left">{agent.full_name || "Mäklare"}</h3>
+                {agent.agency && <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                    <Building className="w-4 h-4" />
+                    <span className="truncate">{agent.agency}</span>
+                  </div>}
+              </div>
+              {agent.bio && <p className="line-clamp-3 text-sm text-left">
+                  {agent.bio}
+                </p>}
             </div>
           </div>
-
-          {agent.bio && <p className="mb-4 line-clamp-2 text-lg text-left text-stone-950">
-              {agent.bio}
-            </p>}
 
           <div className="space-y-2 mb-4">
             {agent.area && <div className="flex items-center gap-2 text-sm">
@@ -123,7 +124,7 @@ const AgentGrid = ({
               </div>}
           </div>
 
-          <Button className="w-full" onClick={e => {
+          <Button variant="default" className="w-full" onClick={e => {
         e.stopPropagation();
         navigate(`/agent/${agent.id}`);
       }}>
