@@ -34,12 +34,13 @@ import bathroomAd from "@/assets/bathroom-ad.jpg";
 import PropertyMap from "@/components/PropertyMap";
 
 // X (Twitter) Logo Component
-const XLogo = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+const XLogo = ({
+  className
+}: {
+  className?: string;
+}) => <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-);
-
+  </svg>;
 const PropertyDetail = () => {
   const {
     id
@@ -78,14 +79,18 @@ const PropertyDetail = () => {
           }
 
           // Check if property has active bidding and get count
-          const { data: bids, count } = await supabase
-            .from('property_bids')
-            .select('id', { count: 'exact' })
-            .eq('property_id', id);
-          
+          const {
+            data: bids,
+            count
+          } = await supabase.from('property_bids').select('id', {
+            count: 'exact'
+          }).eq('property_id', id);
           setHasActiveBidding(bids && bids.length > 0);
           if (count && count > 0) {
-            setDbProperty((prev: any) => ({ ...prev, bidCount: count }));
+            setDbProperty((prev: any) => ({
+              ...prev,
+              bidCount: count
+            }));
           }
         }
       } catch (error) {
@@ -353,7 +358,6 @@ const PropertyDetail = () => {
     downloadICS(`Visning: ${property.title}`, `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`, `${property.address}, ${property.location}`, startDate, endDate, `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`);
     toast.success('Kalenderaktivitet sparad!');
   };
-
   const handleCopyUrl = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
@@ -361,18 +365,15 @@ const PropertyDetail = () => {
     toast.success('URL kopierad!');
     setTimeout(() => setCopiedUrl(false), 2000);
   };
-
   const handleShareFacebook = () => {
     const url = window.location.href;
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
   };
-
   const handleShareX = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}`;
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
   };
-
   const handleShareInstagram = () => {
     // Instagram doesn't have direct sharing URLs, so we copy to clipboard with a message
     const url = window.location.href;
@@ -380,13 +381,11 @@ const PropertyDetail = () => {
     navigator.clipboard.writeText(text);
     toast.success('Text kopierad! Klistra in i Instagram.');
   };
-
   const handleShareWhatsApp = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
   };
-
   const handleShareEmail = () => {
     const url = window.location.href;
     const subject = `Se denna bostad: ${property.title}`;
@@ -435,12 +434,7 @@ const PropertyDetail = () => {
             {/* Image Gallery */}
             <Card className="overflow-hidden">
               <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
-                <img 
-                  src={images[currentImageIndex]} 
-                  alt={property.title} 
-                  className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" 
-                  onClick={() => setIsImageModalOpen(true)}
-                />
+                <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setIsImageModalOpen(true)} />
                 
                 {/* Navigation Buttons */}
                 <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
@@ -458,7 +452,7 @@ const PropertyDetail = () => {
               
               {/* Thumbnail Gallery */}
               <div className="p-2 sm:p-4 bg-muted/30">
-                <div className="flex gap-1 sm:gap-2 overflow-x-auto">
+                <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
                   {images.map((image, index) => <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
                       <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
                     </button>)}
@@ -468,12 +462,7 @@ const PropertyDetail = () => {
 
             {/* Share Button */}
             <div className="flex justify-start">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setIsShareDialogOpen(true)}
-                className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
-              >
+              <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
                 <Share2 className="w-4 h-4" />
                 Dela bostad
               </Button>
@@ -487,43 +476,33 @@ const PropertyDetail = () => {
                     <Badge variant="secondary">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
                     {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white">Såld</Badge>}
-                    {hasActiveBidding && !(property.is_sold || property.isSold) && (
-                      <>
+                    {hasActiveBidding && !(property.is_sold || property.isSold) && <>
                         <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>
-                        {dbProperty?.bidCount && (
-                          <Badge variant="outline">
+                        {dbProperty?.bidCount && <Badge variant="outline">
                             {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
-                          </Badge>
-                        )}
-                      </>
-                    )}
+                          </Badge>}
+                      </>}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>
                     <div className="flex flex-col items-end">
-                      {(property.is_sold || property.isSold) && property.sold_price ? (
-                        <>
+                      {(property.is_sold || property.isSold) && property.sold_price ? <>
                           <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
                             {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
                           </p>
                           <p className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                             {`${property.sold_price.toLocaleString('sv-SE')} kr`}
                           </p>
-                        </>
-                      ) : property.new_price ? (
-                        <>
+                        </> : property.new_price ? <>
                           <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
                             {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
                           </p>
                           <p className="text-2xl sm:text-3xl font-bold text-[#FF6B2C] whitespace-nowrap">
                             {dbProperty ? `${property.new_price.toLocaleString('sv-SE')} kr` : property.price}
                           </p>
-                        </>
-                      ) : (
-                        <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
+                        </> : <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
                           {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                        </p>
-                      )}
+                        </p>}
                     </div>
                   </div>
                   <div className="flex items-center text-muted-foreground mt-2">
@@ -594,12 +573,10 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Utgångspris</span>
                       <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
                     </div>
-                    {(property.is_sold || property.isSold) && property.sold_price && (
-                      <div className="flex justify-between py-2 border-b border-border">
+                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Slutpris</span>
                         <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
-                      </div>
-                    )}
+                      </div>}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Pris/m²</span>
                       <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
@@ -608,15 +585,13 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
                     </div>
-                    {property.new_price && property.is_manual_price_change && (
-                      <div className="flex justify-between py-2 border-b border-border">
+                    {property.new_price && property.is_manual_price_change && <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Prisutveckling</span>
                         <span className="font-semibold text-[#FF6B2C]">
                           +{(property.new_price - property.price).toLocaleString('sv-SE')} kr 
-                          ({Math.round(((property.new_price - property.price) / property.price) * 100)}%)
+                          ({Math.round((property.new_price - property.price) / property.price * 100)}%)
                         </span>
-                      </div>
-                    )}
+                      </div>}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Boarea</span>
                       <span className="font-semibold">{property.area} m²</span>
@@ -649,25 +624,11 @@ const PropertyDetail = () => {
                     <div>
                       <h2 className="text-xl font-bold mb-3">Planritning</h2>
                       <div className="space-y-4">
-                        {property?.floorplan_images?.length > 0 ? (
-                          property.floorplan_images.map((imageUrl: string, index: number) => (
-                            <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                              <img 
-                                src={getImageUrl(imageUrl) || imageUrl} 
-                                alt={`Planritning ${index + 1}`} 
-                                className="w-full max-w-[1200px] h-auto object-contain rounded-lg" 
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                            <img 
-                              src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} 
-                              alt="Planritning" 
-                              className="w-full max-w-[1200px] h-auto object-contain rounded-lg" 
-                            />
-                          </div>
-                        )}
+                        {property?.floorplan_images?.length > 0 ? property.floorplan_images.map((imageUrl: string, index: number) => <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                              <img src={getImageUrl(imageUrl) || imageUrl} alt={`Planritning ${index + 1}`} className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                            </div>) : <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                            <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                          </div>}
                       </div>
                     </div>
                   </>}
@@ -822,11 +783,7 @@ const PropertyDetail = () => {
           <aside className="w-full">
             <div className="p-2 sm:p-4">
               <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <img 
-                  src={bathroomAd} 
-                  alt="Badrumrenovering" 
-                  className="w-full h-32 sm:h-40 md:h-48 object-cover"
-                />
+                <img src={bathroomAd} alt="Badrumrenovering" className="w-full h-32 sm:h-40 md:h-48 object-cover" />
                 <div className="p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3 md:space-y-4">
                   <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
                     Drömbadrum?
@@ -863,56 +820,32 @@ const PropertyDetail = () => {
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareFacebook}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareFacebook}>
                 <Facebook className="w-8 h-8" />
                 <span className="text-sm">Facebook</span>
               </Button>
               
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareX}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareX}>
                 <XLogo className="w-8 h-8" />
                 <span className="text-sm">X</span>
               </Button>
               
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareInstagram}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareInstagram}>
                 <Instagram className="w-8 h-8" />
                 <span className="text-sm">Instagram</span>
               </Button>
               
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareWhatsApp}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareWhatsApp}>
                 <MessageCircle className="w-8 h-8" />
                 <span className="text-sm">WhatsApp</span>
               </Button>
               
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleShareEmail}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareEmail}>
                 <Mail className="w-8 h-8" />
                 <span className="text-sm">Email</span>
               </Button>
               
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all"
-                onClick={handleCopyUrl}
-              >
+              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleCopyUrl}>
                 {copiedUrl ? <Check className="w-8 h-8" /> : <Copy className="w-8 h-8" />}
                 <span className="text-sm">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
               </Button>
@@ -925,33 +858,17 @@ const PropertyDetail = () => {
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
           <div className="relative w-full h-full flex items-center justify-center bg-black/90">
-            <img 
-              src={images[currentImageIndex]} 
-              alt={property.title} 
-              className="max-w-full max-h-[90vh] object-contain"
-            />
+            <img src={images[currentImageIndex]} alt={property.title} className="max-w-full max-h-[90vh] object-contain" />
             
             {/* Navigation Buttons */}
-            {images.length > 1 && (
-              <>
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all"
-                  onClick={handlePreviousImage}
-                >
+            {images.length > 1 && <>
+                <Button variant="secondary" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handlePreviousImage}>
                   <ChevronLeft className="w-5 h-5" />
                 </Button>
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all"
-                  onClick={handleNextImage}
-                >
+                <Button variant="secondary" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handleNextImage}>
                   <ChevronRight className="w-5 h-5" />
                 </Button>
-              </>
-            )}
+              </>}
             
             {/* Image Counter */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
