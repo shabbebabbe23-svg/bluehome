@@ -14,6 +14,7 @@ interface PropertyCardProps {
   bedrooms: number;
   bathrooms: number;
   area: number;
+  fee?: number;
   image: string;
   hoverImage?: string;
   type: string;
@@ -45,6 +46,7 @@ const PropertyCard = ({
   bedrooms,
   bathrooms,
   area,
+  fee = 0,
   image,
   hoverImage,
   viewingDate,
@@ -81,6 +83,21 @@ const PropertyCard = ({
   const daysOnMarket = listedDate 
     ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
+
+  // Calculate monthly cost
+  const priceValue = parseInt(price.replace(/\D/g, ''));
+  const downPayment = Math.round(priceValue * 0.15);
+  const loanAmount = priceValue - downPayment;
+  const monthlyInterest = Math.round((loanAmount * 0.05) / 12);
+  const monthlyAmortization = Math.round((loanAmount * 0.02) / 12);
+  const totalMonthlyCost = monthlyInterest + monthlyAmortization + fee;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('sv-SE', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   // Save scroll position before navigating to detail page
   const handleNavigateToDetail = () => {
@@ -255,6 +272,31 @@ const PropertyCard = ({
               </div>
             </div>
           </div>
+
+          {/* Monthly cost */}
+          {!isSold && (
+            <div className="mt-2 pt-2 border-t border-border/50">
+              <div className="text-xs sm:text-sm text-muted-foreground mb-1">Månadskostnad:</div>
+              <div className="space-y-0.5">
+                <div className="flex justify-between text-[10px] sm:text-xs">
+                  <span className="text-muted-foreground">Ränta (5%)</span>
+                  <span className="text-foreground">{formatCurrency(monthlyInterest)} kr</span>
+                </div>
+                <div className="flex justify-between text-[10px] sm:text-xs">
+                  <span className="text-muted-foreground">Amortering (2%)</span>
+                  <span className="text-foreground">{formatCurrency(monthlyAmortization)} kr</span>
+                </div>
+                <div className="flex justify-between text-[10px] sm:text-xs">
+                  <span className="text-muted-foreground">Avgift</span>
+                  <span className="text-foreground">{formatCurrency(fee)} kr</span>
+                </div>
+                <div className="flex justify-between text-xs sm:text-sm font-semibold pt-1 border-t border-border/30">
+                  <span className="text-foreground">Total</span>
+                  <span className="text-primary">{formatCurrency(totalMonthlyCost)} kr/mån</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Show viewing date only for non-sold properties */}
           {!isSold && (
