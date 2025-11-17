@@ -32,6 +32,7 @@ import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import PropertyMap from "@/components/PropertyMap";
+import PropertyCostBreakdown from "@/components/PropertyCostBreakdown";
 
 // X (Twitter) Logo Component
 const XLogo = ({
@@ -662,6 +663,14 @@ const PropertyDetail = () => {
 
             {/* Map */}
             <PropertyMap address={property.address} location={property.location} />
+            
+            {/* Cost Breakdown */}
+            <PropertyCostBreakdown 
+              price={property.price} 
+              fee={property.fee || 0} 
+              area={property.area} 
+              type={property.type} 
+            />
           </div>
 
           {/* Sidebar */}
