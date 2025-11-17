@@ -494,15 +494,15 @@ const AgentDashboard = () => {
       {/* Header */}
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Home className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
             <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
               Till startsidan
             </Button>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
             <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold">
               <LogOut className="w-4 h-4 mr-2" />
               Logga ut
@@ -549,7 +549,7 @@ const AgentDashboard = () => {
               }} />
               </TabsContent>
 
-              <TabsContent value="existing" className="mt-6">
+              <TabsContent value="existing" className="mt-6 max-h-[calc(100vh-400px)] overflow-y-auto">
                 {isLoadingProperties ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-96" />)}
                   </div> : properties && properties.length > 0 ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
