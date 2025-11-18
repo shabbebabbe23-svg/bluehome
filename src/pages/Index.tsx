@@ -26,14 +26,24 @@ const Index = () => {
       try {
         const { data, error } = await supabase
           .from('properties')
-          .select('*')
+          .select(`
+            *,
+            profiles:user_id (
+              id,
+              full_name,
+              avatar_url,
+              phone,
+              email,
+              agency
+            )
+          `)
           .eq('is_deleted', false)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
         if (data) {
-          const formattedProperties: Property[] = data.map((prop) => ({
+          const formattedProperties: Property[] = data.map((prop: any) => ({
             id: prop.id,
             title: prop.title,
             price: `${prop.price.toLocaleString('sv-SE')} kr`,
@@ -53,6 +63,12 @@ const Index = () => {
             isSold: prop.is_sold || false,
             soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
+            agent_name: prop.profiles?.full_name,
+            agent_avatar: prop.profiles?.avatar_url,
+            agent_phone: prop.profiles?.phone,
+            agent_email: prop.profiles?.email,
+            agent_agency: prop.profiles?.agency,
+            agent_id: prop.profiles?.id,
           }));
           setAllProperties(formattedProperties);
         }

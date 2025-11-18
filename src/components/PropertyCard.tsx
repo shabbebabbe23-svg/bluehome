@@ -1,9 +1,10 @@
 import React from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface PropertyCardProps {
   id: string | number;
@@ -35,6 +36,11 @@ interface PropertyCardProps {
   hasActiveBidding?: boolean;
   buttonText?: string;
   onButtonClick?: () => void;
+  agent_name?: string;
+  agent_avatar?: string;
+  agent_phone?: string;
+  agent_agency?: string;
+  agent_id?: string;
 }
 
 const PropertyCard = ({
@@ -67,6 +73,11 @@ const PropertyCard = ({
   hasActiveBidding = false,
   buttonText,
   onButtonClick,
+  agent_name,
+  agent_avatar,
+  agent_phone,
+  agent_agency,
+  agent_id,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   const viewDate = viewingDate ? new Date(viewingDate) : null;
@@ -295,6 +306,49 @@ const PropertyCard = ({
                   <span className="text-primary">{formatCurrency(totalMonthlyCost)} kr/mån</span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Agent Information */}
+          {agent_name && (
+            <div className="mt-3 pt-3 border-t border-border/50">
+              <Link 
+                to={`/agent/${agent_id}`}
+                className="flex items-center gap-2 hover:bg-muted/30 p-2 rounded-lg transition-colors group/agent relative z-20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Avatar className="w-10 h-10 border-2 border-border">
+                  <AvatarImage src={agent_avatar} className="object-cover" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                    <User className="w-5 h-5" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
+                    {agent_name}
+                  </p>
+                  {agent_agency && (
+                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                      <Building2 className="w-3 h-3 flex-shrink-0" />
+                      {agent_agency}
+                    </p>
+                  )}
+                </div>
+                {agent_phone && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-shrink-0 h-8 w-8 p-0"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.location.href = `tel:${agent_phone}`;
+                    }}
+                  >
+                    <Phone className="w-4 h-4" />
+                  </Button>
+                )}
+              </Link>
             </div>
           )}
 
