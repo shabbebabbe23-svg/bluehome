@@ -71,6 +71,12 @@ export interface Property {
   sold_price?: number;
   new_price?: number;
   is_manual_price_change?: boolean;
+  agent_name?: string;
+  agent_avatar?: string;
+  agent_phone?: string;
+  agent_email?: string;
+  agent_agency?: string;
+  agent_id?: string;
 }
 
 export const allProperties: Property[] = [
