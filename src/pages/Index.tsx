@@ -5,7 +5,7 @@ import PropertyGrid from "@/components/PropertyGrid";
 import AgentGrid from "@/components/AgentGrid";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
-import AllPropertiesMap from "@/components/AllPropertiesMap";
+import LazyMap from "@/components/LazyMap";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
 import sofaAd from "@/assets/sofa-ad.svg";
@@ -24,52 +24,58 @@ const Index = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const { data, error } = await supabase
+        // First get properties
+        const { data: propertiesData, error: propertiesError } = await supabase
           .from('properties')
-          .select(`
-            *,
-            profiles:user_id (
-              id,
-              full_name,
-              avatar_url,
-              phone,
-              email,
-              agency
-            )
-          `)
+          .select('*')
           .eq('is_deleted', false)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (propertiesError) throw propertiesError;
 
-        if (data) {
-          const formattedProperties: Property[] = data.map((prop: any) => ({
-            id: prop.id,
-            title: prop.title,
-            price: `${prop.price.toLocaleString('sv-SE')} kr`,
-            priceValue: prop.price,
-            location: prop.location,
-            address: prop.address,
-            bedrooms: prop.bedrooms,
-            bathrooms: prop.bathrooms,
-            area: prop.area,
-            fee: prop.fee || 0,
-            viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
-            image: prop.image_url || property1,
-            hoverImage: prop.hover_image_url || prop.image_url || property2,
-            type: prop.type,
-            isNew: false,
-            vendorLogo: prop.vendor_logo_url || logo1,
-            isSold: prop.is_sold || false,
-            soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
-            hasVR: prop.has_vr || false,
-            agent_name: prop.profiles?.full_name,
-            agent_avatar: prop.profiles?.avatar_url,
-            agent_phone: prop.profiles?.phone,
-            agent_email: prop.profiles?.email,
-            agent_agency: prop.profiles?.agency,
-            agent_id: prop.profiles?.id,
-          }));
+        if (propertiesData) {
+          // Get unique user IDs
+          const userIds = [...new Set(propertiesData.map(p => p.user_id))];
+          
+          // Fetch profiles for these users
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url, phone, email, agency')
+            .in('id', userIds);
+
+          // Create a map of user_id to profile
+          const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+
+          const formattedProperties: Property[] = propertiesData.map((prop: any) => {
+            const profile = profilesMap.get(prop.user_id);
+            return {
+              id: prop.id,
+              title: prop.title,
+              price: `${prop.price.toLocaleString('sv-SE')} kr`,
+              priceValue: prop.price,
+              location: prop.location,
+              address: prop.address,
+              bedrooms: prop.bedrooms,
+              bathrooms: prop.bathrooms,
+              area: prop.area,
+              fee: prop.fee || 0,
+              viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+              image: prop.image_url || property1,
+              hoverImage: prop.hover_image_url || prop.image_url || property2,
+              type: prop.type,
+              isNew: false,
+              vendorLogo: prop.vendor_logo_url || logo1,
+              isSold: prop.is_sold || false,
+              soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
+              hasVR: prop.has_vr || false,
+              agent_name: profile?.full_name,
+              agent_avatar: profile?.avatar_url,
+              agent_phone: profile?.phone,
+              agent_email: profile?.email,
+              agent_agency: profile?.agency,
+              agent_id: profile?.id,
+            };
+          });
           setAllProperties(formattedProperties);
         }
       } catch (error) {
@@ -126,7 +132,7 @@ const Index = () => {
   />
       </div>
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">
-        <AllPropertiesMap properties={allProperties} />
+        <LazyMap properties={allProperties} />
       </div>
       <Footer />
     </div>
