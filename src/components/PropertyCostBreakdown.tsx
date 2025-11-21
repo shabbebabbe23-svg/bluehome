@@ -14,8 +14,8 @@ const PropertyCostBreakdown = ({ price, fee, area, type }: PropertyCostBreakdown
   const downPayment = Math.round(price * (downPaymentPercent / 100));
   const loanAmount = price - downPayment;
   
-  // Interest rate 5% annually
-  const interestRate = 5;
+  // Interest rate 3% annually
+  const interestRate = 3;
   const monthlyInterest = Math.round((loanAmount * (interestRate / 100)) / 12);
   
   // Amortization 2% of loan annually
