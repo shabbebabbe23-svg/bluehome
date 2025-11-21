@@ -55,8 +55,8 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           // Update map with current geocoded properties
           setPropertiesWithCoords([...geocoded]);
           
-          // Rate limiting - reduced to 500ms for faster loading
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Rate limiting - reduced to 300ms for faster loading
+          await new Promise(resolve => setTimeout(resolve, 300));
         } catch (error) {
           console.error(`Geocoding error for ${property.address}:`, error);
         }
