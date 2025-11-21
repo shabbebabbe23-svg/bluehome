@@ -99,7 +99,7 @@ const PropertyCard = ({
   const priceValue = parseInt(price.replace(/\D/g, ''));
   const downPayment = Math.round(priceValue * 0.15);
   const loanAmount = priceValue - downPayment;
-  const monthlyInterest = Math.round((loanAmount * 0.05) / 12);
+  const monthlyInterest = Math.round((loanAmount * 0.03) / 12);
   const monthlyAmortization = Math.round((loanAmount * 0.02) / 12);
   const totalMonthlyCost = monthlyInterest + monthlyAmortization + fee;
 
@@ -290,7 +290,7 @@ const PropertyCard = ({
               <div className="text-xs sm:text-sm text-muted-foreground mb-1">Månadskostnad:</div>
               <div className="space-y-0.5">
                 <div className="flex justify-between text-[10px] sm:text-xs">
-                  <span className="text-muted-foreground">Ränta (5%)</span>
+                  <span className="text-muted-foreground">Ränta (3%)</span>
                   <span className="text-foreground">{formatCurrency(monthlyInterest)} kr</span>
                 </div>
                 <div className="flex justify-between text-[10px] sm:text-xs">
