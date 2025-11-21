@@ -485,7 +485,7 @@ const PropertyDetail = () => {
                       </>}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold">{dbProperty ? property.address : property.title}</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">{property.address}</h1>
                     <div className="flex flex-col items-end">
                       {(property.is_sold || property.isSold) && property.sold_price ? <>
                           <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
