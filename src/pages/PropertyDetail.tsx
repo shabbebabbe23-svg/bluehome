@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -399,9 +399,16 @@ const PropertyDetail = () => {
       background: 'var(--main-gradient)'
     }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform text-xs sm:text-sm">
-            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Tillbaka</span>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </Button>
           
           {/* Bluehome Logo - Center */}
