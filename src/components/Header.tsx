@@ -78,12 +78,12 @@ const Header = () => {
               <svg className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#22c55e" />
+                    <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))' }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(var(--accent))' }} />
                   </linearGradient>
                 </defs>
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
           </div>
