@@ -682,7 +682,6 @@ const AgentDashboard = () => {
                       <SelectItem value="Parhus">Parhus</SelectItem>
                       <SelectItem value="Fritidshus">Fritidshus</SelectItem>
                       <SelectItem value="Tomt">Tomt</SelectItem>
-                      <SelectItem value="Bostadsrätt">Bostadsrätt</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
