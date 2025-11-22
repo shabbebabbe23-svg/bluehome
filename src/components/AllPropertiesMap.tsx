@@ -108,6 +108,9 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         case 'Radhus':
           color = '#a855f7'; // Purple
           break;
+        case 'Parhus':
+          color = '#14b8a6'; // Teal
+          break;
         case 'Tomt':
           color = '#f59e0b'; // Orange
           break;
@@ -314,6 +317,12 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
                 </div>
               </div>
               <span>Radhus</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" />
+              </div>
+              <span>Parhus</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center">
