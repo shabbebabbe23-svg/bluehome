@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle } from "lucide-react";
-import logo from "@/assets/logo-1.svg";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,7 +75,7 @@ const Header = () => {
             
             {/* Logo */}
             <Link to="/" className="hover:opacity-80 transition-opacity">
-              <img src={logo} alt="Mäklarbyrån A" className="h-10 md:h-12 lg:h-14" />
+              <Home className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-primary" strokeWidth={2.5} />
             </Link>
           </div>
 
