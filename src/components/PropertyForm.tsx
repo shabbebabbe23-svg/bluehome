@@ -23,7 +23,7 @@ const propertySchema = z.object({
   bathrooms: z.coerce.number().min(1, "Minst 1 badrum").max(20, "Max 20 badrum"),
   area: z.coerce.number().min(1, "Area måste vara minst 1 kvm").max(10000, "Max 10000 kvm"),
   fee: z.coerce.number().min(0, "Avgift måste vara minst 0").optional(),
-  operating_cost: z.coerce.number().min(0, "Drift kostnader måste vara minst 0").optional(),
+  operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
 });
@@ -400,9 +400,9 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Drift kostnader */}
+        {/* Driftkostnad */}
         <div>
-          <Label htmlFor="operating_cost">Drift kostnader (kr/mån)</Label>
+          <Label htmlFor="operating_cost">Driftkostnad (kr/mån)</Label>
           <Input
             id="operating_cost"
             type="number"
