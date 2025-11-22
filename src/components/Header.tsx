@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import bluehomeLogo from "@/assets/bluehome-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +75,7 @@ const Header = () => {
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity">
-              <img src={bluehomeLogo} alt="Bluehome" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain" />
+              <Home className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary" />
               <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                 Bluehome
               </span>
