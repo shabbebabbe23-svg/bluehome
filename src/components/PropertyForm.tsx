@@ -209,6 +209,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         bathrooms: data.bathrooms,
         area: data.area,
         fee: data.fee,
+        operating_cost: data.operating_cost || 0,
         description: data.description,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,

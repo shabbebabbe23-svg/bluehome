@@ -79,6 +79,7 @@ export type Database = {
           listed_date: string | null
           location: string
           new_price: number | null
+          operating_cost: number | null
           price: number
           sold_date: string | null
           sold_price: number | null
@@ -111,6 +112,7 @@ export type Database = {
           listed_date?: string | null
           location: string
           new_price?: number | null
+          operating_cost?: number | null
           price: number
           sold_date?: string | null
           sold_price?: number | null
@@ -143,6 +145,7 @@ export type Database = {
           listed_date?: string | null
           location?: string
           new_price?: number | null
+          operating_cost?: number | null
           price?: number
           sold_date?: string | null
           sold_price?: number | null
