@@ -6,9 +6,10 @@ interface PropertyCostBreakdownProps {
   fee: number;
   area: number;
   type: string;
+  operatingCost: number;
 }
 
-const PropertyCostBreakdown = ({ price, fee, area, type }: PropertyCostBreakdownProps) => {
+const PropertyCostBreakdown = ({ price, fee, area, type, operatingCost }: PropertyCostBreakdownProps) => {
   // Calculate costs
   const downPaymentPercent = 15; // 15% minimum down payment
   const downPayment = Math.round(price * (downPaymentPercent / 100));
@@ -22,11 +23,14 @@ const PropertyCostBreakdown = ({ price, fee, area, type }: PropertyCostBreakdown
   const amortizationRate = 2;
   const monthlyAmortization = Math.round((loanAmount * (amortizationRate / 100)) / 12);
   
-  // Monthly fee (operating cost)
+  // Monthly fee
   const monthlyFee = fee;
   
+  // Monthly operating cost
+  const monthlyOperatingCost = operatingCost;
+  
   // Total monthly cost
-  const totalMonthlyCost = monthlyInterest + monthlyAmortization + monthlyFee;
+  const totalMonthlyCost = monthlyInterest + monthlyAmortization + monthlyFee + monthlyOperatingCost;
   
   // Electricity consumption estimate (100 kWh per 10m² per year)
   const annualElectricityConsumption = Math.round((area / 10) * 100);
@@ -78,6 +82,11 @@ const PropertyCostBreakdown = ({ price, fee, area, type }: PropertyCostBreakdown
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Avgift</span>
             <span className="font-medium">{formatCurrency(monthlyFee)}</span>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Driftkostnad</span>
+            <span className="font-medium">{formatCurrency(monthlyOperatingCost)}</span>
           </div>
           
           <Separator className="my-4" />
