@@ -522,23 +522,23 @@ const AgentDashboard = () => {
               <TabsList className="grid w-full grid-cols-5 p-1 bg-hero-gradient">
                 <TabsTrigger value="add" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
                   <Plus className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-[10px] sm:text-sm truncate">Lägg till ny bostad</span>
+                  {activeTab === "add" && <span className="text-[10px] sm:text-sm truncate">Lägg till ny bostad</span>}
                 </TabsTrigger>
                 <TabsTrigger value="existing" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
                   <Home className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-[10px] sm:text-sm truncate">Befintliga bostäder</span>
+                  {activeTab === "existing" && <span className="text-[10px] sm:text-sm truncate">Befintliga bostäder</span>}
                 </TabsTrigger>
                 <TabsTrigger value="removed" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
                   <Archive className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-[10px] sm:text-sm truncate">Borttagna bostäder</span>
+                  {activeTab === "removed" && <span className="text-[10px] sm:text-sm truncate">Borttagna bostäder</span>}
                 </TabsTrigger>
                 <TabsTrigger value="statistics" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
                   <BarChart3 className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-[10px] sm:text-sm truncate">Din statistik</span>
+                  {activeTab === "statistics" && <span className="text-[10px] sm:text-sm truncate">Din statistik</span>}
                 </TabsTrigger>
                 <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
                   <UserCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-[10px] sm:text-sm truncate">Min profil</span>
+                  {activeTab === "profile" && <span className="text-[10px] sm:text-sm truncate">Min profil</span>}
                 </TabsTrigger>
               </TabsList>
 
