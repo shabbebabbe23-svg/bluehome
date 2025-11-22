@@ -22,6 +22,7 @@ const propertySchema = z.object({
   bedrooms: z.coerce.number().min(1, "Minst 1 sovrum").max(50, "Max 50 sovrum"),
   bathrooms: z.coerce.number().min(1, "Minst 1 badrum").max(20, "Max 20 badrum"),
   area: z.coerce.number().min(1, "Area måste vara minst 1 kvm").max(10000, "Max 10000 kvm"),
+  construction_year: z.coerce.number().min(1800, "Byggår måste vara minst 1800").max(2100, "Byggår kan max vara 2100").optional(),
   fee: z.coerce.number().min(0, "Avgift måste vara minst 0").optional(),
   operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
@@ -208,6 +209,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         area: data.area,
+        construction_year: data.construction_year || null,
         fee: data.fee || 0,
         operating_cost: data.operating_cost || 0,
         description: data.description,
@@ -365,6 +367,20 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           />
           {errors.area && (
             <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
+          )}
+        </div>
+
+        {/* Byggår */}
+        <div>
+          <Label htmlFor="construction_year">Byggår</Label>
+          <Input
+            id="construction_year"
+            type="number"
+            {...register("construction_year")}
+            placeholder="2010"
+          />
+          {errors.construction_year && (
+            <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
           )}
         </div>
 

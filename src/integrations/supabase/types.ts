@@ -63,6 +63,7 @@ export type Database = {
           area: number
           bathrooms: number
           bedrooms: number
+          construction_year: number | null
           created_at: string | null
           description: string | null
           fee: number | null
@@ -96,6 +97,7 @@ export type Database = {
           area: number
           bathrooms: number
           bedrooms: number
+          construction_year?: number | null
           created_at?: string | null
           description?: string | null
           fee?: number | null
@@ -129,6 +131,7 @@ export type Database = {
           area?: number
           bathrooms?: number
           bedrooms?: number
+          construction_year?: number | null
           created_at?: string | null
           description?: string | null
           fee?: number | null
