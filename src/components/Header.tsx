@@ -128,9 +128,6 @@ const Header = () => {
                 <Heart className="w-5 h-5 lg:w-6 lg:h-6" />
               </Button>
             )}
-            <Button variant="ghost" size="icon">
-              <User className="w-5 h-5 lg:w-6 lg:h-6" />
-            </Button>
             {user ? (
               <Button 
                 onClick={signOut}
@@ -255,9 +252,6 @@ const Header = () => {
                     <Heart className="w-7 h-7" />
                   </Button>
                 )}
-                <Button variant="ghost" size="icon">
-                  <User className="w-7 h-7" />
-                </Button>
                 {user ? (
                   <Button 
                     onClick={signOut}
