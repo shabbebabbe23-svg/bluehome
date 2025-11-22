@@ -76,7 +76,7 @@ const Header = () => {
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity">
-              <img src={bluehomeLogo} alt="Bluehome" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain" />
+              <img src={bluehomeLogo} alt="Bluehome" className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 object-contain" />
               <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                 Bluehome
               </span>
