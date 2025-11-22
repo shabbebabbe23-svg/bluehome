@@ -1045,7 +1045,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             variant="outline"
             size="default"
             onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="w-full sm:w-auto gap-2"
+            className="hidden sm:flex sm:w-auto gap-2"
           >
             {viewMode === "grid" ? (
               <>
