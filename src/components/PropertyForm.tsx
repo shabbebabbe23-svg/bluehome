@@ -23,6 +23,7 @@ const propertySchema = z.object({
   bathrooms: z.coerce.number().min(1, "Minst 1 badrum").max(20, "Max 20 badrum"),
   area: z.coerce.number().min(1, "Area måste vara minst 1 kvm").max(10000, "Max 10000 kvm"),
   fee: z.coerce.number().min(0, "Avgift måste vara minst 0"),
+  operating_cost: z.coerce.number().min(0, "Drift kostnader måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
 });
@@ -54,7 +55,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const watchPrice = watch("price");
   const watchArea = watch("area");
+  const watchFee = watch("fee");
+  const watchOperatingCost = watch("operating_cost");
   const pricePerSqm = watchPrice && watchArea ? Math.round(watchPrice / watchArea) : null;
+  
+  // Format number with spaces for thousands
+  const formatNumber = (num: number | undefined) => {
+    if (!num) return '';
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  };
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -299,14 +308,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             id="price"
             type="number"
             {...register("price")}
-            placeholder="2500000"
+            placeholder="2 500 000"
           />
           {errors.price && (
             <p className="text-sm text-destructive mt-1">{errors.price.message}</p>
           )}
           {pricePerSqm && (
             <p className="text-sm text-muted-foreground mt-1">
-              Pris/m²: {pricePerSqm.toLocaleString('sv-SE')} kr/m²
+              Pris/m²: {formatNumber(pricePerSqm)} kr/m²
+            </p>
+          )}
+          {watchPrice && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {formatNumber(watchPrice)} kr
             </p>
           )}
         </div>
@@ -360,10 +374,34 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             id="fee"
             type="number"
             {...register("fee")}
-            placeholder="3500"
+            placeholder="3 500"
           />
           {errors.fee && (
             <p className="text-sm text-destructive mt-1">{errors.fee.message}</p>
+          )}
+          {watchFee && watchFee > 0 && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {formatNumber(watchFee)} kr/mån
+            </p>
+          )}
+        </div>
+
+        {/* Drift kostnader */}
+        <div>
+          <Label htmlFor="operating_cost">Drift kostnader (kr/mån)</Label>
+          <Input
+            id="operating_cost"
+            type="number"
+            {...register("operating_cost")}
+            placeholder="2 500"
+          />
+          {errors.operating_cost && (
+            <p className="text-sm text-destructive mt-1">{errors.operating_cost.message}</p>
+          )}
+          {watchOperatingCost && watchOperatingCost > 0 && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {formatNumber(watchOperatingCost)} kr/mån
+            </p>
           )}
         </div>
 
