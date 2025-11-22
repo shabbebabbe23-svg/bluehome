@@ -669,7 +669,8 @@ const PropertyDetail = () => {
               price={property.price} 
               fee={property.fee || 0} 
               area={property.area} 
-              type={property.type} 
+              type={property.type}
+              operatingCost={property.operating_cost || 0}
             />
           </div>
 
