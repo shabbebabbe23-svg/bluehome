@@ -19,9 +19,9 @@ const Header = () => {
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b border-white/10" 
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" 
       style={{
-        background: 'rgba(255, 255, 255, 0.05)'
+        background: 'var(--main-gradient)'
       }}
     >
       <div className="max-w-7xl mx-auto px-4">
@@ -86,23 +86,23 @@ const Header = () => {
                 <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span className="text-xl md:text-2xl lg:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-                Bluestep
+                Bluehome
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4 lg:gap-8">
-            <a href="#" className="text-sm md:text-base lg:text-xl text-white/90 hover:text-white transition-colors">
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Köp
             </a>
-            <a href="#" className="text-sm md:text-base lg:text-xl text-white/90 hover:text-white transition-colors">
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Hyra
             </a>
-            <a href="#" className="text-sm md:text-base lg:text-xl text-white/90 hover:text-white transition-colors">
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Sälj
             </a>
-            <a href="#" className="text-sm md:text-base lg:text-xl text-white/90 hover:text-white transition-colors">
+            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </a>
           </nav>
@@ -112,32 +112,42 @@ const Header = () => {
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button 
                 variant="outline" 
-                className="text-sm lg:text-base bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                className={`text-sm lg:text-base ${
+                  isCommercialPage 
+                    ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
+                    : 'bg-black border-black hover:bg-black/90'
+                }`}
               >
-                {isCommercialPage ? "Privat" : "Företag"}
+                {isCommercialPage ? (
+                  "Privat"
+                ) : (
+                  <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                    Företag
+                  </span>
+                )}
               </Button>
             </Link>
             {user && userType === "user" ? (
-              <Button variant="ghost" className="text-sm lg:text-base text-white hover:bg-white/10">
+              <Button variant="ghost" className="text-sm lg:text-base">
                 <Heart className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
                 Mina favoriter
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+              <Button variant="ghost" size="icon">
                 <Heart className="w-5 h-5 lg:w-6 lg:h-6" />
               </Button>
             )}
             {user ? (
               <Button 
                 onClick={signOut}
-                className="text-sm lg:text-base bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30"
+                className="text-sm lg:text-base bg-hero-gradient hover:scale-105 transition-transform"
               >
                 <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
                 Logga ut
               </Button>
             ) : (
               <Link to="/logga-in">
-                <Button className="text-sm lg:text-base bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30">
+                <Button className="text-sm lg:text-base text-white bg-hero-gradient hover:scale-105 transition-transform">
                   Logga in
                 </Button>
               </Link>
@@ -148,7 +158,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-white hover:bg-white/10"
+            className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-10 h-10" strokeWidth={2.5} /> : <Menu className="w-10 h-10" strokeWidth={2.5} />}
@@ -158,9 +168,9 @@ const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div 
-            className="md:hidden py-4 border-t border-white/10 backdrop-blur-sm animate-fade-in" 
+            className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" 
             style={{
-              background: 'rgba(255, 255, 255, 0.05)'
+              background: 'var(--main-gradient)'
             }}
           >
             <nav className="flex flex-col gap-4">
@@ -210,48 +220,58 @@ const Header = () => {
                 </div>
               )}
               
-              <a href="#" className="text-xl text-white/90 hover:text-white transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Köp
               </a>
-              <a href="#" className="text-xl text-white/90 hover:text-white transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Hyra
               </a>
-              <a href="#" className="text-xl text-white/90 hover:text-white transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Sälj
               </a>
-              <a href="#" className="text-xl text-white/90 hover:text-white transition-colors px-4 py-2">
+              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Om oss
               </a>
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
                 <Button 
                   variant="outline" 
-                  className="text-xl w-full bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                  className={`text-xl w-full ${
+                    isCommercialPage 
+                      ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
+                      : 'bg-black border-black hover:bg-black/90'
+                  }`}
                 >
-                  {isCommercialPage ? "Privat" : "Företag"}
+                  {isCommercialPage ? (
+                    "Privat"
+                  ) : (
+                    <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                      Företag
+                    </span>
+                  )}
                 </Button>
               </Link>
-              <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/10">
+              <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
                 {user && userType === "user" ? (
-                  <Button variant="ghost" className="w-full justify-start text-white hover:bg-white/10">
+                  <Button variant="ghost" className="w-full justify-start">
                     <Heart className="w-5 h-5 mr-2" />
                     Mina favoriter
                   </Button>
                 ) : (
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                  <Button variant="ghost" size="icon">
                     <Heart className="w-7 h-7" />
                   </Button>
                 )}
                 {user ? (
                   <Button 
                     onClick={signOut}
-                    className="text-xl bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 w-full"
+                    className="text-xl bg-hero-gradient w-full"
                   >
                     <LogOut className="w-5 h-5 mr-2" />
                     Logga ut
                   </Button>
                 ) : (
                   <Link to="/logga-in" className="flex-1">
-                    <Button className="text-xl bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 w-full">
+                    <Button className="text-xl text-white bg-hero-gradient w-full">
                       Logga in
                     </Button>
                   </Link>
