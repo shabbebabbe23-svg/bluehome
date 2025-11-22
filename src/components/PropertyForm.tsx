@@ -387,6 +387,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
+        {/* Visningsdatum */}
+        <div>
+          <Label htmlFor="viewing_date">Visningsdatum (valfritt)</Label>
+          <Input
+            id="viewing_date"
+            type="datetime-local"
+            {...register("viewing_date")}
+          />
+          {errors.viewing_date && (
+            <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
+          )}
+        </div>
+
         {/* Drift kostnader */}
         <div>
           <Label htmlFor="operating_cost">Drift kostnader (kr/mån)</Label>
@@ -403,19 +416,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             <p className="text-sm text-muted-foreground mt-1">
               {formatNumber(watchOperatingCost)} kr/mån
             </p>
-          )}
-        </div>
-
-        {/* Visningsdatum */}
-        <div>
-          <Label htmlFor="viewing_date">Visningsdatum (valfritt)</Label>
-          <Input
-            id="viewing_date"
-            type="datetime-local"
-            {...register("viewing_date")}
-          />
-          {errors.viewing_date && (
-            <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
           )}
         </div>
 
