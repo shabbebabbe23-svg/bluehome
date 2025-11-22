@@ -77,7 +77,7 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <svg className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#2563eb" />
                     <stop offset="100%" stopColor="#16a34a" />
                   </linearGradient>
@@ -85,7 +85,7 @@ const Header = () => {
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              <span className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-br from-blue-600 to-green-600 bg-clip-text text-transparent">
                 Bluehome
               </span>
             </Link>
