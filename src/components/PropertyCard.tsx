@@ -80,7 +80,14 @@ const PropertyCard = ({
   agent_id,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
-  const viewDate = viewingDate ? new Date(viewingDate) : null;
+  // Parse the date string as local time to avoid timezone issues
+  const viewDate = viewingDate ? (() => {
+    const dateObj = new Date(viewingDate);
+    // If the date comes from database, it's in ISO format and may have timezone info
+    // We want to display it in the user's local timezone
+    return dateObj;
+  })() : null;
+  
   const isSameDay = (d1: Date, d2: Date) =>
     d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&

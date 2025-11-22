@@ -462,7 +462,7 @@ const AgentDashboard = () => {
         area: Number(formData.get("area")),
         description: formData.get("description") as string,
         fee: Number(formData.get("fee")),
-        viewing_date: viewingDateValue ? new Date(viewingDateValue).toISOString() : null,
+        viewing_date: viewingDateValue || null,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,
         floorplan_images: floorplanImagesUrls,

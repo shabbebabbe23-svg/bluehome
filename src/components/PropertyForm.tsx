@@ -217,7 +217,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         hover_image_url: hoverImageUrl,
         additional_images: additionalImageUrls,
         floorplan_url: floorplanUrl,
-        viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
+        viewing_date: data.viewing_date || null,
       });
 
       if (error) throw error;
