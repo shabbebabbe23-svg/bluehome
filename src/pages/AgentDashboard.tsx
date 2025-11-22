@@ -520,25 +520,25 @@ const AgentDashboard = () => {
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-5 p-1 bg-hero-gradient">
-                <TabsTrigger value="add" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <Plus className="w-4 h-4" />
-                  Lägg till ny bostad
+                <TabsTrigger value="add" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                  <Plus className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-[10px] sm:text-sm truncate">Lägg till ny bostad</span>
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <Home className="w-4 h-4" />
-                  Befintliga bostäder
+                <TabsTrigger value="existing" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                  <Home className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-[10px] sm:text-sm truncate">Befintliga bostäder</span>
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <Archive className="w-4 h-4" />
-                  Borttagna bostäder
+                <TabsTrigger value="removed" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                  <Archive className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-[10px] sm:text-sm truncate">Borttagna bostäder</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <BarChart3 className="w-4 h-4" />
-                  Din statistik
+                <TabsTrigger value="statistics" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                  <BarChart3 className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-[10px] sm:text-sm truncate">Din statistik</span>
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
-                  <UserCircle className="w-4 h-4" />
-                  Min profil
+                <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                  <UserCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-[10px] sm:text-sm truncate">Min profil</span>
                 </TabsTrigger>
               </TabsList>
 
