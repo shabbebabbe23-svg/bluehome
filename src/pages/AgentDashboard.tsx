@@ -485,7 +485,6 @@ const AgentDashboard = () => {
     try {
       await signOut();
       toast.success("Utloggad");
-      navigate("/login");
     } catch (error) {
       toast.error("Kunde inte logga ut");
     }
