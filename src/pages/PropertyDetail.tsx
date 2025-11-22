@@ -474,12 +474,12 @@ const PropertyDetail = () => {
               <CardContent className="p-4 sm:p-6">
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary">{property.type}</Badge>
-                    {property.isNew && <Badge className="bg-success text-white">Ny</Badge>}
-                    {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white">Såld</Badge>}
+                    <Badge variant="secondary" className="text-sm px-4 py-1.5">{property.type}</Badge>
+                    {property.isNew && <Badge className="bg-success text-white text-sm px-4 py-1.5">Ny</Badge>}
+                    {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
                     {hasActiveBidding && !(property.is_sold || property.isSold) && <>
-                        <Badge className="bg-orange-500 text-white">Pågående budgivning</Badge>
-                        {dbProperty?.bidCount && <Badge variant="outline">
+                        <Badge className="bg-orange-500 text-white text-sm px-4 py-1.5">Pågående budgivning</Badge>
+                        {dbProperty?.bidCount && <Badge variant="outline" className="text-sm px-4 py-1.5">
                             {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
                           </Badge>}
                       </>}
