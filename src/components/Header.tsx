@@ -79,7 +79,7 @@ const Header = () => {
                 <defs>
                   <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
-                    <stop offset="100%" style={{ stopColor: 'hsl(45 100% 50%)' }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(135 70% 60%)' }} />
                   </linearGradient>
                 </defs>
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
