@@ -417,11 +417,11 @@ const PropertyDetail = () => {
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           
-          {/* Bluehome Logo - Center */}
+          {/* BaraHem Logo - Center */}
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
             <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              Bluehome
+              BaraHem
             </span>
           </Link>
           
@@ -521,11 +521,12 @@ const PropertyDetail = () => {
             <Card>
               <CardContent className="p-4 sm:p-6">
                 <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <Badge variant="secondary" className="text-sm px-4 py-1.5">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white text-sm px-4 py-1.5">Ny</Badge>}
+                    {property.is_deleted && <Badge className="bg-red-600 text-white text-sm px-4 py-1.5 font-semibold">Borttagen</Badge>}
                     {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
-                    {hasActiveBidding && !(property.is_sold || property.isSold) && <>
+                    {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && <>
                         <Badge className="bg-orange-500 text-white text-sm px-4 py-1.5">Pågående budgivning</Badge>
                         {dbProperty?.bidCount && <Badge variant="outline" className="text-sm px-4 py-1.5">
                             {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
