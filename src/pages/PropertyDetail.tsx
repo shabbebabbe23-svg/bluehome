@@ -399,8 +399,8 @@ const PropertyDetail = () => {
       background: 'var(--main-gradient)'
     }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <Button variant="ghost" onClick={() => navigate(-1)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform w-14 h-14 p-0">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
