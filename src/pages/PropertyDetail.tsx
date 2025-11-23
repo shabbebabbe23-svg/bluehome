@@ -524,6 +524,7 @@ const PropertyDetail = () => {
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <Badge variant="secondary" className="text-sm px-4 py-1.5">{property.type}</Badge>
                     {property.isNew && <Badge className="bg-success text-white text-sm px-4 py-1.5">Ny</Badge>}
+                    {dbProperty?.is_new_production && <Badge className="bg-blue-600 text-white text-sm px-4 py-1.5 font-semibold">Nyproduktion</Badge>}
                     {property.is_deleted && <Badge className="bg-red-600 text-white text-sm px-4 py-1.5 font-semibold">Borttagen</Badge>}
                     {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
                     {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && <>
