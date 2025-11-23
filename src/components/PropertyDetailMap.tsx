@@ -6,6 +6,7 @@ import 'leaflet-routing-machine';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Car, Bike, PersonStanding } from "lucide-react";
 
 interface PropertyDetailMapProps {
   address: string;
@@ -18,6 +19,8 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const routingControlRef = useRef<any>(null);
   const [fromAddress, setFromAddress] = useState(`${address}, ${location}`);
   const [toAddress, setToAddress] = useState('');
+  const [travelMode, setTravelMode] = useState<'driving' | 'cycling' | 'walking'>('driving');
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -117,9 +120,19 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           mapInstanceRef.current.removeControl(routingControlRef.current);
         }
 
+        // Determine router based on travel mode
+        const getRouter = () => {
+          const baseUrl = 'https://router.project-osrm.org/route/v1';
+          return (L as any).Routing.osrmv1({
+            serviceUrl: `${baseUrl}/${travelMode === 'driving' ? 'car' : travelMode === 'cycling' ? 'bike' : 'foot'}`,
+            profile: travelMode === 'driving' ? 'car' : travelMode === 'cycling' ? 'bike' : 'foot'
+          });
+        };
+
         // Create new routing control
         routingControlRef.current = (L as any).Routing.control({
           waypoints: [fromLatLng, toLatLng],
+          router: getRouter(),
           routeWhileDragging: true,
           showAlternatives: false,
           lineOptions: {
@@ -143,15 +156,30 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           }
         }).addTo(mapInstanceRef.current);
 
-        // Zoom map to fit the entire route
+        // Zoom map to fit the entire route and extract distance/time
         routingControlRef.current.on('routesfound', function(e: any) {
           const routes = e.routes;
           const bounds = L.latLngBounds([fromLatLng, toLatLng]);
           
-          if (routes[0] && routes[0].coordinates) {
-            routes[0].coordinates.forEach((coord: any) => {
-              bounds.extend(L.latLng(coord.lat, coord.lng));
+          if (routes[0]) {
+            // Extract distance and time
+            const distanceKm = (routes[0].summary.totalDistance / 1000).toFixed(1);
+            const durationMin = Math.round(routes[0].summary.totalTime / 60);
+            const hours = Math.floor(durationMin / 60);
+            const minutes = durationMin % 60;
+            const durationStr = hours > 0 ? `${hours} tim ${minutes} min` : `${minutes} min`;
+            
+            setRouteInfo({
+              distance: `${distanceKm} km`,
+              duration: durationStr
             });
+
+            // Extend bounds with route coordinates
+            if (routes[0].coordinates) {
+              routes[0].coordinates.forEach((coord: any) => {
+                bounds.extend(L.latLng(coord.lat, coord.lng));
+              });
+            }
           }
           
           mapInstanceRef.current?.fitBounds(bounds, { padding: [50, 50] });
@@ -172,9 +200,57 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           style={{ zIndex: 0 }}
         />
         
+        {/* Route Info Display */}
+        {routeInfo && (
+          <div className="mb-4 p-3 bg-muted rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-sm font-semibold">Avstånd:</span>
+                <span className="ml-2">{routeInfo.distance}</span>
+              </div>
+              <div>
+                <span className="text-sm font-semibold">Restid:</span>
+                <span className="ml-2">{routeInfo.duration}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Route Search */}
         <div className="space-y-3">
           <h3 className="text-lg font-semibold">Beräkna vägbeskrivning</h3>
+          
+          {/* Travel Mode Selection */}
+          <div className="flex gap-2 justify-center">
+            <Button
+              variant={travelMode === 'driving' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTravelMode('driving')}
+              className="flex-1"
+            >
+              <Car className="w-4 h-4 mr-1" />
+              Bil
+            </Button>
+            <Button
+              variant={travelMode === 'cycling' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTravelMode('cycling')}
+              className="flex-1"
+            >
+              <Bike className="w-4 h-4 mr-1" />
+              Cykel
+            </Button>
+            <Button
+              variant={travelMode === 'walking' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTravelMode('walking')}
+              className="flex-1"
+            >
+              <PersonStanding className="w-4 h-4 mr-1" />
+              Gång
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Input
               placeholder="Från adress..."
