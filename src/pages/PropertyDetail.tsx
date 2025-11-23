@@ -667,6 +667,12 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Energiklass</span>
                       <span className="font-semibold">B</span>
                     </div>
+                    {dbProperty?.housing_association && (
+                      <div className="flex justify-between py-2 border-b border-border">
+                        <span className="text-muted-foreground">Bostadsförening</span>
+                        <span className="font-semibold">{dbProperty.housing_association}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
