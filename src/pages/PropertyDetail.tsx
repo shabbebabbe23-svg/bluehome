@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, Share2, Printer, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -426,12 +426,47 @@ const PropertyDetail = () => {
           </Link>
           
           <div className="flex gap-1 sm:gap-2">
-            <Button variant="outline" size="icon" className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
-              <Printer className="w-4 h-4" />
-            </Button>
-            <Button variant={isFavorite ? "default" : "outline"} size="icon" onClick={() => setIsFavorite(!isFavorite)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform">
-              <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} />
-            </Button>
+            <svg 
+              width="36" 
+              height="36" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={() => window.print()}
+              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+            >
+              <defs>
+                <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            
+            <svg 
+              width="36" 
+              height="36" 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+            >
+              <defs>
+                <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path 
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
+                stroke="url(#heartGradient)" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                fill={isFavorite ? "url(#heartGradient)" : "none"}
+              />
+            </svg>
           </div>
         </div>
       </header>
