@@ -16,7 +16,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<any>(null);
-  const [fromAddress, setFromAddress] = useState('');
+  const [fromAddress, setFromAddress] = useState(`${address}, ${location}`);
   const [toAddress, setToAddress] = useState('');
 
   useEffect(() => {
