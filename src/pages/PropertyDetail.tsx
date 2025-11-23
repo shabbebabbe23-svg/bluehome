@@ -406,7 +406,7 @@ const PropertyDetail = () => {
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
             onClick={() => navigate(-1)}
-            className="cursor-pointer hover:-translate-x-1 transition-all duration-300 ease-out"
+            className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
           >
             <defs>
               <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
