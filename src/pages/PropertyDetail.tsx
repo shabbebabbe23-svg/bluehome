@@ -509,8 +509,9 @@ const PropertyDetail = () => {
               </div>
             </Card>
 
-            {/* Share Button */}
-            <div className="flex justify-start">
+            {/* Property Title and Share Section */}
+            <div className="flex flex-col items-center gap-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-center">{property.title}</h1>
               <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
                 <Share2 className="w-4 h-4" />
                 Dela bostad
