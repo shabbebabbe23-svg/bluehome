@@ -25,6 +25,10 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
   const [propertyCoords, setPropertyCoords] = useState<[number, number] | null>(null);
 
+  // Debug logging
+  console.log('PropertyDetailMap - MAPBOX_TOKEN exists:', !!MAPBOX_TOKEN);
+  console.log('PropertyDetailMap - Token length:', MAPBOX_TOKEN?.length);
+
   // Show fallback if no Mapbox token
   if (!MAPBOX_TOKEN) {
     return (
@@ -42,17 +46,26 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   }
 
   useEffect(() => {
-    if (!mapRef.current || !MAPBOX_TOKEN) return;
+    if (!mapRef.current || !MAPBOX_TOKEN) {
+      console.log('PropertyDetailMap useEffect - Missing requirements:', {
+        hasMapRef: !!mapRef.current,
+        hasToken: !!MAPBOX_TOKEN
+      });
+      return;
+    }
 
+    console.log('PropertyDetailMap - Initializing Mapbox...');
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
     const geocodeAddress = async () => {
       const fullAddress = `${address}, ${location}, Sverige`;
+      console.log('PropertyDetailMap - Geocoding:', fullAddress);
       try {
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fullAddress)}.json?access_token=${MAPBOX_TOKEN}`
         );
         const data = await response.json();
+        console.log('PropertyDetailMap - Geocoding response:', data);
         
         if (data.features && data.features[0]) {
           const [lng, lat] = data.features[0].center;
