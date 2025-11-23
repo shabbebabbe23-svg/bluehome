@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent } from "@/components/ui/card";
 import { Property } from "@/components/PropertyGrid";
 import { Home, Building, TreePine, Square, Navigation } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || '';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import L from 'leaflet';
+import 'leaflet-routing-machine';
 
 interface AllPropertiesMapProps {
   properties: Property[];
@@ -25,31 +25,11 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [fromAddress, setFromAddress] = useState('');
   const [toAddress, setToAddress] = useState('');
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const routeLayerId = 'route-layer';
-  const routeSourceId = 'route-source';
-
-  // Show fallback if no Mapbox token
-  if (!MAPBOX_TOKEN) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Kartvy över alla fastigheter</h2>
-          <div className="w-full h-[600px] rounded-lg bg-muted flex items-center justify-center">
-            <p className="text-muted-foreground text-center px-4">
-              Mapbox är inte konfigurerat. Ladda om sidan.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const routingControlRef = useRef<any>(null);
 
   useEffect(() => {
     const geocodeProperties = async () => {
-      if (!MAPBOX_TOKEN) return;
-      
       const geocoded: PropertyWithCoords[] = [];
       
       for (let i = 0; i < properties.length; i++) {
@@ -57,16 +37,15 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         const fullAddress = `${property.address}, ${property.location}, Sverige`;
         try {
           const response = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fullAddress)}.json?access_token=${MAPBOX_TOKEN}`
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
           );
           const data = await response.json();
           
-          if (data.features && data.features[0]) {
-            const [lng, lat] = data.features[0].center;
+          if (data && data[0]) {
             geocoded.push({
               ...property,
-              lat,
-              lng,
+              lat: parseFloat(data[0].lat),
+              lng: parseFloat(data[0].lon),
             });
           }
           
@@ -76,8 +55,8 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           // Update map with current geocoded properties
           setPropertiesWithCoords([...geocoded]);
           
-          // Rate limiting
-          await new Promise(resolve => setTimeout(resolve, 200));
+          // Rate limiting - reduced to 300ms for faster loading
+          await new Promise(resolve => setTimeout(resolve, 300));
         } catch (error) {
           console.error(`Geocoding error for ${property.address}:`, error);
         }
@@ -93,11 +72,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
 
   // Initialize map when coordinates are loaded
   useEffect(() => {
-    if (!mapRef.current || propertiesWithCoords.length === 0 || loading || !MAPBOX_TOKEN) return;
-
-    // Clean up existing markers
-    markersRef.current.forEach(marker => marker.remove());
-    markersRef.current = [];
+    if (!mapRef.current || propertiesWithCoords.length === 0 || loading) return;
 
     // Clean up existing map
     if (mapInstanceRef.current) {
@@ -105,66 +80,69 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
       mapInstanceRef.current = null;
     }
 
-    mapboxgl.accessToken = MAPBOX_TOKEN;
-
     // Center on first property or Stockholm
     const center: [number, number] = propertiesWithCoords.length > 0 
-      ? [propertiesWithCoords[0].lng, propertiesWithCoords[0].lat]
-      : [18.0686, 59.3293];
+      ? [propertiesWithCoords[0].lat, propertiesWithCoords[0].lng]
+      : [59.3293, 18.0686];
 
     // Create map
-    const map = new mapboxgl.Map({
-      container: mapRef.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
-      center: center,
-      zoom: 11,
-    });
+    const map = L.map(mapRef.current).setView(center, 11);
 
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Add satellite tile layer from Esri
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxZoom: 19
+    }).addTo(map);
 
     // Function to create colored icons based on property type
     const createColoredIcon = (type: string) => {
-      let color = '#3b82f6';
+      let color = '#3b82f6'; // Default blue
       
       switch(type) {
         case 'Villa':
-          color = '#3b82f6';
+          color = '#3b82f6'; // Blue
           break;
         case 'Lägenhet':
-          color = '#22c55e';
+          color = '#22c55e'; // Green
           break;
         case 'Radhus':
-          color = '#a855f7';
+          color = '#a855f7'; // Purple
           break;
         case 'Parhus':
-          color = '#14b8a6';
+          color = '#14b8a6'; // Teal
           break;
         case 'Tomt':
-          color = '#f59e0b';
+          color = '#f59e0b'; // Orange
           break;
         case 'Fritidshus':
-          color = '#ec4899';
+          color = '#ec4899'; // Pink
           break;
         default:
-          color = '#6b7280';
+          color = '#6b7280'; // Gray for others
       }
 
-      const el = document.createElement('div');
-      el.className = 'custom-marker';
-      el.innerHTML = `
+      const svgIcon = `
         <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
           <path d="M12.5 0C5.6 0 0 5.6 0 12.5c0 9.4 12.5 28.5 12.5 28.5S25 21.9 25 12.5C25 5.6 19.4 0 12.5 0z" fill="${color}"/>
           <circle cx="12.5" cy="12.5" r="7" fill="white"/>
         </svg>
       `;
-      el.style.cursor = 'pointer';
-      return el;
+
+      return L.divIcon({
+        html: svgIcon,
+        className: 'custom-marker',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+      });
     };
 
     // Add markers
     propertiesWithCoords.forEach((property) => {
-      const el = createColoredIcon(property.type);
+      const icon = createColoredIcon(property.type);
+      const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
       
+      // Find the property in allProperties to get the image
       const fullProperty = properties.find(p => p.id === property.id);
       const imageUrl = fullProperty?.image || '';
       
@@ -183,21 +161,21 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           </a>
         </div>
       `;
-
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([property.lng, property.lat])
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
-        .addTo(map);
       
-      markersRef.current.push(marker);
+      marker.bindPopup(popupContent, {
+        maxWidth: 300,
+        className: 'property-popup'
+      });
     });
 
     mapInstanceRef.current = map;
 
     // Cleanup
     return () => {
-      markersRef.current.forEach(marker => marker.remove());
-      markersRef.current = [];
+      if (routingControlRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -206,79 +184,55 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   }, [propertiesWithCoords, loading, properties]);
 
   const handleRouteSearch = async () => {
-    if (!mapInstanceRef.current || !fromAddress || !toAddress || !MAPBOX_TOKEN) return;
-
-    const map = mapInstanceRef.current;
+    if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
 
     try {
       // Geocode from address
       const fromResponse = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fromAddress + ', Sverige')}.json?access_token=${MAPBOX_TOKEN}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fromAddress + ', Sverige')}`
       );
       const fromData = await fromResponse.json();
 
       // Geocode to address
       const toResponse = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(toAddress + ', Sverige')}.json?access_token=${MAPBOX_TOKEN}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress + ', Sverige')}`
       );
       const toData = await toResponse.json();
 
-      if (fromData.features?.[0] && toData.features?.[0]) {
-        const fromCoords = fromData.features[0].center;
-        const toCoords = toData.features[0].center;
+      if (fromData[0] && toData[0]) {
+        const fromLatLng = L.latLng(parseFloat(fromData[0].lat), parseFloat(fromData[0].lon));
+        const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
 
-        // Get directions from Mapbox
-        const directionsResponse = await fetch(
-          `https://api.mapbox.com/directions/v5/mapbox/driving/${fromCoords[0]},${fromCoords[1]};${toCoords[0]},${toCoords[1]}?geometries=geojson&access_token=${MAPBOX_TOKEN}`
-        );
-        const directionsData = await directionsResponse.json();
-
-        if (directionsData.routes && directionsData.routes[0]) {
-          const route = directionsData.routes[0];
-
-          // Remove existing route layer if any
-          if (map.getLayer(routeLayerId)) {
-            map.removeLayer(routeLayerId);
-          }
-          if (map.getSource(routeSourceId)) {
-            map.removeSource(routeSourceId);
-          }
-
-          // Add route to map
-          map.addSource(routeSourceId, {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              properties: {},
-              geometry: route.geometry
-            }
-          });
-
-          map.addLayer({
-            id: routeLayerId,
-            type: 'line',
-            source: routeSourceId,
-            layout: {
-              'line-join': 'round',
-              'line-cap': 'round'
-            },
-            paint: {
-              'line-color': '#0069D9',
-              'line-width': 6,
-              'line-opacity': 0.8
-            }
-          });
-
-          // Fit map to route bounds
-          const coordinates = route.geometry.coordinates;
-          const bounds = coordinates.reduce((bounds: mapboxgl.LngLatBounds, coord: [number, number]) => {
-            return bounds.extend(coord as [number, number]);
-          }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-
-          map.fitBounds(bounds, {
-            padding: 50
-          });
+        // Remove existing routing control if any
+        if (routingControlRef.current) {
+          mapInstanceRef.current.removeControl(routingControlRef.current);
         }
+
+        // Create routing control
+        routingControlRef.current = (L as any).Routing.control({
+          waypoints: [fromLatLng, toLatLng],
+          routeWhileDragging: true,
+          showAlternatives: true,
+          lineOptions: {
+            styles: [{ color: 'hsl(var(--primary))', opacity: 0.8, weight: 6 }]
+          },
+          createMarker: function(i: number, waypoint: any, n: number) {
+            const marker = L.marker(waypoint.latLng, {
+              draggable: true,
+              icon: L.divIcon({
+                html: `<div style="background: hsl(var(--primary)); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white;">${i === 0 ? 'A' : 'B'}</div>`,
+                className: 'custom-route-marker',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+              })
+            });
+            return marker;
+          }
+        }).addTo(mapInstanceRef.current);
+
+        // Fit map to route
+        const bounds = L.latLngBounds([fromLatLng, toLatLng]);
+        mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
       }
     } catch (error) {
       console.error('Routing error:', error);
