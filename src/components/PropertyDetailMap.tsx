@@ -25,6 +25,22 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
   const [propertyCoords, setPropertyCoords] = useState<[number, number] | null>(null);
 
+  // Show fallback if no Mapbox token
+  if (!MAPBOX_TOKEN) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="text-xl font-bold mb-4">Karta</h2>
+          <div className="w-full h-[400px] rounded-lg bg-muted flex items-center justify-center">
+            <p className="text-muted-foreground text-center px-4">
+              Mapbox är inte konfigurerat. Kontakta administratör.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   useEffect(() => {
     if (!mapRef.current || !MAPBOX_TOKEN) return;
 
