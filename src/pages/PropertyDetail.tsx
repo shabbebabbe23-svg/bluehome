@@ -612,6 +612,10 @@ const PropertyDetail = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
+                        <span className="text-muted-foreground">Slutpris</span>
+                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
+                      </div>}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Bostadstyp</span>
                       <span className="font-semibold">{property.type || 'Villa'}</span>
@@ -624,10 +628,6 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Utgångspris</span>
                       <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
                     </div>
-                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
-                        <span className="text-muted-foreground">Slutpris</span>
-                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
-                      </div>}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Pris/m²</span>
                       <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
