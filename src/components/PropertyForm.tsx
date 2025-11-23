@@ -27,6 +27,7 @@ const propertySchema = z.object({
   operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
+  housing_association: z.string().max(200, "Bostadsförening får max vara 200 tecken").optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertySchema>;
@@ -220,6 +221,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         floorplan_url: floorplanUrl,
         viewing_date: data.viewing_date || null,
         is_new_production: isNewProduction,
+        housing_association: data.housing_association || null,
       });
 
       if (error) throw error;
@@ -436,6 +438,17 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               {formatNumber(watchOperatingCost)} kr/mån
             </p>
           )}
+        </div>
+
+        {/* Bostadsförening */}
+        <div>
+          <Label htmlFor="housing_association">Bostadsförening (valfritt)</Label>
+          <Input
+            id="housing_association"
+            type="text"
+            {...register("housing_association")}
+            placeholder="HSB Brf..."
+          />
         </div>
 
         {/* Beskrivning */}
@@ -709,6 +722,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
                 is_coming_soon: true,
                 is_new_production: isNewProduction,
+                housing_association: data.housing_association || null,
               });
 
               if (error) throw error;

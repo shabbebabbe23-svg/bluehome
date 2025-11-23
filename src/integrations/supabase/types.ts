@@ -70,6 +70,7 @@ export type Database = {
           floorplan_images: string[] | null
           floorplan_url: string | null
           has_vr: boolean | null
+          housing_association: string | null
           hover_image_url: string | null
           id: string
           image_url: string | null
@@ -105,6 +106,7 @@ export type Database = {
           floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_vr?: boolean | null
+          housing_association?: string | null
           hover_image_url?: string | null
           id?: string
           image_url?: string | null
@@ -140,6 +142,7 @@ export type Database = {
           floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_vr?: boolean | null
+          housing_association?: string | null
           hover_image_url?: string | null
           id?: string
           image_url?: string | null
