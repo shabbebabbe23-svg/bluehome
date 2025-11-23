@@ -106,6 +106,35 @@ const AgentDashboard = () => {
     enabled: !!user?.id
   });
 
+  // Fetch agent's removed properties
+  const {
+    data: removedProperties,
+    isLoading: isLoadingRemovedProperties,
+    refetch: refetchRemoved
+  } = useQuery({
+    queryKey: ["agent-removed-properties", user?.id, selectedYear],
+    queryFn: async () => {
+      const startOfYear = `${selectedYear}-01-01T00:00:00`;
+      const endOfYear = `${selectedYear}-12-31T23:59:59`;
+      
+      const {
+        data,
+        error
+      } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("is_deleted", true)
+        .gte("updated_at", startOfYear)
+        .lte("updated_at", endOfYear)
+        .order("updated_at", { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
   // Fetch bids for the currently editing property
   const { data: propertyBids, refetch: refetchBids } = useQuery({
     queryKey: ["property-bids", editingProperty?.id],
@@ -131,6 +160,7 @@ const AgentDashboard = () => {
       if (error) throw error;
       toast.success("Fastighet borttagen");
       refetch();
+      refetchRemoved();
     } catch (error) {
       toast.error("Kunde inte ta bort fastighet");
     }
@@ -591,16 +621,10 @@ const AgentDashboard = () => {
                   </div>}
               </TabsContent>
 
-              <TabsContent value="removed" className="mt-6">
-                <div className="text-center py-12">
-                  <Archive className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Borttagna fastigheter</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Lista över borttagna fastigheter kommer här
-                  </p>
-                  
+              <TabsContent value="removed" className="mt-6 max-h-[calc(100vh-400px)] overflow-y-auto">
+                <div className="mb-6">
                   {/* Year selector */}
-                  <div className="max-w-xs mx-auto">
+                  <div className="max-w-xs">
                     <Label htmlFor="year-select" className="text-base mb-2 block">
                       Filtrera efter år
                     </Label>
@@ -617,6 +641,50 @@ const AgentDashboard = () => {
                     </Select>
                   </div>
                 </div>
+
+                {isLoadingRemovedProperties ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-96" />)}
+                  </div>
+                ) : removedProperties && removedProperties.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {removedProperties.map(property => (
+                      <div key={property.id} className="relative">
+                        <PropertyCard 
+                          id={property.id} 
+                          title={property.address} 
+                          location={property.location} 
+                          price={`${property.price.toLocaleString('sv-SE')} kr`} 
+                          newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined} 
+                          type={property.type} 
+                          bedrooms={property.bedrooms} 
+                          bathrooms={property.bathrooms} 
+                          area={property.area} 
+                          image={property.image_url || ""} 
+                          hoverImage={property.hover_image_url || undefined} 
+                          hasVR={property.has_vr || false} 
+                          listedDate={property.listed_date || undefined} 
+                          isSold={property.is_sold || false} 
+                          soldDate={property.sold_date || undefined} 
+                          soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined} 
+                          vendorLogo={property.vendor_logo_url || undefined} 
+                          viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined} 
+                          hideControls={true}
+                          buttonText="Visa detaljer"
+                          onButtonClick={() => navigate(`/property/${property.id}`)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Archive className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Inga borttagna fastigheter</h3>
+                    <p className="text-muted-foreground">
+                      Du har inga borttagna fastigheter för år {selectedYear}
+                    </p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="statistics" className="mt-6">
