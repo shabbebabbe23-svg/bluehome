@@ -42,6 +42,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [hoverImagePreview, setHoverImagePreview] = useState<string>("");
   const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
   const [floorplanPreview, setFloorplanPreview] = useState<string>("");
+  const [isNewProduction, setIsNewProduction] = useState(false);
 
   const {
     register,
@@ -218,6 +219,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         additional_images: additionalImageUrls,
         floorplan_url: floorplanUrl,
         viewing_date: data.viewing_date || null,
+        is_new_production: isNewProduction,
       });
 
       if (error) throw error;
@@ -232,6 +234,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setHoverImagePreview("");
       setAdditionalImagesPreviews([]);
       setFloorplanPreview("");
+      setIsNewProduction(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -447,6 +450,27 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           {errors.description && (
             <p className="text-sm text-destructive mt-1">{errors.description.message}</p>
           )}
+        </div>
+
+        {/* Nyproduktion */}
+        <div className="md:col-span-2">
+          <Card className="p-4">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="is_new_production"
+                checked={isNewProduction}
+                onChange={(e) => setIsNewProduction(e.target.checked)}
+                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="is_new_production" className="cursor-pointer font-semibold text-base">
+                Nyproduktion
+              </Label>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2 ml-8">
+              Markera om detta är en nyproducerad fastighet
+            </p>
+          </Card>
         </div>
 
         {/* Huvudbild */}
@@ -684,6 +708,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 floorplan_url: floorplanUrl,
                 viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
                 is_coming_soon: true,
+                is_new_production: isNewProduction,
               });
 
               if (error) throw error;
@@ -698,6 +723,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               setHoverImagePreview("");
               setAdditionalImagesPreviews([]);
               setFloorplanPreview("");
+              setIsNewProduction(false);
               onSuccess?.();
             } catch (error) {
               console.error("Error creating property:", error);
