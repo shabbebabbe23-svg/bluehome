@@ -438,7 +438,7 @@ const PropertyDetail = () => {
               <defs>
                 <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(45 100% 50%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(135 70% 60%)', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -455,7 +455,7 @@ const PropertyDetail = () => {
               <defs>
                 <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(45 100% 50%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(135 70% 60%)', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <path 

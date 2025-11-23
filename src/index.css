@@ -21,7 +21,7 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
     --primary-glow: 200 100% 50%;
 
-    --secondary: 45 100% 50%;
+    --secondary: 135 70% 60%;
     --secondary-foreground: 0 0% 0%;
 
     --muted: 210 40% 96%;
@@ -40,14 +40,14 @@ All colors MUST be HSL.
     --radius: 0.75rem;
 
     /* Custom Real Estate Colors */
-    --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(45 100% 50%));
+    --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(135 70% 60%));
   /* Dark variant of the hero gradient (used in .dark mode) */
-  --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(45 80% 30%));
+  --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(135 50% 35%));
     --property-shadow: 0 10px 40px -10px hsl(200 98% 35% / 0.1);
     --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 35% / 0.2);
     --glass-bg: hsl(0 0% 100% / 0.8);
     --property-bg: hsl(0 0% 100%);
-    --success: 45 100% 50%;
+    --success: 135 70% 60%;
     --warning: 43 96% 56%;
     --main-gradient: linear-gradient(135deg, hsl(135, 70%, 91%), hsl(198, 78%, 84%));
 
