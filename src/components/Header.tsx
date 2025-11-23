@@ -86,7 +86,7 @@ const Header = () => {
                 <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span className="text-xl md:text-2xl lg:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-                Bluehome
+                Barahem
               </span>
             </Link>
           </div>
