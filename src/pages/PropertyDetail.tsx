@@ -400,13 +400,13 @@ const PropertyDetail = () => {
     }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <svg 
-            width="48" 
-            height="48" 
+            width="36" 
+            height="36" 
             viewBox="0 0 24 24" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
             onClick={() => navigate(-1)}
-            className="cursor-pointer hover:scale-110 transition-transform"
+            className="cursor-pointer hover:-translate-x-1 transition-all duration-300 ease-out"
           >
             <defs>
               <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
