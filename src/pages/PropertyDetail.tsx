@@ -418,7 +418,7 @@ const PropertyDetail = () => {
           </svg>
           
           {/* Bluehome Logo - Center */}
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
+          <Link to="/" className="flex items-center gap-2 hover:scale-110 transition-all duration-300 ease-out absolute left-1/2 -translate-x-1/2">
             <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
               Bluehome
