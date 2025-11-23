@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Home className="w-8 h-8 text-primary-glow" />
-              <span className="text-2xl font-bold">Bluehome</span>
+              <span className="text-2xl font-bold">BaraHem</span>
             </div>
             <p className="text-white/80">
               Sveriges ledande plattform för att köpa, sälja och hyra fastigheter. 
@@ -75,7 +75,7 @@ const Footer = () => {
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <Mail className="w-full h-full text-white" />
                 </div>
-                <span className="text-white/80">info@bluehome.se</span>
+                <span className="text-white/80">info@barahem.se</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
@@ -140,7 +140,7 @@ const Footer = () => {
 
         <div className="border-t border-white/20 mt-8 md:mt-12 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/60 text-sm md:text-base text-center md:text-left">
-            © 2024 Bluehome. Alla rättigheter förbehållna.
+            © 2024 BaraHem. Alla rättigheter förbehållna.
           </p>
           <div className="flex gap-4 md:gap-6 text-sm md:text-base">
             <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">

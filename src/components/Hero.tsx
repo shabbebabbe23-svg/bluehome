@@ -135,7 +135,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 md:mb-8 text-white/90 max-w-2xl mx-auto px-4">
-            Upptäck tusentals fastigheter över hela Sverige med Bluehome
+            Upptäck tusentals fastigheter över hela Sverige med BaraHem
           </p>
         </div>
 
