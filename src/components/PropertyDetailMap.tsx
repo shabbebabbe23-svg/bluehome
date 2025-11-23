@@ -142,6 +142,20 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
             });
           }
         }).addTo(mapInstanceRef.current);
+
+        // Zoom map to fit the entire route
+        routingControlRef.current.on('routesfound', function(e: any) {
+          const routes = e.routes;
+          const bounds = L.latLngBounds([fromLatLng, toLatLng]);
+          
+          if (routes[0] && routes[0].coordinates) {
+            routes[0].coordinates.forEach((coord: any) => {
+              bounds.extend(L.latLng(coord.lat, coord.lng));
+            });
+          }
+          
+          mapInstanceRef.current?.fitBounds(bounds, { padding: [50, 50] });
+        });
       }
     } catch (error) {
       console.error('Route calculation error:', error);
