@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
-import 'leaflet-routing-machine';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Car, Bike, PersonStanding } from "lucide-react";
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || '';
 
 interface PropertyDetailMapProps {
   address: string;
@@ -15,64 +15,70 @@ interface PropertyDetailMapProps {
 
 const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const routingControlRef = useRef<any>(null);
+  const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const routeLayerId = 'route-layer';
+  const routeSourceId = 'route-source';
   const [fromAddress, setFromAddress] = useState(`${address}, ${location}`);
   const [toAddress, setToAddress] = useState('');
   const [travelMode, setTravelMode] = useState<'driving' | 'cycling' | 'walking'>('driving');
   const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+  const [propertyCoords, setPropertyCoords] = useState<[number, number] | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !MAPBOX_TOKEN) return;
+
+    mapboxgl.accessToken = MAPBOX_TOKEN;
 
     const geocodeAddress = async () => {
       const fullAddress = `${address}, ${location}, Sverige`;
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fullAddress)}.json?access_token=${MAPBOX_TOKEN}`
         );
         const data = await response.json();
         
-        if (data && data[0]) {
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon);
+        if (data.features && data.features[0]) {
+          const [lng, lat] = data.features[0].center;
+          setPropertyCoords([lng, lat]);
 
           // Initialize map
           if (!mapInstanceRef.current) {
-            mapInstanceRef.current = L.map(mapRef.current).setView([lat, lng], 15);
+            const map = new mapboxgl.Map({
+              container: mapRef.current,
+              style: 'mapbox://styles/mapbox/satellite-streets-v12',
+              center: [lng, lat],
+              zoom: 15,
+            });
 
-            // Add satellite tile layer
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-              attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-              maxZoom: 19
-            }).addTo(mapInstanceRef.current);
-
-            // Create custom icon
-            const createColoredIcon = () => {
-              const svgIcon = `
-                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="16" cy="16" r="14" fill="#0069D9" stroke="white" stroke-width="2"/>
-                  <circle cx="16" cy="16" r="6" fill="white"/>
-                </svg>
-              `;
-              return L.divIcon({
-                html: svgIcon,
-                className: 'custom-marker',
-                iconSize: [32, 32],
-                iconAnchor: [16, 16],
-              });
-            };
+            map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
             // Add marker
-            const marker = L.marker([lat, lng], { icon: createColoredIcon() }).addTo(mapInstanceRef.current);
-            
-            // Add popup
-            marker.bindPopup(`
-              <div style="font-family: system-ui; padding: 8px;">
-                <strong style="font-size: 14px; display: block; margin-bottom: 4px;">${address}</strong>
-                <span style="color: #666; font-size: 12px;">${location}</span>
-              </div>
-            `);
+            const el = document.createElement('div');
+            el.className = 'custom-marker';
+            el.innerHTML = `
+              <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="14" fill="#0069D9" stroke="white" stroke-width="2"/>
+                <circle cx="16" cy="16" r="6" fill="white"/>
+              </svg>
+            `;
+            el.style.cursor = 'pointer';
+
+            const marker = new mapboxgl.Marker({ element: el })
+              .setLngLat([lng, lat])
+              .setPopup(
+                new mapboxgl.Popup({ offset: 25 })
+                  .setHTML(`
+                    <div style="font-family: system-ui; padding: 8px;">
+                      <strong style="font-size: 14px; display: block; margin-bottom: 4px;">${address}</strong>
+                      <span style="color: #666; font-size: 12px;">${location}</span>
+                    </div>
+                  `)
+              )
+              .addTo(map);
+
+            markerRef.current = marker;
+            mapInstanceRef.current = map;
           }
         }
       } catch (error) {
@@ -84,9 +90,8 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
 
     // Cleanup
     return () => {
-      if (routingControlRef.current && mapInstanceRef.current) {
-        mapInstanceRef.current.removeControl(routingControlRef.current);
-        routingControlRef.current = null;
+      if (markerRef.current) {
+        markerRef.current.remove();
       }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
@@ -96,94 +101,93 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   }, [address, location]);
 
   const handleRouteSearch = async () => {
-    if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
+    if (!mapInstanceRef.current || !fromAddress || !toAddress || !MAPBOX_TOKEN) return;
+
+    const map = mapInstanceRef.current;
 
     try {
       // Geocode from address
       const fromResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fromAddress)}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fromAddress)}.json?access_token=${MAPBOX_TOKEN}`
       );
       const fromData = await fromResponse.json();
 
       // Geocode to address
       const toResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress)}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(toAddress)}.json?access_token=${MAPBOX_TOKEN}`
       );
       const toData = await toResponse.json();
 
-      if (fromData[0] && toData[0]) {
-        const fromLatLng = L.latLng(parseFloat(fromData[0].lat), parseFloat(fromData[0].lon));
-        const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
+      if (fromData.features?.[0] && toData.features?.[0]) {
+        const fromCoords = fromData.features[0].center;
+        const toCoords = toData.features[0].center;
 
-        // Remove existing routing control if any
-        if (routingControlRef.current) {
-          mapInstanceRef.current.removeControl(routingControlRef.current);
-        }
+        // Map travel mode to Mapbox profile
+        const profile = travelMode === 'driving' ? 'driving' : travelMode === 'cycling' ? 'cycling' : 'walking';
 
-        // Determine router based on travel mode
-        const getRouter = () => {
-          const baseUrl = 'https://router.project-osrm.org/route/v1';
-          return (L as any).Routing.osrmv1({
-            serviceUrl: `${baseUrl}/${travelMode === 'driving' ? 'car' : travelMode === 'cycling' ? 'bike' : 'foot'}`,
-            profile: travelMode === 'driving' ? 'car' : travelMode === 'cycling' ? 'bike' : 'foot'
+        // Get directions from Mapbox
+        const directionsResponse = await fetch(
+          `https://api.mapbox.com/directions/v5/mapbox/${profile}/${fromCoords[0]},${fromCoords[1]};${toCoords[0]},${toCoords[1]}?geometries=geojson&access_token=${MAPBOX_TOKEN}`
+        );
+        const directionsData = await directionsResponse.json();
+
+        if (directionsData.routes && directionsData.routes[0]) {
+          const route = directionsData.routes[0];
+          
+          // Extract distance and duration
+          const distanceKm = (route.distance / 1000).toFixed(1);
+          const durationMin = Math.round(route.duration / 60);
+          const hours = Math.floor(durationMin / 60);
+          const minutes = durationMin % 60;
+          const durationStr = hours > 0 ? `${hours} tim ${minutes} min` : `${minutes} min`;
+          
+          setRouteInfo({
+            distance: `${distanceKm} km`,
+            duration: durationStr
           });
-        };
 
-        // Create new routing control
-        routingControlRef.current = (L as any).Routing.control({
-          waypoints: [fromLatLng, toLatLng],
-          router: getRouter(),
-          routeWhileDragging: true,
-          showAlternatives: false,
-          lineOptions: {
-            styles: [{ color: '#0069D9', weight: 4 }]
-          },
-          createMarker: function(i: number, wp: any) {
-            const svgIcon = `
-              <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="14" fill="${i === 0 ? '#22c55e' : '#ef4444'}" stroke="white" stroke-width="2"/>
-                <circle cx="16" cy="16" r="6" fill="white"/>
-              </svg>
-            `;
-            return L.marker(wp.latLng, {
-              icon: L.divIcon({
-                html: svgIcon,
-                className: 'custom-marker',
-                iconSize: [32, 32],
-                iconAnchor: [16, 16],
-              })
-            });
+          // Remove existing route layer if any
+          if (map.getLayer(routeLayerId)) {
+            map.removeLayer(routeLayerId);
           }
-        }).addTo(mapInstanceRef.current);
+          if (map.getSource(routeSourceId)) {
+            map.removeSource(routeSourceId);
+          }
 
-        // Zoom map to fit the entire route and extract distance/time
-        routingControlRef.current.on('routesfound', function(e: any) {
-          const routes = e.routes;
-          const bounds = L.latLngBounds([fromLatLng, toLatLng]);
-          
-          if (routes[0]) {
-            // Extract distance and time
-            const distanceKm = (routes[0].summary.totalDistance / 1000).toFixed(1);
-            const durationMin = Math.round(routes[0].summary.totalTime / 60);
-            const hours = Math.floor(durationMin / 60);
-            const minutes = durationMin % 60;
-            const durationStr = hours > 0 ? `${hours} tim ${minutes} min` : `${minutes} min`;
-            
-            setRouteInfo({
-              distance: `${distanceKm} km`,
-              duration: durationStr
-            });
-
-            // Extend bounds with route coordinates
-            if (routes[0].coordinates) {
-              routes[0].coordinates.forEach((coord: any) => {
-                bounds.extend(L.latLng(coord.lat, coord.lng));
-              });
+          // Add route to map
+          map.addSource(routeSourceId, {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: route.geometry
             }
-          }
-          
-          mapInstanceRef.current?.fitBounds(bounds, { padding: [50, 50] });
-        });
+          });
+
+          map.addLayer({
+            id: routeLayerId,
+            type: 'line',
+            source: routeSourceId,
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#0069D9',
+              'line-width': 4
+            }
+          });
+
+          // Fit map to route bounds
+          const coordinates = route.geometry.coordinates;
+          const bounds = coordinates.reduce((bounds: mapboxgl.LngLatBounds, coord: [number, number]) => {
+            return bounds.extend(coord as [number, number]);
+          }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+          map.fitBounds(bounds, {
+            padding: 50
+          });
+        }
       }
     } catch (error) {
       console.error('Route calculation error:', error);
