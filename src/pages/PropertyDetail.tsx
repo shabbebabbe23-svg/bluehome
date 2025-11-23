@@ -510,15 +510,13 @@ const PropertyDetail = () => {
             </Card>
 
             {/* Property Title and Share Section */}
-            <div className="relative">
-              <div className="flex justify-start mb-3">
-                <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
-                  <Share2 className="w-4 h-4" />
-                  Dela bostad
-                </Button>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-center">{property.title}</h1>
-            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-center relative flex items-center justify-center gap-4">
+              <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2 absolute left-0">
+                <Share2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Dela bostad</span>
+              </Button>
+              {property.title}
+            </h1>
 
             {/* Property Info */}
             <Card>
