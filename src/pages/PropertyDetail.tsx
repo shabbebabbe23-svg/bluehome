@@ -411,17 +411,17 @@ const PropertyDetail = () => {
             <defs>
               <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: 'hsl(45 100% 50%)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
               </linearGradient>
             </defs>
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           
-          {/* SverigeBo Logo - Center */}
-          <Link to="/" className="flex items-center gap-2 hover:scale-110 transition-all duration-300 ease-out absolute left-1/2 -translate-x-1/2">
+          {/* Bluehome Logo - Center */}
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
             <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              SverigeBo
+              Bluehome
             </span>
           </Link>
           
@@ -438,7 +438,7 @@ const PropertyDetail = () => {
               <defs>
                 <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(135 70% 60%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -455,7 +455,7 @@ const PropertyDetail = () => {
               <defs>
                 <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(135 70% 60%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <path 

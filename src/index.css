@@ -21,8 +21,8 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
     --primary-glow: 200 100% 50%;
 
-    --secondary: 135 70% 60%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
@@ -40,14 +40,14 @@ All colors MUST be HSL.
     --radius: 0.75rem;
 
     /* Custom Real Estate Colors */
-    --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(135 70% 60%));
+    --hero-gradient: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%));
   /* Dark variant of the hero gradient (used in .dark mode) */
-  --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(135 50% 35%));
+  --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(142 50% 14%));
     --property-shadow: 0 10px 40px -10px hsl(200 98% 35% / 0.1);
     --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 35% / 0.2);
     --glass-bg: hsl(0 0% 100% / 0.8);
     --property-bg: hsl(0 0% 100%);
-    --success: 135 70% 60%;
+    --success: 142 76% 30%;
     --warning: 43 96% 56%;
     --main-gradient: linear-gradient(135deg, hsl(135, 70%, 91%), hsl(198, 78%, 84%));
 
@@ -105,7 +105,7 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     /* Dark mode hero gradient (slightly different stops for better contrast) */
-    --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 12%), hsl(45 80% 25%));
+    --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 12%), hsl(142 50% 10%));
   }
 }
 
