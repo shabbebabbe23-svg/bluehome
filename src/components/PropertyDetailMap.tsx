@@ -1,7 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import 'leaflet-routing-machine';
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface PropertyDetailMapProps {
   address: string;
@@ -11,6 +15,9 @@ interface PropertyDetailMapProps {
 const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const routingControlRef = useRef<any>(null);
+  const [fromAddress, setFromAddress] = useState('');
+  const [toAddress, setToAddress] = useState('');
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -74,6 +81,10 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
 
     // Cleanup
     return () => {
+      if (routingControlRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -81,15 +92,95 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
     };
   }, [address, location]);
 
+  const handleRouteSearch = async () => {
+    if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
+
+    try {
+      // Geocode from address
+      const fromResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fromAddress)}`
+      );
+      const fromData = await fromResponse.json();
+
+      // Geocode to address
+      const toResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress)}`
+      );
+      const toData = await toResponse.json();
+
+      if (fromData[0] && toData[0]) {
+        const fromLatLng = L.latLng(parseFloat(fromData[0].lat), parseFloat(fromData[0].lon));
+        const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
+
+        // Remove existing routing control if any
+        if (routingControlRef.current) {
+          mapInstanceRef.current.removeControl(routingControlRef.current);
+        }
+
+        // Create new routing control
+        routingControlRef.current = (L as any).Routing.control({
+          waypoints: [fromLatLng, toLatLng],
+          routeWhileDragging: true,
+          showAlternatives: false,
+          lineOptions: {
+            styles: [{ color: '#0069D9', weight: 4 }]
+          },
+          createMarker: function(i: number, wp: any) {
+            const svgIcon = `
+              <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="14" fill="${i === 0 ? '#22c55e' : '#ef4444'}" stroke="white" stroke-width="2"/>
+                <circle cx="16" cy="16" r="6" fill="white"/>
+              </svg>
+            `;
+            return L.marker(wp.latLng, {
+              icon: L.divIcon({
+                html: svgIcon,
+                className: 'custom-marker',
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+              })
+            });
+          }
+        }).addTo(mapInstanceRef.current);
+      }
+    } catch (error) {
+      console.error('Route calculation error:', error);
+    }
+  };
+
   return (
     <Card>
       <CardContent className="p-6">
         <h2 className="text-xl font-bold mb-4">Karta</h2>
         <div 
           ref={mapRef} 
-          className="w-full h-[400px] rounded-lg"
+          className="w-full h-[400px] rounded-lg mb-4"
           style={{ zIndex: 0 }}
         />
+        
+        {/* Route Search */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold">Beräkna vägbeskrivning</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Input
+              placeholder="Från adress..."
+              value={fromAddress}
+              onChange={(e) => setFromAddress(e.target.value)}
+            />
+            <Input
+              placeholder="Till adress..."
+              value={toAddress}
+              onChange={(e) => setToAddress(e.target.value)}
+            />
+          </div>
+          <Button 
+            onClick={handleRouteSearch}
+            className="w-full"
+            disabled={!fromAddress || !toAddress}
+          >
+            Visa vägbeskrivning
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
