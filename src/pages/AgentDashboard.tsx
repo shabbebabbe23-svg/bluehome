@@ -58,6 +58,7 @@ const AgentDashboard = () => {
   const [bidderEmail, setBidderEmail] = useState("");
   const [bidderPhone, setBidderPhone] = useState("");
   const [bidderLabel, setBidderLabel] = useState("");
+  const [isNewProduction, setIsNewProduction] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -167,6 +168,7 @@ const AgentDashboard = () => {
   };
   const handleEditProperty = (property: any) => {
     setEditingProperty(property);
+    setIsNewProduction(property.is_new_production || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -181,12 +183,6 @@ const AgentDashboard = () => {
     setEditAdditionalImagePreviews([]);
     setExistingAdditionalImages(property.additional_images || []);
     setRemovedImages({ floorplan: [], additional: [] });
-
-    setNewBidAmount("");
-    setBidderName("");
-    setBidderEmail("");
-    setBidderPhone("");
-    setBidderLabel("");
   };
 
   const handleAddBid = async (e: React.FormEvent) => {
@@ -478,6 +474,9 @@ const AgentDashboard = () => {
 
       const newPriceValue = formData.get("new_price") as string;
       const viewingDateValue = formData.get("viewing_date") as string;
+      const constructionYearValue = formData.get("construction_year") as string;
+      const operatingCostValue = formData.get("operating_cost") as string;
+      const housingAssociationValue = formData.get("housing_association") as string;
       
       const { error } = await supabase.from("properties").update({
         title: formData.get("title") as string,
@@ -490,13 +489,17 @@ const AgentDashboard = () => {
         bedrooms: Number(formData.get("bedrooms")),
         bathrooms: Number(formData.get("bathrooms")),
         area: Number(formData.get("area")),
+        construction_year: constructionYearValue ? Number(constructionYearValue) : null,
+        operating_cost: operatingCostValue ? Number(operatingCostValue) : 0,
+        housing_association: housingAssociationValue || null,
         description: formData.get("description") as string,
         fee: Number(formData.get("fee")),
         viewing_date: viewingDateValue || null,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,
         floorplan_images: floorplanImagesUrls,
-        additional_images: additionalImagesUrls
+        additional_images: additionalImagesUrls,
+        is_new_production: isNewProduction,
       }).eq("id", editingProperty.id);
       
       if (error) throw error;
@@ -784,8 +787,43 @@ const AgentDashboard = () => {
                 </div>
 
                 <div>
+                  <Label htmlFor="edit-construction-year">Byggår</Label>
+                  <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                </div>
+
+                <div>
                   <Label htmlFor="edit-viewing-date">Visningsdatum</Label>
                   <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-operating-cost">Driftkostnad (kr/mån)</Label>
+                  <Input id="edit-operating-cost" name="operating_cost" type="number" defaultValue={editingProperty.operating_cost || 0} placeholder="2 500" />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-housing-association">Bostadsförening (valfritt)</Label>
+                  <Input id="edit-housing-association" name="housing_association" type="text" defaultValue={editingProperty.housing_association || ''} placeholder="HSB Brf..." />
+                </div>
+
+                <div className="md:col-span-2">
+                  <Card className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="edit-is-new-production"
+                        checked={isNewProduction}
+                        onChange={(e) => setIsNewProduction(e.target.checked)}
+                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+                      />
+                      <Label htmlFor="edit-is-new-production" className="cursor-pointer font-semibold text-base">
+                        Nyproduktion
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2 ml-8">
+                      Markera om detta är en nyproducerad fastighet
+                    </p>
+                  </Card>
                 </div>
 
                 {/* Mark as sold button */}
