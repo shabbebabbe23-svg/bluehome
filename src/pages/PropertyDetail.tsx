@@ -31,7 +31,7 @@ import storgatan5 from "@/assets/storgatan-5.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
-import PropertyMap from "@/components/PropertyMap";
+import PropertyDetailMap from "@/components/PropertyDetailMap";
 import PropertyCostBreakdown from "@/components/PropertyCostBreakdown";
 
 // X (Twitter) Logo Component
@@ -718,7 +718,7 @@ const PropertyDetail = () => {
             </Card>
 
             {/* Map */}
-            <PropertyMap address={property.address} location={property.location} />
+            <PropertyDetailMap address={property.address} location={property.location} />
             
             {/* Cost Breakdown */}
             <PropertyCostBreakdown 
