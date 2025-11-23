@@ -30,6 +30,22 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const routeLayerId = 'route-layer';
   const routeSourceId = 'route-source';
 
+  // Show fallback if no Mapbox token
+  if (!MAPBOX_TOKEN) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="text-2xl font-bold mb-4">Kartvy över alla fastigheter</h2>
+          <div className="w-full h-[600px] rounded-lg bg-muted flex items-center justify-center">
+            <p className="text-muted-foreground text-center px-4">
+              Mapbox är inte konfigurerat. Ladda om sidan.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   useEffect(() => {
     const geocodeProperties = async () => {
       if (!MAPBOX_TOKEN) return;
