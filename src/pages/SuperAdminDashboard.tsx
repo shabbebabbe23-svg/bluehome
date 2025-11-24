@@ -7,8 +7,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Building2, Plus, Users, Home } from "lucide-react";
+import { Building2, Plus, Users, Home, Search, Filter, Edit, Trash2, Download, Mail, Eye, BarChart3, TrendingUp, Activity } from "lucide-react";
 import Header from "@/components/Header";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { Badge } from "@/components/ui/badge";
 
 interface Agency {
   id: string;
@@ -25,22 +30,70 @@ interface AgencyStats {
   property_count: number;
 }
 
+interface Invitation {
+  id: string;
+  email: string;
+  role: string;
+  agency_id: string | null;
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
+}
+
+interface Profile {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+}
+
+interface Property {
+  id: string;
+  title: string;
+  address: string;
+  price: number;
+  created_at: string;
+}
+
+const COLORS = ['hsl(200, 98%, 35%)', 'hsl(142, 76%, 30%)', 'hsl(280, 70%, 45%)', 'hsl(20, 90%, 50%)'];
+
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>([]);
   const [agencyStats, setAgencyStats] = useState<Record<string, AgencyStats>>({});
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+  const [agencyToDelete, setAgencyToDelete] = useState<Agency | null>(null);
+  const [agencyProfiles, setAgencyProfiles] = useState<Profile[]>([]);
+  const [agencyProperties, setAgencyProperties] = useState<Property[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
+  const [sortBy, setSortBy] = useState<"name" | "agents" | "properties" | "date">("date");
   const [newAgency, setNewAgency] = useState({
     name: "",
     email_domain: "",
     admin_email: "",
     admin_name: "",
   });
+  const [editAgency, setEditAgency] = useState({
+    name: "",
+    email_domain: "",
+    logo_url: "",
+  });
 
   useEffect(() => {
     checkSuperAdminAccess();
   }, []);
+
+  useEffect(() => {
+    filterAndSortAgencies();
+  }, [agencies, searchQuery, filterStatus, sortBy]);
 
   const checkSuperAdminAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -67,6 +120,44 @@ const SuperAdminDashboard = () => {
     }
 
     fetchAgencies();
+    fetchInvitations();
+  };
+
+  const filterAndSortAgencies = () => {
+    let filtered = [...agencies];
+
+    // Filter by search
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (a) =>
+          a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.email_domain.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by status
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((a) =>
+        filterStatus === "active" ? a.is_active : !a.is_active
+      );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "agents":
+          return (agencyStats[b.id]?.agent_count || 0) - (agencyStats[a.id]?.agent_count || 0);
+        case "properties":
+          return (agencyStats[b.id]?.property_count || 0) - (agencyStats[a.id]?.property_count || 0);
+        case "date":
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+
+    setFilteredAgencies(filtered);
   };
 
   const fetchAgencies = async () => {
@@ -124,6 +215,48 @@ const SuperAdminDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchInvitations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("agency_invitations")
+        .select("*")
+        .is("used_at", null)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setInvitations(data || []);
+    } catch (error) {
+      console.error("Error fetching invitations:", error);
+    }
+  };
+
+  const fetchAgencyDetails = async (agencyId: string) => {
+    try {
+      const [profilesResult, propertiesResult] = await Promise.all([
+        supabase.from("profiles").select("*").eq("agency_id", agencyId),
+        supabase
+          .from("properties")
+          .select("*")
+          .eq("is_deleted", false)
+          .in(
+            "user_id",
+            await supabase
+              .from("profiles")
+              .select("id")
+              .eq("agency_id", agencyId)
+              .then((r) => (r.data || []).map((p) => p.id))
+          )
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
+
+      setAgencyProfiles(profilesResult.data || []);
+      setAgencyProperties(propertiesResult.data || []);
+    } catch (error) {
+      console.error("Error fetching agency details:", error);
     }
   };
 
@@ -208,6 +341,127 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  const handleEditAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAgency) return;
+
+    try {
+      const { error } = await supabase
+        .from("agencies")
+        .update({
+          name: editAgency.name,
+          email_domain: editAgency.email_domain,
+          logo_url: editAgency.logo_url || null,
+        })
+        .eq("id", selectedAgency.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Byrå uppdaterad",
+        description: "Byråinformationen har uppdaterats.",
+      });
+
+      setIsEditDialogOpen(false);
+      fetchAgencies();
+    } catch (error: any) {
+      console.error("Error updating agency:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte uppdatera byrå.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteAgency = async () => {
+    if (!agencyToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from("agencies")
+        .delete()
+        .eq("id", agencyToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Byrå borttagen",
+        description: `${agencyToDelete.name} har tagits bort.`,
+      });
+
+      setIsDeleteDialogOpen(false);
+      setAgencyToDelete(null);
+      fetchAgencies();
+    } catch (error: any) {
+      console.error("Error deleting agency:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte ta bort byrå.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportCSV = () => {
+    const csvContent = [
+      ["Byrå", "Email-domän", "Status", "Mäklare", "Objekt", "Skapat"],
+      ...filteredAgencies.map((a) => [
+        a.name,
+        a.email_domain,
+        a.is_active ? "Aktiv" : "Inaktiv",
+        agencyStats[a.id]?.agent_count || 0,
+        agencyStats[a.id]?.property_count || 0,
+        new Date(a.created_at).toLocaleDateString("sv-SE"),
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `byraer_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+
+    toast({
+      title: "Export klar",
+      description: "CSV-filen har laddats ner.",
+    });
+  };
+
+  const openEditDialog = (agency: Agency) => {
+    setSelectedAgency(agency);
+    setEditAgency({
+      name: agency.name,
+      email_domain: agency.email_domain,
+      logo_url: agency.logo_url || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const openDetailDialog = async (agency: Agency) => {
+    setSelectedAgency(agency);
+    setIsDetailDialogOpen(true);
+    await fetchAgencyDetails(agency.id);
+  };
+
+  const openDeleteDialog = (agency: Agency) => {
+    setAgencyToDelete(agency);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const chartData = agencies.map((a) => ({
+    name: a.name.length > 15 ? a.name.substring(0, 15) + "..." : a.name,
+    mäklare: agencyStats[a.id]?.agent_count || 0,
+    objekt: agencyStats[a.id]?.property_count || 0,
+  }));
+
+  const pieData = [
+    { name: "Aktiva", value: agencies.filter((a) => a.is_active).length },
+    { name: "Inaktiva", value: agencies.filter((a) => !a.is_active).length },
+  ];
+
   const toggleAgencyStatus = async (agencyId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
@@ -248,14 +502,19 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="gap-2 w-full sm:w-auto">
-                <Plus className="w-4 h-4" />
-                <span className="hidden xs:inline">Lägg till byrå</span>
-                <span className="xs:hidden">Ny byrå</span>
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button onClick={handleExportCSV} variant="outline" size="lg" className="gap-2">
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Exportera</span>
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden xs:inline">Lägg till byrå</span>
+                  <span className="xs:hidden">Ny byrå</span>
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Skapa ny mäklarbyrå</DialogTitle>
@@ -368,59 +627,304 @@ const SuperAdminDashboard = () => {
             <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="text-center py-8 text-muted-foreground">Laddar...</div>
-            ) : agencies.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Inga byråer har skapats än. Klicka på "Lägg till byrå" för att komma igång.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {agencies.map((agency) => (
-                  <div
-                    key={agency.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-base sm:text-lg">{agency.name}</h3>
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            agency.is_active
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {agency.is_active ? "Aktiv" : "Inaktiv"}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        @{agency.email_domain}
-                      </p>
-                      <div className="flex gap-4 mt-2 text-sm flex-wrap">
-                        <span className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {agencyStats[agency.id]?.agent_count || 0} mäklare
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Home className="w-4 h-4" />
-                          {agencyStats[agency.id]?.property_count || 0} objekt
-                        </span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
-                      className="w-full sm:w-auto"
-                    >
-                      {agency.is_active ? "Inaktivera" : "Aktivera"}
-                    </Button>
+                {loading ? (
+                  <div className="text-center py-8 text-muted-foreground">Laddar...</div>
+                ) : filteredAgencies.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {searchQuery || filterStatus !== "all"
+                      ? "Inga byråer matchar dina filter."
+                      : "Inga byråer har skapats än. Klicka på 'Lägg till byrå' för att komma igång."}
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-4">
+                    {filteredAgencies.map((agency) => (
+                      <div
+                        key={agency.id}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4 hover:border-primary/50 transition-colors"
+                      >
+                        <div className="flex items-start gap-4 flex-1">
+                          {agency.logo_url && (
+                            <img
+                              src={agency.logo_url}
+                              alt={agency.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-base sm:text-lg truncate">
+                                {agency.name}
+                              </h3>
+                              <Badge variant={agency.is_active ? "default" : "secondary"}>
+                                {agency.is_active ? "Aktiv" : "Inaktiv"}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              @{agency.email_domain}
+                            </p>
+                            <div className="flex gap-4 mt-2 text-sm flex-wrap">
+                              <span className="flex items-center gap-1">
+                                <Users className="w-4 h-4" />
+                                {agencyStats[agency.id]?.agent_count || 0} mäklare
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Home className="w-4 h-4" />
+                                {agencyStats[agency.id]?.property_count || 0} objekt
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openDetailDialog(agency)}
+                            className="gap-1"
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span className="hidden sm:inline">Detaljer</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(agency)}
+                            className="gap-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                            <span className="hidden sm:inline">Redigera</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
+                            className="gap-1"
+                          >
+                            <Activity className="w-4 h-4" />
+                            {agency.is_active ? "Inaktivera" : "Aktivera"}
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => openDeleteDialog(agency)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="invitations">
+            <Card className="bg-card/95 backdrop-blur-sm border-white/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  Aktiva inbjudningar
+                </CardTitle>
+                <CardDescription>Hantera väntande inbjudningar</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {invitations.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Inga väntande inbjudningar.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {invitations.map((invitation) => {
+                      const agency = agencies.find((a) => a.id === invitation.agency_id);
+                      const isExpired = new Date(invitation.expires_at) < new Date();
+                      return (
+                        <div
+                          key={invitation.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-3"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-medium">{invitation.email}</p>
+                              <Badge variant={isExpired ? "destructive" : "secondary"}>
+                                {invitation.role}
+                              </Badge>
+                              {isExpired && <Badge variant="destructive">Utgången</Badge>}
+                            </div>
+                            {agency && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {agency.name}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Utgår: {new Date(invitation.expires_at).toLocaleDateString("sv-SE")}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Redigera byrå</DialogTitle>
+              <DialogDescription>Uppdatera byråinformation</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleEditAgency} className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">Byrånamn *</Label>
+                <Input
+                  id="edit-name"
+                  value={editAgency.name}
+                  onChange={(e) => setEditAgency({ ...editAgency, name: e.target.value })}
+                  required
+                />
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div>
+                <Label htmlFor="edit-email-domain">Email-domän *</Label>
+                <Input
+                  id="edit-email-domain"
+                  value={editAgency.email_domain}
+                  onChange={(e) =>
+                    setEditAgency({ ...editAgency, email_domain: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-logo">Logotyp URL</Label>
+                <Input
+                  id="edit-logo"
+                  value={editAgency.logo_url}
+                  onChange={(e) => setEditAgency({ ...editAgency, logo_url: e.target.value })}
+                  placeholder="https://example.com/logo.png"
+                />
+              </div>
+              <div className="flex gap-2 justify-end pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Avbryt
+                </Button>
+                <Button type="submit">Spara ändringar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Detail Dialog */}
+        <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+          <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {selectedAgency?.logo_url && (
+                  <img
+                    src={selectedAgency.logo_url}
+                    alt={selectedAgency.name}
+                    className="w-10 h-10 rounded-lg object-cover"
+                  />
+                )}
+                {selectedAgency?.name}
+              </DialogTitle>
+              <DialogDescription>Detaljerad information om byrån</DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold mb-2 flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Mäklare ({agencyProfiles.length})
+                </h3>
+                {agencyProfiles.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Inga mäklare ännu.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {agencyProfiles.map((profile) => (
+                      <div
+                        key={profile.id}
+                        className="p-3 border rounded-lg flex items-center justify-between"
+                      >
+                        <div>
+                          <p className="font-medium">{profile.full_name || "Namn saknas"}</p>
+                          <p className="text-sm text-muted-foreground">{profile.email}</p>
+                        </div>
+                        {profile.phone && (
+                          <p className="text-sm text-muted-foreground">{profile.phone}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2 flex items-center gap-2">
+                  <Home className="w-4 h-4" />
+                  Senaste objekt ({agencyProperties.length})
+                </h3>
+                {agencyProperties.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Inga objekt ännu.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {agencyProperties.map((property) => (
+                      <div
+                        key={property.id}
+                        className="p-3 border rounded-lg flex items-center justify-between"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{property.title}</p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {property.address}
+                          </p>
+                        </div>
+                        <div className="text-right ml-4">
+                          <p className="font-semibold">
+                            {property.price.toLocaleString("sv-SE")} kr
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(property.created_at).toLocaleDateString("sv-SE")}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Är du säker?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Detta kommer att permanent ta bort byrån "{agencyToDelete?.name}" och alla
+                associerade data. Denna åtgärd kan inte ångras.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setAgencyToDelete(null)}>
+                Avbryt
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAgency}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Ta bort
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
