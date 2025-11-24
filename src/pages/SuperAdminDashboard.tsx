@@ -238,21 +238,22 @@ const SuperAdminDashboard = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
               Superadmin Dashboard
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               Hantera mäklarbyråer och deras konton
             </p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="gap-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" />
-                Lägg till byrå
+                <span className="hidden xs:inline">Lägg till byrå</span>
+                <span className="xs:hidden">Ny byrå</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
@@ -321,7 +322,7 @@ const SuperAdminDashboard = () => {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid gap-4 md:grid-cols-3 mb-8">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Byråer</CardTitle>
@@ -346,7 +347,7 @@ const SuperAdminDashboard = () => {
               <p className="text-xs text-muted-foreground">Över alla byråer</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Objekt</CardTitle>
               <Home className="h-4 w-4 text-muted-foreground" />
@@ -378,11 +379,11 @@ const SuperAdminDashboard = () => {
                 {agencies.map((agency) => (
                   <div
                     key={agency.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">{agency.name}</h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-base sm:text-lg">{agency.name}</h3>
                         <span
                           className={`px-2 py-1 text-xs rounded-full ${
                             agency.is_active
@@ -396,13 +397,13 @@ const SuperAdminDashboard = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         @{agency.email_domain}
                       </p>
-                      <div className="flex gap-4 mt-2 text-sm">
-                        <span>
-                          <Users className="w-4 h-4 inline mr-1" />
+                      <div className="flex gap-4 mt-2 text-sm flex-wrap">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
                           {agencyStats[agency.id]?.agent_count || 0} mäklare
                         </span>
-                        <span>
-                          <Home className="w-4 h-4 inline mr-1" />
+                        <span className="flex items-center gap-1">
+                          <Home className="w-4 h-4" />
                           {agencyStats[agency.id]?.property_count || 0} objekt
                         </span>
                       </div>
@@ -410,6 +411,7 @@ const SuperAdminDashboard = () => {
                     <Button
                       variant="outline"
                       onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
+                      className="w-full sm:w-auto"
                     >
                       {agency.is_active ? "Inaktivera" : "Aktivera"}
                     </Button>
