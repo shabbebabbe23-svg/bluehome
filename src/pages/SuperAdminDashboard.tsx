@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus } from "lucide-react";
+import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus, TrendingUp, Award } from "lucide-react";
 import Header from "@/components/Header";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -39,11 +39,26 @@ interface ActivityLog {
   created_at: string;
 }
 
+interface AgencySalesStats {
+  agency_id: string;
+  agency_name: string;
+  sales_count: number;
+}
+
+interface AgentSalesStats {
+  agent_id: string;
+  agent_name: string;
+  agency_name: string;
+  sales_count: number;
+}
+
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [agencyStats, setAgencyStats] = useState<Record<string, AgencyStats>>({});
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [agencySalesStats, setAgencySalesStats] = useState<AgencySalesStats[]>([]);
+  const [agentSalesStats, setAgentSalesStats] = useState<AgentSalesStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newAgency, setNewAgency] = useState({
@@ -83,6 +98,7 @@ const SuperAdminDashboard = () => {
 
     fetchAgencies();
     fetchActivityLogs();
+    fetchSalesStats();
   };
 
   const fetchActivityLogs = async () => {
@@ -98,6 +114,76 @@ const SuperAdminDashboard = () => {
       setActivityLogs(data || []);
     } catch (error) {
       console.error("Error fetching activity logs:", error);
+    }
+  };
+
+  const fetchSalesStats = async () => {
+    try {
+      // Hämta alla sålda fastigheter med mäklare och byrå-information
+      const { data: soldProperties, error } = await supabase
+        .from("properties")
+        .select(`
+          id,
+          user_id,
+          profiles!inner(
+            id,
+            full_name,
+            agency_id,
+            agencies!inner(
+              id,
+              name
+            )
+          )
+        `)
+        .eq("is_sold", true);
+
+      if (error) throw error;
+
+      // Gruppera per byrå
+      const agencySales = new Map<string, { name: string; count: number }>();
+      // Gruppera per mäklare
+      const agentSales = new Map<string, { name: string; agency_name: string; count: number }>();
+
+      soldProperties?.forEach((property: any) => {
+        const profile = property.profiles;
+        if (profile && profile.agencies) {
+          const agencyId = profile.agencies.id;
+          const agencyName = profile.agencies.name;
+          const agentId = profile.id;
+          const agentName = profile.full_name || "Okänd mäklare";
+
+          // Räkna per byrå
+          const currentAgency = agencySales.get(agencyId) || { name: agencyName, count: 0 };
+          agencySales.set(agencyId, { ...currentAgency, count: currentAgency.count + 1 });
+
+          // Räkna per mäklare
+          const currentAgent = agentSales.get(agentId) || { name: agentName, agency_name: agencyName, count: 0 };
+          agentSales.set(agentId, { ...currentAgent, count: currentAgent.count + 1 });
+        }
+      });
+
+      // Konvertera till array och sortera
+      const agencyStatsArray: AgencySalesStats[] = Array.from(agencySales.entries()).map(
+        ([id, data]) => ({
+          agency_id: id,
+          agency_name: data.name,
+          sales_count: data.count,
+        })
+      ).sort((a, b) => b.sales_count - a.sales_count);
+
+      const agentStatsArray: AgentSalesStats[] = Array.from(agentSales.entries()).map(
+        ([id, data]) => ({
+          agent_id: id,
+          agent_name: data.name,
+          agency_name: data.agency_name,
+          sales_count: data.count,
+        })
+      ).sort((a, b) => b.sales_count - a.sales_count);
+
+      setAgencySalesStats(agencyStatsArray);
+      setAgentSalesStats(agentStatsArray);
+    } catch (error) {
+      console.error("Error fetching sales stats:", error);
     }
   };
 
@@ -431,10 +517,11 @@ const SuperAdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Tabs for Agencies and Activity Log */}
+        {/* Tabs for Agencies, Statistics and Activity Log */}
         <Tabs defaultValue="agencies" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 max-w-[600px]">
             <TabsTrigger value="agencies">Byråer</TabsTrigger>
+            <TabsTrigger value="statistics">Statistik</TabsTrigger>
             <TabsTrigger value="activity">Aktivitetslogg</TabsTrigger>
           </TabsList>
 
@@ -498,6 +585,91 @@ const SuperAdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="statistics">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Top Agencies */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-primary" />
+                    Topplista Byråer
+                  </CardTitle>
+                  <CardDescription>Byråer med flest sålda fastigheter</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {agencySalesStats.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Ingen försäljningsdata tillgänglig än.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {agencySalesStats.map((agency, index) => (
+                        <div
+                          key={agency.agency_id}
+                          className="flex items-center gap-4 p-3 rounded-lg bg-accent/5 border"
+                        >
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white font-bold">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold truncate">{agency.agency_name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {agency.sales_count} {agency.sales_count === 1 ? "såld fastighet" : "sålda fastigheter"}
+                            </p>
+                          </div>
+                          {index === 0 && (
+                            <Award className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Top Agents */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    Topplista Mäklare
+                  </CardTitle>
+                  <CardDescription>Mäklare med flest sålda fastigheter</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {agentSalesStats.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Ingen försäljningsdata tillgänglig än.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {agentSalesStats.map((agent, index) => (
+                        <div
+                          key={agent.agent_id}
+                          className="flex items-center gap-4 p-3 rounded-lg bg-accent/5 border"
+                        >
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white font-bold">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold truncate">{agent.agent_name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{agent.agency_name}</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {agent.sales_count} {agent.sales_count === 1 ? "såld fastighet" : "sålda fastigheter"}
+                            </p>
+                          </div>
+                          {index === 0 && (
+                            <Award className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="activity">
