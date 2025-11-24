@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowUpDown, Grid3x3, List } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -823,6 +824,9 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [dbProperties, setDbProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [propertyBids, setPropertyBids] = useState<Record<string, boolean>>({});
+  const [bulkSelectMode, setBulkSelectMode] = useState(false);
+  const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Save showAll state to sessionStorage whenever it changes
   useEffect(() => {
@@ -1005,6 +1009,59 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     );
   };
 
+  const handlePropertySelect = (id: string | number) => {
+    setSelectedProperties(prev =>
+      prev.includes(String(id))
+        ? prev.filter(propId => propId !== String(id))
+        : [...prev, String(id)]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedProperties.length === 0) return;
+    
+    if (!confirm(`Är du säker på att du vill ta bort ${selectedProperties.length} fastighet(er)?`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .update({ is_deleted: true })
+        .in('id', selectedProperties);
+
+      if (error) throw error;
+
+      // Remove deleted properties from state
+      setDbProperties(prev => prev.filter(p => !selectedProperties.includes(String(p.id))));
+      setSelectedProperties([]);
+      setBulkSelectMode(false);
+      
+      toast({
+        title: "Fastigheter borttagna",
+        description: `${selectedProperties.length} fastighet(er) har tagits bort.`,
+      });
+    } catch (error) {
+      console.error('Error deleting properties:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte ta bort fastigheterna. Försök igen.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProperties.length === displayedProperties.length) {
+      setSelectedProperties([]);
+    } else {
+      setSelectedProperties(displayedProperties.map(p => String(p.id)));
+    }
+  };
+
   if (loading) {
     return (
       <section className="py-8 md:py-16 px-3 sm:px-4">
@@ -1029,8 +1086,51 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </p>
         </div>
 
-        {/* Sort Dropdown and View Toggle */}
+        {/* Sort Dropdown, Bulk Actions, and View Toggle */}
         <div className="flex flex-col items-end gap-2 mb-3 md:mb-4">
+          {!showFinalPrices && (
+            <div className="flex gap-2 w-full sm:w-auto">
+              {!bulkSelectMode ? (
+                <Button
+                  onClick={() => {
+                    setBulkSelectMode(true);
+                    setSelectedProperties([]);
+                  }}
+                  variant="outline"
+                  className="flex-1 sm:flex-initial"
+                >
+                  Välj flera
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={toggleSelectAll}
+                    variant="outline"
+                    className="flex-1 sm:flex-initial"
+                  >
+                    {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
+                  </Button>
+                  <Button
+                    onClick={handleBulkDelete}
+                    disabled={selectedProperties.length === 0 || isDeleting}
+                    variant="destructive"
+                    className="flex-1 sm:flex-initial"
+                  >
+                    {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setBulkSelectMode(false);
+                      setSelectedProperties([]);
+                    }}
+                    variant="ghost"
+                  >
+                    Avbryt
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
               <ArrowUpDown className="w-4 h-4 mr-2" />
@@ -1092,6 +1192,9 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                 viewMode={viewMode}
                 hasActiveBidding={propertyBids[property.id as string] || false}
+                bulkSelectMode={bulkSelectMode}
+                isSelected={selectedProperties.includes(String(property.id))}
+                onSelect={handlePropertySelect}
               />
             </div>
           ))}
