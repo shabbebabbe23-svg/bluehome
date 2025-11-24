@@ -131,6 +131,17 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2 lg:gap-4">
+            {/* User Role Indicator */}
+            {user && userType && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span className="text-sm font-medium text-white">
+                  {userType === "superadmin" ? "Superadmin" : 
+                   userType === "agency_admin" ? "Byrå Admin" :
+                   userType === "maklare" ? "Mäklare" : "Användare"}
+                </span>
+              </div>
+            )}
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button 
                 variant="outline" 
@@ -196,6 +207,18 @@ const Header = () => {
             }}
           >
             <nav className="flex flex-col gap-4">
+              {/* User Role Indicator for Mobile */}
+              {user && userType && (
+                <div className="flex items-center justify-center gap-2 px-4 py-3 mx-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-base font-semibold text-white">
+                    Inloggad som: {userType === "superadmin" ? "Superadmin" : 
+                     userType === "agency_admin" ? "Byrå Admin" :
+                     userType === "maklare" ? "Mäklare" : "Användare"}
+                  </span>
+                </div>
+              )}
+              
               {/* Superadmin Menu Items for Mobile */}
               {user && userType === "superadmin" && (
                 <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
