@@ -843,7 +843,7 @@ const SuperAdminDashboard = () => {
                               setEditingAgency(agency);
                               setIsEditDialogOpen(true);
                             }}
-                            className="gap-2 bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] hover:text-white hover:border-transparent transition-all"
                           >
                             <Pencil className="w-4 h-4" />
                             Redigera
