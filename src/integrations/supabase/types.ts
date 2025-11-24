@@ -14,9 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      agencies: {
+        Row: {
+          created_at: string | null
+          email_domain: string
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email_domain: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email_domain?: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      agency_invitations: {
+        Row: {
+          agency_id: string | null
+          created_at: string | null
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_invitations_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           agency: string | null
+          agency_id: string | null
           area: string | null
           avatar_url: string | null
           bio: string | null
@@ -30,6 +105,7 @@ export type Database = {
         }
         Insert: {
           agency?: string | null
+          agency_id?: string | null
           area?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -43,6 +119,7 @@ export type Database = {
         }
         Update: {
           agency?: string | null
+          agency_id?: string | null
           area?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -54,7 +131,15 @@ export type Database = {
           phone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       properties: {
         Row: {
