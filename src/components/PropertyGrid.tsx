@@ -996,7 +996,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
   const currentProperties = showFinalPrices 
     ? soldProperties 
-    : [...allProperties, ...dbProperties];
+    : dbProperties;
   const filteredProperties = filterByType(currentProperties);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
