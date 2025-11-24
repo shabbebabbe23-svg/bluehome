@@ -25,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, name, agency_name, token }: InvitationRequest = await req.json();
 
-    const signupUrl = `${Deno.env.get("VITE_SUPABASE_URL")}/auth/v1/signup?token=${token}`;
+    const signupUrl = `${Deno.env.get("SITE_URL") || "https://qgvloiecyvqbxeplfzwv.lovableproject.com"}/acceptera-inbjudan?token=${token}`;
 
     const emailResponse = await resend.emails.send({
       from: "BaraHem <onboarding@resend.dev>",
