@@ -613,6 +613,10 @@ const PropertyDetail = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
+                        <span className="text-muted-foreground">Slutpris</span>
+                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
+                      </div>}
                     {property.new_price && property.is_manual_price_change && <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Prisutveckling</span>
                         <span className="font-semibold text-[#FF6B2C]">
@@ -632,10 +636,6 @@ const PropertyDetail = () => {
                       <span className="text-muted-foreground">Upplåtelseform</span>
                       <span className="font-semibold">Äganderätt</span>
                     </div>
-                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
-                        <span className="text-muted-foreground">Slutpris</span>
-                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
-                      </div>}
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Antal rum</span>
                       <span className="font-semibold">{property.bedrooms} rum</span>
