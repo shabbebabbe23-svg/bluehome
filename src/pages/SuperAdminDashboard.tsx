@@ -21,6 +21,9 @@ interface Agency {
   logo_url: string | null;
   is_active: boolean;
   created_at: string;
+  admin_email?: string;
+  admin_name?: string;
+  admin_id?: string;
 }
 
 interface AgencyStats {
@@ -244,7 +247,37 @@ const SuperAdminDashboard = () => {
 
       if (error) throw error;
 
-      setAgencies(agenciesData || []);
+      // Hämta admin-info för varje byrå
+      const agenciesWithAdmin = await Promise.all(
+        (agenciesData || []).map(async (agency) => {
+          const { data: adminProfile } = await supabase
+            .from("profiles")
+            .select("id, full_name, email")
+            .eq("agency_id", agency.id)
+            .limit(1)
+            .single();
+
+          const { data: adminRole } = await supabase
+            .from("user_roles")
+            .select("user_type")
+            .eq("user_id", adminProfile?.id)
+            .eq("user_type", "agency_admin")
+            .single();
+
+          if (adminProfile && adminRole) {
+            return {
+              ...agency,
+              admin_email: adminProfile.email,
+              admin_name: adminProfile.full_name,
+              admin_id: adminProfile.id,
+            };
+          }
+          
+          return agency;
+        })
+      );
+
+      setAgencies(agenciesWithAdmin);
 
       // Fetch stats för varje byrå
       const statsPromises = (agenciesData || []).map(async (agency) => {
@@ -412,7 +445,8 @@ const SuperAdminDashboard = () => {
     if (!editingAgency) return;
 
     try {
-      const { error } = await supabase
+      // Uppdatera byrå-info
+      const { error: agencyError } = await supabase
         .from("agencies")
         .update({
           name: editingAgency.name,
@@ -421,7 +455,20 @@ const SuperAdminDashboard = () => {
         })
         .eq("id", editingAgency.id);
 
-      if (error) throw error;
+      if (agencyError) throw agencyError;
+
+      // Uppdatera admin-profil om admin_id finns
+      if (editingAgency.admin_id && (editingAgency.admin_email || editingAgency.admin_name)) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            email: editingAgency.admin_email,
+            full_name: editingAgency.admin_name,
+          })
+          .eq("id", editingAgency.admin_id);
+
+        if (profileError) throw profileError;
+      }
 
       toast({
         title: "Byrå uppdaterad",
@@ -514,7 +561,10 @@ const SuperAdminDashboard = () => {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="gap-2 w-full sm:w-auto">
+              <Button 
+                size="lg" 
+                className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+              >
                 <Plus className="w-4 h-4" />
                 <span className="hidden xs:inline">Lägg till byrå</span>
                 <span className="xs:hidden">Ny byrå</span>
@@ -624,6 +674,25 @@ const SuperAdminDashboard = () => {
                     placeholder="https://exempel.se/logo.png"
                     value={editingAgency?.logo_url || ""}
                     onChange={(e) => setEditingAgency(prev => prev ? { ...prev, logo_url: e.target.value } : null)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit_admin_name">Byrå-chefens namn</Label>
+                  <Input
+                    id="edit_admin_name"
+                    placeholder="Anna Andersson"
+                    value={editingAgency?.admin_name || ""}
+                    onChange={(e) => setEditingAgency(prev => prev ? { ...prev, admin_name: e.target.value } : null)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit_admin_email">Byrå-chefens email</Label>
+                  <Input
+                    id="edit_admin_email"
+                    type="email"
+                    placeholder="anna@maklarringen.se"
+                    value={editingAgency?.admin_email || ""}
+                    onChange={(e) => setEditingAgency(prev => prev ? { ...prev, admin_email: e.target.value } : null)}
                   />
                 </div>
                 <div className="flex gap-2 justify-end pt-4">
@@ -774,7 +843,7 @@ const SuperAdminDashboard = () => {
                               setEditingAgency(agency);
                               setIsEditDialogOpen(true);
                             }}
-                            className="gap-2"
+                            className="gap-2 bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
                           >
                             <Pencil className="w-4 h-4" />
                             Redigera
