@@ -234,8 +234,23 @@ const SuperAdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <Header />
+    <div className="min-h-screen relative">
+      {/* Background Image with Overlay */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: 'url(/src/assets/commercial-hero.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/80 to-black/85 backdrop-blur-sm" />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Header />
       
       <div className="container mx-auto px-4 pt-24 pb-8">
         <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -421,6 +436,7 @@ const SuperAdminDashboard = () => {
             )}
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );
