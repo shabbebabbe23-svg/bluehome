@@ -10,6 +10,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import CommercialProperties from "./pages/CommercialProperties";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/foretag" element={<CommercialProperties />} />
             <Route path="/maklare" element={<AgentDashboard />} />
             <Route path="/agent/:agentId" element={<AgentProfile />} />
+            <Route path="/superadmin" element={<SuperAdminDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
