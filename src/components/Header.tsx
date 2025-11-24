@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -133,9 +133,17 @@ const Header = () => {
           <div className="hidden md:flex items-center gap-2 lg:gap-4">
             {/* User Role Indicator */}
             {user && userType && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-sm font-medium text-white">
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 transition-all ${
+                userType === "superadmin" 
+                  ? "bg-yellow-500/20 border-yellow-400/60 shadow-lg shadow-yellow-500/30" 
+                  : "bg-white/10 border-white/30"
+              }`}>
+                {userType === "superadmin" ? (
+                  <Shield className="w-5 h-5 text-yellow-400" fill="currentColor" />
+                ) : (
+                  <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+                )}
+                <span className="text-base font-bold text-white">
                   {userType === "superadmin" ? "Superadmin" : 
                    userType === "agency_admin" ? "Byrå Admin" :
                    userType === "maklare" ? "Mäklare" : "Användare"}
@@ -209,9 +217,17 @@ const Header = () => {
             <nav className="flex flex-col gap-4">
               {/* User Role Indicator for Mobile */}
               {user && userType && (
-                <div className="flex items-center justify-center gap-2 px-4 py-3 mx-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-                  <span className="text-base font-semibold text-white">
+                <div className={`flex items-center justify-center gap-3 px-5 py-4 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${
+                  userType === "superadmin" 
+                    ? "bg-yellow-500/20 border-yellow-400/60 shadow-lg shadow-yellow-500/30" 
+                    : "bg-white/10 border-white/30"
+                }`}>
+                  {userType === "superadmin" ? (
+                    <Shield className="w-6 h-6 text-yellow-400" fill="currentColor" />
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+                  )}
+                  <span className="text-lg font-bold text-white">
                     Inloggad som: {userType === "superadmin" ? "Superadmin" : 
                      userType === "agency_admin" ? "Byrå Admin" :
                      userType === "maklare" ? "Mäklare" : "Användare"}
