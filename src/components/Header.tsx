@@ -135,11 +135,11 @@ const Header = () => {
             {user && userType && (
               <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 transition-all ${
                 userType === "superadmin" 
-                  ? "bg-yellow-500/20 border-yellow-400/60 shadow-lg shadow-yellow-500/30" 
+                  ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" 
                   : "bg-white/10 border-white/30"
               }`}>
                 {userType === "superadmin" ? (
-                  <Shield className="w-5 h-5 text-yellow-400" fill="currentColor" />
+                  <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" />
                 ) : (
                   <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
                 )}
@@ -219,11 +219,11 @@ const Header = () => {
               {user && userType && (
                 <div className={`flex items-center justify-center gap-3 px-5 py-4 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${
                   userType === "superadmin" 
-                    ? "bg-yellow-500/20 border-yellow-400/60 shadow-lg shadow-yellow-500/30" 
+                    ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" 
                     : "bg-white/10 border-white/30"
                 }`}>
                   {userType === "superadmin" ? (
-                    <Shield className="w-6 h-6 text-yellow-400" fill="currentColor" />
+                    <Shield className="w-6 h-6 text-[hsl(200,98%,50%)]" fill="currentColor" />
                   ) : (
                     <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
                   )}
