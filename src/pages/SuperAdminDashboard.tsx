@@ -582,7 +582,7 @@ const SuperAdminDashboard = () => {
 
         {/* Statistics Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Byråer</CardTitle>
               <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -594,7 +594,7 @@ const SuperAdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Mäklare</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -606,7 +606,7 @@ const SuperAdminDashboard = () => {
               <p className="text-xs text-muted-foreground">Över alla byråer</p>
             </CardContent>
           </Card>
-          <Card className="sm:col-span-2 lg:col-span-1">
+          <Card className="sm:col-span-2 lg:col-span-1 bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Objekt</CardTitle>
               <Home className="h-4 w-4 text-muted-foreground" />
@@ -620,13 +620,140 @@ const SuperAdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Agencies List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Mäklarbyråer</CardTitle>
-            <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* Charts Section */}
+        <div className="grid gap-4 lg:grid-cols-2 mb-8">
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Byråstatistik
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="mäklare" fill="hsl(200, 98%, 35%)" />
+                    <Bar dataKey="objekt" fill="hsl(142, 76%, 30%)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                  Ingen data att visa
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Status fördelning
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {pieData.some((d) => d.value > 0) ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={(entry) => `${entry.name}: ${entry.value}`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                  Ingen data att visa
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs for Agencies and Invitations */}
+        <Tabs defaultValue="agencies" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="agencies">
+              Byråer ({filteredAgencies.length})
+            </TabsTrigger>
+            <TabsTrigger value="invitations">
+              Inbjudningar ({invitations.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="agencies">
+            <Card className="bg-card/95 backdrop-blur-sm border-white/10">
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div>
+                    <CardTitle>Mäklarbyråer</CardTitle>
+                    <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
+                  </div>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-none">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Sök byråer..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 w-full sm:w-[200px]"
+                      />
+                    </div>
+                    <Select value={filterStatus} onValueChange={(v: any) => setFilterStatus(v)}>
+                      <SelectTrigger className="w-[130px]">
+                        <Filter className="w-4 h-4 mr-2" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Alla</SelectItem>
+                        <SelectItem value="active">Aktiva</SelectItem>
+                        <SelectItem value="inactive">Inaktiva</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="date">Senaste först</SelectItem>
+                        <SelectItem value="name">Namn</SelectItem>
+                        <SelectItem value="agents">Antal mäklare</SelectItem>
+                        <SelectItem value="properties">Antal objekt</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
                 {loading ? (
                   <div className="text-center py-8 text-muted-foreground">Laddar...</div>
                 ) : filteredAgencies.length === 0 ? (
