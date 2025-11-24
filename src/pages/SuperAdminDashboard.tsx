@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus, TrendingUp, Award } from "lucide-react";
+import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus, TrendingUp, Award, Trash2, Pencil, Power } from "lucide-react";
 import Header from "@/components/Header";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -61,6 +62,10 @@ const SuperAdminDashboard = () => {
   const [agentSalesStats, setAgentSalesStats] = useState<AgentSalesStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
+  const [deletingAgency, setDeletingAgency] = useState<Agency | null>(null);
   const [newAgency, setNewAgency] = useState({
     name: "",
     email_domain: "",
@@ -218,6 +223,10 @@ const SuperAdminDashboard = () => {
         return <Plus className="w-5 h-5 text-green-500" />;
       case "agency_status_changed":
         return <Edit className="w-5 h-5 text-blue-500" />;
+      case "agency_updated":
+        return <Pencil className="w-5 h-5 text-blue-500" />;
+      case "agency_deleted":
+        return <Trash2 className="w-5 h-5 text-red-500" />;
       case "invitation_sent":
         return <UserPlus className="w-5 h-5 text-purple-500" />;
       default:
@@ -366,6 +375,7 @@ const SuperAdminDashboard = () => {
 
   const toggleAgencyStatus = async (agencyId: string, currentStatus: boolean) => {
     try {
+      const agency = agencies.find(a => a.id === agencyId);
       const { error } = await supabase
         .from("agencies")
         .update({ is_active: !currentStatus })
@@ -378,12 +388,110 @@ const SuperAdminDashboard = () => {
         description: `Byrån är nu ${!currentStatus ? "aktiv" : "inaktiv"}.`,
       });
 
+      await logActivity(
+        "agency_status_changed",
+        `Byrån "${agency?.name}" ${!currentStatus ? "aktiverades" : "inaktiverades"}`,
+        agencyId,
+        "agency"
+      );
+
       fetchAgencies();
     } catch (error) {
       console.error("Error toggling agency status:", error);
       toast({
         title: "Fel",
         description: "Kunde inte uppdatera status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!editingAgency) return;
+
+    try {
+      const { error } = await supabase
+        .from("agencies")
+        .update({
+          name: editingAgency.name,
+          email_domain: editingAgency.email_domain,
+          logo_url: editingAgency.logo_url,
+        })
+        .eq("id", editingAgency.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Byrå uppdaterad",
+        description: `${editingAgency.name} har uppdaterats.`,
+      });
+
+      await logActivity(
+        "agency_updated",
+        `Byrån "${editingAgency.name}" uppdaterades`,
+        editingAgency.id,
+        "agency"
+      );
+
+      setIsEditDialogOpen(false);
+      setEditingAgency(null);
+      fetchAgencies();
+    } catch (error: any) {
+      console.error("Error updating agency:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte uppdatera byrå.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteAgency = async () => {
+    if (!deletingAgency) return;
+
+    try {
+      const stats = agencyStats[deletingAgency.id];
+      
+      if (stats && (stats.agent_count > 0 || stats.property_count > 0)) {
+        toast({
+          title: "Kan inte radera byrå",
+          description: `Byrån har ${stats.agent_count} mäklare och ${stats.property_count} objekt. Ta bort dessa först.`,
+          variant: "destructive",
+        });
+        setIsDeleteDialogOpen(false);
+        setDeletingAgency(null);
+        return;
+      }
+
+      const { error } = await supabase
+        .from("agencies")
+        .delete()
+        .eq("id", deletingAgency.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Byrå raderad",
+        description: `${deletingAgency.name} har raderats.`,
+      });
+
+      await logActivity(
+        "agency_deleted",
+        `Byrån "${deletingAgency.name}" raderades`,
+        deletingAgency.id,
+        "agency"
+      );
+
+      setIsDeleteDialogOpen(false);
+      setDeletingAgency(null);
+      fetchAgencies();
+    } catch (error: any) {
+      console.error("Error deleting agency:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte radera byrå.",
         variant: "destructive",
       });
     }
@@ -475,6 +583,92 @@ const SuperAdminDashboard = () => {
               </form>
             </DialogContent>
           </Dialog>
+
+          {/* Edit Agency Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Redigera mäklarbyrå</DialogTitle>
+                <DialogDescription>
+                  Uppdatera information om byrån.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleUpdateAgency} className="space-y-4">
+                <div>
+                  <Label htmlFor="edit_name">Byrånamn *</Label>
+                  <Input
+                    id="edit_name"
+                    placeholder="Mäklarringen"
+                    value={editingAgency?.name || ""}
+                    onChange={(e) => setEditingAgency(prev => prev ? { ...prev, name: e.target.value } : null)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit_email_domain">Email-domän *</Label>
+                  <Input
+                    id="edit_email_domain"
+                    placeholder="maklarringen.se"
+                    value={editingAgency?.email_domain || ""}
+                    onChange={(e) => setEditingAgency(prev => prev ? { ...prev, email_domain: e.target.value } : null)}
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Endast domännamn, t.ex. "maklarringen.se" (utan @)
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="edit_logo_url">Logotyp URL</Label>
+                  <Input
+                    id="edit_logo_url"
+                    placeholder="https://exempel.se/logo.png"
+                    value={editingAgency?.logo_url || ""}
+                    onChange={(e) => setEditingAgency(prev => prev ? { ...prev, logo_url: e.target.value } : null)}
+                  />
+                </div>
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                    Avbryt
+                  </Button>
+                  <Button type="submit">
+                    Spara ändringar
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Radera mäklarbyrå?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Är du säker på att du vill radera <strong>{deletingAgency?.name}</strong>?
+                  <br /><br />
+                  Detta kommer att ta bort byrån permanent. Denna åtgärd kan inte ångras.
+                  {deletingAgency && agencyStats[deletingAgency.id] && (
+                    agencyStats[deletingAgency.id].agent_count > 0 || agencyStats[deletingAgency.id].property_count > 0
+                  ) && (
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                      <p className="text-red-800 text-sm font-medium">
+                        ⚠️ Byrån har {agencyStats[deletingAgency.id].agent_count} mäklare och {agencyStats[deletingAgency.id].property_count} objekt.
+                      </p>
+                    </div>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAgency}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Radera
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         {/* Statistics Cards */}
@@ -572,13 +766,41 @@ const SuperAdminDashboard = () => {
                             </span>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
-                          className="w-full sm:w-auto"
-                        >
-                          {agency.is_active ? "Inaktivera" : "Aktivera"}
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingAgency(agency);
+                              setIsEditDialogOpen(true);
+                            }}
+                            className="gap-2"
+                          >
+                            <Pencil className="w-4 h-4" />
+                            Redigera
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
+                            className="gap-2"
+                          >
+                            <Power className="w-4 h-4" />
+                            {agency.is_active ? "Inaktivera" : "Aktivera"}
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              setDeletingAgency(agency);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                            className="gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Radera
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
