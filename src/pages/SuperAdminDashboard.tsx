@@ -6,9 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Building2, Plus, Users, Home } from "lucide-react";
+import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus } from "lucide-react";
 import Header from "@/components/Header";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface Agency {
   id: string;
@@ -25,10 +28,22 @@ interface AgencyStats {
   property_count: number;
 }
 
+interface ActivityLog {
+  id: string;
+  action_type: string;
+  actor_id: string | null;
+  target_id: string | null;
+  target_type: string | null;
+  description: string;
+  metadata: any;
+  created_at: string;
+}
+
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [agencyStats, setAgencyStats] = useState<Record<string, AgencyStats>>({});
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newAgency, setNewAgency] = useState({
@@ -67,6 +82,61 @@ const SuperAdminDashboard = () => {
     }
 
     fetchAgencies();
+    fetchActivityLogs();
+  };
+
+  const fetchActivityLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("activity_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      setActivityLogs(data || []);
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+    }
+  };
+
+  const logActivity = async (
+    actionType: string,
+    description: string,
+    targetId: string | null = null,
+    targetType: string | null = null,
+    metadata: any = {}
+  ) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase.from("activity_logs").insert({
+        action_type: actionType,
+        actor_id: user?.id || null,
+        target_id: targetId,
+        target_type: targetType,
+        description,
+        metadata,
+      });
+
+      fetchActivityLogs();
+    } catch (error) {
+      console.error("Error logging activity:", error);
+    }
+  };
+
+  const getActivityIcon = (actionType: string) => {
+    switch (actionType) {
+      case "agency_created":
+        return <Plus className="w-5 h-5 text-green-500" />;
+      case "agency_status_changed":
+        return <Edit className="w-5 h-5 text-blue-500" />;
+      case "invitation_sent":
+        return <UserPlus className="w-5 h-5 text-purple-500" />;
+      default:
+        return <Activity className="w-5 h-5 text-gray-500" />;
+    }
   };
 
   const fetchAgencies = async () => {
@@ -361,66 +431,111 @@ const SuperAdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Agencies List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Mäklarbyråer</CardTitle>
-            <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8 text-muted-foreground">Laddar...</div>
-            ) : agencies.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Inga byråer har skapats än. Klicka på "Lägg till byrå" för att komma igång.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {agencies.map((agency) => (
-                  <div
-                    key={agency.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-base sm:text-lg">{agency.name}</h3>
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            agency.is_active
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {agency.is_active ? "Aktiv" : "Inaktiv"}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        @{agency.email_domain}
-                      </p>
-                      <div className="flex gap-4 mt-2 text-sm flex-wrap">
-                        <span className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {agencyStats[agency.id]?.agent_count || 0} mäklare
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Home className="w-4 h-4" />
-                          {agencyStats[agency.id]?.property_count || 0} objekt
-                        </span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
-                      className="w-full sm:w-auto"
-                    >
-                      {agency.is_active ? "Inaktivera" : "Aktivera"}
-                    </Button>
+        {/* Tabs for Agencies and Activity Log */}
+        <Tabs defaultValue="agencies" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+            <TabsTrigger value="agencies">Byråer</TabsTrigger>
+            <TabsTrigger value="activity">Aktivitetslogg</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="agencies">
+            <Card>
+              <CardHeader>
+                <CardTitle>Mäklarbyråer</CardTitle>
+                <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-8 text-muted-foreground">Laddar...</div>
+                ) : agencies.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Inga byråer har skapats än. Klicka på "Lägg till byrå" för att komma igång.
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {agencies.map((agency) => (
+                      <div
+                        key={agency.id}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-semibold text-base sm:text-lg">{agency.name}</h3>
+                            <span
+                              className={`px-2 py-1 text-xs rounded-full ${
+                                agency.is_active
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {agency.is_active ? "Aktiv" : "Inaktiv"}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            @{agency.email_domain}
+                          </p>
+                          <div className="flex gap-4 mt-2 text-sm flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              {agencyStats[agency.id]?.agent_count || 0} mäklare
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Home className="w-4 h-4" />
+                              {agencyStats[agency.id]?.property_count || 0} objekt
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          onClick={() => toggleAgencyStatus(agency.id, agency.is_active)}
+                          className="w-full sm:w-auto"
+                        >
+                          {agency.is_active ? "Inaktivera" : "Aktivera"}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <Card>
+              <CardHeader>
+                <CardTitle>Aktivitetslogg</CardTitle>
+                <CardDescription>Senaste aktiviteterna i systemet</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {activityLogs.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Inga aktiviteter att visa än.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {activityLogs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="flex items-start gap-4 p-4 border rounded-lg hover:bg-accent/5 transition-colors"
+                      >
+                        <div className="mt-1">{getActivityIcon(log.action_type)}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{log.description}</p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <Clock className="w-3 h-3" />
+                            <span>
+                              {format(new Date(log.created_at), "d MMM yyyy 'kl.' HH:mm", { locale: sv })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
