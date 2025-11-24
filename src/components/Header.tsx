@@ -27,6 +27,28 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
+            {/* Superadmin Menu Button */}
+            {user && userType === "superadmin" && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="lg" className="hidden md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                    <Menu className="w-12 h-12" strokeWidth={2.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="start" 
+                  className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
+                >
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/superadmin" className="flex items-center gap-3 cursor-pointer py-4">
+                      <BarChart3 className="w-6 h-6" />
+                      <span className="font-medium text-lg">Admin Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
             {/* Agent Menu Button */}
             {user && userType === "maklare" && (
               <DropdownMenu>
@@ -174,6 +196,20 @@ const Header = () => {
             }}
           >
             <nav className="flex flex-col gap-4">
+              {/* Superadmin Menu Items for Mobile */}
+              {user && userType === "superadmin" && (
+                <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
+                  <Link 
+                    to="/superadmin" 
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <BarChart3 className="w-6 h-6" />
+                    <span className="font-medium text-lg">Admin Dashboard</span>
+                  </Link>
+                </div>
+              )}
+              
               {/* Agent Menu Items for Mobile */}
               {user && userType === "maklare" && (
                 <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
