@@ -629,12 +629,12 @@ const PropertyDetail = () => {
                         </span>
                       </div>}
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Utgångspris</span>
-                      <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Upplåtelseform</span>
                       <span className="font-semibold">Äganderätt</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Utgångspris</span>
+                      <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Antal rum</span>
