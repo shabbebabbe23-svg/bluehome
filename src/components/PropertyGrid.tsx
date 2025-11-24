@@ -77,6 +77,7 @@ export interface Property {
   agent_email?: string;
   agent_agency?: string;
   agent_id?: string;
+  createdAt?: Date;
 }
 
 export const allProperties: Property[] = [
@@ -879,6 +880,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             sold_price: prop.sold_price || undefined,
             new_price: prop.new_price || undefined,
             is_manual_price_change: prop.is_manual_price_change || false,
+            createdAt: new Date(prop.created_at),
           }));
           setDbProperties(formattedProperties);
 
@@ -977,6 +979,12 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         return sorted.sort((a, b) => a.address.localeCompare(b.address));
       case "address-za":
         return sorted.sort((a, b) => b.address.localeCompare(a.address));
+      case "newest":
+        return sorted.sort((a, b) => {
+          const aTime = a.createdAt?.getTime() || 0;
+          const bTime = b.createdAt?.getTime() || 0;
+          return bTime - aTime;
+        });
       default:
         return sorted;
     }
@@ -1030,6 +1038,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             </SelectTrigger>
             <SelectContent className="bg-card border-border z-50">
               <SelectItem value="default">Sortera efter</SelectItem>
+              <SelectItem value="newest">Senaste tillagda</SelectItem>
               <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
               <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
               <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
