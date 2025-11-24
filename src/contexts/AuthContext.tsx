@@ -19,29 +19,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchUserType = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("user_type")
+        .eq("user_id", userId)
+        .single();
+      
+      if (error) {
+        console.error('Failed to fetch user type:', error);
+        setUserType(null);
+        return;
+      }
+      
+      console.log('User type fetched:', data?.user_type);
+      setUserType(data?.user_type ?? null);
+    } catch (err) {
+      console.error('Error fetching user type:', err);
+      setUserType(null);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
         // Fetch user type after auth state changes
         if (session?.user) {
-          setTimeout(() => {
-            supabase
-              .from("user_roles")
-              .select("user_type")
-              .eq("user_id", session.user.id)
-              .single()
-              .then(({ data, error }) => {
-                if (error) {
-                  console.error('Failed to fetch user type:', error);
-                }
-                setUserType(data?.user_type ?? null);
-              });
-          }, 0);
+          fetchUserType(session.user.id);
         } else {
           setUserType(null);
         }
@@ -50,23 +61,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
       
       // Fetch user type for existing session
       if (session?.user) {
-        supabase
-          .from("user_roles")
-          .select("user_type")
-          .eq("user_id", session.user.id)
-          .single()
-          .then(({ data, error }) => {
-            if (error) {
-              console.error('Failed to fetch user type:', error);
-            }
-            setUserType(data?.user_type ?? null);
-          });
+        fetchUserType(session.user.id);
       }
     });
 
