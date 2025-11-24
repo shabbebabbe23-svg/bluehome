@@ -405,7 +405,7 @@ const PropertyDetail = () => {
             viewBox="0 0 24 24" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/')}
             className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
           >
             <defs>
