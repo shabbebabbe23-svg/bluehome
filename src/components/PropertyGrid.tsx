@@ -1020,20 +1020,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const handleBulkDelete = async () => {
     if (selectedProperties.length === 0) return;
     
-    // Filter to only include database properties (UUID format)
-    const dbPropertyIds = dbProperties.map(p => String(p.id));
-    const propertiesToDelete = selectedProperties.filter(id => dbPropertyIds.includes(id));
-    
-    if (propertiesToDelete.length === 0) {
-      toast({
-        title: "Ingen databasegenskaper valda",
-        description: "Du kan bara ta bort fastigheter från databasen.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!confirm(`Är du säker på att du vill ta bort ${propertiesToDelete.length} fastighet(er)?`)) {
+    if (!confirm(`Är du säker på att du vill ta bort ${selectedProperties.length} fastighet(er)?`)) {
       return;
     }
 
@@ -1042,18 +1029,18 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       const { error } = await supabase
         .from('properties')
         .update({ is_deleted: true })
-        .in('id', propertiesToDelete);
+        .in('id', selectedProperties);
 
       if (error) throw error;
 
       // Remove deleted properties from state
-      setDbProperties(prev => prev.filter(p => !propertiesToDelete.includes(String(p.id))));
+      setDbProperties(prev => prev.filter(p => !selectedProperties.includes(String(p.id))));
       setSelectedProperties([]);
       setBulkSelectMode(false);
       
       toast({
         title: "Fastigheter borttagna",
-        description: `${propertiesToDelete.length} fastighet(er) har tagits bort.`,
+        description: `${selectedProperties.length} fastighet(er) har tagits bort.`,
       });
     } catch (error) {
       console.error('Error deleting properties:', error);
@@ -1187,30 +1174,34 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-4 md:mb-6"
           : "flex flex-col gap-2 mb-4 md:mb-6"
         }>
-          {displayedProperties.map((property, index) => (
-            <div
-              key={property.id}
-              className="animate-slide-up h-full"
-              style={{ 
-                animationDelay: `${index * 0.1}s`
-              }}
-            >
-              <PropertyCard
-                {...property}
-                title={property.address}
-                isFavorite={favorites.includes(property.id)}
-                onFavoriteToggle={handleFavoriteToggle}
-                isSold={property.isSold || false}
-                soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
-                newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
-                viewMode={viewMode}
-                hasActiveBidding={propertyBids[property.id as string] || false}
-                bulkSelectMode={bulkSelectMode}
-                isSelected={selectedProperties.includes(String(property.id))}
-                onSelect={handlePropertySelect}
-              />
-            </div>
-          ))}
+          {displayedProperties.map((property, index) => {
+            // Only show bulk select for database properties (UUIDs)
+            const isDbProperty = dbProperties.some(p => String(p.id) === String(property.id));
+            return (
+              <div
+                key={property.id}
+                className="animate-slide-up h-full"
+                style={{ 
+                  animationDelay: `${index * 0.1}s`
+                }}
+              >
+                <PropertyCard
+                  {...property}
+                  title={property.address}
+                  isFavorite={favorites.includes(property.id)}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  isSold={property.isSold || false}
+                  soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
+                  newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
+                  viewMode={viewMode}
+                  hasActiveBidding={propertyBids[property.id as string] || false}
+                  bulkSelectMode={bulkSelectMode && isDbProperty}
+                  isSelected={selectedProperties.includes(String(property.id))}
+                  onSelect={handlePropertySelect}
+                />
+              </div>
+            );
+          })}
         </div>
 
         <div className="text-center">
