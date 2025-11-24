@@ -617,6 +617,10 @@ const PropertyDetail = () => {
                         <span className="text-muted-foreground">Slutpris</span>
                         <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
                       </div>}
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Bostadstyp</span>
+                      <span className="font-semibold">{property.type || 'Villa'}</span>
+                    </div>
                     {property.new_price && property.is_manual_price_change && <div className="flex justify-between py-2 border-b border-border">
                         <span className="text-muted-foreground">Prisutveckling</span>
                         <span className="font-semibold text-[#FF6B2C]">
@@ -624,10 +628,6 @@ const PropertyDetail = () => {
                           ({Math.round((property.new_price - property.price) / property.price * 100)}%)
                         </span>
                       </div>}
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Bostadstyp</span>
-                      <span className="font-semibold">{property.type || 'Villa'}</span>
-                    </div>
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">Utgångspris</span>
                       <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
