@@ -195,6 +195,14 @@ const SuperAdminDashboard = () => {
         description: `${newAgency.name} har skapats och inbjudan skickad till ${newAgency.admin_email}`,
       });
 
+      await logActivity(
+        "agency_created",
+        `Skapade byrå "${newAgency.name}" med domän ${newAgency.email_domain}`,
+        agency.id,
+        "agency",
+        { admin_email: newAgency.admin_email, admin_name: newAgency.admin_name }
+      );
+
       setIsDialogOpen(false);
       setNewAgency({ name: "", email_domain: "", admin_email: "", admin_name: "" });
       fetchAgencies();
@@ -217,10 +225,19 @@ const SuperAdminDashboard = () => {
 
       if (error) throw error;
 
+      const agency = agencies.find(a => a.id === agencyId);
       toast({
         title: "Status uppdaterad",
         description: `Byrån är nu ${!currentStatus ? "aktiv" : "inaktiv"}.`,
       });
+
+      await logActivity(
+        "agency_status_changed",
+        `${!currentStatus ? "Aktiverade" : "Inaktiverade"} byrå "${agency?.name}"`,
+        agencyId,
+        "agency",
+        { new_status: !currentStatus }
+      );
 
       fetchAgencies();
     } catch (error) {
