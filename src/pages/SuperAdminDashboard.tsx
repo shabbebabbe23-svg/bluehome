@@ -338,7 +338,7 @@ const SuperAdminDashboard = () => {
 
         {/* Statistics Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Byråer</CardTitle>
               <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -350,7 +350,7 @@ const SuperAdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Mäklare</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -362,7 +362,7 @@ const SuperAdminDashboard = () => {
               <p className="text-xs text-muted-foreground">Över alla byråer</p>
             </CardContent>
           </Card>
-          <Card className="sm:col-span-2 lg:col-span-1">
+          <Card className="sm:col-span-2 lg:col-span-1 bg-card/95 backdrop-blur-sm border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totalt Objekt</CardTitle>
               <Home className="h-4 w-4 text-muted-foreground" />
@@ -377,7 +377,7 @@ const SuperAdminDashboard = () => {
         </div>
 
         {/* Agencies List */}
-        <Card>
+        <Card className="bg-card/95 backdrop-blur-sm border-white/10">
           <CardHeader>
             <CardTitle>Mäklarbyråer</CardTitle>
             <CardDescription>Hantera och övervaka alla anslutna byråer</CardDescription>
