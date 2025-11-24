@@ -41,6 +41,9 @@ interface PropertyCardProps {
   agent_phone?: string;
   agent_agency?: string;
   agent_id?: string;
+  bulkSelectMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: (id: string | number) => void;
 }
 
 const PropertyCard = ({
@@ -78,6 +81,9 @@ const PropertyCard = ({
   agent_phone,
   agent_agency,
   agent_id,
+  bulkSelectMode = false,
+  isSelected = false,
+  onSelect,
 }: PropertyCardProps) => {
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
@@ -108,14 +114,40 @@ const PropertyCard = ({
   };
 
   return (
-  <Card className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col">
+  <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
-      <Link 
-        to={`/fastighet/${id}`} 
-        className="absolute inset-0 z-10" 
-        aria-label={`Visa ${title}`}
-        onClick={handleNavigateToDetail}
-      />
+      {!bulkSelectMode && (
+        <Link 
+          to={`/fastighet/${id}`} 
+          className="absolute inset-0 z-10" 
+          aria-label={`Visa ${title}`}
+          onClick={handleNavigateToDetail}
+        />
+      )}
+      
+      {/* Bulk select checkbox */}
+      {bulkSelectMode && (
+        <div 
+          className="absolute top-4 left-4 z-30 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(id);
+          }}
+        >
+          <div className={`w-8 h-8 rounded-md border-2 flex items-center justify-center transition-all ${
+            isSelected 
+              ? 'bg-primary border-primary' 
+              : 'bg-white/90 border-border hover:border-primary'
+          }`}>
+            {isSelected && (
+              <svg className="w-5 h-5 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+          </div>
+        </div>
+      )}
+      
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
         <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
