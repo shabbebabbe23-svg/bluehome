@@ -1020,7 +1020,20 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const handleBulkDelete = async () => {
     if (selectedProperties.length === 0) return;
     
-    if (!confirm(`Är du säker på att du vill ta bort ${selectedProperties.length} fastighet(er)?`)) {
+    // Filter to only include database properties (UUID format)
+    const dbPropertyIds = dbProperties.map(p => String(p.id));
+    const propertiesToDelete = selectedProperties.filter(id => dbPropertyIds.includes(id));
+    
+    if (propertiesToDelete.length === 0) {
+      toast({
+        title: "Ingen databasegenskaper valda",
+        description: "Du kan bara ta bort fastigheter från databasen.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!confirm(`Är du säker på att du vill ta bort ${propertiesToDelete.length} fastighet(er)?`)) {
       return;
     }
 
@@ -1029,18 +1042,18 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       const { error } = await supabase
         .from('properties')
         .update({ is_deleted: true })
-        .in('id', selectedProperties);
+        .in('id', propertiesToDelete);
 
       if (error) throw error;
 
       // Remove deleted properties from state
-      setDbProperties(prev => prev.filter(p => !selectedProperties.includes(String(p.id))));
+      setDbProperties(prev => prev.filter(p => !propertiesToDelete.includes(String(p.id))));
       setSelectedProperties([]);
       setBulkSelectMode(false);
       
       toast({
         title: "Fastigheter borttagna",
-        description: `${selectedProperties.length} fastighet(er) har tagits bort.`,
+        description: `${propertiesToDelete.length} fastighet(er) har tagits bort.`,
       });
     } catch (error) {
       console.error('Error deleting properties:', error);
