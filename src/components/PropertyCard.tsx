@@ -393,7 +393,7 @@ const PropertyCard = ({
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : daysOnMarket === 0 
               ? "Ny idag" 
-              : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på bluehome`
+              : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
             }
           </p>
         </div>
