@@ -4,10 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, MapPin, Star, Phone, Mail } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const FindAgent = () => {
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
+    <>
+      <Header />
+      <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
@@ -179,6 +183,8 @@ const FindAgent = () => {
         </Card>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

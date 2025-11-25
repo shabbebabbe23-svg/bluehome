@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Zap, Crown } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const AdvertisingPricing = () => {
   const packages = [
@@ -58,7 +60,9 @@ const AdvertisingPricing = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
+    <>
+      <Header />
+      <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
@@ -215,6 +219,8 @@ const AdvertisingPricing = () => {
         </Card>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 
