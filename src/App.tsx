@@ -12,6 +12,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import InvitationAccept from "./pages/InvitationAccept";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/agent/:agentId" element={<AgentProfile />} />
             <Route path="/superadmin" element={<SuperAdminDashboard />} />
             <Route path="/acceptera-inbjudan" element={<InvitationAccept />} />
+            <Route path="/favoriter" element={<Favorites />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
