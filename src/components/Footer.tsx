@@ -8,7 +8,9 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Home className="w-8 h-8 text-primary-glow" />
+              <div className="w-8 h-8 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-1">
+                <Home className="w-full h-full text-white" />
+              </div>
               <span className="text-2xl font-bold">BaraHem</span>
             </div>
             <p className="text-white/80">
