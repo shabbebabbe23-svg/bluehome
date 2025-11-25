@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface PropertyCardProps {
   id: string | number;
@@ -61,7 +62,7 @@ const PropertyCard = ({
   viewingDate,
   type,
   isNew = false,
-  isFavorite = false,
+  isFavorite: initialIsFavorite = false,
   onFavoriteToggle,
   vendorLogo,
   isSold = false,
@@ -85,6 +86,8 @@ const PropertyCard = ({
   isSelected = false,
   onSelect,
 }: PropertyCardProps) => {
+  const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
+  const isFavorite = isFavoriteHook(String(id));
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
   const viewDate = viewingDate ? (() => {
@@ -208,7 +211,11 @@ const PropertyCard = ({
             variant="secondary"
             size="icon"
             className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
-            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onFavoriteToggle?.(id); }}
+            onClick={(e: React.MouseEvent) => { 
+              e.preventDefault();
+              e.stopPropagation(); 
+              toggleFavorite(String(id));
+            }}
           >
             <svg width="0" height="0" style={{ position: 'absolute' }}>
               <defs>

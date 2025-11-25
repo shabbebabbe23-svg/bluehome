@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from "@/components/NotificationBell";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -146,10 +147,15 @@ const Header = () => {
                 <span className="text-base font-bold text-white">
                   {userType === "superadmin" ? "Superadmin" : 
                    userType === "agency_admin" ? "Byrå Admin" :
-                   userType === "maklare" ? "Mäklare" : "Användare"}
+                   userType === "maklare" ? "Mäklare" : 
+                   userType === "buyer" ? "Köpare" : "Användare"}
                 </span>
               </div>
             )}
+
+            {/* Notifications */}
+            {user && (userType === "maklare" || userType === "buyer") && <NotificationBell />}
+
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button 
                 variant="outline" 
@@ -168,11 +174,13 @@ const Header = () => {
                 )}
               </Button>
             </Link>
-            {user && userType === "user" ? (
-              <Button variant="ghost" className="text-sm lg:text-base">
-                <Heart className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                Mina favoriter
-              </Button>
+            {user ? (
+              <Link to="/favoriter">
+                <Button variant="ghost" className="text-sm lg:text-base">
+                  <Heart className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                  Mina favoriter
+                </Button>
+              </Link>
             ) : (
               <Button variant="ghost" size="icon">
                 <Heart className="w-5 h-5 lg:w-6 lg:h-6" />
@@ -326,26 +334,27 @@ const Header = () => {
                 </Button>
               </Link>
               <div className="flex flex-col gap-4 px-4 pt-4 border-t border-white/20">
-                {user && userType === "user" ? (
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Heart className="w-5 h-5 mr-2" />
-                    Mina favoriter
-                  </Button>
-                ) : (
-                  <Button variant="ghost" size="icon">
-                    <Heart className="w-7 h-7" />
-                  </Button>
-                )}
                 {user ? (
-                  <Button 
-                    onClick={signOut}
-                    className="text-xl bg-hero-gradient w-full"
-                  >
-                    <LogOut className="w-5 h-5 mr-2" />
-                    Logga ut
-                  </Button>
+                  <>
+                    <Link to="/favoriter" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Heart className="w-5 h-5 mr-2" />
+                        Mina favoriter
+                      </Button>
+                    </Link>
+                    <Button 
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="text-xl bg-hero-gradient w-full"
+                    >
+                      <LogOut className="w-5 h-5 mr-2" />
+                      Logga ut
+                    </Button>
+                  </>
                 ) : (
-                  <Link to="/logga-in" className="flex-1">
+                  <Link to="/logga-in" className="flex-1" onClick={() => setIsMenuOpen(false)}>
                     <Button className="text-xl text-white bg-hero-gradient w-full">
                       Logga in
                     </Button>

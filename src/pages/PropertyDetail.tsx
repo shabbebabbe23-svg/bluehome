@@ -33,6 +33,8 @@ import AdBanner from "@/components/AdBanner";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import PropertyDetailMap from "@/components/PropertyDetailMap";
 import PropertyCostBreakdown from "@/components/PropertyCostBreakdown";
+import ContactForm from "@/components/ContactForm";
+import ImageGallery from "@/components/ImageGallery";
 
 // X (Twitter) Logo Component
 const XLogo = ({
