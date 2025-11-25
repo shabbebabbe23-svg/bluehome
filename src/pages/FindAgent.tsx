@@ -15,7 +15,7 @@ const FindAgent = () => {
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{
         background: 'var(--main-gradient)'
       }}>
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <svg 
             width="36" 
             height="36" 
@@ -33,6 +33,26 @@ const FindAgent = () => {
             </defs>
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
+
+          {/* BaraHem Logo - Center */}
+          <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            <svg className="w-8 h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
+                </linearGradient>
+              </defs>
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-2xl md:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+              BaraHem
+            </span>
+          </div>
+
+          {/* Spacer for balance */}
+          <div className="w-9"></div>
         </div>
       </header>
       <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
