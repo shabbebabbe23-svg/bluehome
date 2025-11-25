@@ -122,9 +122,22 @@ const Header = () => {
             <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Hyra
             </a>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
-              Sälj
-            </a>
+            <DropdownMenu>
+              <DropdownMenuTrigger className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+                Sälj
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="center" 
+                className="w-72 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
+              >
+                <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                  <span className="font-medium text-base">Hitta rätt mäklare för dig</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                  <span className="font-medium text-base">Pris för att annonsera på BaraHem</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </a>
@@ -309,9 +322,24 @@ const Header = () => {
               <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Hyra
               </a>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
-                Sälj
-              </a>
+              <div className="px-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger className={`text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+                    Sälj
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="start" 
+                    className="w-80 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
+                  >
+                    <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                      <span className="font-medium text-lg">Hitta rätt mäklare för dig</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                      <span className="font-medium text-lg">Pris för att annonsera på BaraHem</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Om oss
               </a>
