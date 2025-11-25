@@ -15,9 +15,7 @@ const AdvertisingPricing = () => {
       description: "Grundannonsering helt utan kostnad",
       icon: Check,
       features: [
-        "30 dagars annonsering",
-        "Publicering på BaraHem",
-        "Upp till 10 bilder",
+        "Upp till 20 bilder",
         "Grundläggande statistik",
         "E-postnotiser om intressenter",
         "Möjligt tack vare våra annonsörer",
@@ -27,11 +25,10 @@ const AdvertisingPricing = () => {
     },
     {
       name: "Premium",
-      price: "Kontakta oss",
+      price: "2 900",
       description: "Maximal exponering för din fastighet",
       icon: Star,
       features: [
-        "90 dagars annonsering",
         "Obegränsat antal bilder",
         "3D-visning, planritning & drönarbild",
         "Toppplacering i alla sökningar",
@@ -154,7 +151,7 @@ const AdvertisingPricing = () => {
                         <span className="text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
                           {pkg.price}
                         </span>
-                        <p className="text-sm text-muted-foreground mt-2">för prisuppgift</p>
+                        <span className="text-muted-foreground"> kr</span>
                       </div>
                     )}
                   </div>
