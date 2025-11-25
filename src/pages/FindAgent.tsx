@@ -4,13 +4,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, MapPin, Star, Phone, Mail } from "lucide-react";
-import Header from "@/components/Header";
+import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 
 const FindAgent = () => {
+  const navigate = useNavigate();
+
   return (
     <>
-      <Header />
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{
+        background: 'var(--main-gradient)'
+      }}>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center">
+          <svg 
+            width="36" 
+            height="36" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            onClick={() => navigate('/')}
+            className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
+          >
+            <defs>
+              <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </header>
       <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
