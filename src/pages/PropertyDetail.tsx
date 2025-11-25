@@ -746,6 +746,18 @@ const PropertyDetail = () => {
             {/* Contact Card */}
             <Card className="sticky top-24">
               <CardContent className="p-6">
+                {/* Days on market badge - right side */}
+                {dbProperty?.listed_date && (() => {
+                  const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
+                  return (
+                    <div className="mb-4 p-3 bg-muted/30 rounded-lg">
+                      <p className="text-sm text-center font-semibold text-muted-foreground">
+                        {daysOnMarket === 0 ? "Ny idag på BaraHem" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
+                      </p>
+                    </div>
+                  );
+                })()}
+                
                 {agentProfile ?
               // Show real agent profile
               <>
