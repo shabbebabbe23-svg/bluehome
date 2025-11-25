@@ -215,7 +215,8 @@ const Login = () => {
               )}
               <Button 
                 type="submit" 
-                className="w-full bg-teal-500 hover:bg-teal-600 text-white" 
+                variant="premium"
+                className="w-full" 
                 disabled={loading}
               >
                 {loading ? "Laddar..." : (isLogin ? "Logga in" : "Skapa konto")}
