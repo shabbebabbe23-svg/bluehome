@@ -130,11 +130,15 @@ const Header = () => {
                 align="center" 
                 className="w-72 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
               >
-                <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
-                  <span className="font-medium text-base">Hitta rätt mäklare för dig</span>
+                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                  <Link to="/hitta-maklare" className="w-full">
+                    <span className="font-medium text-base">Hitta rätt mäklare för dig</span>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
-                  <span className="font-medium text-base">Pris för att annonsera på BaraHem</span>
+                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                  <Link to="/annonsera-pris" className="w-full">
+                    <span className="font-medium text-base">Pris för att annonsera på BaraHem</span>
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -331,11 +335,15 @@ const Header = () => {
                     align="start" 
                     className="w-80 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
                   >
-                    <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
-                      <span className="font-medium text-lg">Hitta rätt mäklare för dig</span>
+                    <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                      <Link to="/hitta-maklare" className="w-full" onClick={() => setIsMenuOpen(false)}>
+                        <span className="font-medium text-lg">Hitta rätt mäklare för dig</span>
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
-                      <span className="font-medium text-lg">Pris för att annonsera på BaraHem</span>
+                    <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
+                      <Link to="/annonsera-pris" className="w-full" onClick={() => setIsMenuOpen(false)}>
+                        <span className="font-medium text-lg">Pris för att annonsera på BaraHem</span>
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
