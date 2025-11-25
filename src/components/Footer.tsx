@@ -1,4 +1,4 @@
-import { Home, Facebook, Twitter, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
+import { Home, Facebook, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -129,8 +129,16 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
-                  <Twitter className="w-full h-full text-white" />
+                <div className="w-5 h-5 rounded p-0.5">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="url(#xGradient)">
+                    <defs>
+                      <linearGradient id="xGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="hsl(200, 98%, 39%)" />
+                        <stop offset="100%" stopColor="hsl(142, 76%, 36%)" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
                 </div>
                 <span>X (Twitter)</span>
               </a>
