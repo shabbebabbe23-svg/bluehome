@@ -1,4 +1,4 @@
-import { Home, Facebook, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -8,7 +8,16 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Home className="w-8 h-8 text-primary-glow" />
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="footerHomeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
+                  </linearGradient>
+                </defs>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#footerHomeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="9 22 9 12 15 12 15 22" stroke="url(#footerHomeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               <span className="text-2xl font-bold">BaraHem</span>
             </div>
             <p className="text-white/80">
