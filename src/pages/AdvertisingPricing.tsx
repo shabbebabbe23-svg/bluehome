@@ -10,9 +10,9 @@ const AdvertisingPricing = () => {
 
   const packages = [
     {
-      name: "Bas",
-      price: "9 995",
-      description: "Perfekt för dig som vill ha grundläggande exponering",
+      name: "Gratis",
+      price: "0",
+      description: "Grundannonsering helt utan kostnad",
       icon: Check,
       features: [
         "30 dagars annonsering",
@@ -20,44 +20,27 @@ const AdvertisingPricing = () => {
         "Upp till 10 bilder",
         "Grundläggande statistik",
         "E-postnotiser om intressenter",
+        "Möjligt tack vare våra annonsörer",
       ],
       highlighted: false,
+      isFree: true,
     },
     {
       name: "Premium",
-      price: "19 995",
-      description: "Mest populära paketet med maximal exponering",
+      price: "Kontakta oss",
+      description: "Maximal exponering för din fastighet",
       icon: Star,
       features: [
-        "60 dagars annonsering",
-        "Publicering på BaraHem + partnersajter",
-        "Upp till 30 bilder",
-        "3D-visning och planritning",
-        "Utökad statistik och analys",
-        "Prioriterad placering i sökresultat",
-        "Social media-marknadsföring",
-        "Dedikerad kundansvarig",
-      ],
-      highlighted: true,
-    },
-    {
-      name: "Exklusiv",
-      price: "34 995",
-      description: "För premium-fastigheter som kräver unik marknadsföring",
-      icon: Crown,
-      features: [
         "90 dagars annonsering",
-        "Publicering på BaraHem + alla partnersajter",
         "Obegränsat antal bilder",
         "3D-visning, planritning & drönarbild",
-        "Komplett statistik i realtid",
         "Toppplacering i alla sökningar",
         "Omfattande social media-kampanj",
-        "Professionell fastighetsvideo",
-        "Dedikerat premium-team",
-        "Tryckta annonser i lokaltidningar",
+        "Dedikerad kundansvarig",
+        "Utökad statistik i realtid",
       ],
-      highlighted: false,
+      highlighted: true,
+      isFree: false,
     },
   ];
 
@@ -114,13 +97,20 @@ const AdvertisingPricing = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-hero-gradient bg-clip-text text-transparent">
             Annonsera din bostad på BaraHem
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Välj det paket som passar din fastighet bäst. Alla priser är engångskostnader utan bindningstid.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
+            Grundannonsering är helt <span className="font-bold text-primary">gratis!</span> Tack vare reklamintäkterna på sidan kan vi erbjuda detta kostnadsfritt.
           </p>
+          <Card className="max-w-2xl mx-auto bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+            <CardContent className="py-6">
+              <p className="text-lg">
+                🎉 <span className="font-semibold">100% gratis grundannonsering</span> – möjligt tack vare våra samarbetspartners och reklam på sidan
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
           {packages.map((pkg, index) => {
             const Icon = pkg.icon;
             return (
@@ -135,7 +125,12 @@ const AdvertisingPricing = () => {
               >
                 {pkg.highlighted && (
                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-hero-gradient">
-                    Mest populär
+                    Rekommenderas
+                  </Badge>
+                )}
+                {pkg.isFree && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500">
+                    100% Gratis
                   </Badge>
                 )}
                 <CardHeader className="text-center pb-8">
@@ -147,10 +142,21 @@ const AdvertisingPricing = () => {
                     {pkg.description}
                   </CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-                      {pkg.price}
-                    </span>
-                    <span className="text-muted-foreground"> kr</span>
+                    {pkg.isFree ? (
+                      <div>
+                        <span className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                          Gratis
+                        </span>
+                        <p className="text-sm text-muted-foreground mt-2">Ingen kostnad</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                          {pkg.price}
+                        </span>
+                        <p className="text-sm text-muted-foreground mt-2">för prisuppgift</p>
+                      </div>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -163,11 +169,11 @@ const AdvertisingPricing = () => {
                     ))}
                   </ul>
                   <Button
-                    variant={pkg.highlighted ? "premium" : "outline"}
+                    variant={pkg.highlighted ? "premium" : pkg.isFree ? "default" : "outline"}
                     className="w-full"
                     size="lg"
                   >
-                    Välj {pkg.name}
+                    {pkg.isFree ? "Börja annonsera gratis" : "Kontakta oss"}
                   </Button>
                 </CardContent>
               </Card>
