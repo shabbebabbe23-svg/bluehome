@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus, TrendingUp, Award, Trash2, Pencil, Power } from "lucide-react";
+import { Building2, Plus, Users, Home, Activity, Clock, CheckCircle, XCircle, Edit, UserPlus, TrendingUp, Award, Trash2, Pencil, Power, Copy, Link as LinkIcon } from "lucide-react";
 import Header from "@/components/Header";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -56,6 +56,17 @@ interface AgentSalesStats {
   sales_count: number;
 }
 
+interface PendingInvitation {
+  id: string;
+  email: string;
+  role: string;
+  token: string;
+  expires_at: string;
+  agency_id: string;
+  created_at: string;
+  agency_name?: string;
+}
+
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -63,10 +74,12 @@ const SuperAdminDashboard = () => {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [agencySalesStats, setAgencySalesStats] = useState<AgencySalesStats[]>([]);
   const [agentSalesStats, setAgentSalesStats] = useState<AgentSalesStats[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [createdInvitationLink, setCreatedInvitationLink] = useState<string | null>(null);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
   const [deletingAgency, setDeletingAgency] = useState<Agency | null>(null);
   const [newAgency, setNewAgency] = useState({
@@ -107,6 +120,29 @@ const SuperAdminDashboard = () => {
     fetchAgencies();
     fetchActivityLogs();
     fetchSalesStats();
+    fetchPendingInvitations();
+  };
+
+  const fetchPendingInvitations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("agency_invitations")
+        .select("*, agencies(name)")
+        .is("used_at", null)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const invitationsWithAgencyName = (data || []).map((inv: any) => ({
+        ...inv,
+        agency_name: inv.agencies?.name,
+      }));
+
+      setPendingInvitations(invitationsWithAgencyName);
+    } catch (error) {
+      console.error("Error fetching pending invitations:", error);
+    }
   };
 
   const fetchActivityLogs = async () => {
@@ -378,29 +414,70 @@ const SuperAdminDashboard = () => {
 
       if (invitationError) throw invitationError;
 
-      // Skicka inbjudan via edge function
-      await supabase.functions.invoke("send-agency-invitation", {
-        body: {
-          email: newAgency.admin_email,
-          name: newAgency.admin_name,
-          agency_name: newAgency.name,
-          token: token,
-        },
-      });
+      // Skapa inbjudningslänk
+      const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${token}`;
+      setCreatedInvitationLink(invitationUrl);
+
+      await logActivity(
+        "agency_created",
+        `Byrån "${newAgency.name}" skapades med inbjudan till ${newAgency.admin_email}`,
+        agency.id,
+        "agency"
+      );
 
       toast({
         title: "Byrå skapad!",
-        description: `${newAgency.name} har skapats och inbjudan skickad till ${newAgency.admin_email}`,
+        description: "Kopiera inbjudningslänken nedan och skicka den till byrå-chefen.",
       });
 
-      setIsDialogOpen(false);
-      setNewAgency({ name: "", email_domain: "", admin_email: "", admin_name: "" });
       fetchAgencies();
+      fetchPendingInvitations();
     } catch (error: any) {
       console.error("Error creating agency:", error);
       toast({
         title: "Fel",
         description: error.message || "Kunde inte skapa byrå.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Kopierat!",
+        description: "Länken har kopierats till urklipp.",
+      });
+    } catch (error) {
+      toast({
+        title: "Fel",
+        description: "Kunde inte kopiera länken. Försök igen.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteInvitation = async (invitationId: string) => {
+    try {
+      const { error } = await supabase
+        .from("agency_invitations")
+        .delete()
+        .eq("id", invitationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Inbjudan raderad",
+        description: "Inbjudan har tagits bort.",
+      });
+
+      fetchPendingInvitations();
+    } catch (error) {
+      console.error("Error deleting invitation:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera inbjudan.",
         variant: "destructive",
       });
     }
@@ -574,10 +651,50 @@ const SuperAdminDashboard = () => {
               <DialogHeader>
                 <DialogTitle>Skapa ny mäklarbyrå</DialogTitle>
                 <DialogDescription>
-                  Fyll i information om byrån och dess chef. En inbjudan kommer att skickas via email.
+                  Fyll i information om byrån och dess chef. Du får en länk som du kan dela med byrå-chefen.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleCreateAgency} className="space-y-4">
+              
+              {createdInvitationLink ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-muted rounded-lg space-y-3">
+                    <div className="flex items-center gap-2">
+                      <LinkIcon className="w-5 h-5 text-primary" />
+                      <p className="font-medium">Inbjudningslänk skapad!</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Kopiera länken nedan och skicka den till byrå-chefen:
+                    </p>
+                    <div className="flex gap-2">
+                      <Input 
+                        value={createdInvitationLink} 
+                        readOnly 
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => copyToClipboard(createdInvitationLink)}
+                        className="gap-2"
+                      >
+                        <Copy className="w-4 h-4" />
+                        Kopiera
+                      </Button>
+                    </div>
+                  </div>
+                  <Button 
+                    type="button" 
+                    onClick={() => {
+                      setCreatedInvitationLink(null);
+                      setIsDialogOpen(false);
+                      setNewAgency({ name: "", email_domain: "", admin_email: "", admin_name: "" });
+                    }}
+                    className="w-full"
+                  >
+                    Stäng
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleCreateAgency} className="space-y-4">
                 <div>
                   <Label htmlFor="name">Byrånamn *</Label>
                   <Input
@@ -627,10 +744,11 @@ const SuperAdminDashboard = () => {
                     Avbryt
                   </Button>
                   <Button type="submit">
-                    Skapa byrå & skicka inbjudan
+                    Skapa byrå & generera länk
                   </Button>
                 </div>
               </form>
+              )}
             </DialogContent>
           </Dialog>
 
@@ -780,10 +898,11 @@ const SuperAdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Tabs for Agencies, Statistics and Activity Log */}
+        {/* Tabs for Agencies, Statistics, Invitations and Activity Log */}
         <Tabs defaultValue="agencies" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-[600px]">
+          <TabsList className="grid w-full grid-cols-4 max-w-[800px]">
             <TabsTrigger value="agencies">Byråer</TabsTrigger>
+            <TabsTrigger value="invitations">Inbjudningar</TabsTrigger>
             <TabsTrigger value="statistics">Statistik</TabsTrigger>
             <TabsTrigger value="activity">Aktivitetslogg</TabsTrigger>
           </TabsList>
@@ -872,6 +991,76 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="invitations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Väntande inbjudningar</CardTitle>
+                <CardDescription>Hantera inbjudningar som ännu inte har accepterats</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pendingInvitations.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Inga väntande inbjudningar.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingInvitations.map((invitation) => {
+                      const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${invitation.token}`;
+                      const expiresDate = new Date(invitation.expires_at);
+                      
+                      return (
+                        <div
+                          key={invitation.id}
+                          className="p-4 border rounded-lg space-y-3"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-semibold">{invitation.email}</h3>
+                                <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
+                                  {invitation.role === "agency_admin" ? "Byrå-admin" : "Mäklare"}
+                                </span>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {invitation.agency_name}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Går ut: {format(expiresDate, "PPP 'kl.' HH:mm", { locale: sv })}
+                              </p>
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deleteInvitation(invitation.id)}
+                              className="gap-2 w-full sm:w-auto"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Radera
+                            </Button>
+                          </div>
+                          <div className="flex gap-2">
+                            <Input 
+                              value={invitationUrl} 
+                              readOnly 
+                              className="font-mono text-xs sm:text-sm"
+                            />
+                            <Button
+                              onClick={() => copyToClipboard(invitationUrl)}
+                              className="gap-2 shrink-0"
+                            >
+                              <Copy className="w-4 h-4" />
+                              <span className="hidden xs:inline">Kopiera</span>
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
