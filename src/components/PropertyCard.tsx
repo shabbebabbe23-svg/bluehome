@@ -388,7 +388,7 @@ const PropertyCard = ({
               </Button>
             </Link>
           )}
-          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-left mt-0.5">
+          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-right mt-0.5">
             {isSold && soldDate 
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : daysOnMarket === 0 
