@@ -280,6 +280,16 @@ const PropertyCard = ({
           <span className="text-xs sm:text-sm md:text-base truncate">{location}</span>
         </div>
 
+        {/* Sold date on left side */}
+        {isSold && soldDate && (
+          <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+            <span className="text-xs sm:text-sm md:text-base">
+              Såld {new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}
+            </span>
+          </div>
+        )}
+
         <div className="mb-0.5 sm:mb-1">
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
             <div className="flex items-center gap-0.5 sm:gap-1">
@@ -391,8 +401,6 @@ const PropertyCard = ({
           <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-right mt-0.5">
             {isSold && soldDate 
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
-              : daysOnMarket === 0 
-              ? "Ny idag" 
               : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
             }
           </p>
