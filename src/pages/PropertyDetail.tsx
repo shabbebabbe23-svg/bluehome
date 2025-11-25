@@ -557,9 +557,19 @@ const PropertyDetail = () => {
                         </p>}
                     </div>
                   </div>
-                  <div className="flex items-center text-muted-foreground mt-2">
-                    <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                    <span className="text-sm sm:text-2xl">{property.location}</span>
+                  <div className="flex items-center justify-between text-muted-foreground mt-2">
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                      <span className="text-sm sm:text-2xl">{property.location}</span>
+                    </div>
+                    {dbProperty?.listed_date && (() => {
+                      const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
+                      return (
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
 
