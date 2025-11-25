@@ -1,1 +1,7 @@
 project_id = "qgvloiecyvqbxeplfzwv"
+
+[functions.send-agency-invitation]
+verify_jwt = false
+
+[functions.notify-favorite]
+verify_jwt = false
