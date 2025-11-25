@@ -62,10 +62,56 @@ export const useFavorites = () => {
         if (error) throw error;
         setFavorites([...favorites, propertyId]);
         toast.success("Tillagd i favoriter");
+        
+        // Send notification to agent in background
+        notifyAgent(propertyId);
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
       toast.error("Något gick fel");
+    }
+  };
+
+  const notifyAgent = async (propertyId: string) => {
+    try {
+      // Fetch property and agent details
+      const { data: property, error: propError } = await supabase
+        .from("properties")
+        .select("title, address, user_id")
+        .eq("id", propertyId)
+        .single();
+
+      if (propError || !property) {
+        console.error("Error fetching property:", propError);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", property.user_id)
+        .single();
+
+      if (profileError || !profile || !profile.email) {
+        console.error("Error fetching agent profile:", profileError);
+        return;
+      }
+
+      // Send notification email
+      await supabase.functions.invoke("notify-favorite", {
+        body: {
+          property_id: propertyId,
+          property_title: property.title,
+          property_address: property.address,
+          agent_email: profile.email,
+          agent_name: profile.full_name || "Mäklare",
+        }
+      });
+
+      console.log("Notification sent to agent");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      // Don't show error to user, this is a background operation
     }
   };
 
