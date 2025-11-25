@@ -14,8 +14,6 @@ const authSchema = z.object({
   password: z.string().min(6, { message: "Lösenordet måste vara minst 6 tecken" }).max(100),
   confirmPassword: z.string().optional(),
   fullName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
-  userType: z.enum(["user", "maklare"]).optional(),
-  organizationNumber: z.string().optional(),
 }).refine((data) => {
   // Only validate confirmPassword during signup
   if (data.fullName && data.password !== data.confirmPassword) {
@@ -25,20 +23,6 @@ const authSchema = z.object({
 }, {
   message: "Lösenorden matchar inte",
   path: ["confirmPassword"],
-}).refine((data) => {
-  // Validate organizationNumber for maklare
-  if (data.userType === "maklare" && data.fullName) {
-    if (!data.organizationNumber) {
-      return false;
-    }
-    // Swedish organization number format: XXXXXX-XXXX (10 digits)
-    const orgNumberRegex = /^\d{6}-?\d{4}$/;
-    return orgNumberRegex.test(data.organizationNumber);
-  }
-  return true;
-}, {
-  message: "Organisationsnummer måste vara i formatet XXXXXX-XXXX",
-  path: ["organizationNumber"],
 });
 
 const Login = () => {
@@ -47,8 +31,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userType, setUserType] = useState<"user" | "maklare">("user");
-  const [organizationNumber, setOrganizationNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -70,7 +52,7 @@ const Login = () => {
       // Validate input
       const validationData = isLogin 
         ? { email, password }
-        : { email, password, confirmPassword, fullName, userType, organizationNumber };
+        : { email, password, confirmPassword, fullName };
       
       authSchema.parse(validationData);
 
@@ -109,7 +91,7 @@ const Login = () => {
           navigate("/");
         }
       } else {
-        // Signup
+        // Signup - automatically set user_type to 'buyer' for all public registrations
         const redirectUrl = `${window.location.origin}/`;
         
         const { error } = await supabase.auth.signUp({
@@ -119,8 +101,7 @@ const Login = () => {
             emailRedirectTo: redirectUrl,
             data: {
               full_name: fullName,
-              user_type: userType,
-              organization_number: userType === "maklare" ? organizationNumber : undefined,
+              user_type: 'buyer',
             },
           },
         });
@@ -185,56 +166,17 @@ const Login = () => {
           <CardContent>
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Fullständigt namn</Label>
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="Ditt namn"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required={!isLogin}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Jag är</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        type="button"
-                        variant={userType === "user" ? "default" : "outline"}
-                        onClick={() => setUserType("user")}
-                        className="w-full"
-                      >
-                        Privatperson
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={userType === "maklare" ? "default" : "outline"}
-                        onClick={() => setUserType("maklare")}
-                        className="w-full"
-                      >
-                        Mäklare
-                      </Button>
-                    </div>
-                  </div>
-                  {userType === "maklare" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="organizationNumber">Organisationsnummer</Label>
-                      <Input
-                        id="organizationNumber"
-                        type="text"
-                        placeholder="XXXXXX-XXXX"
-                        value={organizationNumber}
-                        onChange={(e) => setOrganizationNumber(e.target.value)}
-                        required={userType === "maklare"}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Ange ditt företags organisationsnummer (10 siffror)
-                      </p>
-                    </div>
-                  )}
-                </>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Fullständigt namn</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Ditt namn"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email">E-post</Label>
