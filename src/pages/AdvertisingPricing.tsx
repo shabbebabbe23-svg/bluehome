@@ -112,7 +112,7 @@ const AdvertisingPricing = () => {
             return (
               <Card
                 key={pkg.name}
-                className={`relative transition-all duration-300 hover:shadow-xl animate-scale-in ${
+                className={`relative h-full flex flex-col transition-all duration-300 hover:shadow-xl animate-scale-in ${
                   pkg.highlighted
                     ? "border-primary shadow-lg scale-105"
                     : "hover:scale-105"
@@ -155,8 +155,8 @@ const AdvertisingPricing = () => {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
+                <CardContent className="flex-1 flex flex-col">
+                  <ul className="space-y-3 mb-6 flex-1">
                     {pkg.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
