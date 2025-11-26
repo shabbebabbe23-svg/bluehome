@@ -248,12 +248,9 @@ const AdvertisingPricing = () => {
         {/* CTA Section */}
         <Card className="bg-hero-gradient text-white border-none">
           <CardContent className="py-12 text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              Osäker på vilket paket som passar dig?
+            <h2 className="text-3xl font-bold mb-6">
+              Kontakta mäklare idag
             </h2>
-            <p className="text-lg mb-6 opacity-90">
-              Kontakta oss så hjälper vi dig att hitta den bästa lösningen för din fastighet
-            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="text-lg">
                 Kontakta oss
