@@ -41,10 +41,10 @@ const handler = async (req: Request): Promise<Response> => {
     // For each property, gather statistics and send email
     for (const property of properties) {
       try {
-        // Get view statistics
+        // Get view statistics with timestamps for real-time analysis
         const { data: views, error: viewsError } = await supabase
           .from("property_views")
-          .select("time_spent_seconds")
+          .select("time_spent_seconds, view_started_at")
           .eq("property_id", property.id);
 
         if (viewsError) throw viewsError;
@@ -54,13 +54,20 @@ const handler = async (req: Request): Promise<Response> => {
           ? Math.round(views.reduce((sum, v) => sum + (v.time_spent_seconds || 0), 0) / views_count)
           : 0;
 
-        // Get favorites count
-        const { count: favorites_count, error: favError } = await supabase
+        // Calculate views in last 24 hours
+        const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const recent_views = views.filter(v => v.view_started_at > last24Hours).length;
+
+        // Get favorites with timestamps
+        const { data: favorites, error: favError } = await supabase
           .from("favorites")
-          .select("*", { count: "exact", head: true })
+          .select("created_at")
           .eq("property_id", property.id);
 
         if (favError) throw favError;
+
+        const favorites_count = favorites?.length || 0;
+        const recent_favorites = favorites?.filter(f => f.created_at > last24Hours).length || 0;
 
         // Send statistics email
         const emailResponse = await resend.emails.send({
@@ -71,38 +78,78 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 30px; text-align: center;">
                 <h1 style="color: white; margin: 0; font-size: 28px;">BaraHem</h1>
-                <p style="color: white; margin-top: 10px; opacity: 0.9;">Statistik för din bostad</p>
+                <p style="color: white; margin-top: 10px; opacity: 0.9;">📊 Utökad statistik i realtid</p>
               </div>
               
               <div style="padding: 30px; background: #f9f9f9;">
                 <h2 style="color: #333; margin-top: 0;">${property.title}</h2>
                 <p style="color: #666; margin-bottom: 30px;">${property.address}</p>
                 
+                <!-- Real-time views section -->
                 <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                  <h3 style="margin: 0 0 20px 0; color: #333; font-size: 18px;">Denna veckas statistik</h3>
-                  
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 8px;">
-                      <div style="font-size: 36px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
-                      <div style="color: #666; margin-top: 5px;">Visningar</div>
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📈 Antal visningar i realtid</h3>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
                     </div>
-                    
-                    <div style="text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px;">
-                      <div style="font-size: 36px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count || 0}</div>
-                      <div style="color: #666; margin-top: 5px;">Favoriter</div>
+                    <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${recent_views}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
                     </div>
                   </div>
-                  
-                  <div style="text-align: center; padding: 20px; background: #fef9e7; border-radius: 8px; margin-top: 20px;">
-                    <div style="font-size: 36px; font-weight: bold; color: #f59e0b;">${average_time_spent}s</div>
-                    <div style="color: #666; margin-top: 5px;">Genomsnittlig visningstid</div>
+                </div>
+
+                <!-- Time spent section -->
+                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">⏱️ Hur länge besökare tittar på annonsen</h3>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Favorites section -->
+                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">❤️ Antal som sparat som favorit</h3>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
+                      <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${recent_favorites}</div>
+                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Image clicks section - coming soon -->
+                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; opacity: 0.6;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📸 Vilka bilder som klickas mest</h3>
+                  <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                    <div style="color: #666; font-style: italic;">Bildinteraktionsdata kommer snart</div>
+                  </div>
+                </div>
+
+                <!-- Geographic distribution - coming soon -->
+                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; opacity: 0.6;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">🌍 Geografisk fördelning av besökare</h3>
+                  <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                    <div style="color: #666; font-style: italic;">Geografisk data kommer snart</div>
                   </div>
                 </div>
                 
                 <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 20px; border-radius: 8px; text-align: center;">
                   <p style="color: white; margin: 0 0 15px 0; font-size: 16px;">
                     ${views_count > 0 
-                      ? "Din bostad väcker intresse! Fortsätt visa den i bästa ljus." 
+                      ? "Din bostad får bra uppmärksamhet! Fortsätt så." 
                       : "Förbättra dina bilder och beskrivning för att få fler visningar."}
                   </p>
                   <a href="https://barahem.se/fastighet/${property.id}" 
