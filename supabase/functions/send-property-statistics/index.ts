@@ -26,17 +26,127 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
+    const body = await req.json().catch(() => ({}));
 
-    // Fetch all properties with seller emails
+    // Check if this is a "sold" notification for a specific property
+    if (body.property_id && body.is_sold) {
+      console.log(`Sending sold notification for property ${body.property_id}`);
+      
+      const { data: property, error: propError } = await supabase
+        .from("properties")
+        .select("id, title, address, seller_email, sold_price, sold_date")
+        .eq("id", body.property_id)
+        .single();
+
+      if (propError || !property || !property.seller_email) {
+        console.error("Property not found or missing seller email:", propError);
+        return new Response(
+          JSON.stringify({ error: "Property not found or missing seller email" }),
+          { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Get final statistics for sold property
+      const { data: views } = await supabase
+        .from("property_views")
+        .select("time_spent_seconds, view_started_at")
+        .eq("property_id", property.id);
+
+      const views_count = views?.length || 0;
+      const average_time_spent = views_count > 0
+        ? Math.round(views.reduce((sum, v) => sum + (v.time_spent_seconds || 0), 0) / views_count)
+        : 0;
+
+      const { data: favorites } = await supabase
+        .from("favorites")
+        .select("created_at")
+        .eq("property_id", property.id);
+
+      const favorites_count = favorites?.length || 0;
+
+      // Send "property sold" email
+      await resend.emails.send({
+        from: "BaraHem <onboarding@resend.dev>",
+        to: [property.seller_email],
+        subject: `🎉 Grattis! ${property.title} är såld!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 40px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 36px;">🎉 Grattis!</h1>
+              <p style="color: white; margin-top: 15px; font-size: 18px; opacity: 0.95;">Din bostad är såld</p>
+            </div>
+            
+            <div style="padding: 30px; background: #f9f9f9;">
+              <h2 style="color: #333; margin-top: 0;">${property.title}</h2>
+              <p style="color: #666; margin-bottom: 30px;">${property.address}</p>
+              
+              ${property.sold_price ? `
+                <div style="background: linear-gradient(135deg, #10b981, #059669); border-radius: 8px; padding: 25px; margin-bottom: 30px; text-align: center;">
+                  <div style="color: white; font-size: 16px; opacity: 0.9; margin-bottom: 10px;">Slutpris</div>
+                  <div style="color: white; font-size: 42px; font-weight: bold;">${property.sold_price.toLocaleString('sv-SE')} kr</div>
+                </div>
+              ` : ''}
+              
+              <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 20px 0; color: #333; font-size: 20px; text-align: center;">📊 Slutlig statistik för din annons</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                  <div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 8px;">
+                    <div style="font-size: 36px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
+                    <div style="color: #666; margin-top: 5px;">Totalt visningar</div>
+                  </div>
+                  
+                  <div style="text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px;">
+                    <div style="font-size: 36px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count}</div>
+                    <div style="color: #666; margin-top: 5px;">Favoriter</div>
+                  </div>
+                </div>
+                
+                <div style="text-align: center; padding: 20px; background: #fef9e7; border-radius: 8px;">
+                  <div style="font-size: 36px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
+                  <div style="color: #666; margin-top: 5px;">Genomsnittlig visningstid</div>
+                </div>
+              </div>
+              
+              <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 25px; border-radius: 8px; text-align: center;">
+                <p style="color: white; margin: 0; font-size: 16px; line-height: 1.6;">
+                  Tack för att du valde BaraHem för att sälja din bostad! 
+                  Vi hoppas att du är nöjd med resultatet och önskar dig lycka till i ditt nya hem.
+                </p>
+              </div>
+            </div>
+            
+            <div style="background: #333; padding: 20px; text-align: center;">
+              <p style="color: #999; font-size: 12px; margin: 0;">
+                © ${new Date().getFullYear()} BaraHem. Alla rättigheter förbehållna.
+              </p>
+            </div>
+          </div>
+        `,
+      });
+
+      console.log(`Sold notification sent to ${property.seller_email}`);
+      
+      return new Response(
+        JSON.stringify({ success: true, type: "sold_notification" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Otherwise, this is a monthly scheduled statistics email
+    console.log("Sending monthly statistics emails to all properties");
+
+    // Fetch all active properties with seller emails
     const { data: properties, error: propError } = await supabase
       .from("properties")
       .select("id, title, address, seller_email")
       .not("seller_email", "is", null)
-      .eq("is_deleted", false);
+      .eq("is_deleted", false)
+      .eq("is_sold", false);
 
     if (propError) throw propError;
 
-    console.log(`Found ${properties.length} properties with seller emails`);
+    console.log(`Found ${properties.length} active properties with seller emails`);
 
     // For each property, gather statistics and send email
     for (const property of properties) {
@@ -73,7 +183,7 @@ const handler = async (req: Request): Promise<Response> => {
         const emailResponse = await resend.emails.send({
           from: "BaraHem Statistik <onboarding@resend.dev>",
           to: [property.seller_email],
-          subject: `📊 Veckostatistik för ${property.title}`,
+          subject: `📊 Månadsstatistik för ${property.title}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 30px; text-align: center;">
@@ -186,7 +296,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify({ 
-        success: true, 
+        success: true,
+        type: "monthly_statistics", 
         properties_processed: properties.length 
       }), 
       {
