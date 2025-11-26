@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.notify-favorite]
 verify_jwt = false
+
+[functions.send-property-statistics]
+verify_jwt = false
