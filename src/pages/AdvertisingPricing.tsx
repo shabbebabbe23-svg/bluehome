@@ -33,7 +33,6 @@ const AdvertisingPricing = () => {
         "3D-visning, planritning & drönarbild",
         "Toppplacering i alla sökningar",
         "Omfattande social media-kampanj",
-        "Dedikerad kundansvarig",
         "Utökad statistik i realtid",
       ],
       highlighted: true,
