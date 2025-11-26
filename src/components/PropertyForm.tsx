@@ -28,6 +28,7 @@ const propertySchema = z.object({
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
   housing_association: z.string().max(200, "Bostadsförening får max vara 200 tecken").optional(),
+  seller_email: z.string().email("Ogiltig e-postadress").max(255, "E-post får max vara 255 tecken").optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertySchema>;
@@ -222,6 +223,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         viewing_date: data.viewing_date || null,
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
+        seller_email: data.seller_email || null,
       });
 
       if (error) throw error;
@@ -449,6 +451,23 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             {...register("housing_association")}
             placeholder="HSB Brf..."
           />
+        </div>
+
+        {/* Säljarens e-post */}
+        <div>
+          <Label htmlFor="seller_email">Säljarens e-post (valfritt)</Label>
+          <Input
+            id="seller_email"
+            type="email"
+            {...register("seller_email")}
+            placeholder="säljare@exempel.se"
+          />
+          {errors.seller_email && (
+            <p className="text-sm text-destructive mt-1">{errors.seller_email.message}</p>
+          )}
+          <p className="text-sm text-muted-foreground mt-1">
+            Säljaren får statistik om annonsen skickad till denna e-post
+          </p>
         </div>
 
         {/* Beskrivning */}
