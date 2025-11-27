@@ -26,7 +26,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area' }>>([]);
   const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
@@ -44,15 +44,78 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const lastSearchRef = useRef<number>(0);
+
   const handleSearchChange = async (value: string) => {
     setSearchLocation(value);
     onSearchAddressChange?.(value);
-    
+
+    const searchId = Date.now();
+    lastSearchRef.current = searchId;
+
     if (searchMode === 'property') {
       if (value.trim()) {
-        const filteredSuggestions = filterMunicipalities(value);
-        setSuggestions(filteredSuggestions);
-        setShowSuggestions(filteredSuggestions.length > 0);
+        const lowerValue = value.toLowerCase();
+        const municipalitySuggestions = filterMunicipalities(value).map(m => ({ ...m, type: 'municipality' as const }));
+
+        // Add "Inom tullarna" suggestions if relevant
+        const areaSuggestions: Array<{ name: string; county: string; type: 'area' }> = [];
+
+        if ("stockholm".includes(lowerValue) || "inom".includes(lowerValue) || "tull".includes(lowerValue)) {
+          areaSuggestions.push({
+            name: "Stockholm - Inom tullarna",
+            county: "Stockholms län",
+            type: 'area'
+          });
+        }
+
+        if ("göteborg".includes(lowerValue) || "inom".includes(lowerValue) || "tull".includes(lowerValue)) {
+          areaSuggestions.push({
+            name: "Göteborg - Inom tullarna",
+            county: "Västra Götalands län",
+            type: 'area'
+          });
+        }
+
+        // Fetch matching addresses from Supabase
+        try {
+          const { data: addressData, error } = await supabase
+            .from('properties')
+            .select('address, location')
+            .ilike('address', `%${value}%`)
+            .not('address', 'is', null)
+            .limit(5);
+
+          if (error) throw error;
+
+          // Check if this is still the latest search
+          if (lastSearchRef.current === searchId) {
+            const addressSuggestions = (addressData || [])
+              .filter(p => p.address) // Ensure address is not null/empty
+              .map(p => ({
+                name: p.address,
+                county: p.location || 'Sverige', // Fallback for location
+                type: 'address' as const
+              }));
+
+            // Remove duplicates (if any)
+            const uniqueAddresses = addressSuggestions.filter((addr, index, self) =>
+              index === self.findIndex((t) => t.name === addr.name)
+            );
+
+            const combinedSuggestions = [...areaSuggestions, ...municipalitySuggestions, ...uniqueAddresses];
+            setSuggestions(combinedSuggestions);
+            setShowSuggestions(combinedSuggestions.length > 0);
+          }
+        } catch (error) {
+          console.error('Error fetching address suggestions:', error);
+          // Only update if this is the latest search
+          if (lastSearchRef.current === searchId) {
+            const combinedSuggestions = [...areaSuggestions, ...municipalitySuggestions];
+            setSuggestions(combinedSuggestions);
+            setShowSuggestions(combinedSuggestions.length > 0);
+          }
+        }
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -69,7 +132,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
           if (agentRoles && agentRoles.length > 0) {
             const agentIds = agentRoles.map(role => role.user_id);
-            
+
             const { data: agents } = await supabase
               .from('profiles')
               .select('id, full_name, agency, area')
@@ -81,7 +144,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               )
               .limit(5);
 
-            if (agents) {
+            if (lastSearchRef.current === searchId && agents) {
               setAgentSuggestions(agents);
               setShowSuggestions(agents.length > 0);
             }
@@ -96,9 +159,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     }
   };
 
-  const handleSuggestionClick = (municipality: { name: string; county: string }) => {
-    setSearchLocation(municipality.name);
-    onSearchAddressChange?.(municipality.name);
+  const handleSuggestionClick = (suggestion: { name: string; county: string; type: 'municipality' | 'address' | 'area' }) => {
+    setSearchLocation(suggestion.name);
+    onSearchAddressChange?.(suggestion.name);
     setShowSuggestions(false);
   };
 
@@ -118,7 +181,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   return (
     <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-8 md:pt-0 md:pb-0">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
@@ -150,11 +213,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   setSearchMode('property');
                   onSearchModeChange?.('property');
                 }}
-                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${
-                  searchMode === 'property' 
-                    ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
-                    : 'hover:border-primary'
-                }`}
+                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${searchMode === 'property'
+                  ? 'bg-hero-gradient text-white border-transparent hover:text-black'
+                  : 'hover:border-primary'
+                  }`}
               >
                 <Home className="w-4 h-4 mr-1 sm:mr-2" />
                 Sök bostad
@@ -165,11 +227,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   setSearchMode('agent');
                   onSearchModeChange?.('agent');
                 }}
-                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${
-                  searchMode === 'agent' 
-                    ? 'bg-hero-gradient text-white border-transparent hover:text-black' 
-                    : 'hover:border-primary'
-                }`}
+                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${searchMode === 'agent'
+                  ? 'bg-hero-gradient text-white border-transparent hover:text-black'
+                  : 'hover:border-primary'
+                  }`}
               >
                 <User className="w-4 h-4 mr-1 sm:mr-2" />
                 Sök mäklare
@@ -194,20 +255,28 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   }}
                   className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
                 />
-                
+
                 {/* Autocomplete Suggestions */}
                 {showSuggestions && searchMode === 'property' && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
-                    {suggestions.map((municipality, index) => (
+                    {suggestions.map((suggestion, index) => (
                       <button
-                        key={`${municipality.name}-${index}`}
-                        onClick={() => handleSuggestionClick(municipality)}
+                        key={`${suggestion.name}-${index}`}
+                        onClick={() => handleSuggestionClick(suggestion)}
                         className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
                       >
-                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        {suggestion.type === 'address' ? (
+                          <Home className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        ) : suggestion.type === 'area' ? (
+                          <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        ) : (
+                          <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        )}
                         <div>
-                          <p className="font-medium text-foreground">{municipality.name}</p>
-                          <p className="text-sm text-muted-foreground">{municipality.county}</p>
+                          <p className="font-medium text-foreground">{suggestion.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {suggestion.type === 'address' ? 'Adress' : suggestion.type === 'area' ? 'Område' : suggestion.county}
+                          </p>
                         </div>
                       </button>
                     ))}
@@ -227,7 +296,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         <div>
                           <p className="font-medium text-foreground">{agent.full_name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {agent.agency && agent.area 
+                            {agent.agency && agent.area
                               ? `${agent.agency} • ${agent.area}`
                               : agent.agency || agent.area || 'Mäklare'}
                           </p>
@@ -259,183 +328,183 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                 {/* Property Type Buttons */}
                 <div>
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("");
-                    onPropertyTypeChange?.("");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  <span className="truncate">Alla typer</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("house");
-                    onPropertyTypeChange?.("house");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  Villor
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("villa");
-                    onPropertyTypeChange?.("villa");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <div className="flex mr-1 sm:mr-2">
-                    <Home className="w-4 h-4 sm:w-5 sm:h-5 -mr-1" />
-                    <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("");
+                        onPropertyTypeChange?.("");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <span className="truncate">Alla typer</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("house");
+                        onPropertyTypeChange?.("house");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Villor
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("villa");
+                        onPropertyTypeChange?.("villa");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <div className="flex mr-1 sm:mr-2">
+                        <Home className="w-4 h-4 sm:w-5 sm:h-5 -mr-1" />
+                        <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      Par/Radhus
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("apartment");
+                        onPropertyTypeChange?.("apartment");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <Building className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Lägenheter
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("cottage");
+                        onPropertyTypeChange?.("cottage");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Fritidshus
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPropertyType("plot");
+                        onPropertyTypeChange?.("plot");
+                      }}
+                      className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                    >
+                      <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Tomt
+                    </Button>
                   </div>
-                  Par/Radhus
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("apartment");
-                    onPropertyTypeChange?.("apartment");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <Building className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  Lägenheter
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("cottage");
-                    onPropertyTypeChange?.("cottage");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  Fritidshus
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setPropertyType("plot");
-                    onPropertyTypeChange?.("plot");
-                  }}
-                  className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                >
-                  <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  Tomt
-                </Button>
-              </div>
-            </div>
+                </div>
 
                 {/* More Filters Button */}
                 <Button
-              variant="outline"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
-            >
-              <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-              {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
-            </Button>
+                  variant="outline"
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
+                >
+                  <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                  {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
+                </Button>
 
                 {/* Advanced Filters */}
                 {showAdvancedFilters && (
-              <>
-                {/* Price Filter */}
-                <div className="space-y-3 md:space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
-                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                      {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                  <>
+                    {/* Price Filter */}
+                    <div className="space-y-3 md:space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
+                          {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={20000000}
+                        step={100000}
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm md:text-base text-muted-foreground font-medium">
+                        <span>0 kr</span>
+                        <span>20+ milj kr</span>
+                      </div>
                     </div>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={20000000}
-                    step={100000}
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm md:text-base text-muted-foreground font-medium">
-                    <span>0 kr</span>
-                    <span>20+ milj kr</span>
-                  </div>
-                </div>
 
-                {/* Area Filter */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
-                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                      {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                    {/* Area Filter */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
+                          {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={200}
+                        step={5}
+                        value={areaRange}
+                        onValueChange={setAreaRange}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                        <span>0 kvm</span>
+                        <span>200+ kvm</span>
+                      </div>
                     </div>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={200}
-                    step={5}
-                    value={areaRange}
-                    onValueChange={setAreaRange}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm md:text-base text-muted-foreground">
-                    <span>0 kvm</span>
-                    <span>200+ kvm</span>
-                  </div>
-                </div>
 
-                {/* Room Filter */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
-                    <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                      {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                    {/* Room Filter */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
+                          {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={7}
+                        step={1}
+                        value={roomRange}
+                        onValueChange={setRoomRange}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                        <span>0 rum</span>
+                        <span>7+ rum</span>
+                      </div>
                     </div>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={7}
-                    step={1}
-                    value={roomRange}
-                    onValueChange={setRoomRange}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm md:text-base text-muted-foreground">
-                    <span>0 rum</span>
-                    <span>7+ rum</span>
-                  </div>
-                </div>
 
-                {/* Keywords Filter */}
-                <div className="space-y-3 md:space-y-4">
-                  <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyckelord</h3>
-                  <Input
-                    placeholder="T.ex. balkong, garage, nybyggt..."
-                    value={keywords}
-                    onChange={(e) => setKeywords(e.target.value)}
-                    className="h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
-                  />
-                </div>
+                    {/* Keywords Filter */}
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyckelord</h3>
+                      <Input
+                        placeholder="T.ex. balkong, garage, nybyggt..."
+                        value={keywords}
+                        onChange={(e) => setKeywords(e.target.value)}
+                        className="h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
+                      />
+                    </div>
 
-                {/* New Construction Filter */}
-                <div className="flex items-center justify-end gap-3 px-2 py-2">
-                  <Label htmlFor="new-construction" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
-                    Endast nyproduktion
-                  </Label>
-                  <Switch
-                    id="new-construction"
-                    checked={showNewConstruction}
-                    onCheckedChange={setShowNewConstruction}
-                    className="data-[state=checked]:bg-success"
-                  />
-                </div>
-              </>
+                    {/* New Construction Filter */}
+                    <div className="flex items-center justify-end gap-3 px-2 py-2">
+                      <Label htmlFor="new-construction" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
+                        Endast nyproduktion
+                      </Label>
+                      <Switch
+                        id="new-construction"
+                        checked={showNewConstruction}
+                        onCheckedChange={setShowNewConstruction}
+                        className="data-[state=checked]:bg-success"
+                      />
+                    </div>
+                  </>
                 )}
               </>
             )}

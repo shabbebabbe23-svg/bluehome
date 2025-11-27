@@ -110,7 +110,7 @@ const Index = () => {
           bullets={["✓ Fri hemleverans", "✓ 0% delbetalning", "✓ Många tyger och färger"]}
           buttonText={"Se erbjudanden"}
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
-          className="lg:order-1 order-3"
+          className="lg:order-1 order-3 ml-10 transform scale-90"
         />
         <main className="order-1 lg:order-2 flex-1 w-full">
           <Hero
@@ -131,7 +131,7 @@ const Index = () => {
         </main>
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
-          className="lg:order-3 order-2"
+          className="lg:order-3 order-2 mr-10 transform scale-90"
         />
       </div>
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">

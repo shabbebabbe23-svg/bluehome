@@ -96,7 +96,7 @@ const PropertyCard = ({
     // We want to display it in the user's local timezone
     return dateObj;
   })() : null;
-  
+
   const isSameDay = (d1: Date, d2: Date) =>
     d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&
@@ -107,7 +107,7 @@ const PropertyCard = ({
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
   // Calculate days on bluehome
-  const daysOnMarket = listedDate 
+  const daysOnMarket = listedDate
     ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
@@ -117,31 +117,30 @@ const PropertyCard = ({
   };
 
   return (
-  <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
-        <Link 
-          to={`/fastighet/${id}`} 
-          className="absolute inset-0 z-10" 
+        <Link
+          to={`/fastighet/${id}`}
+          className="absolute inset-0 z-10"
           aria-label={`Visa ${title}`}
           onClick={handleNavigateToDetail}
         />
       )}
-      
+
       {/* Bulk select checkbox */}
       {bulkSelectMode && (
-        <div 
+        <div
           className="absolute top-4 left-4 z-30 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onSelect?.(id);
           }}
         >
-          <div className={`w-8 h-8 rounded-md border-2 flex items-center justify-center transition-all ${
-            isSelected 
-              ? 'bg-primary border-primary' 
-              : 'bg-white/90 border-border hover:border-primary'
-          }`}>
+          <div className={`w-8 h-8 rounded-md border-2 flex items-center justify-center transition-all ${isSelected
+            ? 'bg-primary border-primary'
+            : 'bg-white/90 border-border hover:border-primary'
+            }`}>
             {isSelected && (
               <svg className="w-5 h-5 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                 <path d="M5 13l4 4L19 7"></path>
@@ -150,7 +149,7 @@ const PropertyCard = ({
           </div>
         </div>
       )}
-      
+
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
         <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
@@ -175,14 +174,14 @@ const PropertyCard = ({
             )}
           </div>
         )}
-        
+
         {/* VR Badge - Bottom Left */}
         {hasVR && (
           <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-foreground font-semibold text-xs">
             VR
           </div>
         )}
-        
+
         {/* Overlay with badges */}
         <div className="absolute top-4 left-4 flex gap-2">
           {isSold && (
@@ -211,9 +210,9 @@ const PropertyCard = ({
             variant="secondary"
             size="icon"
             className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
-            onClick={(e: React.MouseEvent) => { 
+            onClick={(e: React.MouseEvent) => {
               e.preventDefault();
-              e.stopPropagation(); 
+              e.stopPropagation();
               toggleFavorite(String(id));
             }}
           >
@@ -226,13 +225,12 @@ const PropertyCard = ({
               </defs>
             </svg>
             <Heart
-              className={`w-4 h-4 transition-all duration-300 ${
-                isFavorite 
-                  ? "fill-red-500 text-red-500" 
-                  : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
-              }`}
+              className={`w-4 h-4 transition-all duration-300 ${isFavorite
+                ? "fill-red-500 text-red-500"
+                : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
+                }`}
               style={
-                !isFavorite 
+                !isFavorite
                   ? { stroke: 'currentColor' }
                   : undefined
               }
@@ -284,7 +282,9 @@ const PropertyCard = ({
 
         <div className="hidden md:flex items-center text-muted-foreground mb-0.5 sm:mb-1">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base truncate">{location}</span>
+          <span className="text-xs sm:text-sm md:text-base truncate">
+            {address ? `${address}, ${location}` : location}
+          </span>
         </div>
 
         {/* Sold date on left side */}
@@ -328,7 +328,7 @@ const PropertyCard = ({
           {/* Agent Information */}
           {agent_name && (
             <div className="mt-3 pt-3 border-t border-border/50">
-              <Link 
+              <Link
                 to={`/agent/${agent_id}`}
                 className="flex items-center gap-2 hover:bg-muted/30 p-2 rounded-lg transition-colors group/agent relative z-20"
                 onClick={(e) => e.stopPropagation()}
@@ -388,7 +388,7 @@ const PropertyCard = ({
 
         <div className="mt-0.5 sm:mt-1">
           {onButtonClick ? (
-            <Button 
+            <Button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -406,7 +406,7 @@ const PropertyCard = ({
             </Link>
           )}
           <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-right mt-0.5">
-            {isSold && soldDate 
+            {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
             }
