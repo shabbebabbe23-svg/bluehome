@@ -19,8 +19,8 @@ const Header = () => {
   const isAgentPage = location.pathname === "/maklare";
 
   return (
-    <header 
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" 
+    <header
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20"
       style={{
         background: 'var(--main-gradient)'
       }}
@@ -36,8 +36,8 @@ const Header = () => {
                     <Menu className="w-12 h-12" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="start" 
+                <DropdownMenuContent
+                  align="start"
                   className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
                 >
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
@@ -49,7 +49,7 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
+
             {/* Agent Menu Button */}
             {user && userType === "maklare" && (
               <DropdownMenu>
@@ -58,8 +58,8 @@ const Header = () => {
                     <Menu className="w-12 h-12" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="start" 
+                <DropdownMenuContent
+                  align="start"
                   className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
                 >
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
@@ -95,7 +95,7 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
+
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <svg className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -119,15 +119,13 @@ const Header = () => {
             <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Köp
             </a>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
-              Hyra
-            </a>
+
             <DropdownMenu>
               <DropdownMenuTrigger className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Sälj
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="center" 
+              <DropdownMenuContent
+                align="center"
                 className="w-72 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
               >
                 <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
@@ -142,30 +140,29 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <a href="#" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+            <Link to="/om-oss" className={`text-sm md:text-base lg:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
-            </a>
+            </Link>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2 lg:gap-4">
             {/* User Role Indicator */}
             {user && userType && (
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 transition-all ${
-                userType === "superadmin" 
-                  ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" 
-                  : "bg-white/10 border-white/30"
-              }`}>
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin"
+                ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30"
+                : "bg-white/10 border-white/30"
+                }`}>
                 {userType === "superadmin" ? (
                   <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" />
                 ) : (
                   <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
                 )}
                 <span className="text-base font-bold text-white">
-                  {userType === "superadmin" ? "Superadmin" : 
-                   userType === "agency_admin" ? "Byrå Admin" :
-                   userType === "maklare" ? "Mäklare" : 
-                   userType === "buyer" ? "Köpare" : "Användare"}
+                  {userType === "superadmin" ? "Superadmin" :
+                    userType === "agency_admin" ? "Byrå Admin" :
+                      userType === "maklare" ? "Mäklare" :
+                        userType === "buyer" ? "Köpare" : "Användare"}
                 </span>
               </div>
             )}
@@ -174,13 +171,12 @@ const Header = () => {
             {user && (userType === "maklare" || userType === "buyer") && <NotificationBell />}
 
             <Link to={isCommercialPage ? "/" : "/foretag"}>
-              <Button 
-                variant="outline" 
-                className={`text-sm lg:text-base ${
-                  isCommercialPage 
-                    ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
-                    : 'bg-black border-black hover:bg-black/90'
-                }`}
+              <Button
+                variant="outline"
+                className={`text-sm lg:text-base ${isCommercialPage
+                  ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold'
+                  : 'bg-black border-black hover:bg-black/90'
+                  }`}
               >
                 {isCommercialPage ? (
                   "Privat"
@@ -204,7 +200,7 @@ const Header = () => {
               </Button>
             )}
             {user ? (
-              <Button 
+              <Button
                 onClick={signOut}
                 className="text-sm lg:text-base bg-hero-gradient hover:scale-105 transition-transform"
               >
@@ -233,8 +229,8 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div 
-            className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" 
+          <div
+            className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in"
             style={{
               background: 'var(--main-gradient)'
             }}
@@ -242,29 +238,28 @@ const Header = () => {
             <nav className="flex flex-col gap-4">
               {/* User Role Indicator for Mobile */}
               {user && userType && (
-                <div className={`flex items-center justify-center gap-3 px-5 py-4 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${
-                  userType === "superadmin" 
-                    ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" 
-                    : "bg-white/10 border-white/30"
-                }`}>
+                <div className={`flex items-center justify-center gap-3 px-5 py-4 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin"
+                  ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30"
+                  : "bg-white/10 border-white/30"
+                  }`}>
                   {userType === "superadmin" ? (
                     <Shield className="w-6 h-6 text-[hsl(200,98%,50%)]" fill="currentColor" />
                   ) : (
                     <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
                   )}
                   <span className="text-lg font-bold text-white">
-                    Inloggad som: {userType === "superadmin" ? "Superadmin" : 
-                     userType === "agency_admin" ? "Byrå Admin" :
-                     userType === "maklare" ? "Mäklare" : "Användare"}
+                    Inloggad som: {userType === "superadmin" ? "Superadmin" :
+                      userType === "agency_admin" ? "Byrå Admin" :
+                        userType === "maklare" ? "Mäklare" : "Användare"}
                   </span>
                 </div>
               )}
-              
+
               {/* Superadmin Menu Items for Mobile */}
               {user && userType === "superadmin" && (
                 <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
-                  <Link 
-                    to="/superadmin" 
+                  <Link
+                    to="/superadmin"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -273,44 +268,44 @@ const Header = () => {
                   </Link>
                 </div>
               )}
-              
+
               {/* Agent Menu Items for Mobile */}
               {user && userType === "maklare" && (
                 <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
-                  <Link 
-                    to="/maklare?tab=add" 
+                  <Link
+                    to="/maklare?tab=add"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Plus className="w-6 h-6" />
                     <span className="font-medium text-lg">Lägg till ny bostad</span>
                   </Link>
-                  <Link 
-                    to="/maklare?tab=existing" 
+                  <Link
+                    to="/maklare?tab=existing"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Home className="w-6 h-6" />
                     <span className="font-medium text-lg">Befintliga bostäder</span>
                   </Link>
-                  <Link 
-                    to="/maklare?tab=removed" 
+                  <Link
+                    to="/maklare?tab=removed"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Archive className="w-6 h-6" />
                     <span className="font-medium text-lg">Borttagna bostäder</span>
                   </Link>
-                  <Link 
-                    to="/maklare?tab=statistics" 
+                  <Link
+                    to="/maklare?tab=statistics"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <BarChart3 className="w-6 h-6" />
                     <span className="font-medium text-lg">Din statistik</span>
                   </Link>
-                  <Link 
-                    to="/maklare?tab=profile" 
+                  <Link
+                    to="/maklare?tab=profile"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -319,20 +314,18 @@ const Header = () => {
                   </Link>
                 </div>
               )}
-              
+
               <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                 Köp
               </a>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
-                Hyra
-              </a>
+
               <div className="px-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger className={`text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
                     Sälj
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="start" 
+                  <DropdownMenuContent
+                    align="start"
                     className="w-80 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500"
                   >
                     <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200 cursor-pointer py-4">
@@ -348,17 +341,16 @@ const Header = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <a href="#" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+              <Link to="/om-oss" className={`text-xl hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`} onClick={() => setIsMenuOpen(false)}>
                 Om oss
-              </a>
+              </Link>
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
-                <Button 
-                  variant="outline" 
-                  className={`text-xl w-full ${
-                    isCommercialPage 
-                      ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' 
-                      : 'bg-black border-black hover:bg-black/90'
-                  }`}
+                <Button
+                  variant="outline"
+                  className={`text-xl w-full ${isCommercialPage
+                    ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold'
+                    : 'bg-black border-black hover:bg-black/90'
+                    }`}
                 >
                   {isCommercialPage ? (
                     "Privat"
@@ -378,7 +370,7 @@ const Header = () => {
                         Mina favoriter
                       </Button>
                     </Link>
-                    <Button 
+                    <Button
                       onClick={() => {
                         signOut();
                         setIsMenuOpen(false);

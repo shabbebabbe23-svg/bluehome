@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import { Card, CardContent } from "@/components/ui/card";
-import { Building, MapPin, Square, Search, Filter } from "lucide-react";
+import { Building, MapPin, Square, Search, Filter, Grid3x3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -120,6 +120,7 @@ const CommercialProperties = () => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const searchRef = useRef<HTMLDivElement>(null);
 
   const propertyTypes = ["Alla", "Kontor", "Kontorshotell", "Butik", "Lager", "Restaurang", "Industri"];
@@ -159,7 +160,7 @@ const CommercialProperties = () => {
   return (
     <div className="min-h-screen relative">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
         style={{ backgroundImage: `url(${commercialHero})` }}
       >
@@ -195,7 +196,7 @@ const CommercialProperties = () => {
                   }}
                   className="pl-14 h-14 text-lg border-2 border-primary/30 focus:border-primary"
                 />
-                
+
                 {/* Autocomplete Suggestions */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
@@ -300,90 +301,89 @@ const CommercialProperties = () => {
           </div>
         </Card>
 
-        {/* Main content with side ads */}
-        <div className="flex gap-40 items-start">
-          {/* Left Ad Banner */}
-          <AdBanner
-            imageSrc={commercial1}
-            alt="Kontorslösningar"
-            title="Kontorslösningar"
-            description="Vi hjälper dig hitta den perfekta kontorslokalen för ditt företag."
-            bullets={[
-              "✓ Flexibla avtal",
-              "✓ Professionell service",
-              "✓ Centrala lägen",
-              "✓ Konkurrenskraftiga priser",
-            ]}
-            buttonText="Kontakta oss"
-            note="Specialerbjudande för nya kunder"
-          />
-
+        {/* Main content */}
+        <div className="px-3 sm:px-4 lg:px-8">
           {/* Property grid */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filteredProperties.map(property => (
-            <Card key={property.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-slate-800/95 border-slate-700 flex flex-col w-[454px] h-[448px]">
-              <div className="relative w-full h-[280px] bg-slate-700">
-                <img 
-                  src={property.image} 
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
-                  VR Funktion
-                </div>
-                <div className="absolute top-4 right-4 bg-black px-3 py-1 rounded-full text-white font-semibold text-sm">
-                  {property.type}
-                </div>
-              </div>
-              <CardContent className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-semibold text-xl text-white mb-3">
-                    {property.title}
-                  </h3>
-                  <div className="space-y-3 text-slate-300">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plats</p>
-                        <p className="text-white text-sm font-medium">{property.location}</p>
-                      </div>
+          <div className="w-full">
+            {/* View Mode Toggle */}
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                className="hidden sm:flex sm:w-auto gap-2"
+              >
+                {viewMode === "grid" ? (
+                  <>
+                    <List className="w-4 h-4" />
+                    Listvy
+                  </>
+                ) : (
+                  <>
+                    <Grid3x3 className="w-4 h-4" />
+                    Rutnätsvy
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className={viewMode === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-12"
+              : "flex flex-col gap-2 mb-12"
+            }>
+              {filteredProperties.map(property => (
+                <Card key={property.id} className={`overflow-hidden hover:shadow-2xl transition-all duration-300 bg-slate-800/95 border-slate-700 scale-85 ${viewMode === "grid"
+                  ? "flex flex-col h-full hover:scale-90"
+                  : "flex flex-row h-auto"
+                  }`}>
+                  <div className={`relative bg-slate-700 ${viewMode === "grid" ? "w-full h-64" : "w-64 h-full"
+                    }`}>
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
+                      VR Funktion
                     </div>
-                    <div className="flex items-start gap-2">
-                      <Square className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Yta</p>
-                        <p className="text-white text-sm font-medium">{property.area}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Building className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Månadshyra</p>
-                        <p className="text-2xl font-bold text-white">{property.price}</p>
-                      </div>
+                    <div className="absolute top-4 right-4 bg-black px-3 py-1 rounded-full text-white font-semibold text-sm">
+                      {property.type}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <CardContent className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-semibold text-xl text-white mb-3">
+                        {property.title}
+                      </h3>
+                      <div className="space-y-3 text-slate-300">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plats</p>
+                            <p className="text-white text-sm font-medium">{property.location}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Square className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Yta</p>
+                            <p className="text-white text-sm font-medium">{property.area}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Building className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Månadshyra</p>
+                            <p className="text-2xl font-bold text-white">{property.price}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-
-          {/* Right Ad Banner */}
-          <AdBanner
-            imageSrc={commercial2}
-            alt="Butikslokaler"
-            title="Butikslokaler"
-            description="Hitta den perfekta butikslokalen för din verksamhet."
-            bullets={[
-              "✓ Högt trafikerade lägen",
-              "✓ Flexibla ytor",
-              "✓ Professionellt stöd",
-              "✓ Attraktiva villkor",
-            ]}
-            buttonText="Boka visning"
-            note="Nya objekt varje vecka"
-          />
         </div>
       </main>
       <Footer />

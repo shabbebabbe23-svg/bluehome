@@ -6,12 +6,15 @@ import AgentGrid from "@/components/AgentGrid";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import LazyMap from "@/components/LazyMap";
+import InlineAdBanner from "@/components/InlineAdBanner";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
 import sofaAd from "@/assets/sofa-ad.svg";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
+import bathroomAd from "@/assets/bathroom-ad.jpg";
+import kitchenAd from "@/assets/kitchen-ad.jpg";
 
 const Index = () => {
   const [userSofaSrc, setUserSofaSrc] = useState<string | null>(null);
@@ -36,7 +39,7 @@ const Index = () => {
         if (propertiesData) {
           // Get unique user IDs
           const userIds = [...new Set(propertiesData.map(p => p.user_id))];
-          
+
           // Fetch profiles for these users
           const { data: profilesData } = await supabase
             .from('profiles')
@@ -91,12 +94,12 @@ const Index = () => {
     const candidate = "/src/assets/soffa-banner.png";
     const img = new Image();
     img.onload = () => setUserSofaSrc(candidate);
-    img.onerror = () => {};
+    img.onerror = () => { };
     img.src = candidate;
   }, []);
 
   return (
-    <div className="min-h-screen" style={{background: 'var(--main-gradient)'}}>
+    <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
       <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
         <AdBanner
@@ -110,15 +113,15 @@ const Index = () => {
           className="lg:order-1 order-3"
         />
         <main className="order-1 lg:order-2 flex-1 w-full">
-          <Hero 
-            onFinalPricesChange={setShowFinalPrices} 
+          <Hero
+            onFinalPricesChange={setShowFinalPrices}
             onPropertyTypeChange={setPropertyType}
             onSearchAddressChange={setSearchAddress}
             onSearchModeChange={setSearchMode}
           />
           {searchMode === 'property' ? (
-            <PropertyGrid 
-              showFinalPrices={showFinalPrices} 
+            <PropertyGrid
+              showFinalPrices={showFinalPrices}
               propertyType={propertyType}
               searchAddress={searchAddress}
             />
@@ -126,13 +129,37 @@ const Index = () => {
             <AgentGrid searchQuery={searchAddress} />
           )}
         </main>
-  <AdBanner
-    note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
-    className="lg:order-3 order-2"
-  />
+        <AdBanner
+          note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
+          className="lg:order-3 order-2"
+        />
       </div>
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">
         <LazyMap properties={allProperties} />
+      </div>
+      {/* Renovation ads under the map */}
+      <div className="w-full px-3 sm:px-4 lg:px-8 mt-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InlineAdBanner
+              title="Badrumsrenovering — Komplett service"
+              description="Expertteam som tar hand om hela renoveringen från idé till färdigt badrum."
+              bullets={["✓ Kostnadsfri uppmätning", "✓ Våtrumsbehöriga installatörer", "✓ 10 års garanti"]}
+              imageSrc={bathroomAd}
+              buttonText="Begär offert"
+              note={<strong className="text-xs">Erbjudande: 10% för nya kunder</strong>}
+            />
+
+            <InlineAdBanner
+              title="Köksrenovering — Design & installation"
+              description="Skräddarsydda kök med fokus på funktion och hållbarhet. Vi hjälper med allt."
+              bullets={["✓ Måttanpassat skräddarsytt", "✓ Energismarta vitvaror", "✓ Fast pris"]}
+              imageSrc={kitchenAd}
+              buttonText="Se paketlösningar"
+              note={<strong className="text-xs">Finansiering tillgänglig</strong>}
+            />
+          </div>
+        </div>
       </div>
       <Footer />
     </div>

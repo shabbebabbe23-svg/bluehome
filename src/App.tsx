@@ -15,6 +15,7 @@ import InvitationAccept from "./pages/InvitationAccept";
 import Favorites from "./pages/Favorites";
 import FindAgent from "./pages/FindAgent";
 import AdvertisingPricing from "./pages/AdvertisingPricing";
+import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/favoriter" element={<Favorites />} />
             <Route path="/hitta-maklare" element={<FindAgent />} />
             <Route path="/annonsera-pris" element={<AdvertisingPricing />} />
+            <Route path="/om-oss" element={<AboutUs />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

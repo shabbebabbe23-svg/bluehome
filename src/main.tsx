@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Preload a few critical vendor logos early to avoid flicker
 import logo1 from "@/assets/logo-1.svg";
@@ -17,4 +18,25 @@ try {
 	// ignore preload errors
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Ensure there is a root element (some hosting setups strip index.html)
+let rootEl = document.getElementById("root");
+if (!rootEl) {
+	rootEl = document.createElement("div");
+	rootEl.id = "root";
+	document.body.appendChild(rootEl);
+}
+
+try {
+	createRoot(rootEl).render(
+		<ErrorBoundary>
+			<App />
+		</ErrorBoundary>
+	);
+} catch (err) {
+	// Fallback: write a visible error message to the page
+	// eslint-disable-next-line no-console
+	console.error("Render error:", err);
+	if (rootEl) {
+		rootEl.innerHTML = `<div style="padding:24px;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial"><h2 style="color:#b91c1c">Ett fel uppstod vid rendering</h2><pre style="white-space:pre-wrap">${String(err)}</pre></div>`;
+	}
+}

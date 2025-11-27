@@ -47,11 +47,11 @@ const AdvertisingPricing = () => {
         background: 'var(--main-gradient)'
       }}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <svg 
-            width="36" 
-            height="36" 
-            viewBox="0 0 24 24" 
-            fill="none" 
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             onClick={() => navigate('/')}
             className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
@@ -62,7 +62,7 @@ const AdvertisingPricing = () => {
                 <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
               </linearGradient>
             </defs>
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
 
           {/* BaraHem Logo - Center */}
@@ -87,183 +87,91 @@ const AdvertisingPricing = () => {
         </div>
       </header>
       <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-hero-gradient bg-clip-text text-transparent">
-            Annonsera din bostad på BaraHem
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
-            Grundannonsering är helt <span className="font-bold text-primary">gratis!</span> Tack vare reklamintäkterna på sidan kan vi erbjuda detta kostnadsfritt.
-          </p>
-          <Card className="max-w-2xl mx-auto bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
-            <CardContent className="py-6">
-              <p className="text-lg">
-                🎉 <span className="font-semibold">100% gratis grundannonsering</span> – möjligt tack vare våra samarbetspartners och reklam på sidan
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div className="text-center mb-12 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-hero-gradient bg-clip-text text-transparent">
+              Annonsera din bostad på BaraHem
+            </h1>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
-          {packages.map((pkg, index) => {
-            const Icon = pkg.icon;
-            return (
-              <Card
-                key={pkg.name}
-                className={`relative h-full flex flex-col transition-all duration-300 hover:shadow-xl animate-scale-in ${
-                  pkg.highlighted
-                    ? "border-primary shadow-lg scale-105"
+          </div>
+
+          {/* Pricing Cards */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
+            {packages.map((pkg, index) => {
+              const Icon = pkg.icon;
+              return (
+                <Card
+                  key={pkg.name}
+                  className={`relative h-full flex flex-col transition-all duration-300 hover:shadow-xl animate-scale-in ${pkg.highlighted
+                    ? "border-primary shadow-lg"
                     : "hover:scale-105"
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {pkg.highlighted && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-hero-gradient">
-                    Rekommenderas
-                  </Badge>
-                )}
-                {pkg.isFree && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500">
-                    100% Gratis
-                  </Badge>
-                )}
-                <CardHeader className="text-center pb-8">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <CardTitle className="text-2xl">{pkg.name}</CardTitle>
-                  <CardDescription className="mt-2">
-                    {pkg.description}
-                  </CardDescription>
-                  <div className="mt-4">
-                    {pkg.isFree ? (
-                      <div>
-                        <span className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-                          Gratis
-                        </span>
-                        <p className="text-sm text-muted-foreground mt-2">Ingen kostnad</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <span className="text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-                          {pkg.price}
-                        </span>
-                        <span className="text-muted-foreground"> kr</span>
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-3 mb-6 flex-1">
-                    {pkg.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2">
-                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    variant={pkg.highlighted ? "premium" : pkg.isFree ? "default" : "outline"}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {pkg.isFree ? "Börja annonsera gratis" : "Kontakta oss"}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {pkg.highlighted && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-hero-gradient">
+                      Rekommenderas
+                    </Badge>
+                  )}
+                  {pkg.isFree && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500">
+                      100% Gratis
+                    </Badge>
+                  )}
+                  <CardHeader className="text-center pb-8">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-4">
+                      <Icon className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                    <CardDescription className="mt-2">
+                      {pkg.description}
+                    </CardDescription>
+                    <div className="mt-4">
+                      {pkg.isFree ? (
+                        <div>
+                          <span className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                            Gratis
+                          </span>
+                          <p className="text-sm text-muted-foreground mt-2">Ingen kostnad</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                            {pkg.price}
+                          </span>
+                          <span className="text-muted-foreground"> kr</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <ul className="space-y-3 mb-6 flex-1">
+                      {pkg.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      variant={pkg.highlighted || pkg.isFree ? "premium" : "outline"}
+                      className="w-full"
+                      size="lg"
+                      onClick={() => pkg.isFree ? navigate('/hitta-maklare') : null}
+                    >
+                      {pkg.isFree ? "Börja annonsera" : "Kontakta oss"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+
         </div>
-
-        {/* Extra Services */}
-        <Card className="mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="w-6 h-6 text-primary" />
-              Tilläggsmoduler
-            </CardTitle>
-            <CardDescription>
-              Komplettera ditt paket med extra exponering och tjänster
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-start gap-4 p-4 rounded-lg border">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Hemnet Premium-placering</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Extra exponering på Hemnet under 14 dagar
-                  </p>
-                  <p className="text-lg font-bold text-primary">4 995 kr</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-4 rounded-lg border">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Professionell styling</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Homestyling inför fotografering
-                  </p>
-                  <p className="text-lg font-bold text-primary">Från 12 995 kr</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-4 rounded-lg border">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Virtuell visning</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    360° virtuell rundtur i bostaden
-                  </p>
-                  <p className="text-lg font-bold text-primary">8 995 kr</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-4 rounded-lg border">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Öppet hus Premium</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Marknadsföring av öppet hus via flera kanaler
-                  </p>
-                  <p className="text-lg font-bold text-primary">2 995 kr</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* CTA Section */}
-        <Card className="bg-hero-gradient text-white border-none">
-          <CardContent className="py-12 text-center">
-            <h2 className="text-3xl font-bold mb-6">
-              Kontakta mäklare idag
-            </h2>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="text-lg">
-                Kontakta oss
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg bg-white/10 hover:bg-white/20 border-white/30">
-                Ring 08-123 456 78
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };
