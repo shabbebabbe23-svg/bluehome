@@ -61,15 +61,20 @@ const InvitationAccept = () => {
           return;
         }
 
+        // Extra: max 48h giltighet
+        const createdAt = new Date(data.created_at || data.expires_at);
+        const now = new Date();
+        const maxAgeMs = 48 * 60 * 60 * 1000;
+        const isExpired = new Date(data.expires_at) < now || (now.getTime() - createdAt.getTime()) > maxAgeMs;
+
         if (data.used_at) {
-          toast.error("Denna inbjudan har redan använts");
-          navigate("/");
+          setInvitation(null);
+          setLoading(false);
           return;
         }
-
-        if (new Date(data.expires_at) < new Date()) {
-          toast.error("Denna inbjudan har gått ut");
-          navigate("/");
+        if (isExpired) {
+          setInvitation(null);
+          setLoading(false);
           return;
         }
 
@@ -143,8 +148,23 @@ const InvitationAccept = () => {
     );
   }
 
+
   if (!invitation) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-xl text-destructive">Inbjudan ogiltig</CardTitle>
+            <CardDescription>
+              Denna inbjudan är antingen använd eller har gått ut (giltig max 48h).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/")}>Till startsidan</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

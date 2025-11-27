@@ -11,6 +11,7 @@ import CommercialProperties from "./pages/CommercialProperties";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import AgencyAdminDashboard from "./pages/AgencyAdminDashboard";
 import InvitationAccept from "./pages/InvitationAccept";
 import Favorites from "./pages/Favorites";
 import FindAgent from "./pages/FindAgent";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/maklare" element={<AgentDashboard />} />
             <Route path="/agent/:agentId" element={<AgentProfile />} />
             <Route path="/superadmin" element={<SuperAdminDashboard />} />
+            <Route path="/byra-admin" element={<AgencyAdminDashboard />} />
             <Route path="/acceptera-inbjudan" element={<InvitationAccept />} />
             <Route path="/favoriter" element={<Favorites />} />
             <Route path="/hitta-maklare" element={<FindAgent />} />
