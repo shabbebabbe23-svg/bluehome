@@ -245,10 +245,14 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden hover:scale-110 transition-all duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="w-10 h-10" strokeWidth={2.5} /> : <Menu className="w-10 h-10" strokeWidth={2.5} />}
+            {isMenuOpen ? (
+              <X className="w-20 h-20 text-primary drop-shadow-[0_0_8px_hsl(200,98%,35%)]" strokeWidth={2.5} />
+            ) : (
+              <Menu className="w-20 h-20 text-primary drop-shadow-[0_0_8px_hsl(200,98%,35%)]" strokeWidth={2.5} />
+            )}
           </Button>
         </div>
 
