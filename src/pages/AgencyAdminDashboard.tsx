@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, LogOut } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -22,24 +24,42 @@ interface Invitation {
 }
 
 const AgencyAdminDashboard = () => {
-  const { user, userType } = useAuth();
+  const navigate = useNavigate();
+  const { user, userType, signOut } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [pendingInvites, setPendingInvites] = useState<Invitation[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [agencyId, setAgencyId] = useState<string | null>(null);
+  const [agencyName, setAgencyName] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     const fetchAgencyId = async () => {
       if (userType === "agency_admin" && user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("agency_id")
+          .select("agency_id, full_name")
           .eq("id", user.id)
           .single();
         
+        if (profile?.full_name) {
+          setUserName(profile.full_name);
+        }
+        
         if (profile?.agency_id) {
           setAgencyId(profile.agency_id);
+          
+          // Fetch agency name
+          const { data: agency } = await supabase
+            .from("agencies")
+            .select("name")
+            .eq("id", profile.agency_id)
+            .single();
+          
+          if (agency?.name) {
+            setAgencyName(agency.name);
+          }
           
           supabase
             .from("profiles")
@@ -95,8 +115,50 @@ const AgencyAdminDashboard = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">Användare i din byrå</h2>
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20 bg-hero-gradient">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Tillbaka-knapp */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/")}
+              className="hover:scale-110 transition-all duration-300"
+            >
+              <ArrowLeft className="w-8 h-8 text-white drop-shadow-lg" strokeWidth={2.5} />
+            </Button>
+
+            {/* Namn och företag */}
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 bg-white/10 border-white/30">
+              <div className="flex flex-col text-right">
+                <span className="text-base font-bold text-white drop-shadow">
+                  {userName || user?.user_metadata?.full_name || user?.email}
+                </span>
+                {agencyName && (
+                  <span className="text-sm text-white/80 drop-shadow">
+                    {agencyName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Logga ut-knapp */}
+            <Button
+              onClick={signOut}
+              className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+            >
+              <LogOut className="w-5 h-5 mr-2" />
+              Logga ut
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="max-w-2xl mx-auto p-6 pt-24">
+        <h2 className="text-2xl font-bold mb-4">Användare i din byrå</h2>
       <table className="w-full mb-6 border rounded">
         <thead>
           <tr className="bg-muted">
@@ -148,6 +210,7 @@ const AgencyAdminDashboard = () => {
         ))}
         {pendingInvites.length === 0 && <li className="text-muted-foreground">Inga väntande inbjudningar</li>}
       </ul>
+      </div>
     </div>
   );
 };
