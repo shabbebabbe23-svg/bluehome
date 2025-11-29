@@ -1,28 +1,3 @@
-            {/* Always visible hamburger menu for all users */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="lg" className="md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
-                  <Menu className="w-12 h-12" strokeWidth={2.5} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
-              >
-                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                  <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
-                    <User className="w-6 h-6" />
-                    <span className="font-medium text-lg">Hantera mäklare</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                  <Link to="/skapa-byra-manuellt" className="flex items-center gap-3 cursor-pointer py-4">
-                    <Plus className="w-6 h-6" />
-                    <span className="font-medium text-lg">Skapa ny byrå</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield } from "lucide-react";
