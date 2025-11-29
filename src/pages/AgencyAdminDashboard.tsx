@@ -117,7 +117,7 @@ const AgencyAdminDashboard = () => {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20 bg-hero-gradient">
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{ background: 'var(--main-gradient)' }}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Tillbaka-knapp */}
@@ -136,18 +136,39 @@ const AgencyAdminDashboard = () => {
               </svg>
             </button>
 
-            {/* Namn och företag */}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 bg-white/10 border-white/30">
-              <div className="flex flex-col text-right">
-                <span className="text-base font-bold text-white drop-shadow">
-                  {userName || user?.user_metadata?.full_name || user?.email}
+            {/* Logo och företagsinfo */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
+                      <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
+                    </linearGradient>
+                  </defs>
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="text-xl md:text-2xl lg:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                  BaraHem
                 </span>
-                {agencyName && (
-                  <span className="text-sm text-white/80 drop-shadow">
-                    {agencyName}
-                  </span>
-                )}
               </div>
+
+              {/* User info */}
+              {userName && (
+                <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 bg-white/10 border-white/30">
+                  <div className="flex flex-col text-right">
+                    <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
+                      {userName}
+                    </span>
+                    {agencyName && (
+                      <span className="text-sm text-white/80 drop-shadow">
+                        {agencyName}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Logga ut-knapp */}
@@ -155,7 +176,7 @@ const AgencyAdminDashboard = () => {
               onClick={signOut}
               className="bg-hero-gradient hover:scale-105 transition-transform text-white"
             >
-              <LogOut className="w-5 h-5 mr-2" />
+              <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
               Logga ut
             </Button>
           </div>
