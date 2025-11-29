@@ -33,7 +33,7 @@ const ManageAgents = () => {
       }
       const { data: propertiesData, error: propertiesError } = await supabase
         .from("properties")
-        .select("id, user_id, is_sold, views");
+        .select("id, user_id, is_sold");
       if (propertiesError) {
         toast({ title: "Fel", description: `Kunde inte hämta objekt: ${propertiesError.message}` });
         setLoading(false);
@@ -45,7 +45,7 @@ const ManageAgents = () => {
           ...agent,
           propertyCount: props.length,
           soldCount: props.filter(p => p.is_sold).length,
-          views: props.reduce((sum, p) => sum + (p.views || 0), 0),
+          views: 0,
         };
       });
       setAgents(agentsWithStats);
@@ -222,7 +222,7 @@ const ManageAgents = () => {
                           {/* Roll visas ej, fältet finns ej i profilen */}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          Objekt: {agent.propertyCount} | Sålda: {agent.soldCount} | Visningar: {agent.views}
+                          Objekt: {agent.propertyCount} | Sålda: {agent.soldCount}
                         </span>
                         <div className="flex gap-2">
                           <Button type="button" size="sm" variant="outline" onClick={() => handleEdit(agent)}>
