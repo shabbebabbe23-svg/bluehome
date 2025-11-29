@@ -49,31 +49,46 @@ export type Database = {
       }
       agencies: {
         Row: {
+          address: string | null
           created_at: string | null
+          description: string | null
           email_domain: string
           id: string
           is_active: boolean | null
           logo_url: string | null
           name: string
+          org_number: string | null
+          phone: string | null
           updated_at: string | null
+          website: string | null
         }
         Insert: {
+          address?: string | null
           created_at?: string | null
+          description?: string | null
           email_domain: string
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name: string
+          org_number?: string | null
+          phone?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Update: {
+          address?: string | null
           created_at?: string | null
+          description?: string | null
           email_domain?: string
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name?: string
+          org_number?: string | null
+          phone?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
