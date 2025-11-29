@@ -27,35 +27,50 @@ const AgencyAdminDashboard = () => {
   const [pendingInvites, setPendingInvites] = useState<Invitation[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agencyId, setAgencyId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (userType === "agency_admin" && user?.agency_id) {
-      supabase
-        .from("profiles")
-        .select("id, full_name, email, user_roles(user_type)")
-        .eq("agency_id", user.agency_id)
-        .then(({ data }) => setUsers(data ?? []));
-      supabase
-        .from("agency_invitations")
-        .select("id, email, role, created_at, expires_at, used_at")
-        .eq("agency_id", user.agency_id)
-        .is("used_at", null)
-        .then(({ data }) => setPendingInvites(data ?? []));
-    }
+    const fetchAgencyId = async () => {
+      if (userType === "agency_admin" && user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("agency_id")
+          .eq("id", user.id)
+          .single();
+        
+        if (profile?.agency_id) {
+          setAgencyId(profile.agency_id);
+          
+          supabase
+            .from("profiles")
+            .select("id, full_name, email, user_roles(user_type)")
+            .eq("agency_id", profile.agency_id)
+            .then(({ data }) => setUsers(data as any ?? []));
+            
+          supabase
+            .from("agency_invitations")
+            .select("id, email, role, created_at, expires_at, used_at")
+            .eq("agency_id", profile.agency_id)
+            .is("used_at", null)
+            .then(({ data }) => setPendingInvites(data ?? []));
+        }
+      }
+    };
+    fetchAgencyId();
   }, [userType, user]);
 
   const sendInvite = async () => {
-    if (!inviteEmail) return;
+    if (!inviteEmail || !agencyId) return;
     setLoading(true);
     await supabase
       .from("agency_invitations")
       .insert({
-        agency_id: user.agency_id,
+        agency_id: agencyId,
         email: inviteEmail,
         role: "maklare",
         token: crypto.randomUUID(),
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        created_by: user.id,
+        created_by: user?.id,
       });
     setInviteEmail("");
     setLoading(false);
@@ -63,18 +78,19 @@ const AgencyAdminDashboard = () => {
     supabase
       .from("agency_invitations")
       .select("id, email, role, created_at, expires_at, used_at")
-      .eq("agency_id", user.agency_id)
+      .eq("agency_id", agencyId)
       .is("used_at", null)
       .then(({ data }) => setPendingInvites(data ?? []));
   };
 
   const removeUser = async (userId: string) => {
     if (!window.confirm("Ta bort användare?")) return;
+    if (!agencyId) return;
     await supabase
       .from("profiles")
       .delete()
       .eq("id", userId)
-      .eq("agency_id", user.agency_id);
+      .eq("agency_id", agencyId);
     setUsers(users.filter(u => u.id !== userId));
   };
 
@@ -107,7 +123,7 @@ const AgencyAdminDashboard = () => {
       </table>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="primary">Lägg till användare</Button>
+          <Button>Lägg till användare</Button>
         </DialogTrigger>
         <DialogContent>
           <h3 className="text-lg font-semibold mb-2">Skicka inbjudan</h3>

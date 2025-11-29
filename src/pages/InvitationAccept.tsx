@@ -61,11 +61,9 @@ const InvitationAccept = () => {
           return;
         }
 
-        // Extra: max 48h giltighet
-        const createdAt = new Date(data.created_at || data.expires_at);
+        // Check if expired
         const now = new Date();
-        const maxAgeMs = 48 * 60 * 60 * 1000;
-        const isExpired = new Date(data.expires_at) < now || (now.getTime() - createdAt.getTime()) > maxAgeMs;
+        const isExpired = new Date(data.expires_at) < now;
 
         if (data.used_at) {
           setInvitation(null);
