@@ -3,15 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
+import { LogOut, Building2, Users, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
   full_name: string;
   email: string;
   user_roles?: { user_type: string }[];
+  propertyCount?: number;
+}
+
+interface AgencyInfo {
+  name: string;
+  email_domain: string;
+  address: string | null;
+  phone: string | null;
+  org_number: string | null;
+  website: string | null;
+  description: string | null;
+  logo_url: string | null;
 }
 
 interface Invitation {
@@ -33,6 +49,8 @@ const AgencyAdminDashboard = () => {
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [agencyInfo, setAgencyInfo] = useState<AgencyInfo | null>(null);
+  const [editingAgency, setEditingAgency] = useState(false);
 
   useEffect(() => {
     const fetchAgencyId = async () => {
@@ -50,22 +68,38 @@ const AgencyAdminDashboard = () => {
         if (profile?.agency_id) {
           setAgencyId(profile.agency_id);
           
-          // Fetch agency name
+          // Fetch full agency info
           const { data: agency } = await supabase
             .from("agencies")
-            .select("name")
+            .select("*")
             .eq("id", profile.agency_id)
             .single();
           
-          if (agency?.name) {
+          if (agency) {
             setAgencyName(agency.name);
+            setAgencyInfo(agency);
           }
           
-          supabase
+          // Fetch users with property counts
+          const { data: usersData } = await supabase
             .from("profiles")
             .select("id, full_name, email, user_roles(user_type)")
-            .eq("agency_id", profile.agency_id)
-            .then(({ data }) => setUsers(data as any ?? []));
+            .eq("agency_id", profile.agency_id);
+          
+          if (usersData) {
+            // Fetch property counts for each user
+            const usersWithCounts = await Promise.all(
+              usersData.map(async (user) => {
+                const { count } = await supabase
+                  .from("properties")
+                  .select("*", { count: "exact", head: true })
+                  .eq("user_id", user.id)
+                  .eq("is_deleted", false);
+                return { ...user, propertyCount: count || 0 };
+              })
+            );
+            setUsers(usersWithCounts as any);
+          }
             
           supabase
             .from("agency_invitations")
@@ -112,6 +146,32 @@ const AgencyAdminDashboard = () => {
       .eq("id", userId)
       .eq("agency_id", agencyId);
     setUsers(users.filter(u => u.id !== userId));
+  };
+
+  const updateAgencyInfo = async () => {
+    if (!agencyId || !agencyInfo) return;
+    setLoading(true);
+    const { error } = await supabase
+      .from("agencies")
+      .update({
+        name: agencyInfo.name,
+        address: agencyInfo.address,
+        phone: agencyInfo.phone,
+        org_number: agencyInfo.org_number,
+        website: agencyInfo.website,
+        description: agencyInfo.description,
+        logo_url: agencyInfo.logo_url,
+      })
+      .eq("id", agencyId);
+    
+    setLoading(false);
+    if (error) {
+      toast.error("Kunde inte uppdatera byråinformation");
+    } else {
+      toast.success("Byråinformation uppdaterad");
+      setEditingAgency(false);
+      setAgencyName(agencyInfo.name);
+    }
   };
 
   return (
@@ -184,59 +244,248 @@ const AgencyAdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto p-6 pt-24">
-        <h2 className="text-2xl font-bold mb-4">Användare i din byrå</h2>
-      <table className="w-full mb-6 border rounded">
-        <thead>
-          <tr className="bg-muted">
-            <th className="p-2 text-left">Namn</th>
-            <th className="p-2 text-left">E-post</th>
-            <th className="p-2 text-left">Roll</th>
-            <th className="p-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(u => (
-            <tr key={u.id} className="border-b">
-              <td className="p-2">{u.full_name}</td>
-              <td className="p-2">{u.email}</td>
-              <td className="p-2">{u.user_roles?.[0]?.user_type ?? "-"}</td>
-              <td className="p-2 text-right">
-                <Button variant="destructive" size="sm" onClick={() => removeUser(u.id)}>
-                  Ta bort
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Lägg till användare</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <h3 className="text-lg font-semibold mb-2">Skicka inbjudan</h3>
-          <Input
-            type="email"
-            placeholder="E-postadress"
-            value={inviteEmail}
-            onChange={e => setInviteEmail(e.target.value)}
-            className="mb-3"
-          />
-          <Button onClick={sendInvite} disabled={loading || !inviteEmail}>
-            Skicka inbjudan
-          </Button>
-        </DialogContent>
-      </Dialog>
-      <h3 className="text-lg font-semibold mt-8 mb-2">Väntande inbjudningar</h3>
-      <ul className="mb-4">
-        {pendingInvites.map(inv => (
-          <li key={inv.id} className="mb-2 text-sm">
-            {inv.email} ({inv.role}) - giltig till {new Date(inv.expires_at).toLocaleDateString()} 
-          </li>
-        ))}
-        {pendingInvites.length === 0 && <li className="text-muted-foreground">Inga väntande inbjudningar</li>}
-      </ul>
+      <div className="max-w-7xl mx-auto p-6 pt-24">
+        <Tabs defaultValue="byrå" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="byrå" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Byråinformation
+            </TabsTrigger>
+            <TabsTrigger value="mäklare" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Mäklare
+            </TabsTrigger>
+            <TabsTrigger value="inbjudningar" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              Inbjudningar
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Byråinformation Tab */}
+          <TabsContent value="byrå">
+            <div className="bg-card rounded-lg border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Byråinformation</h2>
+                {!editingAgency && (
+                  <Button onClick={() => setEditingAgency(true)}>
+                    Redigera
+                  </Button>
+                )}
+              </div>
+
+              {agencyInfo && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">Byrånamn *</Label>
+                      <Input
+                        id="name"
+                        value={agencyInfo.name}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, name: e.target.value })}
+                        disabled={!editingAgency}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email_domain">E-postdomän *</Label>
+                      <Input
+                        id="email_domain"
+                        value={agencyInfo.email_domain}
+                        disabled
+                        className="bg-muted"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="org_number">Organisationsnummer</Label>
+                      <Input
+                        id="org_number"
+                        value={agencyInfo.org_number || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
+                        disabled={!editingAgency}
+                        placeholder="XXXXXX-XXXX"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Telefon</Label>
+                      <Input
+                        id="phone"
+                        value={agencyInfo.phone || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, phone: e.target.value })}
+                        disabled={!editingAgency}
+                        placeholder="+46 XX XXX XX XX"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="website">Webbplats</Label>
+                      <Input
+                        id="website"
+                        value={agencyInfo.website || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, website: e.target.value })}
+                        disabled={!editingAgency}
+                        placeholder="https://www.exempel.se"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="logo_url">Logotyp URL</Label>
+                      <Input
+                        id="logo_url"
+                        value={agencyInfo.logo_url || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, logo_url: e.target.value })}
+                        disabled={!editingAgency}
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Adress</Label>
+                    <Input
+                      id="address"
+                      value={agencyInfo.address || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Gatuadress, Postnummer, Ort"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">Beskrivning</Label>
+                    <Textarea
+                      id="description"
+                      value={agencyInfo.description || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, description: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Beskriv er byrå..."
+                      rows={4}
+                    />
+                  </div>
+
+                  {editingAgency && (
+                    <div className="flex gap-2">
+                      <Button onClick={updateAgencyInfo} disabled={loading}>
+                        Spara ändringar
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        setEditingAgency(false);
+                        // Reset to original values
+                        if (agencyId) {
+                          supabase
+                            .from("agencies")
+                            .select("*")
+                            .eq("id", agencyId)
+                            .single()
+                            .then(({ data }) => data && setAgencyInfo(data));
+                        }
+                      }}>
+                        Avbryt
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Mäklare Tab */}
+          <TabsContent value="mäklare">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-2xl font-bold mb-6">Mäklare i byrån</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {users.map(user => (
+                  <div key={user.id} className="border rounded-lg p-4 bg-background">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg">{user.full_name}</h3>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => removeUser(user.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        Ta bort
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Roll:</span>
+                        <span className="font-medium capitalize">
+                          {user.user_roles?.[0]?.user_type ?? "-"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Aktiva objekt:</span>
+                        <span className="font-bold text-primary">
+                          {user.propertyCount || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {users.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">
+                  Inga mäklare i byrån än
+                </p>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Inbjudningar Tab */}
+          <TabsContent value="inbjudningar">
+            <div className="bg-card rounded-lg border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Inbjudningar</h2>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>Skapa ny inbjudan</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <h3 className="text-lg font-semibold mb-4">Skicka inbjudan</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="invite-email">E-postadress</Label>
+                        <Input
+                          id="invite-email"
+                          type="email"
+                          placeholder="mäklare@exempel.se"
+                          value={inviteEmail}
+                          onChange={e => setInviteEmail(e.target.value)}
+                        />
+                      </div>
+                      <Button onClick={sendInvite} disabled={loading || !inviteEmail} className="w-full">
+                        Skicka inbjudan
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="space-y-3">
+                {pendingInvites.map(inv => (
+                  <div key={inv.id} className="border rounded-lg p-4 bg-background flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{inv.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Roll: <span className="capitalize">{inv.role}</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">
+                        Giltig till {new Date(inv.expires_at).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {pendingInvites.length === 0 && (
+                  <p className="text-center text-muted-foreground py-8">
+                    Inga väntande inbjudningar
+                  </p>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
