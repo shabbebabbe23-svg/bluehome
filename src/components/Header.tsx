@@ -57,7 +57,7 @@ const Header = () => {
             {user && userType === "superadmin" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="lg" className="hidden md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
                     <Menu className="w-12 h-12" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
@@ -106,7 +106,7 @@ const Header = () => {
             {user && userType === "maklare" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="lg" className="hidden md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
                     <Menu className="w-12 h-12" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
