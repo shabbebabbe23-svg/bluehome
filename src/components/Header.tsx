@@ -67,15 +67,9 @@ const Header = () => {
                   className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
                 >
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                    <Link to="/byra-admin" className="flex items-center gap-3 cursor-pointer py-4">
                       <User className="w-6 h-6" />
-                      <span className="font-medium text-lg">Hantera mäklare</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/skapa-byra-manuellt" className="flex items-center gap-3 cursor-pointer py-4">
-                      <Plus className="w-6 h-6" />
-                      <span className="font-medium text-lg">Skapa ny byrå</span>
+                      <span className="font-medium text-lg">Hantera byrå</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -296,6 +290,20 @@ const Header = () => {
                   >
                     <BarChart3 className="w-6 h-6" />
                     <span className="font-medium text-lg">Admin Dashboard</span>
+                  </Link>
+                </div>
+              )}
+
+              {/* Agency Admin Menu Items for Mobile */}
+              {user && userType === "agency_admin" && (
+                <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
+                  <Link
+                    to="/byra-admin"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera byrå</span>
                   </Link>
                 </div>
               )}
