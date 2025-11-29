@@ -636,121 +636,29 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                size="lg" 
-                className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden xs:inline">Lägg till byrå</span>
-                <span className="xs:hidden">Ny byrå</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Skapa ny mäklarbyrå</DialogTitle>
-                <DialogDescription>
-                  Fyll i information om byrån och dess chef. Du får en länk som du kan dela med byrå-chefen.
-                </DialogDescription>
-              </DialogHeader>
-              
-              {createdInvitationLink ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-muted rounded-lg space-y-3">
-                    <div className="flex items-center gap-2">
-                      <LinkIcon className="w-5 h-5 text-primary" />
-                      <p className="font-medium">Inbjudningslänk skapad!</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Kopiera länken nedan och skicka den till byrå-chefen:
-                    </p>
-                    <div className="flex gap-2">
-                      <Input 
-                        value={createdInvitationLink} 
-                        readOnly 
-                        className="font-mono text-sm"
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => copyToClipboard(createdInvitationLink)}
-                        className="gap-2"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Kopiera
-                      </Button>
-                    </div>
-                  </div>
-                  <Button 
-                    type="button" 
-                    onClick={() => {
-                      setCreatedInvitationLink(null);
-                      setIsDialogOpen(false);
-                      setNewAgency({ name: "", email_domain: "", admin_email: "", admin_name: "" });
-                    }}
-                    className="w-full"
-                  >
-                    Stäng
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleCreateAgency} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Byrånamn *</Label>
-                  <Input
-                    id="name"
-                    placeholder="Mäklarringen"
-                    value={newAgency.name}
-                    onChange={(e) => setNewAgency({ ...newAgency, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email_domain">Email-domän *</Label>
-                  <Input
-                    id="email_domain"
-                    placeholder="maklarringen.se"
-                    value={newAgency.email_domain}
-                    onChange={(e) => setNewAgency({ ...newAgency, email_domain: e.target.value })}
-                    required
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Endast domännamn, t.ex. "maklarringen.se" (utan @)
-                  </p>
-                </div>
-                <div>
-                  <Label htmlFor="admin_name">Byrå-chefens namn *</Label>
-                  <Input
-                    id="admin_name"
-                    placeholder="Anna Andersson"
-                    value={newAgency.admin_name}
-                    onChange={(e) => setNewAgency({ ...newAgency, admin_name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="admin_email">Byrå-chefens email *</Label>
-                  <Input
-                    id="admin_email"
-                    type="email"
-                    placeholder="anna@maklarringen.se"
-                    value={newAgency.admin_email}
-                    onChange={(e) => setNewAgency({ ...newAgency, admin_email: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="flex gap-2 justify-end pt-4">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Avbryt
-                  </Button>
-                  <Button type="submit">
-                    Skapa byrå & generera länk
-                  </Button>
-                </div>
-              </form>
-              )}
-            </DialogContent>
-          </Dialog>
+          <div className="flex flex-col gap-2">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  size="lg" 
+                  className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden xs:inline">Lägg till byrå</span>
+                  <span className="xs:hidden">Ny byrå</span>
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="gap-2 w-full sm:w-auto"
+              onClick={() => navigate("/skapa-byra-manuellt")}
+            >
+              <Plus className="w-4 h-4" />
+              Skapa ny byrå manuellt
+            </Button>
+          </div>
 
           {/* Edit Agency Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

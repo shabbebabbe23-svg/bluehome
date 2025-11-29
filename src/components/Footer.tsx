@@ -138,12 +138,18 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
-                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="white">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                <div className="w-5 h-5 bg-gradient-to-br from-pink-500 to-yellow-500 rounded p-0.5">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="2" />
+                    <circle cx="12" cy="12" r="5" stroke="white" strokeWidth="2" />
+                    <circle cx="17" cy="7" r="1.5" fill="white" />
                   </svg>
                 </div>
-                <span>X (Twitter)</span>
+                <span>Instagram</span>
+              </a>
+              <a href="https://www.instagram.com/barahem.se/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/80 hover:text-pink-500 transition-colors">
+                <Instagram className="w-5 h-5" />
+                <span>@barahem.se</span>
               </a>
             </div>
           </div>

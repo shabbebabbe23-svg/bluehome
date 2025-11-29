@@ -18,6 +18,8 @@ import FindAgent from "./pages/FindAgent";
 import AdvertisingPricing from "./pages/AdvertisingPricing";
 import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
+import CreateAgencyManual from "./pages/CreateAgencyManual";
+import ManageAgents from "./pages/ManageAgents";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/agent/:agentId" element={<AgentProfile />} />
             <Route path="/superadmin" element={<SuperAdminDashboard />} />
             <Route path="/byra-admin" element={<AgencyAdminDashboard />} />
+            <Route path="/skapa-byra-manuellt" element={<CreateAgencyManual />} />
+            <Route path="/hantera-maklare" element={<ManageAgents />} />
             <Route path="/acceptera-inbjudan" element={<InvitationAccept />} />
             <Route path="/favoriter" element={<Favorites />} />
             <Route path="/hitta-maklare" element={<FindAgent />} />

@@ -1,3 +1,28 @@
+            {/* Always visible hamburger menu for all users */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="lg" className="md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                  <Menu className="w-12 h-12" strokeWidth={2.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
+              >
+                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                  <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                    <User className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera mäklare</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                  <Link to="/skapa-byra-manuellt" className="flex items-center gap-3 cursor-pointer py-4">
+                    <Plus className="w-6 h-6" />
+                    <span className="font-medium text-lg">Skapa ny byrå</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield } from "lucide-react";
@@ -50,6 +75,33 @@ const Header = () => {
               </DropdownMenu>
             )}
 
+            {/* Agency Admin Menu Button */}
+            {user && userType === "agency_admin" && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="lg" className="md:flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                    <Menu className="w-12 h-12" strokeWidth={2.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top"
+                >
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                      <User className="w-6 h-6" />
+                      <span className="font-medium text-lg">Hantera mäklare</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/skapa-byra-manuellt" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Plus className="w-6 h-6" />
+                      <span className="font-medium text-lg">Skapa ny byrå</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             {/* Agent Menu Button */}
             {user && userType === "maklare" && (
               <DropdownMenu>
@@ -156,13 +208,13 @@ const Header = () => {
                 {userType === "superadmin" ? (
                   <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" />
                 ) : (
-                  <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/40" style={{ animationDuration: '1.5s' }}></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary/70"></span>
+                  </span>
                 )}
-                <span className="text-base font-bold text-white">
-                  {userType === "superadmin" ? "Superadmin" :
-                    userType === "agency_admin" ? "Byrå Admin" :
-                      userType === "maklare" ? "Mäklare" :
-                        userType === "buyer" ? "Köpare" : "Användare"}
+                <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
+                  {user?.user_metadata?.full_name || user?.email || "Användare"}
                 </span>
               </div>
             )}
