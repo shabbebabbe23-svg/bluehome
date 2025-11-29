@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -121,14 +121,20 @@ const AgencyAdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Tillbaka-knapp */}
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={() => navigate("/")}
-              className="hover:scale-110 transition-all duration-300"
+              className="hover:scale-110 transition-all duration-300 cursor-pointer"
             >
-              <ArrowLeft className="w-8 h-8 text-white drop-shadow-lg" strokeWidth={2.5} />
-            </Button>
+              <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
+                  </linearGradient>
+                </defs>
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
 
             {/* Namn och företag */}
             <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border-2 bg-white/10 border-white/30">
@@ -147,7 +153,7 @@ const AgencyAdminDashboard = () => {
             {/* Logga ut-knapp */}
             <Button
               onClick={signOut}
-              className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-hero-gradient hover:scale-105 transition-transform text-white"
             >
               <LogOut className="w-5 h-5 mr-2" />
               Logga ut
