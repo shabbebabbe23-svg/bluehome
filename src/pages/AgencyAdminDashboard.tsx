@@ -169,7 +169,18 @@ const AgencyAdminDashboard = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
+        
+        // Parse error response
+        const errorBody = error.context?.body;
+        
+        if (errorBody?.errorCode === 'email_exists') {
+          const customError: any = new Error(errorBody.error || 'Email redan registrerad');
+          customError.errorCode = 'email_exists';
+          customError.suggestion = errorBody.suggestion;
+          throw customError;
+        }
+        
+        throw new Error(errorBody?.error || error.message || 'Kunde inte skapa mäklare');
       }
 
       // Show detailed success message
@@ -209,7 +220,22 @@ const AgencyAdminDashboard = () => {
       }
     } catch (error: any) {
       console.error("Error creating agent:", error);
-      toast.error(error.message || "Kunde inte skapa mäklare");
+      
+      // Handle specific error cases
+      if (error.errorCode === 'email_exists') {
+        toast.error(
+          <div className="space-y-2">
+            <p className="font-semibold">Email redan registrerad</p>
+            <p className="text-sm">{error.message}</p>
+            {error.suggestion && (
+              <p className="text-xs text-muted-foreground pt-2">{error.suggestion}</p>
+            )}
+          </div>,
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(error.message || "Kunde inte skapa mäklare");
+      }
     } finally {
       setLoading(false);
     }
