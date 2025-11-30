@@ -135,6 +135,9 @@ const AgencyAdminDashboard = () => {
             .then(({ data }) => setPendingInvites(data ?? []));
         }
         setLoadingAgency(false);
+      } else {
+        // If not agency_admin, set loading to false to prevent infinite loading
+        setLoadingAgency(false);
       }
     };
     fetchAgencyId();
