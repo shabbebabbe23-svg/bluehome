@@ -589,44 +589,86 @@ const SuperAdminDashboard = () => {
 
     try {
       const stats = agencyStats[deletingAgency.id];
-      
-      if (stats && (stats.agent_count > 0 || stats.property_count > 0)) {
-        toast({
-          title: "Kan inte radera byrå",
-          description: `Byrån har ${stats.agent_count} mäklare och ${stats.property_count} objekt. Ta bort dessa först.`,
-          variant: "destructive",
-        });
-        setIsDeleteDialogOpen(false);
-        setDeletingAgency(null);
-        return;
+      const agentCount = stats?.agent_count || 0;
+      const propertyCount = stats?.property_count || 0;
+
+      // 1. Hämta alla användare i byrån
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("agency_id", deletingAgency.id);
+
+      if (usersError) throw usersError;
+
+      const userIds = users?.map(u => u.id) || [];
+
+      // 2. Radera alla fastigheter från dessa användare (om det finns några)
+      if (userIds.length > 0) {
+        const { error: propertiesError } = await supabase
+          .from("properties")
+          .delete()
+          .in("user_id", userIds);
+
+        if (propertiesError) throw propertiesError;
+
+        // 3. Radera user_roles
+        const { error: rolesError } = await supabase
+          .from("user_roles")
+          .delete()
+          .in("user_id", userIds);
+
+        if (rolesError) throw rolesError;
+
+        // 4. Radera profiles
+        const { error: profilesError } = await supabase
+          .from("profiles")
+          .delete()
+          .eq("agency_id", deletingAgency.id);
+
+        if (profilesError) throw profilesError;
       }
 
-      const { error } = await supabase
+      // 5. Radera inbjudningar
+      const { error: invitationsError } = await supabase
+        .from("agency_invitations")
+        .delete()
+        .eq("agency_id", deletingAgency.id);
+
+      if (invitationsError) throw invitationsError;
+
+      // 6. Radera byrån
+      const { error: agencyError } = await supabase
         .from("agencies")
         .delete()
         .eq("id", deletingAgency.id);
 
-      if (error) throw error;
+      if (agencyError) throw agencyError;
 
       toast({
-        title: "Byrå raderad",
-        description: `${deletingAgency.name} har raderats.`,
+        title: "Byrå permanent raderad",
+        description: `${deletingAgency.name} och alla associerade data har raderats permanent.`,
       });
 
       await logActivity(
         "agency_deleted",
-        `Byrån "${deletingAgency.name}" raderades`,
+        `Byrån "${deletingAgency.name}" raderades med ${agentCount} mäklare och ${propertyCount} objekt`,
         deletingAgency.id,
-        "agency"
+        "agency",
+        {
+          deleted_agents: agentCount,
+          deleted_properties: propertyCount,
+          user_ids: userIds,
+        }
       );
 
       setIsDeleteDialogOpen(false);
       setDeletingAgency(null);
       fetchAgencies();
+      fetchPendingInvitations();
     } catch (error: any) {
       console.error("Error deleting agency:", error);
       toast({
-        title: "Fel",
+        title: "Fel vid radering",
         description: error.message || "Kunde inte radera byrå.",
         variant: "destructive",
       });
@@ -790,17 +832,24 @@ const SuperAdminDashboard = () => {
           <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Radera mäklarbyrå?</AlertDialogTitle>
+                <AlertDialogTitle>⚠️ PERMANENT RADERING</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Är du säker på att du vill radera <strong>{deletingAgency?.name}</strong>?
-                  <br /><br />
-                  Detta kommer att ta bort byrån permanent. Denna åtgärd kan inte ångras.
+                  Är du säker på att du vill <strong className="text-red-600">PERMANENT RADERA</strong> byrån <strong>{deletingAgency?.name}</strong>?
+                  
                   {deletingAgency && agencyStats[deletingAgency.id] && (
-                    agencyStats[deletingAgency.id].agent_count > 0 || agencyStats[deletingAgency.id].property_count > 0
-                  ) && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <p className="text-red-800 text-sm font-medium">
-                        ⚠️ Byrån har {agencyStats[deletingAgency.id].agent_count} mäklare och {agencyStats[deletingAgency.id].property_count} objekt.
+                    <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border-2 border-red-500 rounded-md space-y-3">
+                      <p className="text-red-800 dark:text-red-200 font-bold text-sm">
+                        🚨 Detta kommer att PERMANENT radera:
+                      </p>
+                      <ul className="text-red-700 dark:text-red-300 text-sm space-y-1 ml-4">
+                        <li>• Byrån "{deletingAgency.name}"</li>
+                        <li>• {agencyStats[deletingAgency.id].agent_count} {agencyStats[deletingAgency.id].agent_count === 1 ? "mäklare" : "mäklare"}</li>
+                        <li>• {agencyStats[deletingAgency.id].property_count} {agencyStats[deletingAgency.id].property_count === 1 ? "fastighet" : "fastigheter"}</li>
+                        <li>• Alla användarkonton och deras data</li>
+                        <li>• Alla inbjudningar</li>
+                      </ul>
+                      <p className="text-red-900 dark:text-red-100 font-bold text-sm mt-3">
+                        ⛔ Denna åtgärd kan INTE ångras!
                       </p>
                     </div>
                   )}
