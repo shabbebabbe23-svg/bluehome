@@ -139,8 +139,13 @@ const AgencyAdminDashboard = () => {
   }, [userType, user]);
 
   const createAgent = async () => {
-    if (!newAgent.email || !newAgent.full_name || !agencyId) {
-      toast.error("Fyll i alla obligatoriska fält");
+    if (!newAgent.email || !newAgent.full_name) {
+      toast.error("Fyll i namn och e-post");
+      return;
+    }
+
+    if (!agencyId) {
+      toast.error("Kunde inte hitta byrå-ID. Ladda om sidan.");
       return;
     }
 
