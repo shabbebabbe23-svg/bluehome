@@ -228,38 +228,79 @@ const AgencyAdminDashboard = () => {
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || !event.target.files[0] || !user) return;
+    const file = event.target.files?.[0];
+    
+    if (!file) {
+      toast.error("Ingen fil vald");
+      return;
+    }
+    
+    if (!user) {
+      toast.error("Du måste vara inloggad");
+      return;
+    }
 
-    const file = event.target.files[0];
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Vänligen välj en bildfil");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Bilden får max vara 5MB");
+      return;
+    }
+
     const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+    const fileName = `${user.id}-avatar-${Date.now()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
 
     setUploadingAvatar(true);
+    console.log("Starting avatar upload:", { fileName, filePath, fileSize: file.size });
 
     try {
-      const { error: uploadError } = await supabase.storage
+      // Upload file
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw uploadError;
+      }
 
+      console.log("Upload successful:", uploadData);
+
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from("property-images")
         .getPublicUrl(filePath);
 
+      console.log("Public URL:", publicUrl);
+
+      // Update profile
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl })
         .eq("id", user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Profile update error:", updateError);
+        throw updateError;
+      }
 
-      setProfileData({ ...profileData, avatar_url: publicUrl });
-      toast.success("Profilbild uppladdad!");
-    } catch (error) {
+      // Update local state immediately
+      setProfileData(prev => ({ ...prev, avatar_url: publicUrl }));
+      
+      toast.success("Profilbild uppladdad! Bilden syns nu.");
+      console.log("Avatar upload complete");
+    } catch (error: any) {
       console.error("Error uploading avatar:", error);
-      toast.error("Kunde inte ladda upp profilbild");
+      toast.error(`Uppladdning misslyckades: ${error.message || 'Okänt fel'}`);
     } finally {
       setUploadingAvatar(false);
     }
@@ -290,38 +331,79 @@ const AgencyAdminDashboard = () => {
   };
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || !event.target.files[0] || !agencyId) return;
+    const file = event.target.files?.[0];
+    
+    if (!file) {
+      toast.error("Ingen fil vald");
+      return;
+    }
+    
+    if (!agencyId) {
+      toast.error("Ingen byrå hittades");
+      return;
+    }
 
-    const file = event.target.files[0];
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Vänligen välj en bildfil");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Logotypen får max vara 5MB");
+      return;
+    }
+
     const fileExt = file.name.split(".").pop();
-    const fileName = `${agencyId}-logo-${Math.random()}.${fileExt}`;
+    const fileName = `${agencyId}-logo-${Date.now()}.${fileExt}`;
     const filePath = `agencies/${fileName}`;
 
     setUploadingLogo(true);
+    console.log("Starting logo upload:", { fileName, filePath, fileSize: file.size });
 
     try {
-      const { error: uploadError } = await supabase.storage
+      // Upload file
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw uploadError;
+      }
 
+      console.log("Upload successful:", uploadData);
+
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from("property-images")
         .getPublicUrl(filePath);
 
+      console.log("Public URL:", publicUrl);
+
+      // Update agency
       const { error: updateError } = await supabase
         .from("agencies")
         .update({ logo_url: publicUrl })
         .eq("id", agencyId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Agency update error:", updateError);
+        throw updateError;
+      }
 
-      setAgencyInfo({ ...agencyInfo!, logo_url: publicUrl });
-      toast.success("Logotyp uppladdad!");
-    } catch (error) {
+      // Update local state immediately
+      setAgencyInfo(prev => prev ? { ...prev, logo_url: publicUrl } : null);
+      
+      toast.success("Logotyp uppladdad! Logotypen syns nu.");
+      console.log("Logo upload complete");
+    } catch (error: any) {
       console.error("Error uploading logo:", error);
-      toast.error("Kunde inte ladda upp logotyp");
+      toast.error(`Uppladdning misslyckades: ${error.message || 'Okänt fel'}`);
     } finally {
       setUploadingLogo(false);
     }
@@ -447,28 +529,36 @@ const AgencyAdminDashboard = () => {
                   <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
                   <div className="flex items-center gap-6">
                     <Avatar className="w-32 h-32 border-4 border-border shadow-lg">
-                      <AvatarImage src={profileData.avatar_url || undefined} />
+                      <AvatarImage src={profileData.avatar_url || undefined} key={profileData.avatar_url} />
                       <AvatarFallback className="bg-muted">
                         <User className="w-16 h-16 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
                     {editingProfile && (
-                      <Label htmlFor="avatar-upload" className="cursor-pointer">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
-                          <Upload className="w-4 h-4" />
-                          <span>{uploadingAvatar ? "Laddar upp..." : "Byt bild"}</span>
-                        </div>
-                        <Input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleAvatarUpload}
-                          disabled={uploadingAvatar}
-                        />
-                      </Label>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="avatar-upload" className="cursor-pointer">
+                          <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                            <Upload className="w-4 h-4" />
+                            <span>{uploadingAvatar ? "Laddar upp..." : "Välj profilbild"}</span>
+                          </div>
+                          <Input
+                            id="avatar-upload"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            className="hidden"
+                            onChange={handleAvatarUpload}
+                            disabled={uploadingAvatar}
+                          />
+                        </Label>
+                        {profileData.avatar_url && (
+                          <p className="text-xs text-muted-foreground">✓ Bild uppladdad</p>
+                        )}
+                      </div>
                     )}
                   </div>
+                  {!editingProfile && !profileData.avatar_url && (
+                    <p className="text-sm text-muted-foreground mt-2">Ingen profilbild uppladdad. Klicka "Redigera" för att ladda upp.</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -643,28 +733,38 @@ const AgencyAdminDashboard = () => {
                           <img 
                             src={agencyInfo.logo_url} 
                             alt="Byrå logotyp" 
+                            key={agencyInfo.logo_url}
                             className="h-40 w-auto object-contain mx-auto"
                             onError={(e) => {
+                              console.error("Failed to load logo:", agencyInfo.logo_url);
                               e.currentTarget.style.display = 'none';
                             }}
                           />
                         </div>
                       )}
                       {editingAgency && (
-                        <Label htmlFor="logo-upload" className="cursor-pointer">
-                          <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors w-fit">
-                            <Upload className="w-4 h-4" />
-                            <span>{uploadingLogo ? "Laddar upp..." : agencyInfo.logo_url ? "Byt logotyp" : "Ladda upp logotyp"}</span>
-                          </div>
-                          <Input
-                            id="logo-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleLogoUpload}
-                            disabled={uploadingLogo}
-                          />
-                        </Label>
+                        <div className="space-y-2">
+                          <Label htmlFor="logo-upload" className="cursor-pointer">
+                            <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
+                              <Upload className="w-5 h-5" />
+                              <span>{uploadingLogo ? "Laddar upp..." : agencyInfo.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
+                            </div>
+                            <Input
+                              id="logo-upload"
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              onChange={handleLogoUpload}
+                              disabled={uploadingLogo}
+                            />
+                          </Label>
+                          {agencyInfo.logo_url && (
+                            <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
+                          )}
+                        </div>
+                      )}
+                      {!editingAgency && !agencyInfo.logo_url && (
+                        <p className="text-sm text-muted-foreground">Ingen logotyp uppladdad. Klicka "Redigera" för att ladda upp.</p>
                       )}
                     </div>
                   </div>
