@@ -68,6 +68,7 @@ const AgencyAdminDashboard = () => {
   });
   const [editingProfile, setEditingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     const fetchAgencyId = async () => {
@@ -284,6 +285,44 @@ const AgencyAdminDashboard = () => {
       toast.success("Profil uppdaterad");
       setEditingProfile(false);
       setUserName(profileData.full_name);
+    }
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0] || !agencyId) return;
+
+    const file = event.target.files[0];
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${agencyId}-logo-${Math.random()}.${fileExt}`;
+    const filePath = `agencies/${fileName}`;
+
+    setUploadingLogo(true);
+
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from("property-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("property-images")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("agencies")
+        .update({ logo_url: publicUrl })
+        .eq("id", agencyId);
+
+      if (updateError) throw updateError;
+
+      setAgencyInfo({ ...agencyInfo!, logo_url: publicUrl });
+      toast.success("Logotyp uppladdad!");
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      toast.error("Kunde inte ladda upp logotyp");
+    } finally {
+      setUploadingLogo(false);
     }
   };
 
@@ -581,26 +620,37 @@ const AgencyAdminDashboard = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="logo_url">Uppladdning av logga</Label>
-                    <Input
-                      id="logo_url"
-                      value={agencyInfo.logo_url || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, logo_url: e.target.value })}
-                      disabled={!editingAgency}
-                      placeholder="https://exempel.se/logo.png"
-                    />
-                    {agencyInfo.logo_url && (
-                      <div className="mt-2 p-2 border rounded-md bg-muted/20">
-                        <img 
-                          src={agencyInfo.logo_url} 
-                          alt="Byrå logotyp" 
-                          className="h-16 object-contain"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
+                    <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
+                    <div className="space-y-3">
+                      {agencyInfo.logo_url && (
+                        <div className="p-3 border rounded-md bg-muted/20">
+                          <img 
+                            src={agencyInfo.logo_url} 
+                            alt="Byrå logotyp" 
+                            className="h-20 object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      {editingAgency && (
+                        <Label htmlFor="logo-upload" className="cursor-pointer">
+                          <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors w-fit">
+                            <Upload className="w-4 h-4" />
+                            <span>{uploadingLogo ? "Laddar upp..." : agencyInfo.logo_url ? "Byt logotyp" : "Ladda upp logotyp"}</span>
+                          </div>
+                          <Input
+                            id="logo-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleLogoUpload}
+                            disabled={uploadingLogo}
+                          />
+                        </Label>
+                      )}
+                    </div>
                   </div>
 
                   {editingAgency && (
