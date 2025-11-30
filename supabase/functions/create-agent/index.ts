@@ -30,10 +30,21 @@ Deno.serve(async (req) => {
 
     const { email, full_name, agency_id }: CreateAgentRequest = await req.json()
 
+    console.log('Received request:', { email, full_name, agency_id })
+
     // Validate input
     if (!email || !full_name || !agency_id) {
+      const missingFields = [];
+      if (!email) missingFields.push('email');
+      if (!full_name) missingFields.push('full_name');
+      if (!agency_id) missingFields.push('agency_id');
+      
+      console.error('Missing fields:', missingFields)
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ 
+          error: 'Missing required fields', 
+          missing: missingFields 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
