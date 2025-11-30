@@ -169,14 +169,17 @@ const AgencyAdminDashboard = () => {
 
       if (error) {
         console.error('Edge function error:', error);
+        console.log('Error context:', error.context);
         
         // Parse error response
         const errorBody = error.context?.body;
+        console.log('Error body:', errorBody);
         
         if (errorBody?.errorCode === 'email_exists') {
           const customError: any = new Error(errorBody.error || 'Email redan registrerad');
           customError.errorCode = 'email_exists';
           customError.suggestion = errorBody.suggestion;
+          console.log('Throwing custom error:', customError);
           throw customError;
         }
         
@@ -184,19 +187,10 @@ const AgencyAdminDashboard = () => {
       }
 
       // Show detailed success message
-      toast.success(
-        <div className="space-y-2">
-          <p className="font-semibold">✓ Mäklare skapad!</p>
-          <div className="text-sm space-y-1">
-            <p><strong>Namn:</strong> {newAgent.full_name}</p>
-            <p><strong>Email:</strong> {newAgent.email}</p>
-            <p className="text-muted-foreground pt-2">
-              En inbjudan har skickats via email. Mäklaren måste klicka på länken i emailet för att välja sitt lösenord och aktivera kontot.
-            </p>
-          </div>
-        </div>,
-        { duration: 6000 }
-      );
+      toast.success("Mäklare skapad!", {
+        duration: 6000,
+        description: `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email för att välja lösenord och aktivera kontot.`
+      });
       setNewAgent({ email: "", full_name: "" });
       
       // Refresh users list
@@ -220,21 +214,24 @@ const AgencyAdminDashboard = () => {
       }
     } catch (error: any) {
       console.error("Error creating agent:", error);
+      console.log("Error details:", {
+        errorCode: error.errorCode,
+        message: error.message,
+        suggestion: error.suggestion,
+        fullError: error
+      });
       
       // Handle specific error cases
       if (error.errorCode === 'email_exists') {
-        toast.error(
-          <div className="space-y-2">
-            <p className="font-semibold">Email redan registrerad</p>
-            <p className="text-sm">{error.message}</p>
-            {error.suggestion && (
-              <p className="text-xs text-muted-foreground pt-2">{error.suggestion}</p>
-            )}
-          </div>,
-          { duration: 8000 }
-        );
+        const errorMsg = `${error.message}\n\n${error.suggestion || ''}`;
+        toast.error(errorMsg, { 
+          duration: 8000,
+          description: "Denna email är redan registrerad i systemet"
+        });
       } else {
-        toast.error(error.message || "Kunde inte skapa mäklare");
+        toast.error(error.message || "Kunde inte skapa mäklare", {
+          duration: 5000
+        });
       }
     } finally {
       setLoading(false);
