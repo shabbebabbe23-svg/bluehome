@@ -67,10 +67,12 @@ const AgencyAdminDashboard = () => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [loadingAgency, setLoadingAgency] = useState(true);
 
   useEffect(() => {
     const fetchAgencyId = async () => {
       if (userType === "agency_admin" && user) {
+        setLoadingAgency(true);
         const { data: profile } = await supabase
           .from("profiles")
           .select("*")
@@ -132,6 +134,7 @@ const AgencyAdminDashboard = () => {
             .is("used_at", null)
             .then(({ data }) => setPendingInvites(data ?? []));
         }
+        setLoadingAgency(false);
       }
     };
     fetchAgencyId();
@@ -668,7 +671,9 @@ const AgencyAdminDashboard = () => {
                 <h2 className="text-2xl font-bold">Mäklare i byrån</h2>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button>Lägg till mäklare</Button>
+                    <Button disabled={loadingAgency || !agencyId}>
+                      {loadingAgency ? "Laddar..." : "Lägg till mäklare"}
+                    </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <h3 className="text-lg font-semibold mb-4">Lägg till ny mäklare</h3>
@@ -697,7 +702,7 @@ const AgencyAdminDashboard = () => {
                       </div>
                       <Button 
                         onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name} 
+                        disabled={loading || !newAgent.email || !newAgent.full_name || !agencyId} 
                         className="w-full"
                       >
                         {loading ? "Skickar inbjudan..." : "Skicka inbjudan"}
