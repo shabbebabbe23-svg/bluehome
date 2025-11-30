@@ -172,7 +172,20 @@ const AgencyAdminDashboard = () => {
         throw error;
       }
 
-      toast.success("Inbjudan skickad! Mäklaren får ett mail för att välja lösenord.");
+      // Show detailed success message
+      toast.success(
+        <div className="space-y-2">
+          <p className="font-semibold">✓ Mäklare skapad!</p>
+          <div className="text-sm space-y-1">
+            <p><strong>Namn:</strong> {newAgent.full_name}</p>
+            <p><strong>Email:</strong> {newAgent.email}</p>
+            <p className="text-muted-foreground pt-2">
+              En inbjudan har skickats via email. Mäklaren måste klicka på länken i emailet för att välja sitt lösenord och aktivera kontot.
+            </p>
+          </div>
+        </div>,
+        { duration: 6000 }
+      );
       setNewAgent({ email: "", full_name: "" });
       
       // Refresh users list
