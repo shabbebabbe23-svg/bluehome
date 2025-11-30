@@ -49,8 +49,7 @@ const AgencyAdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [newAgent, setNewAgent] = useState({
     email: "",
-    full_name: "",
-    office: ""
+    full_name: ""
   });
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string>("");
@@ -155,7 +154,6 @@ const AgencyAdminDashboard = () => {
         body: {
           email: newAgent.email,
           full_name: newAgent.full_name,
-          office: newAgent.office,
           agency_id: agencyId,
         }
       });
@@ -163,7 +161,7 @@ const AgencyAdminDashboard = () => {
       if (error) throw error;
 
       toast.success("Inbjudan skickad! Mäklaren får ett mail för att välja lösenord.");
-      setNewAgent({ email: "", full_name: "", office: "" });
+      setNewAgent({ email: "", full_name: "" });
       
       // Refresh users list
       const { data: usersData } = await supabase
@@ -717,15 +715,6 @@ const AgencyAdminDashboard = () => {
                           value={newAgent.email}
                           onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })}
                           placeholder="mäklare@exempel.se"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="agent-office">Kontor</Label>
-                        <Input
-                          id="agent-office"
-                          value={newAgent.office}
-                          onChange={(e) => setNewAgent({ ...newAgent, office: e.target.value })}
-                          placeholder="Stockholm Centrum"
                         />
                       </div>
                       <Button 

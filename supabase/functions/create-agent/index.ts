@@ -8,7 +8,6 @@ const corsHeaders = {
 interface CreateAgentRequest {
   email: string;
   full_name: string;
-  office: string;
   agency_id: string;
 }
 
@@ -29,7 +28,7 @@ Deno.serve(async (req) => {
       }
     )
 
-    const { email, full_name, office, agency_id }: CreateAgentRequest = await req.json()
+    const { email, full_name, agency_id }: CreateAgentRequest = await req.json()
 
     // Validate input
     if (!email || !full_name || !agency_id) {
@@ -51,8 +50,7 @@ Deno.serve(async (req) => {
       {
         data: {
           full_name,
-          agency_id,
-          office
+          agency_id
         },
         redirectTo: redirectUrl
       }
@@ -68,12 +66,11 @@ Deno.serve(async (req) => {
 
     console.log('User invited successfully:', userData.user.id)
 
-    // Update profile with agency and office info
+    // Update profile with agency info
     const { error: profileError } = await supabaseClient
       .from('profiles')
       .update({
         agency_id,
-        office: office || null,
         full_name,
       })
       .eq('id', userData.user.id)
