@@ -44,8 +44,13 @@ const AgencyAdminDashboard = () => {
   const { user, userType, signOut } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [pendingInvites, setPendingInvites] = useState<Invitation[]>([]);
-  const [inviteEmail, setInviteEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newAgent, setNewAgent] = useState({
+    email: "",
+    full_name: "",
+    office: "",
+    password: ""
+  });
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
@@ -113,28 +118,54 @@ const AgencyAdminDashboard = () => {
     fetchAgencyId();
   }, [userType, user]);
 
-  const sendInvite = async () => {
-    if (!inviteEmail || !agencyId) return;
+  const createAgent = async () => {
+    if (!newAgent.email || !newAgent.full_name || !newAgent.password || !agencyId) {
+      toast.error("Fyll i alla obligatoriska fält");
+      return;
+    }
+
     setLoading(true);
-    await supabase
-      .from("agency_invitations")
-      .insert({
-        agency_id: agencyId,
-        email: inviteEmail,
-        role: "maklare",
-        token: crypto.randomUUID(),
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        created_by: user?.id,
+    try {
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: {
+          email: newAgent.email,
+          full_name: newAgent.full_name,
+          office: newAgent.office,
+          agency_id: agencyId,
+          temporary_password: newAgent.password,
+        }
       });
-    setInviteEmail("");
-    setLoading(false);
-    // Refresh invites
-    supabase
-      .from("agency_invitations")
-      .select("id, email, role, created_at, expires_at, used_at")
-      .eq("agency_id", agencyId)
-      .is("used_at", null)
-      .then(({ data }) => setPendingInvites(data ?? []));
+
+      if (error) throw error;
+
+      toast.success("Mäklare skapad! Tillfälligt lösenord skickat.");
+      setNewAgent({ email: "", full_name: "", office: "", password: "" });
+      
+      // Refresh users list
+      const { data: usersData } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, user_roles(user_type)")
+        .eq("agency_id", agencyId);
+      
+      if (usersData) {
+        const usersWithCounts = await Promise.all(
+          usersData.map(async (user) => {
+            const { count } = await supabase
+              .from("properties")
+              .select("*", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .eq("is_deleted", false);
+            return { ...user, propertyCount: count || 0 };
+          })
+        );
+        setUsers(usersWithCounts as any);
+      }
+    } catch (error: any) {
+      console.error("Error creating agent:", error);
+      toast.error(error.message || "Kunde inte skapa mäklare");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const removeUser = async (userId: string) => {
@@ -246,7 +277,7 @@ const AgencyAdminDashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 pt-24">
         <Tabs defaultValue="byrå" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="byrå" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               Byråinformation
@@ -254,10 +285,6 @@ const AgencyAdminDashboard = () => {
             <TabsTrigger value="mäklare" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Mäklare
-            </TabsTrigger>
-            <TabsTrigger value="inbjudningar" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Inbjudningar
             </TabsTrigger>
           </TabsList>
 
@@ -386,7 +413,67 @@ const AgencyAdminDashboard = () => {
           {/* Mäklare Tab */}
           <TabsContent value="mäklare">
             <div className="bg-card rounded-lg border p-6">
-              <h2 className="text-2xl font-bold mb-6">Mäklare i byrån</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Mäklare i byrån</h2>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>Lägg till mäklare</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <h3 className="text-lg font-semibold mb-4">Lägg till ny mäklare</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="agent-name">Namn *</Label>
+                        <Input
+                          id="agent-name"
+                          value={newAgent.full_name}
+                          onChange={(e) => setNewAgent({ ...newAgent, full_name: e.target.value })}
+                          placeholder="För- och efternamn"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="agent-email">E-post *</Label>
+                        <Input
+                          id="agent-email"
+                          type="email"
+                          value={newAgent.email}
+                          onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })}
+                          placeholder="mäklare@exempel.se"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="agent-office">Kontor</Label>
+                        <Input
+                          id="agent-office"
+                          value={newAgent.office}
+                          onChange={(e) => setNewAgent({ ...newAgent, office: e.target.value })}
+                          placeholder="Stockholm Centrum"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="agent-password">Tillfälligt lösenord *</Label>
+                        <Input
+                          id="agent-password"
+                          type="password"
+                          value={newAgent.password}
+                          onChange={(e) => setNewAgent({ ...newAgent, password: e.target.value })}
+                          placeholder="Minst 6 tecken"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Mäklaren kan ändra lösenordet efter första inloggningen
+                        </p>
+                      </div>
+                      <Button 
+                        onClick={createAgent} 
+                        disabled={loading || !newAgent.email || !newAgent.full_name || !newAgent.password} 
+                        className="w-full"
+                      >
+                        {loading ? "Skapar..." : "Skapa mäklare"}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {users.map(user => (
@@ -431,60 +518,6 @@ const AgencyAdminDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* Inbjudningar Tab */}
-          <TabsContent value="inbjudningar">
-            <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Inbjudningar</h2>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button>Skapa ny inbjudan</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <h3 className="text-lg font-semibold mb-4">Skicka inbjudan</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="invite-email">E-postadress</Label>
-                        <Input
-                          id="invite-email"
-                          type="email"
-                          placeholder="mäklare@exempel.se"
-                          value={inviteEmail}
-                          onChange={e => setInviteEmail(e.target.value)}
-                        />
-                      </div>
-                      <Button onClick={sendInvite} disabled={loading || !inviteEmail} className="w-full">
-                        Skicka inbjudan
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              <div className="space-y-3">
-                {pendingInvites.map(inv => (
-                  <div key={inv.id} className="border rounded-lg p-4 bg-background flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{inv.email}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Roll: <span className="capitalize">{inv.role}</span>
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
-                        Giltig till {new Date(inv.expires_at).toLocaleDateString('sv-SE')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {pendingInvites.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    Inga väntande inbjudningar
-                  </p>
-                )}
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
