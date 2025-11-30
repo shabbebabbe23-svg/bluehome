@@ -148,17 +148,26 @@ const AgencyAdminDashboard = () => {
       return;
     }
 
+    console.log('Creating agent with:', { 
+      email: newAgent.email, 
+      full_name: newAgent.full_name, 
+      agency_id: agencyId 
+    });
+
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-agent', {
         body: {
-          email: newAgent.email,
-          full_name: newAgent.full_name,
+          email: newAgent.email.trim(),
+          full_name: newAgent.full_name.trim(),
           agency_id: agencyId,
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
 
       toast.success("Inbjudan skickad! Mäklaren får ett mail för att välja lösenord.");
       setNewAgent({ email: "", full_name: "" });
