@@ -11,6 +11,7 @@ const Header = () => {
     user,
     session,
     userType,
+    profileName,
     signOut
   } = useAuth();
   const location = useLocation();
@@ -180,7 +181,7 @@ const Header = () => {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-primary/70"></span>
                   </span>}
                 <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
-                  {session?.user?.user_metadata?.full_name || session?.user?.email || "Användare"}
+                  {profileName || session?.user?.email || "Användare"}
                 </span>
               </div>}
 
