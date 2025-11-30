@@ -9,6 +9,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {
     user,
+    session,
     userType,
     signOut
   } = useAuth();
@@ -101,6 +102,23 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>}
 
+            {/* Buyer/Regular User Menu Button */}
+            {user && userType === "buyer" && <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
+                    <Menu className="w-12 h-12 text-primary" strokeWidth={2.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/favoriter" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Heart className="w-6 h-6" />
+                      <span className="font-medium text-lg">Mina favoriter</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>}
+
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <svg className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -162,7 +180,7 @@ const Header = () => {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-primary/70"></span>
                   </span>}
                 <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
-                  {user?.user_metadata?.full_name || user?.email || "Användare"}
+                  {session?.user?.user_metadata?.full_name || session?.user?.email || "Användare"}
                 </span>
               </div>}
 
@@ -211,6 +229,14 @@ const Header = () => {
                   <span className="text-lg font-bold text-white">
                     Inloggad som: {userType === "superadmin" ? "Superadmin" : userType === "agency_admin" ? "Byrå Admin" : userType === "maklare" ? "Mäklare" : "Användare"}
                   </span>
+                </div>}
+
+              {/* Buyer/Regular User Menu Items for Mobile */}
+              {user && userType === "buyer" && <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
+                  <Link to="/favoriter" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Heart className="w-6 h-6" />
+                    <span className="font-medium text-lg">Mina favoriter</span>
+                  </Link>
                 </div>}
 
               {/* Superadmin Menu Items for Mobile */}
