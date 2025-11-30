@@ -118,9 +118,9 @@ const Header = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
-                      <Users className="w-6 h-6" />
-                      <span className="font-medium text-lg">Hantera Mäklare</span>
+                    <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Home className="w-6 h-6" />
+                      <span className="font-medium text-lg">Hantera fastigheter</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -244,9 +244,9 @@ const Header = () => {
                     <User className="w-6 h-6" />
                     <span className="font-medium text-lg">Hantera byrå</span>
                   </Link>
-                  <Link to="/hantera-maklare" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Users className="w-6 h-6" />
-                    <span className="font-medium text-lg">Hantera Mäklare</span>
+                  <Link to="/maklare" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Home className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera fastigheter</span>
                   </Link>
                 </div>}
 
