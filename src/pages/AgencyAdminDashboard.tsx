@@ -528,10 +528,10 @@ const AgencyAdminDashboard = () => {
                 <div>
                   <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
                   <div className="flex items-center gap-6">
-                    <Avatar className="w-32 h-32 border-4 border-border shadow-lg">
+                    <Avatar className="w-64 h-64 border-4 border-border shadow-lg">
                       <AvatarImage src={profileData.avatar_url || undefined} key={profileData.avatar_url} />
                       <AvatarFallback className="bg-muted">
-                        <User className="w-16 h-16 text-muted-foreground" />
+                        <User className="w-32 h-32 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
                     {editingProfile && (
