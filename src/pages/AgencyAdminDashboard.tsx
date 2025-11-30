@@ -525,69 +525,73 @@ const AgencyAdminDashboard = () => {
 
               {agencyInfo && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Företagsnamn</Label>
-                      <Input
-                        id="name"
-                        value={agencyInfo.name}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, name: e.target.value })}
-                        disabled={!editingAgency}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email_domain">E-postdomän</Label>
-                      <Input
-                        id="email_domain"
-                        value={agencyInfo.email_domain}
-                        disabled
-                        className="bg-muted"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="address">Adress</Label>
-                      <Input
-                        id="address"
-                        value={agencyInfo.address || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
-                        disabled={!editingAgency}
-                        placeholder="Gatuadress, Postnummer, Ort"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Telefon</Label>
-                      <Input
-                        id="phone"
-                        value={agencyInfo.phone || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, phone: e.target.value })}
-                        disabled={!editingAgency}
-                        placeholder="+46 XX XXX XX XX"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="org_number">Org.nr</Label>
-                      <Input
-                        id="org_number"
-                        value={agencyInfo.org_number || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
-                        disabled={!editingAgency}
-                        placeholder="XXXXXX-XXXX"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="website">Länk till egen sida</Label>
-                      <Input
-                        id="website"
-                        value={agencyInfo.website || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, website: e.target.value })}
-                        disabled={!editingAgency}
-                        placeholder="https://www.exempel.se"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="name">Företagsnamn</Label>
+                    <Input
+                      id="name"
+                      value={agencyInfo.name}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, name: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Byråns namn"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email_domain">Kontorsnamn</Label>
+                    <Input
+                      id="email_domain"
+                      value={agencyInfo.email_domain}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="address">Adress</Label>
+                    <Input
+                      id="address"
+                      value={agencyInfo.address || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Gatuadress, Postnummer, Ort"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone">Telefon</Label>
+                    <Input
+                      id="phone"
+                      value={agencyInfo.phone || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, phone: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="+46 XX XXX XX XX"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="org_number">Org.nr</Label>
+                    <Input
+                      id="org_number"
+                      value={agencyInfo.org_number || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="XXXXXX-XXXX"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="website">Länk till egen sida</Label>
+                    <Input
+                      id="website"
+                      value={agencyInfo.website || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, website: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="https://www.exempel.se"
+                    />
                   </div>
                   
                   <div>
-                    <Label htmlFor="logo_url">Uppladdning av logga (URL)</Label>
+                    <Label htmlFor="logo_url">Uppladdning av logga</Label>
                     <Input
                       id="logo_url"
                       value={agencyInfo.logo_url || ""}
@@ -607,18 +611,6 @@ const AgencyAdminDashboard = () => {
                         />
                       </div>
                     )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Beskrivning</Label>
-                    <Textarea
-                      id="description"
-                      value={agencyInfo.description || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, description: e.target.value })}
-                      disabled={!editingAgency}
-                      placeholder="Beskriv er byrå..."
-                      rows={4}
-                    />
                   </div>
 
                   {editingAgency && (
