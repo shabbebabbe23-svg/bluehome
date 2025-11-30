@@ -466,40 +466,14 @@ const AgencyAdminDashboard = () => {
               )}
             </div>
 
-            {/* Profilbild och uppladdning */}
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Avatar className="w-32 h-32 border-4 border-white/30 shadow-xl">
-                  <AvatarImage src={profileData.avatar_url} alt={userName || "Profilbild"} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-400">
-                    <User className="w-16 h-16 text-white" />
-                  </AvatarFallback>
-                </Avatar>
-                <Label 
-                  htmlFor="avatar-upload" 
-                  className="absolute bottom-0 right-0 cursor-pointer w-1/4 h-1/4 bg-hero-gradient text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                >
-                  <Upload className="w-4 h-4" />
-                  <Input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleAvatarUpload}
-                    disabled={uploadingAvatar}
-                  />
-                </Label>
-              </div>
-
-              {/* Logga ut-knapp */}
-              <Button
-                onClick={signOut}
-                className="bg-hero-gradient hover:scale-105 transition-transform text-white"
-              >
-                <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                Logga ut
-              </Button>
-            </div>
+            {/* Logga ut-knapp */}
+            <Button
+              onClick={signOut}
+              className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+            >
+              <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+              Logga ut
+            </Button>
           </div>
         </div>
       </header>
@@ -507,7 +481,7 @@ const AgencyAdminDashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 pt-24">
         <Tabs defaultValue="byrå" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger 
               value="byrå" 
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
@@ -521,6 +495,13 @@ const AgencyAdminDashboard = () => {
             >
               <Users className="w-4 h-4" />
               Mäklare
+            </TabsTrigger>
+            <TabsTrigger 
+              value="profil" 
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
+              <User className="w-4 h-4" />
+              Min profil
             </TabsTrigger>
           </TabsList>
 
@@ -758,6 +739,142 @@ const AgencyAdminDashboard = () => {
                   Inga mäklare i byrån än
                 </p>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Min profil Tab */}
+          <TabsContent value="profil">
+            <div className="bg-card rounded-lg border p-6 relative">
+              {/* Profilbild i högra övre hörnet */}
+              <div className="absolute top-6 right-6">
+                <div className="relative">
+                  <Avatar className="w-32 h-32 border-4 border-primary/20 shadow-xl">
+                    <AvatarImage src={profileData.avatar_url} alt={userName || "Profilbild"} />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-400">
+                      <User className="w-16 h-16 text-white" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <Label 
+                    htmlFor="avatar-upload" 
+                    className="absolute bottom-0 right-0 cursor-pointer w-8 h-8 bg-hero-gradient text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <Input
+                      id="avatar-upload"
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleAvatarUpload}
+                      disabled={uploadingAvatar}
+                    />
+                  </Label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-6 pr-40">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <User className="w-6 h-6" />
+                  Min profil
+                </h2>
+                {!editingProfile && (
+                  <Button 
+                    onClick={() => setEditingProfile(true)}
+                    className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+                  >
+                    Redigera
+                  </Button>
+                )}
+              </div>
+
+              <div className="space-y-4 pr-40">
+                <div>
+                  <Label htmlFor="full_name">Namn</Label>
+                  <Input
+                    id="full_name"
+                    value={profileData.full_name}
+                    onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="För- och efternamn"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input
+                    id="phone"
+                    value={profileData.phone}
+                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="+46 XX XXX XX XX"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="office">Kontor</Label>
+                  <Input
+                    id="office"
+                    value={profileData.office}
+                    onChange={(e) => setProfileData({ ...profileData, office: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="Ditt kontor"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="area">Område</Label>
+                  <Input
+                    id="area"
+                    value={profileData.area}
+                    onChange={(e) => setProfileData({ ...profileData, area: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="Område du verkar i"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="bio">Om mig</Label>
+                  <Textarea
+                    id="bio"
+                    value={profileData.bio}
+                    onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="Berätta kort om dig själv..."
+                    rows={4}
+                  />
+                </div>
+
+                {editingProfile && (
+                  <div className="flex gap-2">
+                    <Button onClick={updateProfile} disabled={loading}>
+                      Spara ändringar
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setEditingProfile(false);
+                      if (user) {
+                        supabase
+                          .from("profiles")
+                          .select("*")
+                          .eq("id", user.id)
+                          .single()
+                          .then(({ data }) => {
+                            if (data) {
+                              setProfileData({
+                                full_name: data.full_name || "",
+                                phone: data.phone || "",
+                                office: data.office || "",
+                                area: data.area || "",
+                                bio: data.bio || "",
+                                avatar_url: data.avatar_url || ""
+                              });
+                            }
+                          });
+                      }
+                    }}>
+                      Avbryt
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
