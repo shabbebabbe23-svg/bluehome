@@ -436,7 +436,7 @@ const AgencyAdminDashboard = () => {
                     onClick={() => setEditingProfile(true)}
                     className="bg-hero-gradient hover:scale-105 transition-transform text-white"
                   >
-                    Spara
+                    Redigera
                   </Button>
                 )}
               </div>
@@ -573,7 +573,7 @@ const AgencyAdminDashboard = () => {
                     onClick={() => setEditingAgency(true)}
                     className="bg-hero-gradient hover:scale-105 transition-transform text-white"
                   >
-                    Spara
+                    Redigera
                   </Button>
                 )}
               </div>
