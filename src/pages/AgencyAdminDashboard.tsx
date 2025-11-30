@@ -480,9 +480,11 @@ const AgencyAdminDashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 pt-24">
-        <h1 className="text-4xl font-bold mb-8 bg-hero-gradient bg-clip-text text-transparent">
-          Hantera byrå
-        </h1>
+        <div className="bg-card rounded-lg border p-6 mb-6">
+          <h1 className="text-4xl font-bold text-foreground">
+            Hantera byrå
+          </h1>
+        </div>
         
         <Tabs defaultValue="byrå" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
