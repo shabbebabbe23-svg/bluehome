@@ -25,7 +25,7 @@ const Header = () => {
             {user && userType === "superadmin" && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
-                    <Menu className="w-12 h-12" strokeWidth={2.5} />
+                    <Menu className="w-12 h-12 text-primary" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
@@ -41,8 +41,8 @@ const Header = () => {
             {/* Agency Admin Menu Button */}
             {user && userType === "agency_admin" && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300 text-foreground hover:bg-white/20">
-                    <Menu strokeWidth={2.5} className="text-white drop-shadow-lg w-[80px] h-[35px]" />
+                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300 hover:bg-white/20">
+                    <Menu strokeWidth={2.5} className="text-primary drop-shadow-lg w-[80px] h-[35px]" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
@@ -58,7 +58,7 @@ const Header = () => {
             {user && userType === "maklare" && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
-                    <Menu className="w-12 h-12" strokeWidth={2.5} />
+                    <Menu className="w-12 h-12 text-primary" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
@@ -190,7 +190,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden hover:scale-110 transition-all duration-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="w-20 h-20 text-primary drop-shadow-[0_0_8px_hsl(200,98%,35%)]" strokeWidth={2.5} /> : <Menu className="w-20 h-20 text-primary drop-shadow-[0_0_8px_hsl(200,98%,35%)]" strokeWidth={2.5} />}
+            {isMenuOpen ? <X className="w-20 h-20 text-primary" strokeWidth={2.5} /> : <Menu className="w-20 h-20 text-primary" strokeWidth={2.5} />}
           </Button>
         </div>
 
