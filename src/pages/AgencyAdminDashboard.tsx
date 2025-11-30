@@ -400,15 +400,24 @@ const AgencyAdminDashboard = () => {
       <div className="max-w-7xl mx-auto p-6 pt-24">
         <Tabs defaultValue="profil" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="profil" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="profil" 
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
               <User className="w-4 h-4" />
               Min profil
             </TabsTrigger>
-            <TabsTrigger value="byrå" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="byrå" 
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
               <Building2 className="w-4 h-4" />
               Byråinformation
             </TabsTrigger>
-            <TabsTrigger value="mäklare" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="mäklare" 
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
               <Users className="w-4 h-4" />
               Mäklare
             </TabsTrigger>
@@ -423,8 +432,11 @@ const AgencyAdminDashboard = () => {
                   Min profil
                 </h2>
                 {!editingProfile && (
-                  <Button onClick={() => setEditingProfile(true)}>
-                    Redigera
+                  <Button 
+                    onClick={() => setEditingProfile(true)}
+                    className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+                  >
+                    Spara
                   </Button>
                 )}
               </div>
@@ -557,8 +569,11 @@ const AgencyAdminDashboard = () => {
                   Byråinformation
                 </h2>
                 {!editingAgency && (
-                  <Button onClick={() => setEditingAgency(true)}>
-                    Redigera
+                  <Button 
+                    onClick={() => setEditingAgency(true)}
+                    className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+                  >
+                    Spara
                   </Button>
                 )}
               </div>
