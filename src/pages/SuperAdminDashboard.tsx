@@ -67,6 +67,14 @@ interface PendingInvitation {
   agency_name?: string;
 }
 
+interface AgencyUser {
+  id: string;
+  full_name: string;
+  email: string;
+  user_roles?: { user_type: string }[];
+  propertyCount?: number;
+}
+
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const [agencies, setAgencies] = useState<Agency[]>([]);
@@ -79,6 +87,10 @@ const SuperAdminDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isUsersDialogOpen, setIsUsersDialogOpen] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+  const [agencyUsers, setAgencyUsers] = useState<AgencyUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [createdInvitationLink, setCreatedInvitationLink] = useState<string | null>(null);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
   const [deletingAgency, setDeletingAgency] = useState<Agency | null>(null);
@@ -621,6 +633,47 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  const fetchAgencyUsers = async (agencyId: string) => {
+    setLoadingUsers(true);
+    try {
+      const { data: usersData, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, user_roles(user_type)")
+        .eq("agency_id", agencyId);
+
+      if (error) throw error;
+
+      if (usersData) {
+        const usersWithCounts = await Promise.all(
+          usersData.map(async (user) => {
+            const { count } = await supabase
+              .from("properties")
+              .select("*", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .eq("is_deleted", false);
+            return { ...user, propertyCount: count || 0 };
+          })
+        );
+        setAgencyUsers(usersWithCounts as any);
+      }
+    } catch (error) {
+      console.error("Error fetching agency users:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte hämta användare.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleShowUsers = (agency: Agency) => {
+    setSelectedAgency(agency);
+    setIsUsersDialogOpen(true);
+    fetchAgencyUsers(agency.id);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <Header />
@@ -764,6 +817,58 @@ const SuperAdminDashboard = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Agency Users Dialog */}
+          <Dialog open={isUsersDialogOpen} onOpenChange={setIsUsersDialogOpen}>
+            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Användare i {selectedAgency?.name}
+                </DialogTitle>
+                <DialogDescription>
+                  Alla mäklare och administratörer som tillhör denna byrå
+                </DialogDescription>
+              </DialogHeader>
+              
+              {loadingUsers ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : agencyUsers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Inga användare hittades i denna byrå.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {agencyUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="p-4 border rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base">{user.full_name}</h3>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <div className="flex gap-3 mt-2 text-sm">
+                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium capitalize">
+                              {user.user_roles?.[0]?.user_type === "agency_admin" ? "Byrå-admin" : 
+                               user.user_roles?.[0]?.user_type === "maklare" ? "Mäklare" : 
+                               user.user_roles?.[0]?.user_type || "Användare"}
+                            </span>
+                            <span className="flex items-center gap-1 text-muted-foreground">
+                              <Home className="w-4 h-4" />
+                              {user.propertyCount || 0} objekt
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Statistics Cards */}
@@ -863,6 +968,15 @@ const SuperAdminDashboard = () => {
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleShowUsers(agency)}
+                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] hover:text-white hover:border-transparent transition-all"
+                          >
+                            <Users className="w-4 h-4" />
+                            Visa användare
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
