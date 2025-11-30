@@ -31,6 +31,8 @@ interface AgencyInfo {
   website: string | null;
   description: string | null;
   logo_url: string | null;
+  area: string | null;
+  owner: string | null;
 }
 
 interface Invitation {
@@ -330,6 +332,8 @@ const AgencyAdminDashboard = () => {
         website: agencyInfo.website,
         description: agencyInfo.description,
         logo_url: agencyInfo.logo_url,
+        area: agencyInfo.area,
+        owner: agencyInfo.owner,
       })
       .eq("id", agencyId);
     
@@ -666,6 +670,28 @@ const AgencyAdminDashboard = () => {
                       onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="Gatuadress, Postnummer, Ort"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="area">Område</Label>
+                    <Input
+                      id="area"
+                      value={agencyInfo.area || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, area: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="T.ex. Stockholm, Göteborg, Malmö"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="owner">Ägare</Label>
+                    <Input
+                      id="owner"
+                      value={agencyInfo.owner || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, owner: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Namn på företagsägare"
                     />
                   </div>
 

@@ -50,6 +50,7 @@ export type Database = {
       agencies: {
         Row: {
           address: string | null
+          area: string | null
           created_at: string | null
           description: string | null
           email_domain: string
@@ -58,12 +59,14 @@ export type Database = {
           logo_url: string | null
           name: string
           org_number: string | null
+          owner: string | null
           phone: string | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
           address?: string | null
+          area?: string | null
           created_at?: string | null
           description?: string | null
           email_domain: string
@@ -72,12 +75,14 @@ export type Database = {
           logo_url?: string | null
           name: string
           org_number?: string | null
+          owner?: string | null
           phone?: string | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
           address?: string | null
+          area?: string | null
           created_at?: string | null
           description?: string | null
           email_domain?: string
@@ -86,6 +91,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           org_number?: string | null
+          owner?: string | null
           phone?: string | null
           updated_at?: string | null
           website?: string | null
