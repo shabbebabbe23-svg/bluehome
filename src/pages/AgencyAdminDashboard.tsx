@@ -466,14 +466,40 @@ const AgencyAdminDashboard = () => {
               )}
             </div>
 
-            {/* Logga ut-knapp */}
-            <Button
-              onClick={signOut}
-              className="bg-hero-gradient hover:scale-105 transition-transform text-white"
-            >
-              <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-              Logga ut
-            </Button>
+            {/* Profilbild och uppladdning */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="w-32 h-32 border-4 border-white/30 shadow-xl">
+                  <AvatarImage src={profileData.avatar_url} alt={userName || "Profilbild"} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-400">
+                    <User className="w-16 h-16 text-white" />
+                  </AvatarFallback>
+                </Avatar>
+                <Label 
+                  htmlFor="avatar-upload" 
+                  className="absolute bottom-0 right-0 cursor-pointer w-1/4 h-1/4 bg-hero-gradient text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                >
+                  <Upload className="w-4 h-4" />
+                  <Input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                    disabled={uploadingAvatar}
+                  />
+                </Label>
+              </div>
+
+              {/* Logga ut-knapp */}
+              <Button
+                onClick={signOut}
+                className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+              >
+                <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                Logga ut
+              </Button>
+            </div>
           </div>
         </div>
       </header>
