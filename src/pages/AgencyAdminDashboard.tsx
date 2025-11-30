@@ -358,8 +358,12 @@ const AgencyAdminDashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 pt-24">
-        <Tabs defaultValue="byrå" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+        <Tabs defaultValue="profil" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="profil" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Min profil
+            </TabsTrigger>
             <TabsTrigger value="byrå" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               Byråinformation
@@ -370,160 +374,160 @@ const AgencyAdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Byråinformation Tab */}
-          <TabsContent value="byrå">
-            <div className="space-y-6">
-              {/* Profile Section */}
-              <div className="bg-card rounded-lg border p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <User className="w-6 h-6" />
-                    Min profil
-                  </h2>
-                  {!editingProfile && (
-                    <Button onClick={() => setEditingProfile(true)}>
-                      Redigera
-                    </Button>
-                  )}
-                </div>
-
-                <div className="space-y-4">
-                  {/* Avatar Section */}
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
-                    <div className="flex items-center gap-4">
-                      <Avatar className="w-20 h-20 border-2 border-border">
-                        <AvatarImage src={profileData.avatar_url || undefined} />
-                        <AvatarFallback className="bg-muted">
-                          <User className="w-10 h-10 text-muted-foreground" />
-                        </AvatarFallback>
-                      </Avatar>
-                      {editingProfile && (
-                        <Label htmlFor="avatar-upload" className="cursor-pointer">
-                          <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
-                            <Upload className="w-4 h-4" />
-                            <span>{uploadingAvatar ? "Laddar upp..." : "Byt bild"}</span>
-                          </div>
-                          <Input
-                            id="avatar-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleAvatarUpload}
-                            disabled={uploadingAvatar}
-                          />
-                        </Label>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="profile_full_name">Namn</Label>
-                      <Input
-                        id="profile_full_name"
-                        value={profileData.full_name}
-                        onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
-                        disabled={!editingProfile}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="profile_phone">Telefon</Label>
-                      <Input
-                        id="profile_phone"
-                        value={profileData.phone}
-                        onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                        disabled={!editingProfile}
-                        placeholder="+46 XX XXX XX XX"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="profile_office">Kontor</Label>
-                      <Input
-                        id="profile_office"
-                        value={profileData.office}
-                        onChange={(e) => setProfileData({ ...profileData, office: e.target.value })}
-                        disabled={!editingProfile}
-                        placeholder="t.ex. Stockholm City"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="profile_area">Område</Label>
-                      <Input
-                        id="profile_area"
-                        value={profileData.area}
-                        onChange={(e) => setProfileData({ ...profileData, area: e.target.value })}
-                        disabled={!editingProfile}
-                        placeholder="t.ex. Stockholm, Södermalm"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="profile_bio">Presentation</Label>
-                    <Textarea
-                      id="profile_bio"
-                      value={profileData.bio}
-                      onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                      disabled={!editingProfile}
-                      placeholder="Beskriv dig själv och din erfarenhet..."
-                      rows={4}
-                    />
-                  </div>
-
-                  {editingProfile && (
-                    <div className="flex gap-2">
-                      <Button onClick={updateProfile} disabled={loading}>
-                        Spara profil
-                      </Button>
-                      <Button variant="outline" onClick={() => {
-                        setEditingProfile(false);
-                        // Reset to original values
-                        if (user) {
-                          supabase
-                            .from("profiles")
-                            .select("*")
-                            .eq("id", user.id)
-                            .single()
-                            .then(({ data }) => {
-                              if (data) {
-                                setProfileData({
-                                  full_name: data.full_name || "",
-                                  phone: data.phone || "",
-                                  office: data.office || "",
-                                  area: data.area || "",
-                                  bio: data.bio || "",
-                                  avatar_url: data.avatar_url || ""
-                                });
-                              }
-                            });
-                        }
-                      }}>
-                        Avbryt
-                      </Button>
-                    </div>
-                  )}
-                </div>
+          {/* Min profil Tab */}
+          <TabsContent value="profil">
+            <div className="bg-card rounded-lg border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <User className="w-6 h-6" />
+                  Min profil
+                </h2>
+                {!editingProfile && (
+                  <Button onClick={() => setEditingProfile(true)}>
+                    Redigera
+                  </Button>
+                )}
               </div>
 
-              <Separator />
-
-              {/* Agency Information Section */}
-              <div className="bg-card rounded-lg border p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">Byråinformation</h2>
-                  {!editingAgency && (
-                    <Button onClick={() => setEditingAgency(true)}>
-                      Redigera
-                    </Button>
-                  )}
+              <div className="space-y-4">
+                {/* Avatar Section */}
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-20 h-20 border-2 border-border">
+                      <AvatarImage src={profileData.avatar_url || undefined} />
+                      <AvatarFallback className="bg-muted">
+                        <User className="w-10 h-10 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    {editingProfile && (
+                      <Label htmlFor="avatar-upload" className="cursor-pointer">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                          <Upload className="w-4 h-4" />
+                          <span>{uploadingAvatar ? "Laddar upp..." : "Byt bild"}</span>
+                        </div>
+                        <Input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                          disabled={uploadingAvatar}
+                        />
+                      </Label>
+                    )}
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="profile_full_name">Namn</Label>
+                    <Input
+                      id="profile_full_name"
+                      value={profileData.full_name}
+                      onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                      disabled={!editingProfile}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="profile_phone">Telefon</Label>
+                    <Input
+                      id="profile_phone"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                      disabled={!editingProfile}
+                      placeholder="+46 XX XXX XX XX"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="profile_office">Kontor</Label>
+                    <Input
+                      id="profile_office"
+                      value={profileData.office}
+                      onChange={(e) => setProfileData({ ...profileData, office: e.target.value })}
+                      disabled={!editingProfile}
+                      placeholder="t.ex. Stockholm City"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="profile_area">Område</Label>
+                    <Input
+                      id="profile_area"
+                      value={profileData.area}
+                      onChange={(e) => setProfileData({ ...profileData, area: e.target.value })}
+                      disabled={!editingProfile}
+                      placeholder="t.ex. Stockholm, Södermalm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="profile_bio">Presentation</Label>
+                  <Textarea
+                    id="profile_bio"
+                    value={profileData.bio}
+                    onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                    disabled={!editingProfile}
+                    placeholder="Beskriv dig själv och din erfarenhet..."
+                    rows={4}
+                  />
+                </div>
+
+                {editingProfile && (
+                  <div className="flex gap-2">
+                    <Button onClick={updateProfile} disabled={loading}>
+                      Spara profil
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setEditingProfile(false);
+                      if (user) {
+                        supabase
+                          .from("profiles")
+                          .select("*")
+                          .eq("id", user.id)
+                          .single()
+                          .then(({ data }) => {
+                            if (data) {
+                              setProfileData({
+                                full_name: data.full_name || "",
+                                phone: data.phone || "",
+                                office: data.office || "",
+                                area: data.area || "",
+                                bio: data.bio || "",
+                                avatar_url: data.avatar_url || ""
+                              });
+                            }
+                          });
+                      }
+                    }}>
+                      Avbryt
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Byråinformation Tab */}
+          <TabsContent value="byrå">
+            <div className="bg-card rounded-lg border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <Building2 className="w-6 h-6" />
+                  Byråinformation
+                </h2>
+                {!editingAgency && (
+                  <Button onClick={() => setEditingAgency(true)}>
+                    Redigera
+                  </Button>
+                )}
+              </div>
 
               {agencyInfo && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Byrånamn *</Label>
+                      <Label htmlFor="name">Företagsnamn</Label>
                       <Input
                         id="name"
                         value={agencyInfo.name}
@@ -532,7 +536,7 @@ const AgencyAdminDashboard = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="email_domain">E-postdomän *</Label>
+                      <Label htmlFor="email_domain">E-postdomän</Label>
                       <Input
                         id="email_domain"
                         value={agencyInfo.email_domain}
@@ -541,13 +545,13 @@ const AgencyAdminDashboard = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="org_number">Organisationsnummer</Label>
+                      <Label htmlFor="address">Adress</Label>
                       <Input
-                        id="org_number"
-                        value={agencyInfo.org_number || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
+                        id="address"
+                        value={agencyInfo.address || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
                         disabled={!editingAgency}
-                        placeholder="XXXXXX-XXXX"
+                        placeholder="Gatuadress, Postnummer, Ort"
                       />
                     </div>
                     <div>
@@ -561,7 +565,17 @@ const AgencyAdminDashboard = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="website">Webbplats</Label>
+                      <Label htmlFor="org_number">Org.nr</Label>
+                      <Input
+                        id="org_number"
+                        value={agencyInfo.org_number || ""}
+                        onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
+                        disabled={!editingAgency}
+                        placeholder="XXXXXX-XXXX"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="website">Länk till egen sida</Label>
                       <Input
                         id="website"
                         value={agencyInfo.website || ""}
@@ -570,27 +584,31 @@ const AgencyAdminDashboard = () => {
                         placeholder="https://www.exempel.se"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="logo_url">Logotyp URL</Label>
-                      <Input
-                        id="logo_url"
-                        value={agencyInfo.logo_url || ""}
-                        onChange={(e) => setAgencyInfo({ ...agencyInfo, logo_url: e.target.value })}
-                        disabled={!editingAgency}
-                        placeholder="https://..."
-                      />
-                    </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="address">Adress</Label>
+                    <Label htmlFor="logo_url">Uppladdning av logga (URL)</Label>
                     <Input
-                      id="address"
-                      value={agencyInfo.address || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
+                      id="logo_url"
+                      value={agencyInfo.logo_url || ""}
+                      onChange={(e) => setAgencyInfo({ ...agencyInfo, logo_url: e.target.value })}
                       disabled={!editingAgency}
-                      placeholder="Gatuadress, Postnummer, Ort"
+                      placeholder="https://exempel.se/logo.png"
                     />
+                    {agencyInfo.logo_url && (
+                      <div className="mt-2 p-2 border rounded-md bg-muted/20">
+                        <img 
+                          src={agencyInfo.logo_url} 
+                          alt="Byrå logotyp" 
+                          className="h-16 object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
+
                   <div>
                     <Label htmlFor="description">Beskrivning</Label>
                     <Textarea
@@ -610,7 +628,6 @@ const AgencyAdminDashboard = () => {
                       </Button>
                       <Button variant="outline" onClick={() => {
                         setEditingAgency(false);
-                        // Reset to original values
                         if (agencyId) {
                           supabase
                             .from("agencies")
@@ -626,7 +643,6 @@ const AgencyAdminDashboard = () => {
                   )}
                 </div>
               )}
-              </div>
             </div>
           </TabsContent>
 
