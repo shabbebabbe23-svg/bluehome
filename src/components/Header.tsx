@@ -103,7 +103,7 @@ const Header = () => {
               </DropdownMenu>}
 
             {/* Buyer/Regular User Menu Button */}
-            {user && userType === "buyer" && <DropdownMenu>
+            {user && (userType === "buyer" || userType === "user") && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300">
                     <Menu className="w-12 h-12 text-primary" strokeWidth={2.5} />
@@ -185,7 +185,7 @@ const Header = () => {
               </div>}
 
             {/* Notifications */}
-            {user && (userType === "maklare" || userType === "buyer") && <NotificationBell />}
+            {user && (userType === "maklare" || userType === "buyer" || userType === "user") && <NotificationBell />}
 
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button variant="outline" className={`text-sm lg:text-base ${isCommercialPage ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' : 'bg-black border-black hover:bg-black/90'}`}>
@@ -232,7 +232,7 @@ const Header = () => {
                 </div>}
 
               {/* Buyer/Regular User Menu Items for Mobile */}
-              {user && userType === "buyer" && <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
+              {user && (userType === "buyer" || userType === "user") && <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
                   <Link to="/favoriter" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <Heart className="w-6 h-6" />
                     <span className="font-medium text-lg">Mina favoriter</span>
