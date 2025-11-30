@@ -154,15 +154,15 @@ export const ProfileForm = () => {
       {/* Avatar in top-right corner */}
       <div className="absolute top-6 right-6 flex flex-col items-center gap-2">
         <div className="relative">
-          <Avatar className="w-32 h-32 border-4 border-border">
+          <Avatar className="w-64 h-64 border-4 border-border">
             <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
             <AvatarFallback className="bg-muted">
-              <User className="w-16 h-16 text-muted-foreground" />
+              <User className="w-32 h-32 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
           <Label htmlFor="avatar-upload" className="cursor-pointer absolute bottom-0 right-0">
-            <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg">
-              <Upload className="w-4 h-4" />
+            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg">
+              <Upload className="w-8 h-8" />
             </div>
             <Input
               id="avatar-upload"
