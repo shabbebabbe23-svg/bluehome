@@ -42,7 +42,7 @@ const Header = () => {
             {user && userType === "agency_admin" && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300 text-foreground hover:bg-white/20">
-                    <Menu strokeWidth={2.5} className="text-white drop-shadow-lg w-[80px] h-[40px]" />
+                    <Menu strokeWidth={2.5} className="text-white drop-shadow-lg w-[80px] h-[35px]" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
