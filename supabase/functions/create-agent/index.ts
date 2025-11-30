@@ -10,7 +10,6 @@ interface CreateAgentRequest {
   full_name: string;
   office: string;
   agency_id: string;
-  temporary_password: string;
 }
 
 Deno.serve(async (req) => {
@@ -30,33 +29,44 @@ Deno.serve(async (req) => {
       }
     )
 
-    const { email, full_name, office, agency_id, temporary_password }: CreateAgentRequest = await req.json()
+    const { email, full_name, office, agency_id }: CreateAgentRequest = await req.json()
 
     // Validate input
-    if (!email || !full_name || !agency_id || !temporary_password) {
+    if (!email || !full_name || !agency_id) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Create the user with admin API
-    const { data: userData, error: userError } = await supabaseClient.auth.admin.createUser({
+    // Get the redirect URL for password setup
+    const origin = req.headers.get('origin') || Deno.env.get('SUPABASE_URL') || ''
+    const redirectUrl = `${origin}/`
+
+    console.log('Inviting user:', email, 'with redirect:', redirectUrl)
+
+    // Invite user by email - this sends an invitation email automatically
+    const { data: userData, error: userError } = await supabaseClient.auth.admin.inviteUserByEmail(
       email,
-      password: temporary_password,
-      email_confirm: true,
-      user_metadata: {
-        full_name,
+      {
+        data: {
+          full_name,
+          agency_id,
+          office
+        },
+        redirectTo: redirectUrl
       }
-    })
+    )
 
     if (userError) {
-      console.error('Error creating user:', userError)
+      console.error('Error inviting user:', userError)
       return new Response(
         JSON.stringify({ error: userError.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    console.log('User invited successfully:', userData.user.id)
 
     // Update profile with agency and office info
     const { error: profileError } = await supabaseClient
@@ -70,10 +80,7 @@ Deno.serve(async (req) => {
 
     if (profileError) {
       console.error('Error updating profile:', profileError)
-      return new Response(
-        JSON.stringify({ error: 'User created but profile update failed' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      // Don't fail the request if profile update fails, user can update later
     }
 
     // Set user role to maklare
@@ -84,13 +91,14 @@ Deno.serve(async (req) => {
 
     if (roleError) {
       console.error('Error setting role:', roleError)
+      // Don't fail the request if role setting fails
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         user: userData.user,
-        message: 'Mäklare skapad framgångsrikt' 
+        message: 'Inbjudan skickad! Mäklaren får ett mail för att välja lösenord.' 
       }),
       { 
         status: 200, 

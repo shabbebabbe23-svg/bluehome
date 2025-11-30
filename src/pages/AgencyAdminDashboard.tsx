@@ -50,8 +50,7 @@ const AgencyAdminDashboard = () => {
   const [newAgent, setNewAgent] = useState({
     email: "",
     full_name: "",
-    office: "",
-    password: ""
+    office: ""
   });
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string>("");
@@ -140,7 +139,7 @@ const AgencyAdminDashboard = () => {
   }, [userType, user]);
 
   const createAgent = async () => {
-    if (!newAgent.email || !newAgent.full_name || !newAgent.password || !agencyId) {
+    if (!newAgent.email || !newAgent.full_name || !agencyId) {
       toast.error("Fyll i alla obligatoriska fält");
       return;
     }
@@ -153,14 +152,13 @@ const AgencyAdminDashboard = () => {
           full_name: newAgent.full_name,
           office: newAgent.office,
           agency_id: agencyId,
-          temporary_password: newAgent.password,
         }
       });
 
       if (error) throw error;
 
-      toast.success("Mäklare skapad! Tillfälligt lösenord skickat.");
-      setNewAgent({ email: "", full_name: "", office: "", password: "" });
+      toast.success("Inbjudan skickad! Mäklaren får ett mail för att välja lösenord.");
+      setNewAgent({ email: "", full_name: "", office: "" });
       
       // Refresh users list
       const { data: usersData } = await supabase
@@ -693,6 +691,9 @@ const AgencyAdminDashboard = () => {
                   </DialogTrigger>
                   <DialogContent>
                     <h3 className="text-lg font-semibold mb-4">Lägg till ny mäklare</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Mäklaren får ett e-postmeddelande med en länk för att välja sitt eget lösenord.
+                    </p>
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="agent-name">Namn *</Label>
@@ -722,25 +723,12 @@ const AgencyAdminDashboard = () => {
                           placeholder="Stockholm Centrum"
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="agent-password">Tillfälligt lösenord *</Label>
-                        <Input
-                          id="agent-password"
-                          type="password"
-                          value={newAgent.password}
-                          onChange={(e) => setNewAgent({ ...newAgent, password: e.target.value })}
-                          placeholder="Minst 6 tecken"
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Mäklaren kan ändra lösenordet efter första inloggningen
-                        </p>
-                      </div>
                       <Button 
                         onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name || !newAgent.password} 
+                        disabled={loading || !newAgent.email || !newAgent.full_name} 
                         className="w-full"
                       >
-                        {loading ? "Skapar..." : "Skapa mäklare"}
+                        {loading ? "Skickar inbjudan..." : "Skicka inbjudan"}
                       </Button>
                     </div>
                   </DialogContent>
