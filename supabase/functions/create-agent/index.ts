@@ -69,6 +69,19 @@ Deno.serve(async (req) => {
 
     if (userError) {
       console.error('Error inviting user:', userError)
+      
+      // Check if user already exists
+      if (userError.message?.includes('already been registered') || userError.code === 'email_exists') {
+        return new Response(
+          JSON.stringify({ 
+            error: 'En användare med denna email är redan registrerad',
+            errorCode: 'email_exists',
+            suggestion: 'Användaren kanske redan är inbjuden eller har ett konto. Kontrollera med användaren eller använd en annan email.'
+          }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      
       return new Response(
         JSON.stringify({ error: userError.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
