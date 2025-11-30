@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -112,9 +112,15 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/favoriter" className="flex items-center gap-3 cursor-pointer py-4">
-                      <Heart className="w-6 h-6" />
-                      <span className="font-medium text-lg">Mina favoriter</span>
+                    <Link to="/byra-admin" className="flex items-center gap-3 cursor-pointer py-4">
+                      <User className="w-6 h-6" />
+                      <span className="font-medium text-lg">Hantera byrå</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/hantera-maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Users className="w-6 h-6" />
+                      <span className="font-medium text-lg">Hantera Mäklare</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -234,9 +240,13 @@ const Header = () => {
 
               {/* Buyer/Regular User Menu Items for Mobile */}
               {user && (userType === "buyer" || userType === "user") && <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
-                  <Link to="/favoriter" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Heart className="w-6 h-6" />
-                    <span className="font-medium text-lg">Mina favoriter</span>
+                  <Link to="/byra-admin" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <User className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera byrå</span>
+                  </Link>
+                  <Link to="/hantera-maklare" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Users className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera Mäklare</span>
                   </Link>
                 </div>}
 
