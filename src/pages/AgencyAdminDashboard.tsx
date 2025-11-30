@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Building2, Users, Mail } from "lucide-react";
+import { LogOut, Building2, Users, User, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserProfile {
@@ -56,18 +58,36 @@ const AgencyAdminDashboard = () => {
   const [userName, setUserName] = useState<string>("");
   const [agencyInfo, setAgencyInfo] = useState<AgencyInfo | null>(null);
   const [editingAgency, setEditingAgency] = useState(false);
+  const [profileData, setProfileData] = useState({
+    full_name: "",
+    phone: "",
+    office: "",
+    area: "",
+    bio: "",
+    avatar_url: ""
+  });
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     const fetchAgencyId = async () => {
       if (userType === "agency_admin" && user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("agency_id, full_name")
+          .select("*")
           .eq("id", user.id)
           .single();
         
-        if (profile?.full_name) {
-          setUserName(profile.full_name);
+        if (profile) {
+          setUserName(profile.full_name || "");
+          setProfileData({
+            full_name: profile.full_name || "",
+            phone: profile.phone || "",
+            office: profile.office || "",
+            area: profile.area || "",
+            bio: profile.bio || "",
+            avatar_url: profile.avatar_url || ""
+          });
         }
         
         if (profile?.agency_id) {
@@ -205,6 +225,68 @@ const AgencyAdminDashboard = () => {
     }
   };
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0] || !user) return;
+
+    const file = event.target.files[0];
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+    const filePath = `${user.id}/${fileName}`;
+
+    setUploadingAvatar(true);
+
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from("property-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("property-images")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+
+      setProfileData({ ...profileData, avatar_url: publicUrl });
+      toast.success("Profilbild uppladdad!");
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Kunde inte ladda upp profilbild");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const updateProfile = async () => {
+    if (!user) return;
+    setLoading(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profileData.full_name,
+        phone: profileData.phone || null,
+        office: profileData.office || null,
+        area: profileData.area || null,
+        bio: profileData.bio || null,
+      })
+      .eq("id", user.id);
+
+    setLoading(false);
+    if (error) {
+      toast.error("Kunde inte uppdatera profil");
+    } else {
+      toast.success("Profil uppdaterad");
+      setEditingProfile(false);
+      setUserName(profileData.full_name);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -290,15 +372,152 @@ const AgencyAdminDashboard = () => {
 
           {/* Byråinformation Tab */}
           <TabsContent value="byrå">
-            <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Byråinformation</h2>
-                {!editingAgency && (
-                  <Button onClick={() => setEditingAgency(true)}>
-                    Redigera
-                  </Button>
-                )}
+            <div className="space-y-6">
+              {/* Profile Section */}
+              <div className="bg-card rounded-lg border p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <User className="w-6 h-6" />
+                    Min profil
+                  </h2>
+                  {!editingProfile && (
+                    <Button onClick={() => setEditingProfile(true)}>
+                      Redigera
+                    </Button>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  {/* Avatar Section */}
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-20 h-20 border-2 border-border">
+                        <AvatarImage src={profileData.avatar_url || undefined} />
+                        <AvatarFallback className="bg-muted">
+                          <User className="w-10 h-10 text-muted-foreground" />
+                        </AvatarFallback>
+                      </Avatar>
+                      {editingProfile && (
+                        <Label htmlFor="avatar-upload" className="cursor-pointer">
+                          <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors">
+                            <Upload className="w-4 h-4" />
+                            <span>{uploadingAvatar ? "Laddar upp..." : "Byt bild"}</span>
+                          </div>
+                          <Input
+                            id="avatar-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleAvatarUpload}
+                            disabled={uploadingAvatar}
+                          />
+                        </Label>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="profile_full_name">Namn</Label>
+                      <Input
+                        id="profile_full_name"
+                        value={profileData.full_name}
+                        onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                        disabled={!editingProfile}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="profile_phone">Telefon</Label>
+                      <Input
+                        id="profile_phone"
+                        value={profileData.phone}
+                        onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                        disabled={!editingProfile}
+                        placeholder="+46 XX XXX XX XX"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="profile_office">Kontor</Label>
+                      <Input
+                        id="profile_office"
+                        value={profileData.office}
+                        onChange={(e) => setProfileData({ ...profileData, office: e.target.value })}
+                        disabled={!editingProfile}
+                        placeholder="t.ex. Stockholm City"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="profile_area">Område</Label>
+                      <Input
+                        id="profile_area"
+                        value={profileData.area}
+                        onChange={(e) => setProfileData({ ...profileData, area: e.target.value })}
+                        disabled={!editingProfile}
+                        placeholder="t.ex. Stockholm, Södermalm"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="profile_bio">Presentation</Label>
+                    <Textarea
+                      id="profile_bio"
+                      value={profileData.bio}
+                      onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                      disabled={!editingProfile}
+                      placeholder="Beskriv dig själv och din erfarenhet..."
+                      rows={4}
+                    />
+                  </div>
+
+                  {editingProfile && (
+                    <div className="flex gap-2">
+                      <Button onClick={updateProfile} disabled={loading}>
+                        Spara profil
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        setEditingProfile(false);
+                        // Reset to original values
+                        if (user) {
+                          supabase
+                            .from("profiles")
+                            .select("*")
+                            .eq("id", user.id)
+                            .single()
+                            .then(({ data }) => {
+                              if (data) {
+                                setProfileData({
+                                  full_name: data.full_name || "",
+                                  phone: data.phone || "",
+                                  office: data.office || "",
+                                  area: data.area || "",
+                                  bio: data.bio || "",
+                                  avatar_url: data.avatar_url || ""
+                                });
+                              }
+                            });
+                        }
+                      }}>
+                        Avbryt
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              <Separator />
+
+              {/* Agency Information Section */}
+              <div className="bg-card rounded-lg border p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold">Byråinformation</h2>
+                  {!editingAgency && (
+                    <Button onClick={() => setEditingAgency(true)}>
+                      Redigera
+                    </Button>
+                  )}
+                </div>
 
               {agencyInfo && (
                 <div className="space-y-4">
@@ -407,6 +626,7 @@ const AgencyAdminDashboard = () => {
                   )}
                 </div>
               )}
+              </div>
             </div>
           </TabsContent>
 
