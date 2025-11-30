@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Building2, Users, User, Upload } from "lucide-react";
+import { LogOut, Building2, Users, User, Upload, BarChart3, TrendingUp, Home as HomeIcon, Award } from "lucide-react";
 import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface UserProfile {
   id: string;
@@ -68,6 +69,13 @@ const AgencyAdminDashboard = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [loadingAgency, setLoadingAgency] = useState(true);
+  const [statistics, setStatistics] = useState({
+    totalAgents: 0,
+    activeProperties: 0,
+    soldProperties: 0,
+    totalSalesValue: 0,
+    topAgent: { name: "", salesCount: 0 }
+  });
 
   useEffect(() => {
     const fetchAgencyId = async () => {
@@ -133,6 +141,9 @@ const AgencyAdminDashboard = () => {
             .eq("agency_id", profile.agency_id)
             .is("used_at", null)
             .then(({ data }) => setPendingInvites(data ?? []));
+          
+          // Fetch statistics
+          fetchStatistics(profile.agency_id, usersData || []);
         }
         setLoadingAgency(false);
       } else {
@@ -142,6 +153,60 @@ const AgencyAdminDashboard = () => {
     };
     fetchAgencyId();
   }, [userType, user]);
+
+  const fetchStatistics = async (agencyId: string, agencyUsers: any[]) => {
+    // Get user IDs for all agents in the agency
+    const userIds = agencyUsers.map(u => u.id);
+    
+    // Count active properties
+    const { count: activeCount } = await supabase
+      .from("properties")
+      .select("*", { count: "exact", head: true })
+      .in("user_id", userIds)
+      .eq("is_deleted", false)
+      .eq("is_sold", false);
+    
+    // Count sold properties
+    const { count: soldCount } = await supabase
+      .from("properties")
+      .select("*", { count: "exact", head: true })
+      .in("user_id", userIds)
+      .eq("is_sold", true);
+    
+    // Get sold properties with prices
+    const { data: soldProperties } = await supabase
+      .from("properties")
+      .select("sold_price, user_id")
+      .in("user_id", userIds)
+      .eq("is_sold", true)
+      .not("sold_price", "is", null);
+    
+    // Calculate total sales value
+    const totalSales = soldProperties?.reduce((sum, prop) => sum + (prop.sold_price || 0), 0) || 0;
+    
+    // Find top agent by sales count
+    const salesByAgent: Record<string, number> = {};
+    soldProperties?.forEach(prop => {
+      salesByAgent[prop.user_id] = (salesByAgent[prop.user_id] || 0) + 1;
+    });
+    
+    const topAgentId = Object.keys(salesByAgent).reduce((a, b) => 
+      salesByAgent[a] > salesByAgent[b] ? a : b, ""
+    );
+    
+    const topAgent = agencyUsers.find(u => u.id === topAgentId);
+    
+    setStatistics({
+      totalAgents: agencyUsers.length,
+      activeProperties: activeCount || 0,
+      soldProperties: soldCount || 0,
+      totalSalesValue: totalSales,
+      topAgent: {
+        name: topAgent?.full_name || "-",
+        salesCount: salesByAgent[topAgentId] || 0
+      }
+    });
+  };
 
   const createAgent = async () => {
     if (!newAgent.email || !newAgent.full_name) {
@@ -538,7 +603,7 @@ const AgencyAdminDashboard = () => {
         </div>
         
         <Tabs defaultValue="byrå" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger 
               value="byrå" 
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
@@ -552,6 +617,13 @@ const AgencyAdminDashboard = () => {
             >
               <Users className="w-4 h-4" />
               Mäklare
+            </TabsTrigger>
+            <TabsTrigger 
+              value="statistik" 
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
+              <BarChart3 className="w-4 h-4" />
+              Statistik
             </TabsTrigger>
           </TabsList>
 
@@ -791,6 +863,93 @@ const AgencyAdminDashboard = () => {
                   Inga mäklare i byrån än
                 </p>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Statistik Tab */}
+          <TabsContent value="statistik">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              
+              {/* Antal Mäklare */}
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Antal Mäklare</CardTitle>
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">
+                    {statistics.totalAgents}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Aktiva mäklare i byrån
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Aktiva Fastigheter */}
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Aktiva Fastigheter</CardTitle>
+                  <HomeIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-700 dark:text-green-300">
+                    {statistics.activeProperties}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Till salu just nu
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Sålda Fastigheter */}
+              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Sålda Fastigheter</CardTitle>
+                  <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+                    {statistics.soldProperties}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Totalt antal sålda
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Totalt Försäljningsvärde */}
+              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200 dark:border-amber-800 md:col-span-2">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Totalt Försäljningsvärde</CardTitle>
+                  <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-amber-700 dark:text-amber-300">
+                    {statistics.totalSalesValue.toLocaleString('sv-SE')} kr
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Sammanlagt värde av alla försäljningar
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Bästa Mäklare */}
+              <Card className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900 border-rose-200 dark:border-rose-800">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Bästa Mäklare</CardTitle>
+                  <Award className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold text-rose-700 dark:text-rose-300 truncate">
+                    {statistics.topAgent.name}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {statistics.topAgent.salesCount} försäljningar
+                  </p>
+                </CardContent>
+              </Card>
+
             </div>
           </TabsContent>
 
