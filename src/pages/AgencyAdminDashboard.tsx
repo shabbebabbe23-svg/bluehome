@@ -445,11 +445,11 @@ const AgencyAdminDashboard = () => {
                 {/* Avatar Section */}
                 <div>
                   <Label className="text-sm font-medium mb-2 block">Profilbild</Label>
-                  <div className="flex items-center gap-4">
-                    <Avatar className="w-20 h-20 border-2 border-border">
+                  <div className="flex items-center gap-6">
+                    <Avatar className="w-32 h-32 border-4 border-border shadow-lg">
                       <AvatarImage src={profileData.avatar_url || undefined} />
                       <AvatarFallback className="bg-muted">
-                        <User className="w-10 h-10 text-muted-foreground" />
+                        <User className="w-16 h-16 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
                     {editingProfile && (
@@ -639,11 +639,11 @@ const AgencyAdminDashboard = () => {
                     <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
                     <div className="space-y-3">
                       {agencyInfo.logo_url && (
-                        <div className="p-3 border rounded-md bg-muted/20">
+                        <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
                           <img 
                             src={agencyInfo.logo_url} 
                             alt="Byrå logotyp" 
-                            className="h-20 object-contain"
+                            className="h-40 w-auto object-contain mx-auto"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}
