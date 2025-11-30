@@ -375,7 +375,7 @@ const AgencyAdminDashboard = () => {
                       {userName}
                     </span>
                     {agencyName && (
-                      <span className="text-sm text-white/80 drop-shadow">
+                      <span className="text-sm text-black font-semibold drop-shadow">
                         {agencyName}
                       </span>
                     )}
