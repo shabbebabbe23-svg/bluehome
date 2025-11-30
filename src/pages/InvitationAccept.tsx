@@ -126,7 +126,17 @@ const InvitationAccept = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle user already exists
+        if (error.message?.includes('already been registered') || 
+            error.message?.includes('User already registered') ||
+            error.code === 'user_already_exists') {
+          toast.error("Detta email är redan registrerat. Om du redan har ett konto, logga in istället på startsidan.");
+          setTimeout(() => navigate("/login"), 3000);
+          return;
+        }
+        throw error;
+      }
 
       toast.success("Konto skapat! Du är nu inloggad.");
       navigate("/maklare");
