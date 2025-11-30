@@ -526,23 +526,13 @@ const AgencyAdminDashboard = () => {
               {agencyInfo && (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Företagsnamn</Label>
+                    <Label htmlFor="office_name">Kontorsnamn</Label>
                     <Input
-                      id="name"
+                      id="office_name"
                       value={agencyInfo.name}
                       onChange={(e) => setAgencyInfo({ ...agencyInfo, name: e.target.value })}
                       disabled={!editingAgency}
-                      placeholder="Byråns namn"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email_domain">Kontorsnamn</Label>
-                    <Input
-                      id="email_domain"
-                      value={agencyInfo.email_domain}
-                      disabled
-                      className="bg-muted"
+                      placeholder="Kontorsnamn"
                     />
                   </div>
 
@@ -634,6 +624,10 @@ const AgencyAdminDashboard = () => {
                     </div>
                   )}
                 </div>
+              )}
+              
+              {!agencyInfo && (
+                <p className="text-muted-foreground">Laddar byråinformation...</p>
               )}
             </div>
           </TabsContent>
