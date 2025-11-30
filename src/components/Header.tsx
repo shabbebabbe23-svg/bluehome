@@ -52,6 +52,12 @@ const Header = () => {
                       <span className="font-medium text-lg">Hantera byrå</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                    <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-4">
+                      <Home className="w-6 h-6" />
+                      <span className="font-medium text-lg">Hantera fastigheter</span>
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>}
             {/* Agent Menu Button */}
@@ -220,6 +226,10 @@ const Header = () => {
                   <Link to="/byra-admin" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <User className="w-6 h-6" />
                     <span className="font-medium text-lg">Hantera byrå</span>
+                  </Link>
+                  <Link to="/maklare" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Home className="w-6 h-6" />
+                    <span className="font-medium text-lg">Hantera fastigheter</span>
                   </Link>
                 </div>}
 
