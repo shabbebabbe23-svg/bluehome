@@ -41,10 +41,10 @@ const Header = () => {
               </DropdownMenu>}
 
             {/* Agency Admin Menu Button */}
-            {user && userType === "agency_admin" && <DropdownMenu>
+            {user && (userType === "agency_admin" || user?.email === "info@barahem.se") && <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="lg" className="flex h-14 w-14 hover:scale-110 transition-all duration-300 hover:bg-white/20">
-                    <Menu strokeWidth={2.5} className="text-primary drop-shadow-lg w-[80px] h-[35px]" />
+                  <Button variant="ghost" size="lg" className="flex h-21 w-21 hover:scale-110 transition-all duration-300 hover:bg-white/20">
+                    <Menu strokeWidth={2.5} className="text-primary drop-shadow-lg w-[120px] h-[52px]" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">

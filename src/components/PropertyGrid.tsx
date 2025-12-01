@@ -859,7 +859,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
         if (error) throw error;
 
-        if (data) {
+        if (data && data.length > 0) {
           const formattedProperties: Property[] = data.map((prop) => ({
             id: prop.id,
             title: prop.title,
@@ -902,9 +902,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             });
             setPropertyBids(bidsMap);
           }
+        } else {
+          // Om inga fastigheter finns i databasen, visa dummy-fastigheter
+          setDbProperties(allProperties);
         }
       } catch (error) {
         console.error('Error fetching properties:', error);
+        setDbProperties(allProperties);
       } finally {
         setLoading(false);
       }
@@ -1113,18 +1117,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         <div className="flex flex-col items-end gap-2 mb-3 md:mb-4">
           {!showFinalPrices && (
             <div className="flex gap-2 w-full sm:w-auto">
-              {!bulkSelectMode ? (
-                <Button
-                  onClick={() => {
-                    setBulkSelectMode(true);
-                    setSelectedProperties([]);
-                  }}
-                  variant="outline"
-                  className="flex-1 sm:flex-initial"
-                >
-                  Välj flera
-                </Button>
-              ) : (
+              {!bulkSelectMode ? null : (
                 <>
                   <Button
                     onClick={toggleSelectAll}

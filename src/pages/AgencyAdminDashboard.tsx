@@ -216,93 +216,28 @@ const AgencyAdminDashboard = () => {
       return;
     }
 
-    if (!agencyId) {
-      toast.error("Kunde inte hitta byrå-ID. Ladda om sidan.");
-      return;
-    }
-
-    console.log('Creating agent with:', { 
-      email: newAgent.email, 
-      full_name: newAgent.full_name, 
-      agency_id: agencyId 
-    });
-
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-agent', {
-        body: {
+      const response = await fetch("http://localhost:3001/api/invite-agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           email: newAgent.email.trim(),
-          full_name: newAgent.full_name.trim(),
-          agency_id: agencyId,
-        }
+          full_name: newAgent.full_name.trim()
+        })
       });
 
-      if (error) {
-        console.error('Edge function error:', error);
-        console.log('Error context:', error.context);
-        
-        // Parse error response
-        const errorBody = error.context?.body;
-        console.log('Error body:', errorBody);
-        
-        if (errorBody?.errorCode === 'email_exists') {
-          const customError: any = new Error(errorBody.error || 'Email redan registrerad');
-          customError.errorCode = 'email_exists';
-          customError.suggestion = errorBody.suggestion;
-          console.log('Throwing custom error:', customError);
-          throw customError;
-        }
-        
-        throw new Error(errorBody?.error || error.message || 'Kunde inte skapa mäklare');
-      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Kunde inte skicka inbjudan");
 
-      // Show detailed success message
-      toast.success("Mäklare skapad!", {
+      toast.success("Inbjudan skickad!", {
         duration: 6000,
-        description: `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email för att välja lösenord och aktivera kontot.`
+        description: `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email.`
       });
       setNewAgent({ email: "", full_name: "" });
-      
-      // Refresh users list
-      const { data: usersData } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, user_roles(user_type)")
-        .eq("agency_id", agencyId);
-      
-      if (usersData) {
-        const usersWithCounts = await Promise.all(
-          usersData.map(async (user) => {
-            const { count } = await supabase
-              .from("properties")
-              .select("*", { count: "exact", head: true })
-              .eq("user_id", user.id)
-              .eq("is_deleted", false);
-            return { ...user, propertyCount: count || 0 };
-          })
-        );
-        setUsers(usersWithCounts as any);
-      }
+      // Här kan du lägga till logik för att uppdatera användarlistan om du har en databas
     } catch (error: any) {
-      console.error("Error creating agent:", error);
-      console.log("Error details:", {
-        errorCode: error.errorCode,
-        message: error.message,
-        suggestion: error.suggestion,
-        fullError: error
-      });
-      
-      // Handle specific error cases
-      if (error.errorCode === 'email_exists') {
-        const errorMsg = `${error.message}\n\n${error.suggestion || ''}`;
-        toast.error(errorMsg, { 
-          duration: 8000,
-          description: "Denna email är redan registrerad i systemet"
-        });
-      } else {
-        toast.error(error.message || "Kunde inte skapa mäklare", {
-          duration: 5000
-        });
-      }
+      toast.error(error.message || "Kunde inte skicka inbjudan", { duration: 5000 });
     } finally {
       setLoading(false);
     }
@@ -319,21 +254,22 @@ const AgencyAdminDashboard = () => {
     setUsers(users.filter(u => u.id !== userId));
   };
 
-  const updateAgencyInfo = async () => {
-    if (!agencyId || !agencyInfo) return;
+  const updateAgencyInfo = async (updatedInfo?: AgencyInfo) => {
+    const info = updatedInfo || agencyInfo;
+    if (!agencyId || !info) return;
     setLoading(true);
     const { error } = await supabase
       .from("agencies")
       .update({
-        name: agencyInfo.name,
-        address: agencyInfo.address,
-        phone: agencyInfo.phone,
-        org_number: agencyInfo.org_number,
-        website: agencyInfo.website,
-        description: agencyInfo.description,
-        logo_url: agencyInfo.logo_url,
-        area: agencyInfo.area,
-        owner: agencyInfo.owner,
+        name: info.name,
+        address: info.address,
+        phone: info.phone,
+        org_number: info.org_number,
+        website: info.website,
+        description: info.description,
+        logo_url: info.logo_url,
+        area: info.area,
+        owner: info.owner,
       })
       .eq("id", agencyId);
     
@@ -343,7 +279,7 @@ const AgencyAdminDashboard = () => {
     } else {
       toast.success("Byråinformation uppdaterad");
       setEditingAgency(false);
-      setAgencyName(agencyInfo.name);
+      setAgencyName(info.name);
     }
   };
 
@@ -634,104 +570,189 @@ const AgencyAdminDashboard = () => {
           {/* Byråinformation Tab */}
           <TabsContent value="byrå">
             <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  <Building2 className="w-6 h-6" />
-                  Byråinformation
-                </h2>
-                {!editingAgency && (
-                  <Button 
-                    onClick={() => setEditingAgency(true)}
-                    className="bg-hero-gradient hover:scale-105 transition-transform text-white"
-                  >
-                    Redigera
-                  </Button>
-                )}
-              </div>
-
-              {agencyInfo && (
-                <div className="space-y-4">
-                  <div>
+              <div className="space-y-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <Building2 className="w-8 h-8 text-primary" />
+                  <h2 className="text-2xl font-bold">Byråinformation</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <Label htmlFor="office_name">Kontorsnamn</Label>
                     <Input
                       id="office_name"
-                      value={agencyInfo.name}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, name: e.target.value })}
+                      value={agencyInfo?.name || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), name: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="Kontorsnamn"
                     />
-                  </div>
-
-                  <div>
+                    <Label htmlFor="agency-email-domain">E-postdomän</Label>
+                    <Input
+                      id="agency-email-domain"
+                      value={agencyInfo?.email_domain || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), email_domain: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="E-postdomän"
+                    />
                     <Label htmlFor="address">Adress</Label>
                     <Input
                       id="address"
-                      value={agencyInfo.address || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, address: e.target.value })}
+                      value={agencyInfo?.address || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), address: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="Gatuadress, Postnummer, Ort"
                     />
-                  </div>
-
-                  <div>
                     <Label htmlFor="area">Område</Label>
                     <Input
                       id="area"
-                      value={agencyInfo.area || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, area: e.target.value })}
+                      value={agencyInfo?.area || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), area: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="T.ex. Stockholm, Göteborg, Malmö"
                     />
-                  </div>
-
-                  <div>
                     <Label htmlFor="owner">Ägare</Label>
                     <Input
                       id="owner"
-                      value={agencyInfo.owner || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, owner: e.target.value })}
+                      value={agencyInfo?.owner || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), owner: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="Namn på företagsägare"
                     />
                   </div>
-
-                  <div>
+                  <div className="space-y-4">
                     <Label htmlFor="phone">Telefon</Label>
                     <Input
                       id="phone"
-                      value={agencyInfo.phone || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, phone: e.target.value })}
+                      value={agencyInfo?.phone || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), phone: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="+46 XX XXX XX XX"
                     />
-                  </div>
-
-                  <div>
                     <Label htmlFor="org_number">Org.nr</Label>
                     <Input
                       id="org_number"
-                      value={agencyInfo.org_number || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, org_number: e.target.value })}
+                      value={agencyInfo?.org_number || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), org_number: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="XXXXXX-XXXX"
                     />
-                  </div>
-
-                  <div>
                     <Label htmlFor="website">Länk till egen sida</Label>
                     <Input
                       id="website"
-                      value={agencyInfo.website || ""}
-                      onChange={(e) => setAgencyInfo({ ...agencyInfo, website: e.target.value })}
+                      value={agencyInfo?.website || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), website: e.target.value })}
                       disabled={!editingAgency}
                       placeholder="https://www.exempel.se"
                     />
-                  </div>
-                  
-                  <div>
+                    <Label htmlFor="description">Beskrivning</Label>
+                    <Textarea
+                      id="description"
+                      value={agencyInfo?.description || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), description: e.target.value })}
+                      disabled={!editingAgency}
+                      placeholder="Beskrivning av byrån"
+                    />
                     <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
                     <div className="space-y-3">
-                      {agencyInfo.logo_url && (
+                      {agencyInfo?.logo_url && (
                         <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
                           <img 
                             src={agencyInfo.logo_url} 
@@ -750,7 +771,7 @@ const AgencyAdminDashboard = () => {
                           <Label htmlFor="logo-upload" className="cursor-pointer">
                             <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
                               <Upload className="w-5 h-5" />
-                              <span>{uploadingLogo ? "Laddar upp..." : agencyInfo.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
+                              <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
                             </div>
                             <Input
                               id="logo-upload"
@@ -761,61 +782,62 @@ const AgencyAdminDashboard = () => {
                               disabled={uploadingLogo}
                             />
                           </Label>
-                          {agencyInfo.logo_url && (
+                          {agencyInfo?.logo_url && (
                             <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
                           )}
                         </div>
                       )}
-                      {!editingAgency && !agencyInfo.logo_url && (
+                      {!editingAgency && !agencyInfo?.logo_url && (
                         <p className="text-sm text-muted-foreground">Ingen logotyp uppladdad. Klicka "Redigera" för att ladda upp.</p>
                       )}
                     </div>
                   </div>
-
-                  {editingAgency && (
-                    <div className="flex gap-2">
-                      <Button onClick={updateAgencyInfo} disabled={loading}>
-                        Spara ändringar
-                      </Button>
-                      <Button variant="outline" onClick={() => {
-                        setEditingAgency(false);
-                        if (agencyId) {
-                          supabase
-                            .from("agencies")
-                            .select("*")
-                            .eq("id", agencyId)
-                            .single()
-                            .then(({ data }) => data && setAgencyInfo(data));
-                        }
-                      }}>
-                        Avbryt
-                      </Button>
-                    </div>
-                  )}
                 </div>
-              )}
-              
-              {!agencyInfo && (
-                <p className="text-muted-foreground">Laddar byråinformation...</p>
-              )}
+                {editingAgency && (
+                  <div className="flex gap-2 mt-8">
+                    <Button onClick={() => updateAgencyInfo()} disabled={loading}>
+                      Spara
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setEditingAgency(false);
+                      if (agencyId) {
+                        supabase
+                          .from("agencies")
+                          .select("*")
+                          .eq("id", agencyId)
+                          .single()
+                          .then(({ data }) => data && setAgencyInfo(data));
+                      }
+                    }}>
+                      Avbryt
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
           {/* Mäklare Tab */}
           <TabsContent value="mäklare">
             <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Mäklare i byrån</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <Users className="w-6 h-6" />
+                  Mäklare
+                </h2>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button disabled={loadingAgency || !agencyId}>
-                      {loadingAgency ? "Laddar..." : "Lägg till mäklare"}
+                    <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">
+                      <User className="w-4 h-4 mr-2" />
+                      Bjud in mäklare
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
-                    <h3 className="text-lg font-semibold mb-4">Lägg till ny mäklare</h3>
+                  <DialogContent className="max-w-lg">
+                    <h3 className="text-lg font-semibold">
+                      Bjud in ny mäklare
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Mäklaren får ett e-postmeddelande med en länk för att välja sitt eget lösenord.
+                      Fyll i namn och e-post för att bjuda in en mäklare till byrån.
                     </p>
                     <div className="space-y-4">
                       <div>
@@ -839,7 +861,7 @@ const AgencyAdminDashboard = () => {
                       </div>
                       <Button 
                         onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name || !agencyId} 
+                        disabled={loading || !newAgent.email || !newAgent.full_name} 
                         className="w-full"
                       >
                         {loading ? "Skickar inbjudan..." : "Skicka inbjudan"}
