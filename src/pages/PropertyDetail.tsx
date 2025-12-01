@@ -836,15 +836,35 @@ const PropertyDetail = () => {
                     </div>
 
                     <div className="space-y-3">
-                      {agentProfile.phone && <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      {agentProfile.phone && <Button 
+                          className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                          size="lg"
+                          onClick={() => window.open(`tel:${agentProfile.phone}`, '_self')}
+                        >
                           <Phone className="w-4 h-4 mr-2" />
                           Ring mig
                         </Button>}
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Intresserad av: ${property.address}`;
+                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
                         <Mail className="w-4 h-4 mr-2" />
                         Skicka meddelande
                       </Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
                         <Calendar className="w-4 h-4 mr-2" />
                         Boka visning
                       </Button>
@@ -863,9 +883,35 @@ const PropertyDetail = () => {
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Visa telefonnummer</Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => toast.info('Kontakta mäklaren via email för telefonnummer')}
+                      >
+                        Visa telefonnummer
+                      </Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Intresserad av: ${property.address}`;
+                          const body = `Hej,\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        Skicka meddelande
+                      </Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        Boka visning
+                      </Button>
                     </div>
                   </>}
 
