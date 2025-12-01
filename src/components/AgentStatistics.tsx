@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { BarChart3, Eye, Clock, TrendingUp } from "lucide-react";
+import { BarChart3, Eye, Clock, TrendingUp, Image } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface PropertyStats {
@@ -10,6 +10,8 @@ interface PropertyStats {
   property_title: string;
   total_views: number;
   avg_time_spent: number;
+  image_views: number;
+  avg_images_per_session: number;
 }
 
 export const AgentStatistics = () => {
@@ -48,6 +50,14 @@ export const AgentStatistics = () => {
 
         if (viewsError) throw viewsError;
 
+        // Fetch image views for properties
+        const { data: imageViews, error: imageViewsError } = await supabase
+          .from("image_views")
+          .select("property_id, session_id")
+          .in("property_id", propertyIds);
+
+        if (imageViewsError) throw imageViewsError;
+
         // Calculate stats per property
         const propertyStatsMap = new Map<string, PropertyStats>();
         let totalViewCount = 0;
@@ -59,6 +69,8 @@ export const AgentStatistics = () => {
             property_title: prop.title,
             total_views: 0,
             avg_time_spent: 0,
+            image_views: 0,
+            avg_images_per_session: 0,
           });
         });
 
@@ -72,10 +84,24 @@ export const AgentStatistics = () => {
           }
         });
 
+        // Calculate image view stats
+        imageViews?.forEach(imgView => {
+          const stat = propertyStatsMap.get(imgView.property_id);
+          if (stat) {
+            stat.image_views += 1;
+          }
+        });
+
         // Calculate averages
         propertyStatsMap.forEach(stat => {
           if (stat.total_views > 0) {
             stat.avg_time_spent = Math.round(stat.avg_time_spent / stat.total_views);
+            
+            // Calculate unique sessions for this property
+            const propertyImageViews = imageViews?.filter(iv => iv.property_id === stat.property_id) || [];
+            const uniqueSessions = new Set(propertyImageViews.map(iv => iv.session_id)).size;
+            stat.avg_images_per_session = uniqueSessions > 0 ? 
+              Math.round(stat.image_views / uniqueSessions) : 0;
           }
         });
 
@@ -178,7 +204,7 @@ export const AgentStatistics = () => {
                 >
                   <div className="flex-1">
                     <h4 className="font-medium">{stat.property_title}</h4>
-                    <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap gap-3 sm:gap-4 mt-2 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Eye className="w-4 h-4" />
                         {stat.total_views} visningar
@@ -186,6 +212,10 @@ export const AgentStatistics = () => {
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         {formatTime(stat.avg_time_spent)} snitt
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Image className="w-4 h-4" />
+                        {stat.avg_images_per_session} bilder/besök
                       </span>
                     </div>
                   </div>

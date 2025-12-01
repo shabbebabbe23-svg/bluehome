@@ -1,31 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ImageGalleryProps {
   images: string[];
   mainImage: string;
   title: string;
+  propertyId?: string;
 }
 
-const ImageGallery = ({ images, mainImage, title }: ImageGalleryProps) => {
+const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   
   const allImages = [mainImage, ...images];
 
+  // Track image views
+  const trackImageView = async (imageIndex: number) => {
+    if (!propertyId) return;
+    
+    try {
+      const sessionId = sessionStorage.getItem('session_id') || 
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (!sessionStorage.getItem('session_id')) {
+        sessionStorage.setItem('session_id', sessionId);
+      }
+
+      await supabase.from('image_views').insert({
+        property_id: propertyId,
+        session_id: sessionId,
+        image_index: imageIndex,
+        image_url: allImages[imageIndex],
+      });
+    } catch (error) {
+      console.error('Error tracking image view:', error);
+    }
+  };
+
   const openGallery = (index: number) => {
     setCurrentIndex(index);
     setIsOpen(true);
+    trackImageView(index);
   };
 
   const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % allImages.length);
+    const newIndex = (currentIndex + 1) % allImages.length;
+    setCurrentIndex(newIndex);
+    trackImageView(newIndex);
   };
 
   const previousImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    const newIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+    setCurrentIndex(newIndex);
+    trackImageView(newIndex);
   };
 
   return (

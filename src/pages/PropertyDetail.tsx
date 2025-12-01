@@ -325,11 +325,39 @@ const PropertyDetail = () => {
 
   // Handle images for both database and hardcoded properties
   const images = dbProperty ? [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) : property.images || [property1];
+  
+  // Track image views
+  const trackImageView = async (imageIndex: number) => {
+    if (!id) return;
+    
+    try {
+      const sessionId = sessionStorage.getItem('session_id') || 
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (!sessionStorage.getItem('session_id')) {
+        sessionStorage.setItem('session_id', sessionId);
+      }
+
+      await supabase.from('image_views').insert({
+        property_id: id,
+        session_id: sessionId,
+        image_index: imageIndex,
+        image_url: images[imageIndex],
+      });
+    } catch (error) {
+      console.error('Error tracking image view:', error);
+    }
+  };
+  
   const handlePreviousImage = () => {
-    setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+    const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(newIndex);
+    trackImageView(newIndex);
   };
   const handleNextImage = () => {
-    setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+    const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+    setCurrentImageIndex(newIndex);
+    trackImageView(newIndex);
   };
   const handleDownloadViewing = (date: string, time: string) => {
     // Parse datum och tid för att skapa en riktig Date
@@ -504,7 +532,10 @@ const PropertyDetail = () => {
               {/* Thumbnail Gallery */}
               <div className="p-2 sm:p-4 bg-muted/30 mx-0">
                 <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
-                  {images.map((image, index) => <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
+                  {images.map((image, index) => <button key={index} onClick={() => {
+                      setCurrentImageIndex(index);
+                      trackImageView(index);
+                    }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
                       <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
                     </button>)}
                 </div>
