@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Building2, Users, User, Upload, BarChart3, TrendingUp, Home as HomeIcon, Award } from "lucide-react";
+import { LogOut, Building2, Users, User, Upload, BarChart3, TrendingUp, Home as HomeIcon, Award, Copy, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -39,9 +39,10 @@ interface Invitation {
   id: string;
   email: string;
   role: string;
+  token: string;
   created_at: string;
   expires_at: string;
-  used_at?: string;
+  used_at?: string | null;
 }
 
 const AgencyAdminDashboard = () => {
@@ -49,6 +50,7 @@ const AgencyAdminDashboard = () => {
   const { user, userType, signOut } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [pendingInvites, setPendingInvites] = useState<Invitation[]>([]);
+  const [createdInvitationLink, setCreatedInvitationLink] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [newAgent, setNewAgent] = useState({
     email: "",
@@ -139,9 +141,10 @@ const AgencyAdminDashboard = () => {
             
           supabase
             .from("agency_invitations")
-            .select("id, email, role, created_at, expires_at, used_at")
+            .select("id, email, role, token, created_at, expires_at, used_at")
             .eq("agency_id", profile.agency_id)
             .is("used_at", null)
+            .gt("expires_at", new Date().toISOString())
             .then(({ data }) => setPendingInvites(data ?? []));
           
           // Fetch statistics
@@ -211,8 +214,8 @@ const AgencyAdminDashboard = () => {
   };
 
   const createAgent = async () => {
-    if (!newAgent.email || !newAgent.full_name) {
-      toast.error("Fyll i namn och e-post");
+    if (!newAgent.email.trim() || !newAgent.full_name.trim()) {
+      toast.error("Fyll i alla fält");
       return;
     }
 
@@ -223,60 +226,99 @@ const AgencyAdminDashboard = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-agent', {
-        body: {
+      // Skapa inbjudan för mäklare
+      const token = crypto.randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7 dagars giltighet
+
+      const { error: invitationError } = await supabase
+        .from("agency_invitations")
+        .insert({
+          agency_id: agencyId,
           email: newAgent.email.trim(),
-          full_name: newAgent.full_name.trim(),
-          agency_id: agencyId
-        }
-      });
+          role: "maklare",
+          token: token,
+          expires_at: expiresAt.toISOString(),
+          created_by: user?.id,
+        });
 
-      if (error) throw error;
-
-      if (data?.error) {
-        // Handle specific error cases
-        if (data.errorCode === 'email_exists') {
-          toast.error(data.error, {
+      if (invitationError) {
+        // Check if invitation already exists for this email
+        if (invitationError.code === '23505') {
+          toast.error("Det finns redan en inbjudan för denna email", {
             duration: 8000,
-            description: data.suggestion
           });
         } else {
-          throw new Error(data.error);
+          throw invitationError;
         }
         return;
       }
 
-      toast.success("Inbjudan skickad!", {
-        duration: 6000,
-        description: data.message || `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email.`
+      // Skapa inbjudningslänk
+      const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${token}`;
+      
+      toast.success("Inbjudan skapad!", {
+        duration: 8000,
+        description: "Kopiera länken nedan och skicka den till mäklaren.",
       });
 
+      // Show invitation link
+      setCreatedInvitationLink(invitationUrl);
       setNewAgent({ email: "", full_name: "" });
 
-      // Refresh user list
-      const { data: usersData } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, user_roles(user_type)")
-        .eq("agency_id", agencyId);
-
-      if (usersData) {
-        const usersWithCounts = await Promise.all(
-          usersData.map(async (user) => {
-            const { count } = await supabase
-              .from("properties")
-              .select("*", { count: "exact", head: true })
-              .eq("user_id", user.id)
-              .eq("is_deleted", false);
-            return { ...user, propertyCount: count || 0 };
-          })
-        );
-        setUsers(usersWithCounts as any);
-      }
+      // Refresh pending invitations list
+      const { data } = await supabase
+        .from("agency_invitations")
+        .select("id, email, role, token, created_at, expires_at, used_at")
+        .eq("agency_id", agencyId)
+        .is("used_at", null)
+        .gt("expires_at", new Date().toISOString());
+        
+      setPendingInvites(data ?? []);
     } catch (error: any) {
-      console.error("Error creating agent:", error);
-      toast.error(error.message || "Kunde inte skicka inbjudan", { duration: 5000 });
+      console.error("Error creating invitation:", error);
+      toast.error(error.message || "Kunde inte skapa inbjudan", { duration: 5000 });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteInvitation = async (invitationId: string) => {
+    try {
+      const { error } = await supabase
+        .from("agency_invitations")
+        .delete()
+        .eq("id", invitationId);
+
+      if (error) throw error;
+
+      toast.success("Inbjudan raderad", {
+        description: "Inbjudan har tagits bort.",
+      });
+
+      // Refresh list
+      const { data } = await supabase
+        .from("agency_invitations")
+        .select("id, email, role, token, created_at, expires_at, used_at")
+        .eq("agency_id", agencyId)
+        .is("used_at", null)
+        .gt("expires_at", new Date().toISOString());
+        
+      setPendingInvites(data ?? []);
+    } catch (error) {
+      console.error("Error deleting invitation:", error);
+      toast.error("Kunde inte radera inbjudan");
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Kopierat!", {
+        description: "Länken har kopierats till urklipp.",
+      });
+    } catch (error) {
+      toast.error("Kunde inte kopiera länken. Försök igen.");
     }
   };
 
@@ -898,11 +940,78 @@ const AgencyAdminDashboard = () => {
                       </div>
                       <Button 
                         onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name} 
+                        disabled={loading || !newAgent.email || !newAgent.full_name || loadingAgency || !agencyId} 
                         className="w-full"
                       >
-                        {loading ? "Skickar inbjudan..." : "Skicka inbjudan"}
+                        {loading ? "Skapar inbjudan..." : "Skapa inbjudan"}
                       </Button>
+
+                      {/* Show created invitation link */}
+                      {createdInvitationLink && (
+                        <div className="mt-4 p-4 bg-muted rounded-lg space-y-2">
+                          <Label className="text-sm font-semibold">Inbjudningslänk skapad!</Label>
+                          <p className="text-xs text-muted-foreground">
+                            Kopiera länken nedan och skicka den till mäklaren:
+                          </p>
+                          <div className="flex gap-2">
+                            <Input
+                              readOnly
+                              value={createdInvitationLink}
+                              className="text-xs bg-background"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => copyToClipboard(createdInvitationLink)}
+                            >
+                              Kopiera
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Show pending invitations */}
+                      {pendingInvites.length > 0 && (
+                        <div className="mt-6 pt-6 border-t">
+                          <Label className="text-sm font-semibold mb-3 block">
+                            Väntande inbjudningar ({pendingInvites.length})
+                          </Label>
+                          <div className="space-y-2">
+                            {pendingInvites.map((invite) => (
+                              <div key={invite.id} className="p-3 bg-muted rounded-lg">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div>
+                                    <p className="text-sm font-medium">{invite.email}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Utgår: {new Date(invite.expires_at).toLocaleDateString('sv-SE')}
+                                    </p>
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => deleteInvitation(invite.id)}
+                                    className="text-destructive"
+                                  >
+                                    Radera
+                                  </Button>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Input
+                                    readOnly
+                                    value={`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`}
+                                    className="text-xs bg-background"
+                                  />
+                                  <Button
+                                    size="sm"
+                                    onClick={() => copyToClipboard(`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`)}
+                                  >
+                                    Kopiera
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </DialogContent>
                 </Dialog>
