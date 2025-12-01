@@ -88,9 +88,11 @@ const SuperAdminDashboard = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isUsersDialogOpen, setIsUsersDialogOpen] = useState(false);
+  const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
   const [agencyUsers, setAgencyUsers] = useState<AgencyUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<AgencyUser | null>(null);
   const [createdInvitationLink, setCreatedInvitationLink] = useState<string | null>(null);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
   const [deletingAgency, setDeletingAgency] = useState<Agency | null>(null);
@@ -731,6 +733,56 @@ const SuperAdminDashboard = () => {
     fetchAgencyUsers(agency.id);
   };
 
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+
+    try {
+      // Ta bort användarens fastigheter
+      const { error: propertiesError } = await supabase
+        .from("properties")
+        .delete()
+        .eq("user_id", deletingUser.id);
+
+      if (propertiesError) throw propertiesError;
+
+      // Ta bort användarens roller
+      const { error: rolesError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", deletingUser.id);
+
+      if (rolesError) throw rolesError;
+
+      // Ta bort användarens profil
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", deletingUser.id);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Användare borttagen",
+        description: `${deletingUser.full_name} har tagits bort permanent.`,
+      });
+
+      // Uppdatera användarlistan
+      if (selectedAgency) {
+        fetchAgencyUsers(selectedAgency.id);
+      }
+
+      setIsDeleteUserDialogOpen(false);
+      setDeletingUser(null);
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte ta bort användaren.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <Header />
@@ -882,6 +934,42 @@ const SuperAdminDashboard = () => {
             </AlertDialogContent>
           </AlertDialog>
 
+          {/* Delete User Confirmation Dialog */}
+          <AlertDialog open={isDeleteUserDialogOpen} onOpenChange={setIsDeleteUserDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-destructive" />
+                  Radera användare permanent?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    Du är på väg att permanent ta bort användaren{" "}
+                    <span className="font-semibold">{deletingUser?.full_name}</span> ({deletingUser?.email}).
+                  </p>
+                  <p className="text-destructive font-medium">
+                    ⚠️ Detta kommer att permanent radera:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    <li>Användarens profil</li>
+                    <li>Alla användarens fastigheter ({deletingUser?.propertyCount || 0} objekt)</li>
+                    <li>Användarens roller och behörigheter</li>
+                  </ul>
+                  <p className="font-semibold">Denna åtgärd kan inte ångras!</p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteUser}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  Radera permanent
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
           {/* Agency Users Dialog */}
           <Dialog open={isUsersDialogOpen} onOpenChange={setIsUsersDialogOpen}>
             <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
@@ -926,6 +1014,18 @@ const SuperAdminDashboard = () => {
                             </span>
                           </div>
                         </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setDeletingUser(user);
+                            setIsDeleteUserDialogOpen(true);
+                          }}
+                          className="gap-2 shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span className="hidden sm:inline">Radera</span>
+                        </Button>
                       </div>
                     </div>
                   ))}
