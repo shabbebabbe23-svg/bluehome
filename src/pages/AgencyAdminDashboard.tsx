@@ -60,7 +60,6 @@ const AgencyAdminDashboard = () => {
   const [agencyName, setAgencyName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [agencyInfo, setAgencyInfo] = useState<AgencyInfo | null>(null);
-  const [editingAgency, setEditingAgency] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: "",
     phone: "",
@@ -357,7 +356,6 @@ const AgencyAdminDashboard = () => {
       toast.error("Kunde inte uppdatera byråinformation");
     } else {
       toast.success("Byråinformation uppdaterad");
-      setEditingAgency(false);
       setAgencyName(info.name);
     }
   };
@@ -672,7 +670,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), name: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="Kontorsnamn"
                     />
                     <Label htmlFor="agency-email-domain">E-postdomän</Label>
@@ -691,7 +688,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), email_domain: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="E-postdomän"
                     />
                     <Label htmlFor="address">Adress</Label>
@@ -710,7 +706,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), address: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="Gatuadress, Postnummer, Ort"
                     />
                     <Label htmlFor="area">Område</Label>
@@ -729,7 +724,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), area: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="T.ex. Stockholm, Göteborg, Malmö"
                     />
                     <Label htmlFor="owner">Ägare</Label>
@@ -748,7 +742,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), owner: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="Namn på företagsägare"
                     />
                   </div>
@@ -769,7 +762,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), phone: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="+46 XX XXX XX XX"
                     />
                     <Label htmlFor="org_number">Org.nr</Label>
@@ -788,7 +780,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), org_number: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="XXXXXX-XXXX"
                     />
                     <Label htmlFor="website">Länk till egen sida</Label>
@@ -807,7 +798,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), website: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="https://www.exempel.se"
                     />
                     <Label htmlFor="description">Beskrivning</Label>
@@ -826,7 +816,6 @@ const AgencyAdminDashboard = () => {
                         area: "",
                         owner: ""
                       }), description: e.target.value })}
-                      disabled={!editingAgency}
                       placeholder="Beskrivning av byrån"
                     />
                     <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
@@ -845,53 +834,33 @@ const AgencyAdminDashboard = () => {
                           />
                         </div>
                       )}
-                      {editingAgency && (
-                        <div className="space-y-2">
-                          <Label htmlFor="logo-upload" className="cursor-pointer">
-                            <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
-                              <Upload className="w-5 h-5" />
-                              <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
-                            </div>
-                            <Input
-                              id="logo-upload"
-                              type="file"
-                              accept="image/jpeg,image/jpg,image/png,image/webp"
-                              className="hidden"
-                              onChange={handleLogoUpload}
-                              disabled={uploadingLogo}
-                            />
-                          </Label>
-                          {agencyInfo?.logo_url && (
-                            <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
-                          )}
-                        </div>
-                      )}
-                      {!editingAgency && !agencyInfo?.logo_url && (
-                        <p className="text-sm text-muted-foreground">Ingen logotyp uppladdad. Klicka "Redigera" för att ladda upp.</p>
-                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="logo-upload" className="cursor-pointer">
+                          <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
+                            <Upload className="w-5 h-5" />
+                            <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
+                          </div>
+                          <Input
+                            id="logo-upload"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            className="hidden"
+                            onChange={handleLogoUpload}
+                            disabled={uploadingLogo}
+                          />
+                        </Label>
+                        {agencyInfo?.logo_url && (
+                          <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-                {editingAgency && (
-                  <div className="flex gap-2 mt-8">
-                    <Button onClick={() => updateAgencyInfo()} disabled={loading}>
-                      Spara
-                    </Button>
-                    <Button variant="outline" onClick={() => {
-                      setEditingAgency(false);
-                      if (agencyId) {
-                        supabase
-                          .from("agencies")
-                          .select("*")
-                          .eq("id", agencyId)
-                          .single()
-                          .then(({ data }) => data && setAgencyInfo(data));
-                      }
-                    }}>
-                      Avbryt
-                    </Button>
-                  </div>
-                )}
+                <div className="flex gap-2 mt-8">
+                  <Button onClick={() => updateAgencyInfo()} disabled={loading}>
+                    {loading ? "Sparar..." : "Spara"}
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
