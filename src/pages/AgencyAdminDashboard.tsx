@@ -216,27 +216,64 @@ const AgencyAdminDashboard = () => {
       return;
     }
 
+    if (!agencyId) {
+      toast.error("Ingen byrå hittades");
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/invite-agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: {
           email: newAgent.email.trim(),
-          full_name: newAgent.full_name.trim()
-        })
+          full_name: newAgent.full_name.trim(),
+          agency_id: agencyId
+        }
       });
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Kunde inte skicka inbjudan");
+      if (error) throw error;
+
+      if (data?.error) {
+        // Handle specific error cases
+        if (data.errorCode === 'email_exists') {
+          toast.error(data.error, {
+            duration: 8000,
+            description: data.suggestion
+          });
+        } else {
+          throw new Error(data.error);
+        }
+        return;
+      }
 
       toast.success("Inbjudan skickad!", {
         duration: 6000,
-        description: `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email.`
+        description: data.message || `${newAgent.full_name} (${newAgent.email}) har fått en inbjudan via email.`
       });
+
       setNewAgent({ email: "", full_name: "" });
-      // Här kan du lägga till logik för att uppdatera användarlistan om du har en databas
+
+      // Refresh user list
+      const { data: usersData } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, user_roles(user_type)")
+        .eq("agency_id", agencyId);
+
+      if (usersData) {
+        const usersWithCounts = await Promise.all(
+          usersData.map(async (user) => {
+            const { count } = await supabase
+              .from("properties")
+              .select("*", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .eq("is_deleted", false);
+            return { ...user, propertyCount: count || 0 };
+          })
+        );
+        setUsers(usersWithCounts as any);
+      }
     } catch (error: any) {
+      console.error("Error creating agent:", error);
       toast.error(error.message || "Kunde inte skicka inbjudan", { duration: 5000 });
     } finally {
       setLoading(false);
