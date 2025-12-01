@@ -798,29 +798,14 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  size="lg" 
-                  className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden xs:inline">Lägg till byrå</span>
-                  <span className="xs:hidden">Ny byrå</span>
-                </Button>
-              </DialogTrigger>
-            </Dialog>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="gap-2 w-full sm:w-auto"
-              onClick={() => navigate("/skapa-byra-manuellt")}
-            >
-              <Plus className="w-4 h-4" />
-              Skapa ny byrå manuellt
-            </Button>
-          </div>
+          <Button
+            size="lg"
+            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+            onClick={() => navigate("/skapa-byra-manuellt")}
+          >
+            <Plus className="w-4 h-4" />
+            Skapa ny byrå manuellt
+          </Button>
 
           {/* Edit Agency Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
