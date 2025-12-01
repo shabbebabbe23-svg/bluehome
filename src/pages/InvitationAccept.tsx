@@ -26,7 +26,6 @@ const InvitationAccept = () => {
   const [submitting, setSubmitting] = useState(false);
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
   const [formData, setFormData] = useState({
-    fullName: "",
     password: "",
     confirmPassword: "",
   });
@@ -114,12 +113,13 @@ const InvitationAccept = () => {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log("Starting signup with invitation token:", token);
+      
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email: invitation.email,
         password: formData.password,
         options: {
           data: {
-            full_name: formData.fullName,
             invitation_token: token,
           },
           emailRedirectTo: `${window.location.origin}/`,
@@ -127,6 +127,7 @@ const InvitationAccept = () => {
       });
 
       if (error) {
+        console.error("Signup error:", error);
         // Handle user already exists
         if (error.message?.includes('already been registered') || 
             error.message?.includes('User already registered') ||
@@ -138,8 +139,26 @@ const InvitationAccept = () => {
         throw error;
       }
 
+      console.log("Signup successful, user created:", signUpData.user?.id);
+
+      // Mark invitation as used
+      const { error: updateError } = await supabase
+        .from("agency_invitations")
+        .update({ used_at: new Date().toISOString() })
+        .eq("token", token);
+
+      if (updateError) {
+        console.error("Error marking invitation as used:", updateError);
+      }
+
       toast.success("Konto skapat! Du är nu inloggad.");
-      navigate("/maklare");
+      
+      // Navigate based on role
+      if (invitation.role === "agency_admin") {
+        navigate("/byra-admin");
+      } else {
+        navigate("/maklare");
+      }
     } catch (error: any) {
       console.error("Error signing up:", error);
       toast.error(error.message || "Ett fel uppstod vid registrering");
@@ -270,9 +289,9 @@ const InvitationAccept = () => {
       <div className="pt-24 flex items-center justify-center min-h-screen p-4">
         <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Välkommen!</CardTitle>
+          <CardTitle className="text-2xl">Välkommen till {invitation.agency_name}!</CardTitle>
           <CardDescription>
-            Du har blivit inbjuden till {invitation.agency_name} som {invitation.role === "maklare" ? "mäklare" : "byrå-admin"}
+            Du har blivit inbjuden som {invitation.role === "maklare" ? "mäklare" : "byrå-admin"}. Skapa ditt lösenord för att komma igång.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -289,19 +308,7 @@ const InvitationAccept = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fullName">Fullständigt namn *</Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="Ditt fullständiga namn"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Lösenord *</Label>
+              <Label htmlFor="password">Välj lösenord *</Label>
               <Input
                 id="password"
                 type="password"
@@ -318,7 +325,7 @@ const InvitationAccept = () => {
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Bekräfta ditt lösenord"
+                placeholder="Ange lösenordet igen"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
@@ -337,7 +344,7 @@ const InvitationAccept = () => {
                   Skapar konto...
                 </>
               ) : (
-                "Skapa konto"
+                "Registrera dig"
               )}
             </Button>
           </form>
