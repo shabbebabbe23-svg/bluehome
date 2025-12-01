@@ -71,33 +71,15 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=add" className="flex items-center gap-3 cursor-pointer py-4">
-                      <Plus className="w-6 h-6" />
-                      <span className="font-medium text-lg">Lägg till ny bostad</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=existing" className="flex items-center gap-3 cursor-pointer py-4">
+                    <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-4">
                       <Home className="w-6 h-6" />
-                      <span className="font-medium text-lg">Befintliga bostäder</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=removed" className="flex items-center gap-3 cursor-pointer py-4">
-                      <Archive className="w-6 h-6" />
-                      <span className="font-medium text-lg">Borttagna bostäder</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=statistics" className="flex items-center gap-3 cursor-pointer py-4">
-                      <BarChart3 className="w-6 h-6" />
-                      <span className="font-medium text-lg">Din statistik</span>
+                      <span className="font-medium text-lg">Hantera fastigheter</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
                     <Link to="/maklare?tab=profile" className="flex items-center gap-3 cursor-pointer py-4">
                       <UserCircle className="w-6 h-6" />
-                      <span className="font-medium text-lg">Min profil</span>
+                      <span className="font-medium text-lg">Hantera konto</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -239,25 +221,13 @@ const Header = () => {
 
               {/* Agent Menu Items for Mobile */}
               {user && userType === "maklare" && <div className="flex flex-col gap-2 px-4 pb-4 border-b border-white/20">
-                  <Link to="/maklare?tab=add" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Plus className="w-6 h-6" />
-                    <span className="font-medium text-lg">Lägg till ny bostad</span>
-                  </Link>
-                  <Link to="/maklare?tab=existing" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/maklare" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <Home className="w-6 h-6" />
-                    <span className="font-medium text-lg">Befintliga bostäder</span>
-                  </Link>
-                  <Link to="/maklare?tab=removed" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Archive className="w-6 h-6" />
-                    <span className="font-medium text-lg">Borttagna bostäder</span>
-                  </Link>
-                  <Link to="/maklare?tab=statistics" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <BarChart3 className="w-6 h-6" />
-                    <span className="font-medium text-lg">Din statistik</span>
+                    <span className="font-medium text-lg">Hantera fastigheter</span>
                   </Link>
                   <Link to="/maklare?tab=profile" className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <UserCircle className="w-6 h-6" />
-                    <span className="font-medium text-lg">Min profil</span>
+                    <span className="font-medium text-lg">Hantera konto</span>
                   </Link>
                 </div>}
 
