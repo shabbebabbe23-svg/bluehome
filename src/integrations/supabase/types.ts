@@ -171,6 +171,44 @@ export type Database = {
           },
         ]
       }
+      image_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_index: number
+          image_url: string | null
+          property_id: string
+          session_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_index: number
+          image_url?: string | null
+          property_id: string
+          session_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_index?: number
+          image_url?: string | null
+          property_id?: string
+          session_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
