@@ -678,25 +678,40 @@ const SuperAdminDashboard = () => {
   const fetchAgencyUsers = async (agencyId: string) => {
     setLoadingUsers(true);
     try {
+      // Hämta profiler
       const { data: usersData, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email, user_roles(user_type)")
+        .select("id, full_name, email")
         .eq("agency_id", agencyId);
 
       if (error) throw error;
 
       if (usersData) {
-        const usersWithCounts = await Promise.all(
+        // Hämta roller separat för varje användare
+        const usersWithRolesAndCounts = await Promise.all(
           usersData.map(async (user) => {
+            // Hämta roll
+            const { data: roleData } = await supabase
+              .from("user_roles")
+              .select("user_type")
+              .eq("user_id", user.id)
+              .single();
+            
+            // Hämta antal fastigheter
             const { count } = await supabase
               .from("properties")
               .select("*", { count: "exact", head: true })
               .eq("user_id", user.id)
               .eq("is_deleted", false);
-            return { ...user, propertyCount: count || 0 };
+            
+            return { 
+              ...user, 
+              user_roles: roleData ? [{ user_type: roleData.user_type }] : [],
+              propertyCount: count || 0 
+            };
           })
         );
-        setAgencyUsers(usersWithCounts as any);
+        setAgencyUsers(usersWithRolesAndCounts as any);
       }
     } catch (error) {
       console.error("Error fetching agency users:", error);
