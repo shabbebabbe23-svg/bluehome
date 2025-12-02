@@ -873,7 +873,12 @@ const AgencyAdminDashboard = () => {
                   <Users className="w-6 h-6" />
                   Mäklare
                 </h2>
-                <Dialog>
+                <Dialog onOpenChange={(open) => {
+                  if (open) {
+                    setCreatedInvitationLink(null);
+                    setNewAgent({ email: "", full_name: "" });
+                  }
+                }}>
                   <DialogTrigger asChild>
                     <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">
                       <User className="w-4 h-4 mr-2" />
