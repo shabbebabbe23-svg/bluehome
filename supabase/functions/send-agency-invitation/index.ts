@@ -100,25 +100,19 @@ const handler = async (req: Request): Promise<Response> => {
                         </ul>
                       </div>
 
-                      <!-- CTA-knapp -->
-                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                          <td align="center" style="padding: 8px 0 24px 0;">
-                            <a href="${signupUrl}" 
-                               style="display: inline-block;
-                                      background: linear-gradient(135deg, hsl(200, 98%, 35%), hsl(142, 76%, 30%));
-                                      color: white;
-                                      text-decoration: none;
-                                      padding: 16px 48px;
-                                      border-radius: 8px;
-                                      font-size: 16px;
-                                      font-weight: 600;
-                                      box-shadow: 0 4px 14px rgba(0, 128, 128, 0.3);">
-                              Skapa mitt konto →
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
+                      <!-- Registreringslänk -->
+                      <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; text-align: center;">
+                        Klicka på länken nedan för att skapa ditt konto:
+                      </p>
+                      <p style="margin: 0 0 24px 0; text-align: center; word-break: break-all;">
+                        <a href="${signupUrl}" 
+                           style="color: hsl(200, 98%, 35%); 
+                                  text-decoration: underline; 
+                                  font-size: 14px;
+                                  font-weight: 500;">
+                          ${signupUrl}
+                        </a>
+                      </p>
 
                       <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">
                         Länken är giltig i 7 dagar.
