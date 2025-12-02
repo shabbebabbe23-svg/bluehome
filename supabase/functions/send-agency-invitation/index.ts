@@ -14,6 +14,7 @@ interface InvitationRequest {
   name: string;
   agency_name: string;
   token: string;
+  role?: string; // 'agency_admin' or 'maklare'
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,9 +24,27 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, name, agency_name, token }: InvitationRequest = await req.json();
+    const { email, name, agency_name, token, role = 'agency_admin' }: InvitationRequest = await req.json();
 
     const signupUrl = `${Deno.env.get("SITE_URL") || "https://qgvloiecyvqbxeplfzwv.lovableproject.com"}/acceptera-inbjudan?token=${token}`;
+
+    // Anpassa meddelandet baserat på roll
+    const roleText = role === 'maklare' ? 'mäklare' : 'byrå-admin';
+    const roleCapabilities = role === 'maklare' 
+      ? `
+        <ul>
+          <li>Skapa och hantera dina egna objekt</li>
+          <li>Se statistik för dina fastigheter</li>
+          <li>Hantera visningar och intresseanmälningar</li>
+        </ul>
+      `
+      : `
+        <ul>
+          <li>Bjuda in mäklare till din byrå</li>
+          <li>Hantera alla objekt från din byrå</li>
+          <li>Se statistik och rapporter</li>
+        </ul>
+      `;
 
     const emailResponse = await resend.emails.send({
       from: "BaraHem <onboarding@resend.dev>",
@@ -35,13 +54,9 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #333;">Välkommen till BaraHem!</h1>
           <p>Hej ${name},</p>
-          <p>Du har blivit inbjuden att bli byrå-admin för <strong>${agency_name}</strong> på BaraHem.</p>
-          <p>Som byrå-admin kan du:</p>
-          <ul>
-            <li>Bjuda in mäklare till din byrå</li>
-            <li>Hantera alla objekt från din byrå</li>
-            <li>Se statistik och rapporter</li>
-          </ul>
+          <p>Du har blivit inbjuden att bli ${roleText} för <strong>${agency_name}</strong> på BaraHem.</p>
+          <p>Som ${roleText} kan du:</p>
+          ${roleCapabilities}
           <p style="margin: 30px 0;">
             <a href="${signupUrl}" 
                style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); 
