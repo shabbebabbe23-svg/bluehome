@@ -458,6 +458,9 @@ export type Database = {
           session_id: string
           time_spent_seconds: number | null
           view_started_at: string
+          visitor_city: string | null
+          visitor_country: string | null
+          visitor_region: string | null
         }
         Insert: {
           created_at?: string
@@ -466,6 +469,9 @@ export type Database = {
           session_id: string
           time_spent_seconds?: number | null
           view_started_at?: string
+          visitor_city?: string | null
+          visitor_country?: string | null
+          visitor_region?: string | null
         }
         Update: {
           created_at?: string
@@ -474,6 +480,9 @@ export type Database = {
           session_id?: string
           time_spent_seconds?: number | null
           view_started_at?: string
+          visitor_city?: string | null
+          visitor_country?: string | null
+          visitor_region?: string | null
         }
         Relationships: [
           {

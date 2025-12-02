@@ -21,9 +21,31 @@ export const usePropertyViewTracking = (propertyId: string) => {
     const sessionId = getSessionId();
     startTimeRef.current = Date.now();
 
+    // Get visitor location using IP geolocation
+    const getVisitorLocation = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        return {
+          city: data.city || null,
+          region: data.region || null,
+          country: data.country_name || 'Sweden',
+        };
+      } catch (error) {
+        console.error("Error fetching location:", error);
+        return {
+          city: null,
+          region: null,
+          country: 'Sweden',
+        };
+      }
+    };
+
     // Log the initial view
     const logView = async () => {
       try {
+        const location = await getVisitorLocation();
+        
         const { data, error } = await supabase
           .from("property_views")
           .insert({
@@ -31,6 +53,9 @@ export const usePropertyViewTracking = (propertyId: string) => {
             session_id: sessionId,
             view_started_at: new Date().toISOString(),
             time_spent_seconds: 0,
+            visitor_city: location.city,
+            visitor_region: location.region,
+            visitor_country: location.country,
           })
           .select()
           .single();
