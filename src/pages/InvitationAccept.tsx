@@ -4,9 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock, CheckCircle } from "lucide-react";
+import heroImage from "@/assets/hero-image.jpg";
 
 interface InvitationData {
   email: string;
@@ -60,7 +60,6 @@ const InvitationAccept = () => {
           return;
         }
 
-        // Check if expired
         const now = new Date();
         const isExpired = new Date(data.expires_at) < now;
 
@@ -113,8 +112,6 @@ const InvitationAccept = () => {
     setSubmitting(true);
 
     try {
-      console.log("Starting signup with invitation token:", token);
-      
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: invitation.email,
         password: formData.password,
@@ -128,7 +125,6 @@ const InvitationAccept = () => {
 
       if (error) {
         console.error("Signup error:", error);
-        // Handle user already exists
         if (error.message?.includes('already been registered') || 
             error.message?.includes('User already registered') ||
             error.code === 'user_already_exists') {
@@ -139,9 +135,6 @@ const InvitationAccept = () => {
         throw error;
       }
 
-      console.log("Signup successful, user created:", signUpData.user?.id);
-
-      // Mark invitation as used
       const { error: updateError } = await supabase
         .from("agency_invitations")
         .update({ used_at: new Date().toISOString() })
@@ -153,7 +146,6 @@ const InvitationAccept = () => {
 
       toast.success("Konto skapat! Du är nu inloggad.");
       
-      // Navigate based on role
       if (invitation.role === "agency_admin") {
         navigate("/byra-admin");
       } else {
@@ -169,187 +161,177 @@ const InvitationAccept = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%))' }}>
+        <Loader2 className="h-12 w-12 animate-spin text-white" />
       </div>
     );
   }
 
-
   if (!invitation) {
     return (
-      <div className="min-h-screen">
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{ background: 'var(--main-gradient)' }}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              {/* Tillbaka-knapp */}
-              <button
-                onClick={() => navigate("/")}
-                className="hover:scale-110 transition-all duration-300 cursor-pointer"
-              >
-                <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
-                      <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
-                    </linearGradient>
-                  </defs>
-                  <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <div className="min-h-screen relative flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%))' }}>
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{ 
+            backgroundImage: `url(${heroImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div className="relative z-10 w-full max-w-md">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
-
-              {/* Logo */}
-              <div className="flex items-center gap-2">
-                <svg className="w-8 h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
-                      <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
-                    </linearGradient>
-                  </defs>
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="text-xl md:text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-                  BaraHem
-                </span>
               </div>
-
-              {/* Spacer för symmetri */}
-              <div className="w-9"></div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">Inbjudan ogiltig</h1>
+              <p className="text-muted-foreground">
+                Denna inbjudan är antingen redan använd eller har gått ut.
+              </p>
             </div>
+            <Button 
+              onClick={() => navigate("/")} 
+              className="w-full"
+              style={{ background: 'linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%))' }}
+            >
+              Till startsidan
+            </Button>
           </div>
-        </header>
-
-        {/* Content */}
-        <div className="pt-24 flex items-center justify-center min-h-screen p-4">
-          <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-xl text-destructive">Inbjudan ogiltig</CardTitle>
-            <CardDescription>
-              Denna inbjudan är antingen använd eller har gått ut (giltig max 48h).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate("/")}>Till startsidan</Button>
-          </CardContent>
-        </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{ background: 'var(--main-gradient)' }}>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Tillbaka-knapp */}
-            <button
-              onClick={() => navigate("/")}
-              className="hover:scale-110 transition-all duration-300 cursor-pointer"
-            >
-              <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
-                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
-                  </linearGradient>
-                </defs>
-                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+    <div className="min-h-screen relative flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%))' }}>
+      {/* Bakgrundsbild med overlay */}
+      <div 
+        className="absolute inset-0 opacity-25"
+        style={{ 
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      {/* Dekorativa cirklar */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
 
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <svg className="w-8 h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Huvudkort */}
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="p-6 text-center border-b border-border/50">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
                     <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)' }} />
                   </linearGradient>
                 </defs>
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#logoGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="9 22 9 12 15 12 15 22" stroke="url(#logoGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-xl md:text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] bg-clip-text text-transparent">
                 BaraHem
               </span>
             </div>
-
-            {/* Spacer för symmetri */}
-            <div className="w-9"></div>
+            <h1 className="text-xl font-semibold text-foreground">
+              Välkommen till {invitation.agency_name}!
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              Du har blivit inbjuden som {invitation.role === "maklare" ? "mäklare" : "byrå-administratör"}
+            </p>
           </div>
-        </div>
-      </header>
 
-      {/* Content */}
-      <div className="pt-24 flex items-center justify-center min-h-screen p-4">
-        <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Välkommen till {invitation.agency_name}!</CardTitle>
-          <CardDescription>
-            Du har blivit inbjuden som {invitation.role === "maklare" ? "mäklare" : "byrå-admin"}. Skapa ditt lösenord för att komma igång.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Formulär */}
+          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            {/* Email (readonly) */}
             <div className="space-y-2">
-              <Label htmlFor="email">E-post</Label>
-              <Input
-                id="email"
-                type="email"
-                value={invitation.email}
-                disabled
-                className="bg-muted"
-              />
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                E-postadress
+              </Label>
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  value={invitation.email}
+                  disabled
+                  className="bg-muted/50 pl-10"
+                />
+                <CheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+              </div>
             </div>
 
+            {/* Lösenord */}
             <div className="space-y-2">
-              <Label htmlFor="password">Välj lösenord *</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Minst 6 tecken"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-                minLength={6}
-              />
+              <Label htmlFor="password" className="text-sm font-medium text-foreground">
+                Välj lösenord
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Minst 6 tecken"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  minLength={6}
+                  className="pl-10"
+                />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
 
+            {/* Bekräfta lösenord */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Bekräfta lösenord *</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Ange lösenordet igen"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                required
-                minLength={6}
-              />
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+                Bekräfta lösenord
+              </Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Ange lösenordet igen"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  required
+                  minLength={6}
+                  className="pl-10"
+                />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
 
+            {/* Submit-knapp */}
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-12 text-base font-semibold"
+              style={{ background: 'linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%))' }}
               disabled={submitting}
             >
               {submitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Skapar konto...
                 </>
               ) : (
-                "Registrera dig"
+                "Skapa mitt konto"
               )}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+
+          {/* Footer */}
+          <div className="px-6 pb-6">
+            <p className="text-xs text-center text-muted-foreground">
+              Genom att skapa ett konto godkänner du våra användarvillkor och integritetspolicy.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

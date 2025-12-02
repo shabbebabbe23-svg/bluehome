@@ -14,11 +14,10 @@ interface InvitationRequest {
   name: string;
   agency_name: string;
   token: string;
-  role?: string; // 'agency_admin' or 'maklare'
+  role?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -28,57 +27,114 @@ const handler = async (req: Request): Promise<Response> => {
 
     const signupUrl = `${Deno.env.get("SITE_URL") || "https://qgvloiecyvqbxeplfzwv.lovableproject.com"}/acceptera-inbjudan?token=${token}`;
 
-    // Anpassa meddelandet baserat på roll
-    const roleText = role === 'maklare' ? 'mäklare' : 'byrå-admin';
-    const roleCapabilities = role === 'maklare' 
-      ? `
-        <ul>
-          <li>Skapa och hantera dina egna objekt</li>
-          <li>Se statistik för dina fastigheter</li>
-          <li>Hantera visningar och intresseanmälningar</li>
-        </ul>
-      `
-      : `
-        <ul>
-          <li>Bjuda in mäklare till din byrå</li>
-          <li>Hantera alla objekt från din byrå</li>
-          <li>Se statistik och rapporter</li>
-        </ul>
-      `;
+    const roleText = role === 'maklare' ? 'mäklare' : 'byrå-administratör';
 
     const emailResponse = await resend.emails.send({
       from: "BaraHem <noreply@info.barahem.se>",
       to: [email],
-      subject: `Inbjudan till ${agency_name} på BaraHem`,
+      subject: `Välkommen till ${agency_name} – Din inbjudan till BaraHem`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #333;">Välkommen till BaraHem!</h1>
-          <p>Hej ${name},</p>
-          <p>Du har blivit inbjuden att bli ${roleText} för <strong>${agency_name}</strong> på BaraHem.</p>
-          <p>Som ${roleText} kan du:</p>
-          ${roleCapabilities}
-          <p style="margin: 30px 0;">
-            <a href="${signupUrl}" 
-               style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); 
-                      color: white; 
-                      padding: 12px 30px; 
-                      text-decoration: none; 
-                      border-radius: 6px;
-                      display: inline-block;">
-              Acceptera inbjudan och skapa konto
-            </a>
-          </p>
-          <p style="color: #666; font-size: 14px;">
-            Denna inbjudan är giltig i 7 dagar.
-          </p>
-          <p style="color: #666; font-size: 14px;">
-            Om du inte begärt denna inbjudan kan du ignorera detta email.
-          </p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
-          <p style="color: #999; font-size: 12px;">
-            © ${new Date().getFullYear()} BaraHem. Alla rättigheter förbehållna.
-          </p>
-        </div>
+        <!DOCTYPE html>
+        <html lang="sv">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+          <table role="presentation" style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);">
+                  
+                  <!-- Header med gradient -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, hsl(200, 98%, 35%), hsl(142, 76%, 30%)); padding: 32px 40px; text-align: center;">
+                      <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                        🏠 BaraHem
+                      </h1>
+                      <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">
+                        Sveriges smartaste bostadsportal
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Huvudinnehåll -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <h2 style="margin: 0 0 8px 0; color: #1e293b; font-size: 24px; font-weight: 600;">
+                        Hej ${name}! 👋
+                      </h2>
+                      <p style="margin: 0 0 24px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        Grattis! Du har blivit utvald att bli ${roleText} hos <strong style="color: #1e293b;">${agency_name}</strong>.
+                      </p>
+
+                      <div style="background: linear-gradient(135deg, hsl(200, 98%, 96%), hsl(142, 76%, 96%)); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+                        <h3 style="margin: 0 0 16px 0; color: #1e293b; font-size: 16px; font-weight: 600;">
+                          Som ${roleText} på BaraHem kan du:
+                        </h3>
+                        <ul style="margin: 0; padding: 0 0 0 20px; color: #475569; font-size: 15px; line-height: 1.8;">
+                          ${role === 'maklare' 
+                            ? `
+                              <li>Skapa och publicera bostadsannonser</li>
+                              <li>Följa statistik och intresse för dina objekt</li>
+                              <li>Hantera visningar och budgivning</li>
+                              <li>Kommunicera direkt med intresserade köpare</li>
+                            `
+                            : `
+                              <li>Bjuda in och hantera mäklare i din byrå</li>
+                              <li>Få överblick över alla objekt och försäljningar</li>
+                              <li>Se detaljerad statistik och rapporter</li>
+                              <li>Administrera byråns profil och inställningar</li>
+                            `
+                          }
+                        </ul>
+                      </div>
+
+                      <!-- CTA-knapp -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td align="center" style="padding: 8px 0 24px 0;">
+                            <a href="${signupUrl}" 
+                               style="display: inline-block;
+                                      background: linear-gradient(135deg, hsl(200, 98%, 35%), hsl(142, 76%, 30%));
+                                      color: white;
+                                      text-decoration: none;
+                                      padding: 16px 48px;
+                                      border-radius: 8px;
+                                      font-size: 16px;
+                                      font-weight: 600;
+                                      box-shadow: 0 4px 14px rgba(0, 128, 128, 0.3);">
+                              Skapa mitt konto →
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">
+                        Länken är giltig i 7 dagar.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 13px; text-align: center;">
+                        Du får detta mail för att någon har bjudit in dig till BaraHem.<br>
+                        Om du inte förväntat dig denna inbjudan kan du ignorera mailet.
+                      </p>
+                      <p style="margin: 0; color: #cbd5e1; font-size: 12px; text-align: center;">
+                        © ${new Date().getFullYear()} BaraHem. Alla rättigheter förbehållna.
+                      </p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `,
     });
 
