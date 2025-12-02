@@ -256,12 +256,39 @@ const AgencyAdminDashboard = () => {
       // Skapa inbjudningslänk
       const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${token}`;
       
-      toast.success("Inbjudan skapad!", {
-        duration: 8000,
-        description: "Kopiera länken nedan och skicka den till mäklaren.",
-      });
+      // Skicka email med inbjudningslänken
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-agency-invitation', {
+          body: {
+            email: newAgent.email.trim(),
+            name: newAgent.full_name.trim(),
+            agency_name: agencyName,
+            token: token,
+            role: 'maklare'
+          }
+        });
 
-      // Show invitation link
+        if (emailError) {
+          console.error("Email sending failed:", emailError);
+          toast.warning("Inbjudan skapad men email kunde inte skickas", {
+            duration: 8000,
+            description: "Kopiera länken nedan och skicka den manuellt till mäklaren.",
+          });
+        } else {
+          toast.success("Inbjudan skickad!", {
+            duration: 8000,
+            description: `Ett email med inbjudningslänken har skickats till ${newAgent.email}`,
+          });
+        }
+      } catch (emailError: any) {
+        console.error("Email error:", emailError);
+        toast.warning("Inbjudan skapad men email kunde inte skickas", {
+          duration: 8000,
+          description: "Kopiera länken nedan och skicka den manuellt till mäklaren.",
+        });
+      }
+
+      // Show invitation link as backup
       setCreatedInvitationLink(invitationUrl);
       setNewAgent({ email: "", full_name: "" });
 
