@@ -28,6 +28,9 @@ const handler = async (req: Request): Promise<Response> => {
     const signupUrl = `${Deno.env.get("SITE_URL") || "https://qgvloiecyvqbxeplfzwv.lovableproject.com"}/acceptera-inbjudan?token=${token}`;
 
     const roleText = role === 'maklare' ? 'mäklare' : 'byrå-administratör';
+    
+    // Logo URL - kan ersättas med en publikt hostad logo
+    const logoUrl = "https://qgvloiecyvqbxeplfzwv.lovableproject.com/favicon.svg";
 
     const emailResponse = await resend.emails.send({
       from: "BaraHem <noreply@info.barahem.se>",
@@ -49,9 +52,16 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header med gradient -->
                   <tr>
                     <td style="background: linear-gradient(135deg, hsl(200, 98%, 35%), hsl(142, 76%, 30%)); padding: 32px 40px; text-align: center;">
-                      <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
-                        🏠 BaraHem
-                      </h1>
+                      <table role="presentation" style="margin: 0 auto;">
+                        <tr>
+                          <td style="vertical-align: middle; padding-right: 10px;">
+                            <img src="${logoUrl}" alt="BaraHem" width="36" height="36" style="display: block;" />
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <span style="color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">BaraHem</span>
+                          </td>
+                        </tr>
+                      </table>
                       <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">
                         Sveriges smartaste bostadsportal
                       </p>
