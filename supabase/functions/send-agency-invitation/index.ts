@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
     const emailResponse = await resend.emails.send({
-      from: "BaraHem <onboarding@resend.dev>",
+      from: "BaraHem <noreply@info.barahem.se>",
       to: [email],
       subject: `Inbjudan till ${agency_name} på BaraHem`,
       html: `
