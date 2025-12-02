@@ -39,31 +39,23 @@ const InvitationAccept = () => {
 
     const fetchInvitation = async () => {
       try {
-        const { data, error } = await supabase
+        // Hämta inbjudan först
+        const { data: invitationData, error: invitationError } = await supabase
           .from("agency_invitations")
-          .select(`
-            email,
-            agency_id,
-            role,
-            expires_at,
-            used_at,
-            agencies (
-              name
-            )
-          `)
+          .select("email, agency_id, role, expires_at, used_at")
           .eq("token", token)
           .single();
 
-        if (error || !data) {
+        if (invitationError || !invitationData) {
           toast.error("Inbjudan hittades inte");
           navigate("/");
           return;
         }
 
         const now = new Date();
-        const isExpired = new Date(data.expires_at) < now;
+        const isExpired = new Date(invitationData.expires_at) < now;
 
-        if (data.used_at) {
+        if (invitationData.used_at) {
           setInvitation(null);
           setLoading(false);
           return;
@@ -74,13 +66,25 @@ const InvitationAccept = () => {
           return;
         }
 
+        // Hämta byrånamn separat
+        let agencyName = "";
+        if (invitationData.agency_id) {
+          const { data: agencyData } = await supabase
+            .from("agencies")
+            .select("name")
+            .eq("id", invitationData.agency_id)
+            .single();
+          
+          agencyName = agencyData?.name || "";
+        }
+
         setInvitation({
-          email: data.email,
-          agency_id: data.agency_id,
-          role: data.role,
-          agency_name: (data.agencies as any)?.name || "",
-          expires_at: data.expires_at,
-          used_at: data.used_at,
+          email: invitationData.email,
+          agency_id: invitationData.agency_id,
+          role: invitationData.role,
+          agency_name: agencyName,
+          expires_at: invitationData.expires_at,
+          used_at: invitationData.used_at,
         });
       } catch (error) {
         console.error("Error fetching invitation:", error);
