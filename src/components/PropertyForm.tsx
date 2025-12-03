@@ -51,6 +51,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [documents, setDocuments] = useState<File[]>([]);
+  const [documentNames, setDocumentNames] = useState<string[]>([]);
 
   const {
     register,
@@ -204,6 +206,44 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     return publicUrl;
   };
 
+  const uploadDocument = async (file: File, path: string): Promise<{ url: string; name: string }> => {
+    const { data, error } = await supabase.storage
+      .from("property-documents")
+      .upload(path, file, { upsert: true });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("property-documents")
+      .getPublicUrl(data.path);
+
+    return { url: publicUrl, name: file.name };
+  };
+
+  const handleDocumentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    if (documents.length + files.length > 10) {
+      toast.error("Du kan lägga till max 10 dokument");
+      return;
+    }
+
+    for (const file of files) {
+      if (file.size > 20 * 1024 * 1024) {
+        toast.error("Varje dokument får max vara 20MB");
+        return;
+      }
+    }
+
+    setDocuments([...documents, ...files]);
+    setDocumentNames([...documentNames, ...files.map(f => f.name)]);
+  };
+
+  const removeDocument = (index: number) => {
+    setDocuments(documents.filter((_, i) => i !== index));
+    setDocumentNames(documentNames.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (data: PropertyFormData) => {
     if (!user) {
       toast.error("Du måste vara inloggad");
@@ -253,6 +293,17 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         );
       }
 
+      // Upload documents
+      const uploadedDocuments: { url: string; name: string }[] = [];
+      for (let i = 0; i < documents.length; i++) {
+        const file = documents[i];
+        const doc = await uploadDocument(
+          file,
+          `${user.id}/${timestamp}-doc-${i}-${file.name}`
+        );
+        uploadedDocuments.push(doc);
+      }
+
       // Insert property
       const { error } = await supabase.from("properties").insert({
         user_id: user.id,
@@ -281,6 +332,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        documents: uploadedDocuments,
       });
 
       if (error) throw error;
@@ -300,6 +352,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
+      setDocuments([]);
+      setDocumentNames([]);
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -768,6 +822,49 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 className="cursor-pointer"
               />
               <p className="text-sm text-muted-foreground">Max 5MB</p>
+            </div>
+        </Card>
+        </div>
+
+        {/* Dokument */}
+        <div className="md:col-span-2">
+          <Label>Dokument (valfritt, max 10 st)</Label>
+          <p className="text-sm text-muted-foreground mb-2">
+            Ladda upp dokument som årsredovisning, stadgar, etc. Alla besökare kan ladda ner dessa.
+          </p>
+          <Card className="p-4">
+            <div className="space-y-4">
+              {documentNames.length > 0 && (
+                <div className="space-y-2">
+                  {documentNames.map((name, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm truncate max-w-[200px]">{name}</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeDocument(index)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Input
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                multiple
+                onChange={handleDocumentChange}
+                className="cursor-pointer"
+              />
+              <p className="text-sm text-muted-foreground">
+                {documents.length}/10 dokument • Max 20MB per fil • PDF, Word, Excel
+              </p>
             </div>
           </Card>
         </div>

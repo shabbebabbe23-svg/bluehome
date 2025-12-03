@@ -302,6 +302,7 @@ export type Database = {
           construction_year: number | null
           created_at: string | null
           description: string | null
+          documents: Json | null
           fee: number | null
           floorplan_images: string[] | null
           floorplan_url: string | null
@@ -342,6 +343,7 @@ export type Database = {
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          documents?: Json | null
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
@@ -382,6 +384,7 @@ export type Database = {
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          documents?: Json | null
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
