@@ -117,25 +117,40 @@ const AgencyAdminDashboard = () => {
             setAgencyInfo(agency);
           }
           
-          // Fetch users with property counts
+          // Fetch users - separate queries to avoid RLS conflicts with nested selects
           const { data: usersData } = await supabase
             .from("profiles")
-            .select("id, full_name, email, user_roles(user_type)")
+            .select("id, full_name, email")
             .eq("agency_id", profile.agency_id);
           
-          if (usersData) {
-            // Fetch property counts for each user
-            const usersWithCounts = await Promise.all(
-              usersData.map(async (user) => {
+          if (usersData && usersData.length > 0) {
+            // Fetch property counts and roles for each user separately
+            const usersWithDetails = await Promise.all(
+              usersData.map(async (userProfile) => {
+                // Fetch property count
                 const { count } = await supabase
                   .from("properties")
                   .select("*", { count: "exact", head: true })
-                  .eq("user_id", user.id)
+                  .eq("user_id", userProfile.id)
                   .eq("is_deleted", false);
-                return { ...user, propertyCount: count || 0 };
+                
+                // Fetch user role separately to avoid RLS conflicts
+                const { data: roleData } = await supabase
+                  .from("user_roles")
+                  .select("user_type")
+                  .eq("user_id", userProfile.id)
+                  .single();
+                
+                return { 
+                  ...userProfile, 
+                  propertyCount: count || 0,
+                  user_roles: roleData ? [{ user_type: roleData.user_type }] : []
+                };
               })
             );
-            setUsers(usersWithCounts as any);
+            setUsers(usersWithDetails as any);
+          } else {
+            setUsers([]);
           }
             
           supabase
