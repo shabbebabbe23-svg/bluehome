@@ -123,13 +123,9 @@ const Index = () => {
           <Hero
             onFinalPricesChange={setShowFinalPrices}
             onPropertyTypeChange={setPropertyType}
-            onSearchAddressChange={(value) => {
-              setSearchAddress(value);
-              if (value.length >= 2) {
-                scrollToResults();
-              }
-            }}
+            onSearchAddressChange={setSearchAddress}
             onSearchModeChange={setSearchMode}
+            onSearchSubmit={scrollToResults}
           />
           <div ref={resultsRef}>
             {searchMode === 'property' ? (
