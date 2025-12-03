@@ -36,7 +36,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [agentHighlightedIndex, setAgentHighlightedIndex] = useState(-1);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
-  const [showNewConstruction, setShowNewConstruction] = useState(false);
+  const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -47,7 +47,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setPropertyType("");
     setShowFinalPrices(false);
     setKeywords("");
-    setShowNewConstruction(false);
+    setNewConstructionFilter('include');
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -73,7 +73,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
-    propertyType !== "" || showFinalPrices || keywords !== "" || showNewConstruction;
+    propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -439,6 +439,37 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   />
                 </div>
 
+                {/* New Construction Filter */}
+                <div className="space-y-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNewConstructionFilter('include')}
+                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'include' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                    >
+                      Inkluderar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNewConstructionFilter('only')}
+                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'only' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                    >
+                      Endast
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNewConstructionFilter('exclude')}
+                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'exclude' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                    >
+                      Exkluderar
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Property Type Buttons */}
                 <div>
                   <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
@@ -691,18 +722,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       />
                     </div>
 
-                    {/* New Construction Filter */}
-                    <div className="flex items-center justify-end gap-3 px-2 py-2">
-                      <Label htmlFor="new-construction" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
-                        Endast nyproduktion
-                      </Label>
-                      <Switch
-                        id="new-construction"
-                        checked={showNewConstruction}
-                        onCheckedChange={setShowNewConstruction}
-                        className="data-[state=checked]:bg-success"
-                      />
-                    </div>
                   </>
                 )}
               </>
