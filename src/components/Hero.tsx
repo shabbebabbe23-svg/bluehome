@@ -27,7 +27,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area' }>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area'; price?: number }>>([]);
   const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
@@ -102,9 +102,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         try {
           const { data: addressData, error } = await supabase
             .from('properties')
-            .select('address, location')
+            .select('address, location, price')
             .ilike('address', `%${value}%`)
             .not('address', 'is', null)
+            .eq('is_deleted', false)
             .limit(5);
 
           if (error) throw error;
@@ -116,7 +117,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               .map(p => ({
                 name: p.address,
                 county: p.location || 'Sverige', // Fallback for location
-                type: 'address' as const
+                type: 'address' as const,
+                price: p.price
               }));
 
             // Remove duplicates (if any)
@@ -299,10 +301,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         ) : (
                           <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         )}
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium text-foreground">{suggestion.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {suggestion.type === 'address' ? 'Adress' : suggestion.type === 'area' ? 'Område' : suggestion.county}
+                            {suggestion.type === 'address' 
+                              ? `${suggestion.county}${suggestion.price ? ` • ${suggestion.price.toLocaleString('sv-SE')} kr` : ''}`
+                              : suggestion.type === 'area' 
+                                ? 'Område' 
+                                : suggestion.county}
                           </p>
                         </div>
                       </button>
