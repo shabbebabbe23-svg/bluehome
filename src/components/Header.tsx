@@ -216,7 +216,7 @@ const Header = () => {
               {user && userType && (
                 <div className={`flex items-center justify-center gap-2 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                   {userType === "superadmin" ? <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" /> : <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />}
-                  <span className="text-base font-bold text-white">
+                  <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
                     Inloggad som: {userType === "superadmin" ? "Superadmin" : userType === "agency_admin" ? "Byrå Admin" : userType === "maklare" ? "Mäklare" : "Användare"}
                   </span>
                 </div>
