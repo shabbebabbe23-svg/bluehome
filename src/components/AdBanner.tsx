@@ -40,22 +40,22 @@ const AdBanner = ({
             alt={alt} 
             className="w-full h-40 xl:h-52 object-cover"
           />
-          <div className="p-3 xl:p-4 space-y-2 xl:space-y-3 flex-1">
-            <h3 className="text-lg xl:text-2xl font-bold text-foreground">
+          <div className="p-4 xl:p-5 space-y-2 xl:space-y-3 flex-1">
+            <h3 className="text-xl xl:text-[1.7rem] font-bold text-foreground">
               {title}
             </h3>
-            <p className="text-sm xl:text-base text-muted-foreground">
+            <p className="text-base xl:text-lg text-muted-foreground">
               {description}
             </p>
-            <ul className="space-y-1 xl:space-y-2 text-xs xl:text-sm text-muted-foreground">
+            <ul className="space-y-1 xl:space-y-2 text-sm xl:text-base text-muted-foreground">
               {bullets.map((b) => (
                 <li key={b}>{b}</li>
               ))}
             </ul>
-            <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-sm xl:text-base">
+            <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-base xl:text-lg">
               {buttonText}
             </Button>
-            <p className="text-[10px] xl:text-xs text-muted-foreground text-center">
+            <p className="text-xs xl:text-sm text-muted-foreground text-center">
               {note}
             </p>
           </div>
