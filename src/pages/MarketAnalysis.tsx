@@ -176,17 +176,39 @@ const MarketAnalysis = () => {
 
       {/* Filters */}
       <section className="py-8 border-b">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 space-y-4">
+          {/* City filters */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-muted-foreground mr-2">
+              <MapPin className="w-4 h-4 inline mr-1" />
+              Stad:
+            </span>
+            {["", "Stockholm", "Göteborg", "Malmö", "Uppsala", "Linköping", "Västerås", "Örebro"].map((city) => (
+              <Button
+                key={city || "all"}
+                variant={selectedArea === city ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedArea(city);
+                  setAreaInput(city);
+                }}
+                className={selectedArea === city ? "bg-gradient-to-r from-primary to-green-500" : ""}
+              >
+                {city || "Alla"}
+              </Button>
+            ))}
+          </div>
+
+          {/* Custom city input */}
           <div className="flex flex-wrap gap-4 items-center">
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Sök stad eller område..."
+                placeholder="Eller skriv annan stad..."
                 value={areaInput}
                 onChange={(e) => setAreaInput(e.target.value)}
                 onKeyDown={handleAreaKeyDown}
-                className="w-[250px] pl-10 pr-10"
+                className="w-[220px] pr-8"
               />
               {areaInput && (
                 <Button
@@ -203,30 +225,37 @@ const MarketAnalysis = () => {
             <Button 
               onClick={handleAreaSearch}
               variant="outline"
+              size="sm"
               className="gap-2"
             >
               <Search className="w-4 h-4" />
               Sök
             </Button>
-            {selectedArea && (
-              <span className="text-sm text-muted-foreground">
-                Visar resultat för: <strong>{selectedArea}</strong>
-              </span>
-            )}
+          </div>
 
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-[200px]">
-                <Home className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Välj bostadstyp" />
-              </SelectTrigger>
-              <SelectContent className="bg-card">
-                <SelectItem value="all">Alla typer</SelectItem>
-                <SelectItem value="Lägenhet">Lägenhet</SelectItem>
-                <SelectItem value="Villa">Villa</SelectItem>
-                <SelectItem value="Radhus">Radhus</SelectItem>
-                <SelectItem value="Fritidshus">Fritidshus</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Property type filters */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-muted-foreground mr-2">
+              <Home className="w-4 h-4 inline mr-1" />
+              Bostadstyp:
+            </span>
+            {[
+              { value: "all", label: "Alla" },
+              { value: "Lägenhet", label: "Lägenhet" },
+              { value: "Villa", label: "Villa" },
+              { value: "Radhus", label: "Radhus" },
+              { value: "Fritidshus", label: "Fritidshus" },
+            ].map((type) => (
+              <Button
+                key={type.value}
+                variant={selectedType === type.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedType(type.value)}
+                className={selectedType === type.value ? "bg-gradient-to-r from-primary to-green-500" : ""}
+              >
+                {type.label}
+              </Button>
+            ))}
           </div>
         </div>
       </section>
