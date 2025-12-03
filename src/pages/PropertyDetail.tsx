@@ -766,6 +766,39 @@ const PropertyDetail = () => {
                     </div>
                   </>}
 
+                {/* Documents Section */}
+                {dbProperty?.documents && Array.isArray(dbProperty.documents) && dbProperty.documents.length > 0 && (
+                  <>
+                    <Separator className="my-6" />
+                    <div>
+                      <h2 className="text-xl font-bold mb-3">Dokument</h2>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Ladda ner årsredovisning, stadgar och andra dokument
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {(dbProperty.documents as { url: string; name: string }[]).map((doc, index) => (
+                          <a
+                            key={index}
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={doc.name}
+                            className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors group"
+                          >
+                            <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                              <Download className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{doc.name}</p>
+                              <p className="text-xs text-muted-foreground">Klicka för att ladda ner</p>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {!dbProperty && <>
                     <Separator className="my-6" />
 
