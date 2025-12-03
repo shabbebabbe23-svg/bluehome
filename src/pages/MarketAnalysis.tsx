@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingUp, TrendingDown, MapPin, Home, BarChart3 } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, MapPin, Home, BarChart3, Search, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -24,7 +26,8 @@ interface AreaStats {
 
 const MarketAnalysis = () => {
   const navigate = useNavigate();
-  const [selectedArea, setSelectedArea] = useState<string>("all");
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [areaInput, setAreaInput] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [priceHistory, setPriceHistory] = useState<PriceData[]>([]);
   const [areaStats, setAreaStats] = useState<AreaStats[]>([]);
@@ -33,6 +36,21 @@ const MarketAnalysis = () => {
   useEffect(() => {
     fetchMarketData();
   }, [selectedArea, selectedType]);
+
+  const handleAreaSearch = () => {
+    setSelectedArea(areaInput.trim());
+  };
+
+  const handleAreaKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleAreaSearch();
+    }
+  };
+
+  const clearAreaFilter = () => {
+    setAreaInput("");
+    setSelectedArea("");
+  };
 
   const fetchMarketData = async () => {
     setLoading(true);
@@ -44,7 +62,7 @@ const MarketAnalysis = () => {
         .eq("is_sold", true)
         .eq("is_deleted", false);
 
-      if (selectedArea !== "all") {
+      if (selectedArea && selectedArea.trim() !== "") {
         query = query.ilike("location", `%${selectedArea}%`);
       }
       if (selectedType !== "all") {
@@ -159,28 +177,49 @@ const MarketAnalysis = () => {
       {/* Filters */}
       <section className="py-8 border-b">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-4">
-            <Select value={selectedArea} onValueChange={setSelectedArea}>
-              <SelectTrigger className="w-[200px]">
-                <MapPin className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Välj område" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alla områden</SelectItem>
-                <SelectItem value="Stockholm">Stockholm</SelectItem>
-                <SelectItem value="Göteborg">Göteborg</SelectItem>
-                <SelectItem value="Malmö">Malmö</SelectItem>
-                <SelectItem value="Uppsala">Uppsala</SelectItem>
-                <SelectItem value="Linköping">Linköping</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Sök stad eller område..."
+                value={areaInput}
+                onChange={(e) => setAreaInput(e.target.value)}
+                onKeyDown={handleAreaKeyDown}
+                className="w-[250px] pl-10 pr-10"
+              />
+              {areaInput && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  onClick={clearAreaFilter}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+            <Button 
+              onClick={handleAreaSearch}
+              variant="outline"
+              className="gap-2"
+            >
+              <Search className="w-4 h-4" />
+              Sök
+            </Button>
+            {selectedArea && (
+              <span className="text-sm text-muted-foreground">
+                Visar resultat för: <strong>{selectedArea}</strong>
+              </span>
+            )}
 
             <Select value={selectedType} onValueChange={setSelectedType}>
               <SelectTrigger className="w-[200px]">
                 <Home className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Välj bostadstyp" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card">
                 <SelectItem value="all">Alla typer</SelectItem>
                 <SelectItem value="Lägenhet">Lägenhet</SelectItem>
                 <SelectItem value="Villa">Villa</SelectItem>
