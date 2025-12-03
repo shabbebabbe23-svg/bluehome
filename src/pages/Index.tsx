@@ -21,6 +21,9 @@ const Index = () => {
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000000]);
+  const [areaRange, setAreaRange] = useState<[number, number]>([0, 200]);
+  const [roomRange, setRoomRange] = useState<[number, number]>([0, 7]);
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -126,6 +129,9 @@ const Index = () => {
             onSearchAddressChange={setSearchAddress}
             onSearchModeChange={setSearchMode}
             onSearchSubmit={scrollToResults}
+            onPriceRangeChange={setPriceRange}
+            onAreaRangeChange={setAreaRange}
+            onRoomRangeChange={setRoomRange}
           />
           <div ref={resultsRef}>
             {searchMode === 'property' ? (
@@ -133,6 +139,9 @@ const Index = () => {
                 showFinalPrices={showFinalPrices}
                 propertyType={propertyType}
                 searchAddress={searchAddress}
+                priceRange={priceRange}
+                areaRange={areaRange}
+                roomRange={roomRange}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />
