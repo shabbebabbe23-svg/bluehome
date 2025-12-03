@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut, Move3D, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -14,6 +15,7 @@ interface Property {
   image_url: string;
   additional_images: string[];
   has_vr: boolean;
+  vr_image_indices: number[] | null;
 }
 
 const VirtualTour = () => {
@@ -39,7 +41,7 @@ const VirtualTour = () => {
     try {
       const { data, error } = await supabase
         .from("properties")
-        .select("id, title, address, image_url, additional_images, has_vr")
+        .select("id, title, address, image_url, additional_images, has_vr, vr_image_indices")
         .eq("id", id)
         .maybeSingle();
 
@@ -52,9 +54,20 @@ const VirtualTour = () => {
     }
   };
 
+  // Get all images with 360° flag
   const allImages = property
-    ? [property.image_url, ...(property.additional_images || [])].filter(Boolean)
+    ? [
+        { url: property.image_url, is360: property.vr_image_indices?.includes(-1) || false },
+        ...(property.additional_images || []).map((url, idx) => ({
+          url,
+          is360: property.vr_image_indices?.includes(idx) || false
+        }))
+      ].filter(img => img.url)
     : [];
+
+  // Filter to only 360° images if any exist, otherwise show all
+  const vrImages = allImages.filter(img => img.is360);
+  const displayImages = vrImages.length > 0 ? vrImages : allImages;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -185,9 +198,9 @@ const VirtualTour = () => {
                       transformStyle: "preserve-3d",
                     }}
                   >
-                    {allImages[currentImageIndex] && (
+                    {displayImages[currentImageIndex] && (
                       <img
-                        src={allImages[currentImageIndex]}
+                        src={displayImages[currentImageIndex].url}
                         alt={`${property.title} - Bild ${currentImageIndex + 1}`}
                         className="w-full h-full object-cover"
                         draggable={false}
@@ -252,24 +265,34 @@ const VirtualTour = () => {
               {/* Thumbnail Strip */}
               <div className="p-4 bg-card border-t">
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                  {allImages.map((img, index) => (
+                  {displayImages.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                         currentImageIndex === index
                           ? "border-primary ring-2 ring-primary/30"
                           : "border-transparent hover:border-muted-foreground/30"
                       }`}
                     >
                       <img
-                        src={img}
+                        src={img.url}
                         alt={`Miniatyr ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
+                      {img.is360 && (
+                        <Badge className="absolute bottom-1 left-1 bg-gradient-to-r from-primary to-green-500 text-[10px] px-1 py-0">
+                          360°
+                        </Badge>
+                      )}
                     </button>
                   ))}
                 </div>
+                {vrImages.length > 0 && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Visar {vrImages.length} 360°-bilder
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

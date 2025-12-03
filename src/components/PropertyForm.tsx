@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Upload, Loader2, FileText, X } from "lucide-react";
+import { Upload, Loader2, FileText, X, Move3D } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -46,6 +47,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [floorplanPreview, setFloorplanPreview] = useState<string>("");
   const [isNewProduction, setIsNewProduction] = useState(false);
   const [agencyLogoUrl, setAgencyLogoUrl] = useState<string | null>(null);
+  const [vrImageIndices, setVrImageIndices] = useState<number[]>([]);
+  const [isMainImage360, setIsMainImage360] = useState(false);
 
   const {
     register,
@@ -170,6 +173,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const removeAdditionalImage = (index: number) => {
     setAdditionalImages(additionalImages.filter((_, i) => i !== index));
     setAdditionalImagesPreviews(additionalImagesPreviews.filter((_, i) => i !== index));
+    // Update VR indices - remove the index and adjust remaining indices
+    setVrImageIndices(vrImageIndices
+      .filter(i => i !== index)
+      .map(i => i > index ? i - 1 : i)
+    );
+  };
+
+  const toggleVrImage = (index: number) => {
+    if (vrImageIndices.includes(index)) {
+      setVrImageIndices(vrImageIndices.filter(i => i !== index));
+    } else {
+      setVrImageIndices([...vrImageIndices, index]);
+    }
   };
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
@@ -259,6 +275,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         housing_association: data.housing_association || null,
         seller_email: data.seller_email || null,
         vendor_logo_url: agencyLogoUrl,
+        vr_image_indices: isMainImage360 ? [-1, ...vrImageIndices] : vrImageIndices,
+        has_vr: isMainImage360 || vrImageIndices.length > 0,
       });
 
       if (error) throw error;
@@ -274,6 +292,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setAdditionalImagesPreviews([]);
       setFloorplanPreview("");
       setIsNewProduction(false);
+      setVrImageIndices([]);
+      setIsMainImage360(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -546,11 +566,29 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           <Card className="p-4">
             <div className="flex flex-col items-center gap-4">
               {mainImagePreview ? (
-                <img
-                  src={mainImagePreview}
-                  alt="Preview"
-                  className="w-full h-48 object-cover rounded"
-                />
+                <div className="relative w-full">
+                  <img
+                    src={mainImagePreview}
+                    alt="Preview"
+                    className={`w-full h-48 object-cover rounded ${isMainImage360 ? 'ring-2 ring-primary' : ''}`}
+                  />
+                  {isMainImage360 && (
+                    <Badge className="absolute top-2 left-2 bg-gradient-to-r from-primary to-green-500">
+                      <Move3D className="w-3 h-3 mr-1" />
+                      360°
+                    </Badge>
+                  )}
+                  <Button
+                    type="button"
+                    variant={isMainImage360 ? "default" : "outline"}
+                    size="sm"
+                    className={`absolute bottom-2 left-2 gap-1 ${isMainImage360 ? 'bg-gradient-to-r from-primary to-green-500' : ''}`}
+                    onClick={() => setIsMainImage360(!isMainImage360)}
+                  >
+                    <Move3D className="w-4 h-4" />
+                    {isMainImage360 ? '360° aktiv' : 'Markera som 360°'}
+                  </Button>
+                </div>
               ) : (
                 <div className="w-full h-48 bg-muted rounded flex items-center justify-center">
                   <Upload className="w-12 h-12 text-muted-foreground" />
@@ -602,20 +640,38 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               {additionalImagesPreviews.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {additionalImagesPreviews.map((preview, index) => (
-                    <div key={index} className="relative">
+                    <div key={index} className={`relative rounded overflow-hidden ${vrImageIndices.includes(index) ? 'ring-2 ring-primary' : ''}`}>
                       <img
                         src={preview}
                         alt={`Additional ${index + 1}`}
-                        className="w-full h-32 object-cover rounded"
+                        className="w-full h-32 object-cover"
                       />
+                      {vrImageIndices.includes(index) && (
+                        <Badge className="absolute top-2 left-2 bg-gradient-to-r from-primary to-green-500 text-xs">
+                          <Move3D className="w-3 h-3 mr-1" />
+                          360°
+                        </Badge>
+                      )}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => removeAdditionalImage(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
                       <Button
                         type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2 h-6 w-6"
-                        onClick={() => removeAdditionalImage(index)}
+                        variant={vrImageIndices.includes(index) ? "default" : "outline"}
+                        size="sm"
+                        className={`absolute bottom-2 left-2 h-7 text-xs gap-1 ${vrImageIndices.includes(index) ? 'bg-gradient-to-r from-primary to-green-500' : 'bg-white/90 hover:bg-white'}`}
+                        onClick={() => toggleVrImage(index)}
                       >
-                        <X className="w-4 h-4" />
+                        <Move3D className="w-3 h-3" />
+                        360°
                       </Button>
                     </div>
                   ))}
@@ -635,6 +691,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 />
                 <p className="text-sm text-muted-foreground">
                   {additionalImages.length}/6 bilder uppladdade • Max 5MB per bild
+                  {vrImageIndices.length > 0 && ` • ${vrImageIndices.length} markerade som 360°`}
                 </p>
               </div>
             </div>
