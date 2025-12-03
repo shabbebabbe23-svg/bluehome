@@ -441,7 +441,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 </div>
 
                 {/* New Construction Filter */}
-                <div className="space-y-1">
+                <div className="flex flex-col items-end space-y-1">
                   <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
                   <ToggleGroup
                     type="single" 
