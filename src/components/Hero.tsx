@@ -15,9 +15,10 @@ interface HeroProps {
   onPropertyTypeChange?: (value: string) => void;
   onSearchAddressChange?: (value: string) => void;
   onSearchModeChange?: (mode: 'property' | 'agent') => void;
+  onSearchSubmit?: () => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -271,6 +272,12 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   onFocus={() => {
                     if (searchLocation.trim() && suggestions.length > 0) {
                       setShowSuggestions(true);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setShowSuggestions(false);
+                      onSearchSubmit?.();
                     }
                   }}
                   className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
@@ -542,7 +549,11 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             )}
 
             {/* Search Button */}
-            <Button size="lg" className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform">
+            <Button 
+              size="lg" 
+              onClick={() => onSearchSubmit?.()}
+              className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform"
+            >
               {searchMode === 'property' ? 'Hitta bostäder' : 'Hitta mäklare'}
             </Button>
           </div>
