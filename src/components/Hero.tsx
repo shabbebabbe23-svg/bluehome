@@ -20,9 +20,10 @@ interface HeroProps {
   onPriceRangeChange?: (value: [number, number]) => void;
   onAreaRangeChange?: (value: [number, number]) => void;
   onRoomRangeChange?: (value: [number, number]) => void;
+  onNewConstructionFilterChange?: (value: 'include' | 'only' | 'exclude') => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -446,7 +447,12 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   <ToggleGroup
                     type="single" 
                     value={newConstructionFilter}
-                    onValueChange={(value) => value && setNewConstructionFilter(value as 'include' | 'only' | 'exclude')}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setNewConstructionFilter(value as 'include' | 'only' | 'exclude');
+                        onNewConstructionFilterChange?.(value as 'include' | 'only' | 'exclude');
+                      }
+                    }}
                     className="border border-primary/30 rounded-md p-0.5 bg-muted/30"
                   >
                     <ToggleGroupItem 
