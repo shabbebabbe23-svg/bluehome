@@ -441,9 +441,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 </div>
 
                 {/* New Construction Filter */}
-                <div className="flex items-center justify-between gap-3">
+                <div className="space-y-1">
                   <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
-                  <ToggleGroup 
+                  <ToggleGroup
                     type="single" 
                     value={newConstructionFilter}
                     onValueChange={(value) => value && setNewConstructionFilter(value as 'include' | 'only' | 'exclude')}
