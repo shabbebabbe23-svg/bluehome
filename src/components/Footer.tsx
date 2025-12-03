@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -74,18 +74,15 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Kontakt</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
-                  <Phone className="w-full h-full text-white" />
-                </div>
-                <span className="text-white/80">+46 8 123 456 78</span>
-              </div>
-              <div className="flex items-center gap-3">
+              <a 
+                href="mailto:info@barahem.se" 
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors"
+              >
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <Mail className="w-full h-full text-white" />
                 </div>
-                <span className="text-white/80">info@barahem.se</span>
-              </div>
+                <span>info@barahem.se</span>
+              </a>
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <MapPin className="w-full h-full text-white" />
