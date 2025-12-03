@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User } from "lucide-react";
+import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -32,6 +32,26 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [keywords, setKeywords] = useState("");
   const [showNewConstruction, setShowNewConstruction] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const clearAllFilters = () => {
+    setSearchLocation("");
+    setPriceRange([0, 20000000]);
+    setAreaRange([0, 200]);
+    setRoomRange([0, 7]);
+    setPropertyType("");
+    setShowFinalPrices(false);
+    setKeywords("");
+    setShowNewConstruction(false);
+    onSearchAddressChange?.("");
+    onPropertyTypeChange?.("");
+    onFinalPricesChange?.(false);
+  };
+
+  const hasActiveFilters = searchLocation !== "" || 
+    priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
+    areaRange[0] !== 0 || areaRange[1] !== 200 ||
+    roomRange[0] !== 0 || roomRange[1] !== 7 ||
+    propertyType !== "" || showFinalPrices || keywords !== "" || showNewConstruction;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -402,15 +422,27 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   </div>
                 </div>
 
-                {/* More Filters Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
-                >
-                  <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
-                </Button>
+                {/* Filter Buttons Row */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    className="flex-1 h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                    {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
+                  </Button>
+                  {hasActiveFilters && (
+                    <Button
+                      variant="outline"
+                      onClick={clearAllFilters}
+                      className="h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                    >
+                      <X className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Rensa
+                    </Button>
+                  )}
+                </div>
 
                 {/* Advanced Filters */}
                 {showAdvancedFilters && (
