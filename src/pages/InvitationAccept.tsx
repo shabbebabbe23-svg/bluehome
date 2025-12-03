@@ -286,6 +286,7 @@ const InvitationAccept = () => {
                   required
                   minLength={6}
                   className="pl-10"
+                  autoComplete="new-password"
                 />
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
@@ -306,6 +307,7 @@ const InvitationAccept = () => {
                   required
                   minLength={6}
                   className="pl-10"
+                  autoComplete="new-password"
                 />
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
