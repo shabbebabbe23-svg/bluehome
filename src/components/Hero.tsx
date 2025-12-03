@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import heroImage from "@/assets/hero-image.jpg";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
 import { supabase } from "@/integrations/supabase/client";
@@ -442,32 +443,31 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {/* New Construction Filter */}
                 <div className="space-y-2">
                   <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setNewConstructionFilter('include')}
-                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'include' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                  <ToggleGroup 
+                    type="single" 
+                    value={newConstructionFilter}
+                    onValueChange={(value) => value && setNewConstructionFilter(value as 'include' | 'only' | 'exclude')}
+                    className="w-full border-2 border-primary/30 rounded-lg p-1 bg-muted/30"
+                  >
+                    <ToggleGroupItem 
+                      value="include" 
+                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
                     >
                       Inkluderar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setNewConstructionFilter('only')}
-                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'only' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                    </ToggleGroupItem>
+                    <ToggleGroupItem 
+                      value="only" 
+                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
                     >
                       Endast
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setNewConstructionFilter('exclude')}
-                      className={`flex-1 text-xs sm:text-sm font-medium border-2 ${newConstructionFilter === 'exclude' ? 'bg-hero-gradient text-white border-transparent hover:text-black' : 'hover:border-primary'}`}
+                    </ToggleGroupItem>
+                    <ToggleGroupItem 
+                      value="exclude" 
+                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
                     >
                       Exkluderar
-                    </Button>
-                  </div>
+                    </ToggleGroupItem>
+                  </ToggleGroup>
                 </div>
 
                 {/* Property Type Buttons */}
