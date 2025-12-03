@@ -522,11 +522,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {showAdvancedFilters && (
                   <>
                     {/* Price Filter */}
-                    <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Min pris</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
+                        <div className="flex items-center gap-2">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -536,12 +535,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.min(value, priceRange[1]);
                               setPriceRange([clampedValue, priceRange[1]]);
                             }}
-                            placeholder="0 kr"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Min"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                        </div>
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Max pris</Label>
+                          <span className="text-muted-foreground">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -551,8 +548,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.max(value, priceRange[0]);
                               setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
                             }}
-                            placeholder="20 000 000+ kr"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Max"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -564,18 +561,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground font-medium">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 kr</span>
                         <span>20+ milj kr</span>
                       </div>
                     </div>
 
                     {/* Area Filter */}
-                    <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Min yta</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
+                        <div className="flex items-center gap-2">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -585,12 +581,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.min(value, areaRange[1]);
                               setAreaRange([clampedValue, areaRange[1]]);
                             }}
-                            placeholder="0 kvm"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Min"
+                            className="w-20 sm:w-24 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                        </div>
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Max yta</Label>
+                          <span className="text-muted-foreground">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -600,9 +594,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.max(value, areaRange[0]);
                               setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
                             }}
-                            placeholder="200+ kvm"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Max"
+                            className="w-20 sm:w-24 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
+                          <span className="text-xs text-muted-foreground">kvm</span>
                         </div>
                       </div>
                       <Slider
@@ -613,18 +608,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 kvm</span>
                         <span>200+ kvm</span>
                       </div>
                     </div>
 
                     {/* Room Filter */}
-                    <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Min rum</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
+                        <div className="flex items-center gap-2">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -634,12 +628,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.min(value, roomRange[1]);
                               setRoomRange([clampedValue, roomRange[1]]);
                             }}
-                            placeholder="0 rum"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Min"
+                            className="w-16 sm:w-20 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                        </div>
-                        <div>
-                          <Label className="text-sm text-muted-foreground mb-1 block">Max rum</Label>
+                          <span className="text-muted-foreground">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -649,9 +641,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               const clampedValue = Math.max(value, roomRange[0]);
                               setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
                             }}
-                            placeholder="7+ rum"
-                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                            placeholder="Max"
+                            className="w-16 sm:w-20 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
+                          <span className="text-xs text-muted-foreground">rum</span>
                         </div>
                       </div>
                       <Slider
@@ -662,7 +655,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 rum</span>
                         <span>7+ rum</span>
                       </div>
