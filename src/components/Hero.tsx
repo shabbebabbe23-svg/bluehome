@@ -441,29 +441,29 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 </div>
 
                 {/* New Construction Filter */}
-                <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
                   <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
                   <ToggleGroup 
                     type="single" 
                     value={newConstructionFilter}
                     onValueChange={(value) => value && setNewConstructionFilter(value as 'include' | 'only' | 'exclude')}
-                    className="w-full border-2 border-primary/30 rounded-lg p-1 bg-muted/30"
+                    className="border border-primary/30 rounded-md p-0.5 bg-muted/30"
                   >
                     <ToggleGroupItem 
                       value="include" 
-                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                     >
                       Inkluderar
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="only" 
-                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                     >
                       Endast
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="exclude" 
-                      className="flex-1 text-xs sm:text-sm font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-md"
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                     >
                       Exkluderar
                     </ToggleGroupItem>
