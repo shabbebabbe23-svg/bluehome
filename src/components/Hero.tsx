@@ -523,10 +523,37 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   <>
                     {/* Price Filter */}
                     <div className="space-y-3 md:space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Min pris</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceRange[0] === 0 ? '' : priceRange[0].toLocaleString('sv-SE')}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, priceRange[1]);
+                              setPriceRange([clampedValue, priceRange[1]]);
+                            }}
+                            placeholder="0 kr"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Max pris</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceRange[1] >= 20000000 ? '' : priceRange[1].toLocaleString('sv-SE')}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 20000000;
+                              const clampedValue = Math.max(value, priceRange[0]);
+                              setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
+                            }}
+                            placeholder="20 000 000+ kr"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
                         </div>
                       </div>
                       <Slider
@@ -544,11 +571,38 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     </div>
 
                     {/* Area Filter */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Min yta</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={areaRange[0] === 0 ? '' : areaRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, areaRange[1]);
+                              setAreaRange([clampedValue, areaRange[1]]);
+                            }}
+                            placeholder="0 kvm"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Max yta</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={areaRange[1] >= 200 ? '' : areaRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 200;
+                              const clampedValue = Math.max(value, areaRange[0]);
+                              setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
+                            }}
+                            placeholder="200+ kvm"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
                         </div>
                       </div>
                       <Slider
@@ -566,11 +620,38 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     </div>
 
                     {/* Room Filter */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Min rum</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={roomRange[0] === 0 ? '' : roomRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, roomRange[1]);
+                              setRoomRange([clampedValue, roomRange[1]]);
+                            }}
+                            placeholder="0 rum"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground mb-1 block">Max rum</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={roomRange[1] >= 7 ? '' : roomRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 7;
+                              const clampedValue = Math.max(value, roomRange[0]);
+                              setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
+                            }}
+                            placeholder="7+ rum"
+                            className="h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                          />
                         </div>
                       </div>
                       <Slider
