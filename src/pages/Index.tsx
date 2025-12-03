@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PropertyGrid from "@/components/PropertyGrid";
@@ -21,8 +21,19 @@ const Index = () => {
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000000]);
+  const [areaRange, setAreaRange] = useState<[number, number]>([0, 200]);
+  const [roomRange, setRoomRange] = useState<[number, number]>([0, 7]);
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
+  const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToResults = () => {
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -118,16 +129,27 @@ const Index = () => {
             onPropertyTypeChange={setPropertyType}
             onSearchAddressChange={setSearchAddress}
             onSearchModeChange={setSearchMode}
+            onSearchSubmit={scrollToResults}
+            onPriceRangeChange={setPriceRange}
+            onAreaRangeChange={setAreaRange}
+            onRoomRangeChange={setRoomRange}
+            onNewConstructionFilterChange={setNewConstructionFilter}
           />
-          {searchMode === 'property' ? (
-            <PropertyGrid
-              showFinalPrices={showFinalPrices}
-              propertyType={propertyType}
-              searchAddress={searchAddress}
-            />
-          ) : (
-            <AgentGrid searchQuery={searchAddress} />
-          )}
+          <div ref={resultsRef}>
+            {searchMode === 'property' ? (
+              <PropertyGrid
+                showFinalPrices={showFinalPrices}
+                propertyType={propertyType}
+                searchAddress={searchAddress}
+                priceRange={priceRange}
+                areaRange={areaRange}
+                roomRange={roomRange}
+                newConstructionFilter={newConstructionFilter}
+              />
+            ) : (
+              <AgentGrid searchQuery={searchAddress} />
+            )}
+          </div>
         </main>
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}

@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userType: "admin" | "moderator" | "user" | "maklare" | "superadmin" | "agency_admin" | "buyer" | null;
+  profileName: string | null;
   signOut: () => Promise<void>;
 }
 
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userType, setUserType] = useState<"admin" | "moderator" | "user" | "maklare" | "superadmin" | "agency_admin" | "buyer" | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -41,6 +43,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const fetchProfileName = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", userId)
+        .single();
+      
+      if (error) {
+        console.error('Failed to fetch profile:', error);
+        setProfileName(null);
+        return;
+      }
+      
+      console.log('Profile fetched:', data);
+      setProfileName(data?.full_name || data?.email || null);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setProfileName(null);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -53,8 +77,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Fetch user type after auth state changes
         if (session?.user) {
           fetchUserType(session.user.id);
+          fetchProfileName(session.user.id);
         } else {
           setUserType(null);
+          setProfileName(null);
         }
       }
     );
@@ -69,6 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Fetch user type for existing session
       if (session?.user) {
         fetchUserType(session.user.id);
+        fetchProfileName(session.user.id);
       }
     });
 
@@ -85,7 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, userType, signOut }}>
+    <AuthContext.Provider value={{ user, session, userType, profileName, signOut }}>
       {children}
     </AuthContext.Provider>
   );

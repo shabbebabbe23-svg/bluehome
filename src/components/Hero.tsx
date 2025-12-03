@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User } from "lucide-react";
+import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import heroImage from "@/assets/hero-image.jpg";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,9 +16,14 @@ interface HeroProps {
   onPropertyTypeChange?: (value: string) => void;
   onSearchAddressChange?: (value: string) => void;
   onSearchModeChange?: (mode: 'property' | 'agent') => void;
+  onSearchSubmit?: () => void;
+  onPriceRangeChange?: (value: [number, number]) => void;
+  onAreaRangeChange?: (value: [number, number]) => void;
+  onRoomRangeChange?: (value: [number, number]) => void;
+  onNewConstructionFilterChange?: (value: 'include' | 'only' | 'exclude') => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -26,12 +32,50 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area' }>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area'; price?: number }>>([]);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
+  const [agentHighlightedIndex, setAgentHighlightedIndex] = useState(-1);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
-  const [showNewConstruction, setShowNewConstruction] = useState(false);
+  const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const clearAllFilters = () => {
+    setSearchLocation("");
+    setPriceRange([0, 20000000]);
+    setAreaRange([0, 200]);
+    setRoomRange([0, 7]);
+    setPropertyType("");
+    setShowFinalPrices(false);
+    setKeywords("");
+    setNewConstructionFilter('include');
+    onSearchAddressChange?.("");
+    onPropertyTypeChange?.("");
+    onFinalPricesChange?.(false);
+    onPriceRangeChange?.([0, 20000000]);
+    onAreaRangeChange?.([0, 200]);
+    onRoomRangeChange?.([0, 7]);
+  };
+
+  // Call callbacks when filter values change
+  useEffect(() => {
+    onPriceRangeChange?.(priceRange as [number, number]);
+  }, [priceRange, onPriceRangeChange]);
+
+  useEffect(() => {
+    onAreaRangeChange?.(areaRange as [number, number]);
+  }, [areaRange, onAreaRangeChange]);
+
+  useEffect(() => {
+    onRoomRangeChange?.(roomRange as [number, number]);
+  }, [roomRange, onRoomRangeChange]);
+
+  const hasActiveFilters = searchLocation !== "" || 
+    priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
+    areaRange[0] !== 0 || areaRange[1] !== 200 ||
+    roomRange[0] !== 0 || roomRange[1] !== 7 ||
+    propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,6 +87,15 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Reset highlighted index when suggestions change
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [suggestions]);
+
+  useEffect(() => {
+    setAgentHighlightedIndex(-1);
+  }, [agentSuggestions]);
 
   const lastSearchRef = useRef<number>(0);
 
@@ -81,9 +134,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         try {
           const { data: addressData, error } = await supabase
             .from('properties')
-            .select('address, location')
+            .select('address, location, price')
             .ilike('address', `%${value}%`)
             .not('address', 'is', null)
+            .eq('is_deleted', false)
             .limit(5);
 
           if (error) throw error;
@@ -95,7 +149,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               .map(p => ({
                 name: p.address,
                 county: p.location || 'Sverige', // Fallback for location
-                type: 'address' as const
+                type: 'address' as const,
+                price: p.price
               }));
 
             // Remove duplicates (if any)
@@ -253,6 +308,56 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       setShowSuggestions(true);
                     }
                   }}
+                  onKeyDown={(e) => {
+                    if (searchMode === 'property' && showSuggestions && suggestions.length > 0) {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setHighlightedIndex(prev => 
+                          prev < suggestions.length - 1 ? prev + 1 : 0
+                        );
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setHighlightedIndex(prev => 
+                          prev > 0 ? prev - 1 : suggestions.length - 1
+                        );
+                      } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                        e.preventDefault();
+                        handleSuggestionClick(suggestions[highlightedIndex]);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Enter') {
+                        setShowSuggestions(false);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                        setHighlightedIndex(-1);
+                      }
+                    } else if (searchMode === 'agent' && showSuggestions && agentSuggestions.length > 0) {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setAgentHighlightedIndex(prev => 
+                          prev < agentSuggestions.length - 1 ? prev + 1 : 0
+                        );
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setAgentHighlightedIndex(prev => 
+                          prev > 0 ? prev - 1 : agentSuggestions.length - 1
+                        );
+                      } else if (e.key === 'Enter' && agentHighlightedIndex >= 0) {
+                        e.preventDefault();
+                        handleAgentSuggestionClick(agentSuggestions[agentHighlightedIndex]);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Enter') {
+                        setShowSuggestions(false);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                        setAgentHighlightedIndex(-1);
+                      }
+                    } else if (e.key === 'Enter') {
+                      setShowSuggestions(false);
+                      onSearchSubmit?.();
+                    }
+                  }}
                   className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
                 />
 
@@ -263,7 +368,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       <button
                         key={`${suggestion.name}-${index}`}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
+                          index === highlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                        }`}
                       >
                         {suggestion.type === 'address' ? (
                           <Home className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -272,10 +380,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         ) : (
                           <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         )}
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium text-foreground">{suggestion.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {suggestion.type === 'address' ? 'Adress' : suggestion.type === 'area' ? 'Område' : suggestion.county}
+                            {suggestion.type === 'address' 
+                              ? `${suggestion.county}${suggestion.price ? ` • ${suggestion.price.toLocaleString('sv-SE')} kr` : ''}`
+                              : suggestion.type === 'area' 
+                                ? 'Område' 
+                                : suggestion.county}
                           </p>
                         </div>
                       </button>
@@ -286,11 +398,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {/* Agent Suggestions */}
                 {showSuggestions && searchMode === 'agent' && agentSuggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
-                    {agentSuggestions.map((agent) => (
+                    {agentSuggestions.map((agent, index) => (
                       <button
                         key={agent.id}
                         onClick={() => handleAgentSuggestionClick(agent)}
-                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                        onMouseEnter={() => setAgentHighlightedIndex(index)}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
+                          index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                        }`}
                       >
                         <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         <div>
@@ -326,9 +441,44 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   />
                 </div>
 
+                {/* New Construction Filter */}
+                <div className="flex flex-col items-end space-y-1">
+                  <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
+                  <ToggleGroup
+                    type="single" 
+                    value={newConstructionFilter}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setNewConstructionFilter(value as 'include' | 'only' | 'exclude');
+                        onNewConstructionFilterChange?.(value as 'include' | 'only' | 'exclude');
+                      }
+                    }}
+                    className="border border-primary/30 rounded-md p-0.5 bg-muted/30"
+                  >
+                    <ToggleGroupItem 
+                      value="include" 
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                    >
+                      Inkluderar
+                    </ToggleGroupItem>
+                    <ToggleGroupItem 
+                      value="only" 
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                    >
+                      Endast
+                    </ToggleGroupItem>
+                    <ToggleGroupItem 
+                      value="exclude" 
+                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                    >
+                      Exkluderar
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+
                 {/* Property Type Buttons */}
                 <div>
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3">Bostadstyp</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     <Button
                       variant="outline"
@@ -338,7 +488,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Home className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] mr-1 sm:mr-2" />
                       <span className="truncate">Alla typer</span>
                     </Button>
                     <Button
@@ -349,7 +499,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Home className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] mr-1 sm:mr-2" />
                       Villor
                     </Button>
                     <Button
@@ -361,8 +511,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
                       <div className="flex mr-1 sm:mr-2">
-                        <Home className="w-4 h-4 sm:w-5 sm:h-5 -mr-1" />
-                        <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Home className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] -mr-1" />
+                        <Home className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px]" />
                       </div>
                       Par/Radhus
                     </Button>
@@ -374,7 +524,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Building className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Building className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] mr-1 sm:mr-2" />
                       Lägenheter
                     </Button>
                     <Button
@@ -385,7 +535,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <TreePine className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] mr-1 sm:mr-2" />
                       Fritidshus
                     </Button>
                     <Button
@@ -396,31 +546,67 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Square className="w-[21px] h-[21px] sm:w-[25px] sm:h-[25px] mr-1 sm:mr-2" />
                       Tomt
                     </Button>
                   </div>
                 </div>
 
-                {/* More Filters Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
-                >
-                  <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                  {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
-                </Button>
+                {/* Filter Buttons Row */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    className="flex-1 h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 hover:border-primary"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                    {showAdvancedFilters ? "Mindre filter" : "Mer filter"}
+                  </Button>
+                  {hasActiveFilters && (
+                    <Button
+                      variant="outline"
+                      onClick={clearAllFilters}
+                      className="h-10 sm:h-12 md:h-14 text-sm sm:text-base font-semibold border-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                    >
+                      <X className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      Rensa
+                    </Button>
+                  )}
+                </div>
 
                 {/* Advanced Filters */}
                 {showAdvancedFilters && (
                   <>
                     {/* Price Filter */}
-                    <div className="space-y-3 md:space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {formatPrice(priceRange[0])} - {priceRange[1] >= 20000000 ? '20+ milj kr' : formatPrice(priceRange[1])}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceRange[0] === 0 ? '' : priceRange[0].toLocaleString('sv-SE')}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, priceRange[1]);
+                              setPriceRange([clampedValue, priceRange[1]]);
+                            }}
+                            placeholder="Min"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-muted-foreground">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceRange[1] >= 20000000 ? '' : priceRange[1].toLocaleString('sv-SE')}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 20000000;
+                              const clampedValue = Math.max(value, priceRange[0]);
+                              setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
+                            }}
+                            placeholder="Max"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
                         </div>
                       </div>
                       <Slider
@@ -431,18 +617,43 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground font-medium">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 kr</span>
                         <span>20+ milj kr</span>
                       </div>
                     </div>
 
                     {/* Area Filter */}
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {areaRange[0]} kvm - {areaRange[1] >= 200 ? '200+ kvm' : `${areaRange[1]} kvm`}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={areaRange[0] === 0 ? '' : areaRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, areaRange[1]);
+                              setAreaRange([clampedValue, areaRange[1]]);
+                            }}
+                            placeholder="Min"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-muted-foreground">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={areaRange[1] >= 200 ? '' : areaRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 200;
+                              const clampedValue = Math.max(value, areaRange[0]);
+                              setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
+                            }}
+                            placeholder="Max"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-xs text-muted-foreground">kvm</span>
                         </div>
                       </div>
                       <Slider
@@ -453,18 +664,43 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 kvm</span>
                         <span>200+ kvm</span>
                       </div>
                     </div>
 
                     {/* Room Filter */}
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">
-                          {roomRange[0]} rum - {roomRange[1] >= 7 ? '7+ rum' : `${roomRange[1]} rum`}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={roomRange[0] === 0 ? '' : roomRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, roomRange[1]);
+                              setRoomRange([clampedValue, roomRange[1]]);
+                            }}
+                            placeholder="Min"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-muted-foreground">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={roomRange[1] >= 7 ? '' : roomRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 7;
+                              const clampedValue = Math.max(value, roomRange[0]);
+                              setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
+                            }}
+                            placeholder="Max"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-xs text-muted-foreground">rum</span>
                         </div>
                       </div>
                       <Slider
@@ -475,7 +711,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm md:text-base text-muted-foreground">
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>0 rum</span>
                         <span>7+ rum</span>
                       </div>
@@ -492,25 +728,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       />
                     </div>
 
-                    {/* New Construction Filter */}
-                    <div className="flex items-center justify-end gap-3 px-2 py-2">
-                      <Label htmlFor="new-construction" className="text-base sm:text-lg font-semibold text-foreground cursor-pointer">
-                        Endast nyproduktion
-                      </Label>
-                      <Switch
-                        id="new-construction"
-                        checked={showNewConstruction}
-                        onCheckedChange={setShowNewConstruction}
-                        className="data-[state=checked]:bg-success"
-                      />
-                    </div>
                   </>
                 )}
               </>
             )}
 
             {/* Search Button */}
-            <Button size="lg" className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform">
+            <Button 
+              size="lg" 
+              onClick={() => onSearchSubmit?.()}
+              className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform"
+            >
               {searchMode === 'property' ? 'Hitta bostäder' : 'Hitta mäklare'}
             </Button>
           </div>

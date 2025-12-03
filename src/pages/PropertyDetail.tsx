@@ -298,6 +298,27 @@ const PropertyDetail = () => {
     rooms: 3,
     description: "Exklusiv lägenhet vid Strandvägen med direktutsikt över vattnet. Högklassig standard med genomtänkta detaljer. Tre sovrum, varav ett är master bedroom med eget badrum. Stor balkong med kvällssol och magisk utsikt.",
     features: ["Balkong", "Sjöutsikt", "Hiss", "Parkering", "Nybyggt", "Lyxigt"]
+  }, {
+    id: 101,
+    title: "Såld villa i Danderyd",
+    price: "8 750 000 kr",
+    location: "Danderyd, Stockholm",
+    address: "Enebyvägen 22",
+    vendor: "Täbys Estate",
+    bedrooms: 5,
+    bathrooms: 3,
+    area: 185,
+    images: [property1, property2, property3, property4],
+    type: "Villa",
+    isNew: false,
+    isSold: true,
+    soldDate: new Date("2024-10-02"),
+    sold_price: 9250000,
+    buildYear: 2005,
+    floor: 0,
+    rooms: 5,
+    description: "Vacker villa i attraktivt läge som såldes snabbt till ett konkurrenskraftigt pris. Renoverad och i utmärkt skick med modern köksstandard och nyrenoverade badrum. Stor trädgård med söderläge.",
+    features: ["Trädgård", "Garage", "Nyrenoverat", "Söderläge", "Öppen spis"]
   }];
 
   // Use database property if available, otherwise fallback to hardcoded
@@ -325,11 +346,39 @@ const PropertyDetail = () => {
 
   // Handle images for both database and hardcoded properties
   const images = dbProperty ? [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) : property.images || [property1];
+  
+  // Track image views
+  const trackImageView = async (imageIndex: number) => {
+    if (!id) return;
+    
+    try {
+      const sessionId = sessionStorage.getItem('session_id') || 
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (!sessionStorage.getItem('session_id')) {
+        sessionStorage.setItem('session_id', sessionId);
+      }
+
+      await supabase.from('image_views').insert({
+        property_id: id,
+        session_id: sessionId,
+        image_index: imageIndex,
+        image_url: images[imageIndex],
+      });
+    } catch (error) {
+      console.error('Error tracking image view:', error);
+    }
+  };
+  
   const handlePreviousImage = () => {
-    setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+    const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(newIndex);
+    trackImageView(newIndex);
   };
   const handleNextImage = () => {
-    setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+    const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+    setCurrentImageIndex(newIndex);
+    trackImageView(newIndex);
   };
   const handleDownloadViewing = (date: string, time: string) => {
     // Parse datum och tid för att skapa en riktig Date
@@ -504,7 +553,10 @@ const PropertyDetail = () => {
               {/* Thumbnail Gallery */}
               <div className="p-2 sm:p-4 bg-muted/30 mx-0">
                 <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
-                  {images.map((image, index) => <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
+                  {images.map((image, index) => <button key={index} onClick={() => {
+                      setCurrentImageIndex(index);
+                      trackImageView(index);
+                    }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
                       <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
                     </button>)}
                 </div>
@@ -805,15 +857,35 @@ const PropertyDetail = () => {
                     </div>
 
                     <div className="space-y-3">
-                      {agentProfile.phone && <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      {agentProfile.phone && <Button 
+                          className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                          size="lg"
+                          onClick={() => window.open(`tel:${agentProfile.phone}`, '_self')}
+                        >
                           <Phone className="w-4 h-4 mr-2" />
                           Ring mig
                         </Button>}
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Intresserad av: ${property.address}`;
+                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
                         <Mail className="w-4 h-4 mr-2" />
                         Skicka meddelande
                       </Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
                         <Calendar className="w-4 h-4 mr-2" />
                         Boka visning
                       </Button>
@@ -832,9 +904,35 @@ const PropertyDetail = () => {
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Visa telefonnummer</Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Skicka meddelande</Button>
-                      <Button className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" size="lg">Boka visning</Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => toast.info('Kontakta mäklaren via email för telefonnummer')}
+                      >
+                        Visa telefonnummer
+                      </Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Intresserad av: ${property.address}`;
+                          const body = `Hej,\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        Skicka meddelande
+                      </Button>
+                      <Button 
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        Boka visning
+                      </Button>
                     </div>
                   </>}
 

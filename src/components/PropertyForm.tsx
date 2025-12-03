@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -45,6 +45,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
   const [floorplanPreview, setFloorplanPreview] = useState<string>("");
   const [isNewProduction, setIsNewProduction] = useState(false);
+  const [agencyLogoUrl, setAgencyLogoUrl] = useState<string | null>(null);
 
   const {
     register,
@@ -68,6 +69,39 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     if (!num) return '';
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
+
+  // Fetch agency logo when component mounts
+  useEffect(() => {
+    const fetchAgencyLogo = async () => {
+      if (!user) return;
+
+      try {
+        // Get user's profile to find their agency_id
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("agency_id")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.agency_id) {
+          // Get agency logo
+          const { data: agency } = await supabase
+            .from("agencies")
+            .select("logo_url")
+            .eq("id", profile.agency_id)
+            .single();
+
+          if (agency?.logo_url) {
+            setAgencyLogoUrl(agency.logo_url);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching agency logo:", error);
+      }
+    };
+
+    fetchAgencyLogo();
+  }, [user]);
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -224,6 +258,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
         seller_email: data.seller_email || null,
+        vendor_logo_url: agencyLogoUrl,
       });
 
       if (error) throw error;

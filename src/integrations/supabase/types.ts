@@ -49,31 +49,52 @@ export type Database = {
       }
       agencies: {
         Row: {
+          address: string | null
+          area: string | null
           created_at: string | null
+          description: string | null
           email_domain: string
           id: string
           is_active: boolean | null
           logo_url: string | null
           name: string
+          org_number: string | null
+          owner: string | null
+          phone: string | null
           updated_at: string | null
+          website: string | null
         }
         Insert: {
+          address?: string | null
+          area?: string | null
           created_at?: string | null
+          description?: string | null
           email_domain: string
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name: string
+          org_number?: string | null
+          owner?: string | null
+          phone?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Update: {
+          address?: string | null
+          area?: string | null
           created_at?: string | null
+          description?: string | null
           email_domain?: string
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name?: string
+          org_number?: string | null
+          owner?: string | null
+          phone?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -143,6 +164,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      image_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_index: number
+          image_url: string | null
+          property_id: string
+          session_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_index: number
+          image_url?: string | null
+          property_id: string
+          session_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_index?: number
+          image_url?: string | null
+          property_id?: string
+          session_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_views_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
@@ -399,6 +458,9 @@ export type Database = {
           session_id: string
           time_spent_seconds: number | null
           view_started_at: string
+          visitor_city: string | null
+          visitor_country: string | null
+          visitor_region: string | null
         }
         Insert: {
           created_at?: string
@@ -407,6 +469,9 @@ export type Database = {
           session_id: string
           time_spent_seconds?: number | null
           view_started_at?: string
+          visitor_city?: string | null
+          visitor_country?: string | null
+          visitor_region?: string | null
         }
         Update: {
           created_at?: string
@@ -415,6 +480,9 @@ export type Database = {
           session_id?: string
           time_spent_seconds?: number | null
           view_started_at?: string
+          visitor_city?: string | null
+          visitor_country?: string | null
+          visitor_region?: string | null
         }
         Relationships: [
           {

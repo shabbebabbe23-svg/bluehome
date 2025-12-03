@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Upload, Eye, Building2, MapPin, Home } from "lucide-react";
+import { User, Upload, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -143,92 +143,41 @@ export const ProfileForm = () => {
   };
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader>
         <CardTitle>Min profil</CardTitle>
         <CardDescription>
           Uppdatera dina profiluppgifter som visas för kunder på fastighetsannonser
         </CardDescription>
       </CardHeader>
+      
+      {/* Avatar in top-right corner */}
+      <div className="absolute top-6 right-6 flex flex-col items-center gap-2">
+        <div className="relative">
+          <Avatar className="w-64 h-64">
+            <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
+            <AvatarFallback className="bg-muted">
+              <User className="w-32 h-32 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <Label htmlFor="avatar-upload" className="cursor-pointer absolute bottom-0 right-0">
+            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg">
+              <Upload className="w-8 h-8" />
+            </div>
+            <Input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploading}
+            />
+          </Label>
+        </div>
+      </div>
+
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Public Profile Preview Section */}
-          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4">
-            <div className="flex items-start gap-3 mb-3">
-              <Eye className="w-5 h-5 text-primary mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-lg mb-1">Publik profil</h3>
-                <p className="text-sm text-muted-foreground">
-                  Detta är informationen som visas för kunder på dina fastighetsannonser och din mäklarprofil
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="w-4 h-4 text-primary" />
-                  <span className="font-medium">Profilbild:</span>
-                  <Badge variant={avatarUrl ? "default" : "destructive"}>
-                    {avatarUrl ? "Uppladdad" : "Saknas"}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Building2 className="w-4 h-4 text-primary" />
-                  <span className="font-medium">Mäklarbyrå:</span>
-                  <Badge variant="outline">Viktigt!</Badge>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span className="font-medium">Kontor:</span>
-                  <Badge variant="secondary">Visas</Badge>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Home className="w-4 h-4 text-primary" />
-                  <span className="font-medium">Område:</span>
-                  <Badge variant="secondary">Visas</Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Avatar Upload Section */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Profilbild
-              <Badge variant="destructive" className="ml-2">Obligatorisk</Badge>
-            </h3>
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <Avatar className="w-32 h-32 border-4 border-border">
-                <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
-                <AvatarFallback className="bg-muted">
-                  <User className="w-16 h-16 text-muted-foreground" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <Label htmlFor="avatar-upload" className="cursor-pointer">
-                  <div className="flex items-center gap-2 px-4 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors border-2 border-dashed border-border hover:border-primary">
-                    <Upload className="w-5 h-5" />
-                    <span className="font-medium">{uploading ? "Laddar upp..." : "Ladda upp profilbild"}</span>
-                  </div>
-                  <Input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarUpload}
-                    disabled={uploading}
-                  />
-                </Label>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Din profilbild visas på alla dina fastighetsannonser. Rekommenderat format: kvadratisk bild.
-                </p>
-              </div>
-            </div>
-          </div>
 
           <Separator />
 

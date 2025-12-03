@@ -56,15 +56,12 @@ interface AgentSalesStats {
   sales_count: number;
 }
 
-interface PendingInvitation {
+interface AgencyUser {
   id: string;
+  full_name: string;
   email: string;
-  role: string;
-  token: string;
-  expires_at: string;
-  agency_id: string;
-  created_at: string;
-  agency_name?: string;
+  user_roles?: { user_type: string }[];
+  propertyCount?: number;
 }
 
 const SuperAdminDashboard = () => {
@@ -74,11 +71,16 @@ const SuperAdminDashboard = () => {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [agencySalesStats, setAgencySalesStats] = useState<AgencySalesStats[]>([]);
   const [agentSalesStats, setAgentSalesStats] = useState<AgentSalesStats[]>([]);
-  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isUsersDialogOpen, setIsUsersDialogOpen] = useState(false);
+  const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+  const [agencyUsers, setAgencyUsers] = useState<AgencyUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<AgencyUser | null>(null);
   const [createdInvitationLink, setCreatedInvitationLink] = useState<string | null>(null);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
   const [deletingAgency, setDeletingAgency] = useState<Agency | null>(null);
@@ -120,29 +122,6 @@ const SuperAdminDashboard = () => {
     fetchAgencies();
     fetchActivityLogs();
     fetchSalesStats();
-    fetchPendingInvitations();
-  };
-
-  const fetchPendingInvitations = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("agency_invitations")
-        .select("*, agencies(name)")
-        .is("used_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      const invitationsWithAgencyName = (data || []).map((inv: any) => ({
-        ...inv,
-        agency_name: inv.agencies?.name,
-      }));
-
-      setPendingInvitations(invitationsWithAgencyName);
-    } catch (error) {
-      console.error("Error fetching pending invitations:", error);
-    }
   };
 
   const fetchActivityLogs = async () => {
@@ -431,7 +410,6 @@ const SuperAdminDashboard = () => {
       });
 
       fetchAgencies();
-      fetchPendingInvitations();
     } catch (error: any) {
       console.error("Error creating agency:", error);
       toast({
@@ -453,31 +431,6 @@ const SuperAdminDashboard = () => {
       toast({
         title: "Fel",
         description: "Kunde inte kopiera länken. Försök igen.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const deleteInvitation = async (invitationId: string) => {
-    try {
-      const { error } = await supabase
-        .from("agency_invitations")
-        .delete()
-        .eq("id", invitationId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Inbjudan raderad",
-        description: "Inbjudan har tagits bort.",
-      });
-
-      fetchPendingInvitations();
-    } catch (error) {
-      console.error("Error deleting invitation:", error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte radera inbjudan.",
         variant: "destructive",
       });
     }
@@ -577,35 +530,76 @@ const SuperAdminDashboard = () => {
 
     try {
       const stats = agencyStats[deletingAgency.id];
-      
-      if (stats && (stats.agent_count > 0 || stats.property_count > 0)) {
-        toast({
-          title: "Kan inte radera byrå",
-          description: `Byrån har ${stats.agent_count} mäklare och ${stats.property_count} objekt. Ta bort dessa först.`,
-          variant: "destructive",
-        });
-        setIsDeleteDialogOpen(false);
-        setDeletingAgency(null);
-        return;
+      const agentCount = stats?.agent_count || 0;
+      const propertyCount = stats?.property_count || 0;
+
+      // 1. Hämta alla användare i byrån
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("agency_id", deletingAgency.id);
+
+      if (usersError) throw usersError;
+
+      const userIds = users?.map(u => u.id) || [];
+
+      // 2. Radera alla fastigheter från dessa användare (om det finns några)
+      if (userIds.length > 0) {
+        const { error: propertiesError } = await supabase
+          .from("properties")
+          .delete()
+          .in("user_id", userIds);
+
+        if (propertiesError) throw propertiesError;
+
+        // 3. Radera user_roles
+        const { error: rolesError } = await supabase
+          .from("user_roles")
+          .delete()
+          .in("user_id", userIds);
+
+        if (rolesError) throw rolesError;
+
+        // 4. Radera profiles
+        const { error: profilesError } = await supabase
+          .from("profiles")
+          .delete()
+          .eq("agency_id", deletingAgency.id);
+
+        if (profilesError) throw profilesError;
       }
 
-      const { error } = await supabase
+      // 5. Radera inbjudningar
+      const { error: invitationsError } = await supabase
+        .from("agency_invitations")
+        .delete()
+        .eq("agency_id", deletingAgency.id);
+
+      if (invitationsError) throw invitationsError;
+
+      // 6. Radera byrån
+      const { error: agencyError } = await supabase
         .from("agencies")
         .delete()
         .eq("id", deletingAgency.id);
 
-      if (error) throw error;
+      if (agencyError) throw agencyError;
 
       toast({
-        title: "Byrå raderad",
-        description: `${deletingAgency.name} har raderats.`,
+        title: "Byrå permanent raderad",
+        description: `${deletingAgency.name} och alla associerade data har raderats permanent.`,
       });
 
       await logActivity(
         "agency_deleted",
-        `Byrån "${deletingAgency.name}" raderades`,
+        `Byrån "${deletingAgency.name}" raderades med ${agentCount} mäklare och ${propertyCount} objekt`,
         deletingAgency.id,
-        "agency"
+        "agency",
+        {
+          deleted_agents: agentCount,
+          deleted_properties: propertyCount,
+          user_ids: userIds,
+        }
       );
 
       setIsDeleteDialogOpen(false);
@@ -614,8 +608,114 @@ const SuperAdminDashboard = () => {
     } catch (error: any) {
       console.error("Error deleting agency:", error);
       toast({
-        title: "Fel",
+        title: "Fel vid radering",
         description: error.message || "Kunde inte radera byrå.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchAgencyUsers = async (agencyId: string) => {
+    setLoadingUsers(true);
+    try {
+      // Hämta profiler
+      const { data: usersData, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .eq("agency_id", agencyId);
+
+      if (error) throw error;
+
+      if (usersData) {
+        // Hämta roller separat för varje användare
+        const usersWithRolesAndCounts = await Promise.all(
+          usersData.map(async (user) => {
+            // Hämta roll
+            const { data: roleData } = await supabase
+              .from("user_roles")
+              .select("user_type")
+              .eq("user_id", user.id)
+              .single();
+            
+            // Hämta antal fastigheter
+            const { count } = await supabase
+              .from("properties")
+              .select("*", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .eq("is_deleted", false);
+            
+            return { 
+              ...user, 
+              user_roles: roleData ? [{ user_type: roleData.user_type }] : [],
+              propertyCount: count || 0 
+            };
+          })
+        );
+        setAgencyUsers(usersWithRolesAndCounts as any);
+      }
+    } catch (error) {
+      console.error("Error fetching agency users:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte hämta användare.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleShowUsers = (agency: Agency) => {
+    setSelectedAgency(agency);
+    setIsUsersDialogOpen(true);
+    fetchAgencyUsers(agency.id);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+
+    try {
+      // Ta bort användarens fastigheter
+      const { error: propertiesError } = await supabase
+        .from("properties")
+        .delete()
+        .eq("user_id", deletingUser.id);
+
+      if (propertiesError) throw propertiesError;
+
+      // Ta bort användarens roller
+      const { error: rolesError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", deletingUser.id);
+
+      if (rolesError) throw rolesError;
+
+      // Ta bort användarens profil
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", deletingUser.id);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Användare borttagen",
+        description: `${deletingUser.full_name} har tagits bort permanent.`,
+      });
+
+      // Uppdatera användarlistan
+      if (selectedAgency) {
+        fetchAgencyUsers(selectedAgency.id);
+      }
+
+      setIsDeleteUserDialogOpen(false);
+      setDeletingUser(null);
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte ta bort användaren.",
         variant: "destructive",
       });
     }
@@ -636,29 +736,14 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  size="lg" 
-                  className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden xs:inline">Lägg till byrå</span>
-                  <span className="xs:hidden">Ny byrå</span>
-                </Button>
-              </DialogTrigger>
-            </Dialog>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="gap-2 w-full sm:w-auto"
-              onClick={() => navigate("/skapa-byra-manuellt")}
-            >
-              <Plus className="w-4 h-4" />
-              Skapa ny byrå manuellt
-            </Button>
-          </div>
+          <Button
+            size="lg"
+            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+            onClick={() => navigate("/skapa-byra-manuellt")}
+          >
+            <Plus className="w-4 h-4" />
+            Skapa ny byrå manuellt
+          </Button>
 
           {/* Edit Agency Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -737,17 +822,24 @@ const SuperAdminDashboard = () => {
           <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Radera mäklarbyrå?</AlertDialogTitle>
+                <AlertDialogTitle>⚠️ PERMANENT RADERING</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Är du säker på att du vill radera <strong>{deletingAgency?.name}</strong>?
-                  <br /><br />
-                  Detta kommer att ta bort byrån permanent. Denna åtgärd kan inte ångras.
+                  Är du säker på att du vill <strong className="text-red-600">PERMANENT RADERA</strong> byrån <strong>{deletingAgency?.name}</strong>?
+                  
                   {deletingAgency && agencyStats[deletingAgency.id] && (
-                    agencyStats[deletingAgency.id].agent_count > 0 || agencyStats[deletingAgency.id].property_count > 0
-                  ) && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <p className="text-red-800 text-sm font-medium">
-                        ⚠️ Byrån har {agencyStats[deletingAgency.id].agent_count} mäklare och {agencyStats[deletingAgency.id].property_count} objekt.
+                    <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border-2 border-red-500 rounded-md space-y-3">
+                      <p className="text-red-800 dark:text-red-200 font-bold text-sm">
+                        🚨 Detta kommer att PERMANENT radera:
+                      </p>
+                      <ul className="text-red-700 dark:text-red-300 text-sm space-y-1 ml-4">
+                        <li>• Byrån "{deletingAgency.name}"</li>
+                        <li>• {agencyStats[deletingAgency.id].agent_count} {agencyStats[deletingAgency.id].agent_count === 1 ? "mäklare" : "mäklare"}</li>
+                        <li>• {agencyStats[deletingAgency.id].property_count} {agencyStats[deletingAgency.id].property_count === 1 ? "fastighet" : "fastigheter"}</li>
+                        <li>• Alla användarkonton och deras data</li>
+                        <li>• Alla inbjudningar</li>
+                      </ul>
+                      <p className="text-red-900 dark:text-red-100 font-bold text-sm mt-3">
+                        ⛔ Denna åtgärd kan INTE ångras!
                       </p>
                     </div>
                   )}
@@ -764,6 +856,106 @@ const SuperAdminDashboard = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Delete User Confirmation Dialog */}
+          <AlertDialog open={isDeleteUserDialogOpen} onOpenChange={setIsDeleteUserDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-destructive" />
+                  Radera användare permanent?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    Du är på väg att permanent ta bort användaren{" "}
+                    <span className="font-semibold">{deletingUser?.full_name}</span> ({deletingUser?.email}).
+                  </p>
+                  <p className="text-destructive font-medium">
+                    ⚠️ Detta kommer att permanent radera:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    <li>Användarens profil</li>
+                    <li>Alla användarens fastigheter ({deletingUser?.propertyCount || 0} objekt)</li>
+                    <li>Användarens roller och behörigheter</li>
+                  </ul>
+                  <p className="font-semibold">Denna åtgärd kan inte ångras!</p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteUser}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  Radera permanent
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* Agency Users Dialog */}
+          <Dialog open={isUsersDialogOpen} onOpenChange={setIsUsersDialogOpen}>
+            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Användare i {selectedAgency?.name}
+                </DialogTitle>
+                <DialogDescription>
+                  Alla mäklare och administratörer som tillhör denna byrå
+                </DialogDescription>
+              </DialogHeader>
+              
+              {loadingUsers ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : agencyUsers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Inga användare hittades i denna byrå.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {agencyUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="p-4 border rounded-lg bg-accent/5 hover:bg-accent/10 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base">{user.full_name}</h3>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <div className="flex gap-3 mt-2 text-sm">
+                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium capitalize">
+                              {user.user_roles?.[0]?.user_type === "agency_admin" ? "Byrå-admin" : 
+                               user.user_roles?.[0]?.user_type === "maklare" ? "Mäklare" : 
+                               user.user_roles?.[0]?.user_type || "Användare"}
+                            </span>
+                            <span className="flex items-center gap-1 text-muted-foreground">
+                              <Home className="w-4 h-4" />
+                              {user.propertyCount || 0} objekt
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setDeletingUser(user);
+                            setIsDeleteUserDialogOpen(true);
+                          }}
+                          className="gap-2 shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span className="hidden sm:inline">Radera</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Statistics Cards */}
@@ -806,11 +998,10 @@ const SuperAdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Tabs for Agencies, Statistics, Invitations and Activity Log */}
+        {/* Tabs for Agencies, Statistics and Activity Log */}
         <Tabs defaultValue="agencies" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 max-w-[800px]">
+          <TabsList className="grid w-full grid-cols-3 max-w-[600px]">
             <TabsTrigger value="agencies">Byråer</TabsTrigger>
-            <TabsTrigger value="invitations">Inbjudningar</TabsTrigger>
             <TabsTrigger value="statistics">Statistik</TabsTrigger>
             <TabsTrigger value="activity">Aktivitetslogg</TabsTrigger>
           </TabsList>
@@ -866,6 +1057,15 @@ const SuperAdminDashboard = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => handleShowUsers(agency)}
+                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] hover:text-white hover:border-transparent transition-all"
+                          >
+                            <Users className="w-4 h-4" />
+                            Visa användare
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => {
                               setEditingAgency(agency);
                               setIsEditDialogOpen(true);
@@ -899,76 +1099,6 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="invitations">
-            <Card>
-              <CardHeader>
-                <CardTitle>Väntande inbjudningar</CardTitle>
-                <CardDescription>Hantera inbjudningar som ännu inte har accepterats</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {pendingInvitations.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Inga väntande inbjudningar.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {pendingInvitations.map((invitation) => {
-                      const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${invitation.token}`;
-                      const expiresDate = new Date(invitation.expires_at);
-                      
-                      return (
-                        <div
-                          key={invitation.id}
-                          className="p-4 border rounded-lg space-y-3"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="font-semibold">{invitation.email}</h3>
-                                <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
-                                  {invitation.role === "agency_admin" ? "Byrå-admin" : "Mäklare"}
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {invitation.agency_name}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Går ut: {format(expiresDate, "PPP 'kl.' HH:mm", { locale: sv })}
-                              </p>
-                            </div>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => deleteInvitation(invitation.id)}
-                              className="gap-2 w-full sm:w-auto"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              Radera
-                            </Button>
-                          </div>
-                          <div className="flex gap-2">
-                            <Input 
-                              value={invitationUrl} 
-                              readOnly 
-                              className="font-mono text-xs sm:text-sm"
-                            />
-                            <Button
-                              onClick={() => copyToClipboard(invitationUrl)}
-                              className="gap-2 shrink-0"
-                            >
-                              <Copy className="w-4 h-4" />
-                              <span className="hidden xs:inline">Kopiera</span>
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
                 )}
               </CardContent>
