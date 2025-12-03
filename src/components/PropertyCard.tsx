@@ -152,7 +152,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
-        <div className="w-full h-40 sm:h-44 md:h-48 lg:h-44 xl:h-48 relative">
+        <div className="w-full h-40 sm:h-44 md:h-48 lg:h-40 xl:h-44 relative">
           <img
             src={image}
             alt={title}

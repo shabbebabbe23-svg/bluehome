@@ -1187,7 +1187,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         </div>
 
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-6"
+          ? "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6"
           : "flex flex-col gap-2 sm:gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
