@@ -472,7 +472,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                 {/* Property Type Buttons */}
                 <div>
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-3">Bostadstyp</h3>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3">Bostadstyp</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     <Button
                       variant="outline"
