@@ -17,10 +17,10 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
-        name: 'Bluehome - Hitta ditt drömhem',
-        short_name: 'Bluehome',
+        name: 'BaraHem - Hitta ditt drömhem',
+        short_name: 'BaraHem',
         description: 'Sveriges ledande fastighetsplattform',
-        theme_color: '#3B82F6',
+        theme_color: '#0077B6',
         background_color: '#ffffff',
         display: 'standalone',
         scope: '/',
