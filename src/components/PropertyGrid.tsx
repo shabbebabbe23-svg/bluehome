@@ -1100,13 +1100,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="py-3 md:py-5 px-3 sm:px-4">
+    <section className="py-2 sm:py-3 md:py-5 px-2 sm:px-3 md:px-4">
       <div className="w-full">
-        <div className="text-center mb-3 md:mb-4 animate-fade-in">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1.5 md:mb-2 text-foreground">
+        <div className="text-center mb-2 sm:mb-3 md:mb-4 animate-fade-in">
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1 sm:mb-1.5 md:mb-2 text-foreground">
             {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2 sm:px-4">
             {showFinalPrices
               ? "Se slutpriser på nyligen sålda fastigheter"
               : "Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige"}
@@ -1187,8 +1187,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         </div>
 
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-4 md:mb-6"
-          : "flex flex-col gap-2 mb-4 md:mb-6"
+          ? "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-6"
+          : "flex flex-col gap-2 sm:gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)
