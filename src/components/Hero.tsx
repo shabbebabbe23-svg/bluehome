@@ -338,7 +338,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Home className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] mr-1 sm:mr-2" />
                       <span className="truncate">Alla typer</span>
                     </Button>
                     <Button
@@ -349,7 +349,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "house" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Home className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] mr-1 sm:mr-2" />
                       Villor
                     </Button>
                     <Button
@@ -361,8 +361,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "villa" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
                       <div className="flex mr-1 sm:mr-2">
-                        <Home className="w-4 h-4 sm:w-5 sm:h-5 -mr-1" />
-                        <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Home className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] -mr-1" />
+                        <Home className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px]" />
                       </div>
                       Par/Radhus
                     </Button>
@@ -374,7 +374,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "apartment" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Building className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Building className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] mr-1 sm:mr-2" />
                       Lägenheter
                     </Button>
                     <Button
@@ -385,7 +385,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "cottage" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <TreePine className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] mr-1 sm:mr-2" />
                       Fritidshus
                     </Button>
                     <Button
@@ -396,7 +396,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       }}
                       className={`h-10 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base font-semibold justify-start border-2 ${propertyType === "plot" ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                     >
-                      <Square className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                      <Square className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] mr-1 sm:mr-2" />
                       Tomt
                     </Button>
                   </div>
