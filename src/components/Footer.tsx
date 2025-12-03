@@ -21,8 +21,8 @@ const Footer = () => {
               <span className="text-2xl font-bold">BaraHem</span>
             </div>
             <p className="text-white/80">
-              Sveriges ledande plattform för att köpa, sälja och hyra fastigheter. 
-              Hitta ditt perfekta hem idag.
+              En helt ny plattform för bostadsmarknaden med innovativa funktioner och tjänster. 
+              Upptäck ett smartare sätt att hitta ditt nästa hem.
             </p>
           </div>
 
