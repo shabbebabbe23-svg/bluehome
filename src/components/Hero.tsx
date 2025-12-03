@@ -358,7 +358,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       onSearchSubmit?.();
                     }
                   }}
-                  className="pl-8 sm:pl-10 h-10 sm:h-12 md:h-14 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                  className="pl-8 sm:pl-10 h-10 sm:h-12 md:h-14 text-base sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary"
                 />
 
                 {/* Autocomplete Suggestions */}
