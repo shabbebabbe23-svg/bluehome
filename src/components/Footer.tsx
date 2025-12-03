@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Mail, MapPin, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Linkedin, TrendingUp, Move3D } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -30,43 +31,46 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Snabblänkar</h3>
             <div className="space-y-2">
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
+              <Link to="/" className="block text-white/80 hover:text-primary-glow transition-colors">
                 Köp bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Hyra bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
+              </Link>
+              <Link to="/hitta-maklare" className="block text-white/80 hover:text-primary-glow transition-colors">
+                Hitta mäklare
+              </Link>
+              <Link to="/annonsera-pris" className="block text-white/80 hover:text-primary-glow transition-colors">
                 Sälj bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Bostadsvärdering
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Marknadsinsikter
-              </a>
+              </Link>
+              <Link to="/marknadsanalys" className="flex items-center gap-2 text-white/80 hover:text-primary-glow transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                Marknadsanalys
+              </Link>
+              <Link to="/om-oss" className="block text-white/80 hover:text-primary-glow transition-colors">
+                Om oss
+              </Link>
             </div>
           </div>
 
-          {/* Support */}
+          {/* Features */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="text-lg font-semibold mb-4">Funktioner</h3>
             <div className="space-y-2">
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Hjälpcenter
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Kontakta oss
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Användarvillkor
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Integritetspolicy
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Cookiepolicy
-              </a>
+              <Link to="/marknadsanalys" className="flex items-center gap-2 text-white/80 hover:text-primary-glow transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                Prishistorik
+              </Link>
+              <span className="flex items-center gap-2 text-white/80">
+                <Move3D className="w-4 h-4" />
+                360° Virtuella visningar
+              </span>
+              <span className="block text-white/80">
+                Sparade sökningar
+              </span>
+              <span className="block text-white/80">
+                Favorithantering
+              </span>
+              <span className="block text-white/80">
+                Push-notifikationer
+              </span>
             </div>
           </div>
 

@@ -20,6 +20,8 @@ import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import CreateAgencyManual from "./pages/CreateAgencyManual";
 import ManageAgents from "./pages/ManageAgents";
+import MarketAnalysis from "./pages/MarketAnalysis";
+import VirtualTour from "./pages/VirtualTour";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
 
@@ -50,6 +52,8 @@ const App = () => (
             <Route path="/hitta-maklare" element={<FindAgent />} />
             <Route path="/annonsera-pris" element={<AdvertisingPricing />} />
             <Route path="/om-oss" element={<AboutUs />} />
+            <Route path="/marknadsanalys" element={<MarketAnalysis />} />
+            <Route path="/virtuell-visning/:id" element={<VirtualTour />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
