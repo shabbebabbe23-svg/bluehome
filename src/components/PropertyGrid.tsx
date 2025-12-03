@@ -46,6 +46,9 @@ interface PropertyGridProps {
   showFinalPrices?: boolean;
   propertyType?: string;
   searchAddress?: string;
+  priceRange?: [number, number];
+  areaRange?: [number, number];
+  roomRange?: [number, number];
 }
 
 export interface Property {
@@ -570,7 +573,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "" }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -743,6 +746,31 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           property.location.toLowerCase().includes(searchLower)
         );
       }
+    }
+
+    // Filter by price range
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange;
+      filtered = filtered.filter(property => {
+        const price = property.sold_price || property.priceValue;
+        return price >= minPrice && (maxPrice >= 20000000 || price <= maxPrice);
+      });
+    }
+
+    // Filter by area range
+    if (areaRange) {
+      const [minArea, maxArea] = areaRange;
+      filtered = filtered.filter(property => {
+        return property.area >= minArea && (maxArea >= 200 || property.area <= maxArea);
+      });
+    }
+
+    // Filter by room range
+    if (roomRange) {
+      const [minRooms, maxRooms] = roomRange;
+      filtered = filtered.filter(property => {
+        return property.bedrooms >= minRooms && (maxRooms >= 7 || property.bedrooms <= maxRooms);
+      });
     }
 
     return filtered;

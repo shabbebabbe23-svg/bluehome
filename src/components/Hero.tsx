@@ -16,9 +16,12 @@ interface HeroProps {
   onSearchAddressChange?: (value: string) => void;
   onSearchModeChange?: (mode: 'property' | 'agent') => void;
   onSearchSubmit?: () => void;
+  onPriceRangeChange?: (value: [number, number]) => void;
+  onAreaRangeChange?: (value: [number, number]) => void;
+  onRoomRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -48,7 +51,23 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
+    onPriceRangeChange?.([0, 20000000]);
+    onAreaRangeChange?.([0, 200]);
+    onRoomRangeChange?.([0, 7]);
   };
+
+  // Call callbacks when filter values change
+  useEffect(() => {
+    onPriceRangeChange?.(priceRange as [number, number]);
+  }, [priceRange, onPriceRangeChange]);
+
+  useEffect(() => {
+    onAreaRangeChange?.(areaRange as [number, number]);
+  }, [areaRange, onAreaRangeChange]);
+
+  useEffect(() => {
+    onRoomRangeChange?.(roomRange as [number, number]);
+  }, [roomRange, onRoomRangeChange]);
 
   const hasActiveFilters = searchLocation !== "" || 
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
