@@ -582,7 +582,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([clampedValue, areaRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-20 sm:w-24 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground">-</span>
                           <Input
@@ -595,7 +595,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
                             }}
                             placeholder="Max"
-                            className="w-20 sm:w-24 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-xs text-muted-foreground">kvm</span>
                         </div>
@@ -629,7 +629,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([clampedValue, roomRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-16 sm:w-20 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground">-</span>
                           <Input
@@ -642,7 +642,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
                             }}
                             placeholder="Max"
-                            className="w-16 sm:w-20 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-xs text-muted-foreground">rum</span>
                         </div>
