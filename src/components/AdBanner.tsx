@@ -32,7 +32,7 @@ const AdBanner = ({
   return (
     // Use sticky on large screens so the left ad follows while staying within the column
     // This prevents it from overlapping content that comes after the grid (like the DetailAdBanner)
-    <aside className={`w-64 xl:w-80 shrink-0 sticky top-24 ${className ?? ""}`}>
+    <aside className={`hidden lg:block w-64 xl:w-80 shrink-0 ${className ?? ""} lg:sticky lg:top-24`}>
       <div className="p-2 xl:p-4">
         <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-[440px] xl:h-[520px] flex flex-col">
           <img 

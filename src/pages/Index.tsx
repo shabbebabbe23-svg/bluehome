@@ -101,8 +101,7 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8">
-        {/* Left Ad - Hidden on mobile/tablet */}
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
         <AdBanner
           imageSrc={userSofaSrc ?? sofaAd}
           alt={"Soffa annons"}
@@ -111,9 +110,9 @@ const Index = () => {
           bullets={["✓ Fri hemleverans", "✓ 0% delbetalning", "✓ Många tyger och färger"]}
           buttonText={"Se erbjudanden"}
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
-          className="hidden lg:block lg:order-1 ml-10 transform scale-90"
+          className="lg:order-1 order-3 ml-10 transform scale-90"
         />
-        <main className="order-1 lg:order-2 flex-1 w-full max-w-5xl mx-auto">
+        <main className="order-1 lg:order-2 flex-1 w-full">
           <Hero
             onFinalPricesChange={setShowFinalPrices}
             onPropertyTypeChange={setPropertyType}
@@ -130,19 +129,18 @@ const Index = () => {
             <AgentGrid searchQuery={searchAddress} />
           )}
         </main>
-        {/* Right Ad - Hidden on mobile/tablet */}
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
-          className="hidden lg:block lg:order-3 mr-10 transform scale-90"
+          className="lg:order-3 order-2 mr-10 transform scale-90"
         />
       </div>
-      <div className="w-full px-2 sm:px-4 lg:px-8 mt-6 md:mt-8">
+      <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">
         <LazyMap properties={allProperties} />
       </div>
       {/* Renovation ads under the map */}
-      <div className="w-full px-2 sm:px-4 lg:px-8 mt-4 md:mt-6">
+      <div className="w-full px-3 sm:px-4 lg:px-8 mt-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InlineAdBanner
               title="Badrumsrenovering — Komplett service"
               description="Expertteam som tar hand om hela renoveringen från idé till färdigt badrum."
