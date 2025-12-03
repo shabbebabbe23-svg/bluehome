@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingUp, TrendingDown, MapPin, Home, BarChart3, Search, X } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, MapPin, Home, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -27,7 +25,6 @@ interface AreaStats {
 const MarketAnalysis = () => {
   const navigate = useNavigate();
   const [selectedArea, setSelectedArea] = useState<string>("");
-  const [areaInput, setAreaInput] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [priceHistory, setPriceHistory] = useState<PriceData[]>([]);
   const [areaStats, setAreaStats] = useState<AreaStats[]>([]);
@@ -36,21 +33,6 @@ const MarketAnalysis = () => {
   useEffect(() => {
     fetchMarketData();
   }, [selectedArea, selectedType]);
-
-  const handleAreaSearch = () => {
-    setSelectedArea(areaInput.trim());
-  };
-
-  const handleAreaKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleAreaSearch();
-    }
-  };
-
-  const clearAreaFilter = () => {
-    setAreaInput("");
-    setSelectedArea("");
-  };
 
   const fetchMarketData = async () => {
     setLoading(true);

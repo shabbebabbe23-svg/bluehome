@@ -26,6 +26,8 @@ const Index = () => {
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
+  const [elevatorFilter, setElevatorFilter] = useState(false);
+  const [balconyFilter, setBalconyFilter] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const scrollToResults = () => {
@@ -125,6 +127,8 @@ const Index = () => {
             onAreaRangeChange={setAreaRange}
             onRoomRangeChange={setRoomRange}
             onNewConstructionFilterChange={setNewConstructionFilter}
+            onElevatorFilterChange={setElevatorFilter}
+            onBalconyFilterChange={setBalconyFilter}
           />
           <div ref={resultsRef}>
             {searchMode === 'property' ? (
@@ -136,6 +140,8 @@ const Index = () => {
                 areaRange={areaRange}
                 roomRange={roomRange}
                 newConstructionFilter={newConstructionFilter}
+                elevatorFilter={elevatorFilter}
+                balconyFilter={balconyFilter}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />

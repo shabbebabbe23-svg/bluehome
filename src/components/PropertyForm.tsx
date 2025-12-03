@@ -49,6 +49,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [agencyLogoUrl, setAgencyLogoUrl] = useState<string | null>(null);
   const [vrImageIndices, setVrImageIndices] = useState<number[]>([]);
   const [isMainImage360, setIsMainImage360] = useState(false);
+  const [hasElevator, setHasElevator] = useState(false);
+  const [hasBalcony, setHasBalcony] = useState(false);
 
   const {
     register,
@@ -277,6 +279,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         vendor_logo_url: agencyLogoUrl,
         vr_image_indices: isMainImage360 ? [-1, ...vrImageIndices] : vrImageIndices,
         has_vr: isMainImage360 || vrImageIndices.length > 0,
+        has_elevator: hasElevator,
+        has_balcony: hasBalcony,
       });
 
       if (error) throw error;
@@ -294,6 +298,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsNewProduction(false);
       setVrImageIndices([]);
       setIsMainImage360(false);
+      setHasElevator(false);
+      setHasBalcony(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -556,6 +562,47 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             </div>
             <p className="text-sm text-muted-foreground mt-2 ml-8">
               Markera om detta är en nyproducerad fastighet
+            </p>
+          </Card>
+        </div>
+
+        {/* Hiss och Balkong */}
+        <div>
+          <Card className="p-4">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="has_elevator"
+                checked={hasElevator}
+                onChange={(e) => setHasElevator(e.target.checked)}
+                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="has_elevator" className="cursor-pointer font-semibold text-base">
+                Hiss
+              </Label>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2 ml-8">
+              Byggnaden har hiss
+            </p>
+          </Card>
+        </div>
+
+        <div>
+          <Card className="p-4">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="has_balcony"
+                checked={hasBalcony}
+                onChange={(e) => setHasBalcony(e.target.checked)}
+                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="has_balcony" className="cursor-pointer font-semibold text-base">
+                Balkong
+              </Label>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2 ml-8">
+              Bostaden har balkong
             </p>
           </Card>
         </div>

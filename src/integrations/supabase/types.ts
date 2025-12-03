@@ -305,6 +305,8 @@ export type Database = {
           fee: number | null
           floorplan_images: string[] | null
           floorplan_url: string | null
+          has_balcony: boolean | null
+          has_elevator: boolean | null
           has_vr: boolean | null
           housing_association: string | null
           hover_image_url: string | null
@@ -343,6 +345,8 @@ export type Database = {
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
+          has_balcony?: boolean | null
+          has_elevator?: boolean | null
           has_vr?: boolean | null
           housing_association?: string | null
           hover_image_url?: string | null
@@ -381,6 +385,8 @@ export type Database = {
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
+          has_balcony?: boolean | null
+          has_elevator?: boolean | null
           has_vr?: boolean | null
           housing_association?: string | null
           hover_image_url?: string | null
