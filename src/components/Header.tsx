@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -138,6 +138,10 @@ const Header = () => {
             </DropdownMenu>
             <Link to="/om-oss" className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
+            </Link>
+            <Link to="/marknadsanalys" className={`text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+              <TrendingUp className="w-4 h-4" />
+              Marknadsanalys
             </Link>
           </nav>
 
@@ -286,6 +290,11 @@ const Header = () => {
 
               <Link to="/om-oss" className={`text-lg hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`} onClick={() => setIsMenuOpen(false)}>
                 Om oss
+              </Link>
+
+              <Link to="/marknadsanalys" className={`text-lg hover:text-primary transition-colors px-4 py-2 flex items-center gap-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`} onClick={() => setIsMenuOpen(false)}>
+                <TrendingUp className="w-5 h-5" />
+                Marknadsanalys
               </Link>
 
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">

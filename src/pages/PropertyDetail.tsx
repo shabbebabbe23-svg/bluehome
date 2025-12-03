@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -565,10 +565,21 @@ const PropertyDetail = () => {
 
             {/* Property Title and Share Section */}
             <h1 className="text-3xl sm:text-4xl font-bold text-center relative flex items-center justify-center gap-4">
-              <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2 absolute left-0">
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Dela bostad</span>
-              </Button>
+              <div className="absolute left-0 flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
+                  <Share2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dela bostad</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate(`/virtuell-visning/${id}`)} 
+                  className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
+                >
+                  <Move3D className="w-4 h-4" />
+                  <span className="hidden sm:inline">360° Visning</span>
+                </Button>
+              </div>
               {property.title}
             </h1>
 
