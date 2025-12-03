@@ -9,7 +9,7 @@ import LazyMap from "@/components/LazyMap";
 import InlineAdBanner from "@/components/InlineAdBanner";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
-import sofaAd from "@/assets/sofa-ad.svg";
+import soffaBanner from "@/assets/soffa-banner.png";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
@@ -17,7 +17,6 @@ import bathroomAd from "@/assets/bathroom-ad.jpg";
 import kitchenAd from "@/assets/kitchen-ad.jpg";
 
 const Index = () => {
-  const [userSofaSrc, setUserSofaSrc] = useState<string | null>(null);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
@@ -100,21 +99,13 @@ const Index = () => {
     fetchProperties();
   }, []);
 
-  useEffect(() => {
-    // Try to load a user-provided PNG at runtime without causing build errors.
-    const candidate = "/src/assets/soffa-banner.png";
-    const img = new Image();
-    img.onload = () => setUserSofaSrc(candidate);
-    img.onerror = () => { };
-    img.src = candidate;
-  }, []);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
       <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
         <AdBanner
-          imageSrc={userSofaSrc ?? sofaAd}
+          imageSrc={soffaBanner}
           alt={"Soffa annons"}
           title={"Soffor — Fynda din nya soffa"}
           description={"Letar du efter en ny soffa? Upptäck kvalitetssoffor till bra priser."}
