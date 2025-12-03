@@ -183,54 +183,17 @@ const MarketAnalysis = () => {
               <MapPin className="w-4 h-4 inline mr-1" />
               Stad:
             </span>
-            {["", "Stockholm", "Göteborg", "Malmö", "Uppsala", "Linköping", "Västerås", "Örebro"].map((city) => (
+            {["", "Stockholm", "Göteborg", "Malmö", "Uppsala"].map((city) => (
               <Button
                 key={city || "all"}
                 variant={selectedArea === city ? "default" : "outline"}
                 size="sm"
-                onClick={() => {
-                  setSelectedArea(city);
-                  setAreaInput(city);
-                }}
+                onClick={() => setSelectedArea(city)}
                 className={selectedArea === city ? "bg-gradient-to-r from-primary to-green-500" : ""}
               >
                 {city || "Alla"}
               </Button>
             ))}
-          </div>
-
-          {/* Custom city input */}
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Eller skriv annan stad..."
-                value={areaInput}
-                onChange={(e) => setAreaInput(e.target.value)}
-                onKeyDown={handleAreaKeyDown}
-                className="w-[220px] pr-8"
-              />
-              {areaInput && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                  onClick={clearAreaFilter}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-            <Button 
-              onClick={handleAreaSearch}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <Search className="w-4 h-4" />
-              Sök
-            </Button>
           </div>
 
           {/* Property type filters */}
