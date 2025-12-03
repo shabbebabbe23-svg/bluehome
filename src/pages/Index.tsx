@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PropertyGrid from "@/components/PropertyGrid";
@@ -23,6 +23,13 @@ const Index = () => {
   const [searchAddress, setSearchAddress] = useState("");
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToResults = () => {
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -116,18 +123,25 @@ const Index = () => {
           <Hero
             onFinalPricesChange={setShowFinalPrices}
             onPropertyTypeChange={setPropertyType}
-            onSearchAddressChange={setSearchAddress}
+            onSearchAddressChange={(value) => {
+              setSearchAddress(value);
+              if (value.length >= 2) {
+                scrollToResults();
+              }
+            }}
             onSearchModeChange={setSearchMode}
           />
-          {searchMode === 'property' ? (
-            <PropertyGrid
-              showFinalPrices={showFinalPrices}
-              propertyType={propertyType}
-              searchAddress={searchAddress}
-            />
-          ) : (
-            <AgentGrid searchQuery={searchAddress} />
-          )}
+          <div ref={resultsRef}>
+            {searchMode === 'property' ? (
+              <PropertyGrid
+                showFinalPrices={showFinalPrices}
+                propertyType={propertyType}
+                searchAddress={searchAddress}
+              />
+            ) : (
+              <AgentGrid searchQuery={searchAddress} />
+            )}
+          </div>
         </main>
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
