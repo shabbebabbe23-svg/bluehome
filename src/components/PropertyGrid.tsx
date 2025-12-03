@@ -49,6 +49,7 @@ interface PropertyGridProps {
   priceRange?: [number, number];
   areaRange?: [number, number];
   roomRange?: [number, number];
+  newConstructionFilter?: 'include' | 'only' | 'exclude';
 }
 
 export interface Property {
@@ -75,6 +76,7 @@ export interface Property {
   sold_price?: number;
   new_price?: number;
   is_manual_price_change?: boolean;
+  is_new_production?: boolean;
   agent_name?: string;
   agent_avatar?: string;
   agent_phone?: string;
@@ -573,7 +575,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include' }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -645,6 +647,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             sold_price: prop.sold_price || undefined,
             new_price: prop.new_price || undefined,
             is_manual_price_change: prop.is_manual_price_change || false,
+            is_new_production: prop.is_new_production || false,
             createdAt: new Date(prop.created_at),
           }));
           setDbProperties(formattedProperties);
@@ -771,6 +774,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       filtered = filtered.filter(property => {
         return property.bedrooms >= minRooms && (maxRooms >= 7 || property.bedrooms <= maxRooms);
       });
+    }
+
+    // Filter by new construction
+    if (newConstructionFilter === 'only') {
+      filtered = filtered.filter(property => property.is_new_production === true);
+    } else if (newConstructionFilter === 'exclude') {
+      filtered = filtered.filter(property => property.is_new_production !== true);
     }
 
     return filtered;
