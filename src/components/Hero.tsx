@@ -28,7 +28,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area'; price?: number }>>([]);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
+  const [agentHighlightedIndex, setAgentHighlightedIndex] = useState(-1);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [showNewConstruction, setShowNewConstruction] = useState(false);
@@ -64,6 +66,15 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Reset highlighted index when suggestions change
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [suggestions]);
+
+  useEffect(() => {
+    setAgentHighlightedIndex(-1);
+  }, [agentSuggestions]);
 
   const lastSearchRef = useRef<number>(0);
 
@@ -277,7 +288,51 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     }
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (searchMode === 'property' && showSuggestions && suggestions.length > 0) {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setHighlightedIndex(prev => 
+                          prev < suggestions.length - 1 ? prev + 1 : 0
+                        );
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setHighlightedIndex(prev => 
+                          prev > 0 ? prev - 1 : suggestions.length - 1
+                        );
+                      } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                        e.preventDefault();
+                        handleSuggestionClick(suggestions[highlightedIndex]);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Enter') {
+                        setShowSuggestions(false);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                        setHighlightedIndex(-1);
+                      }
+                    } else if (searchMode === 'agent' && showSuggestions && agentSuggestions.length > 0) {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setAgentHighlightedIndex(prev => 
+                          prev < agentSuggestions.length - 1 ? prev + 1 : 0
+                        );
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setAgentHighlightedIndex(prev => 
+                          prev > 0 ? prev - 1 : agentSuggestions.length - 1
+                        );
+                      } else if (e.key === 'Enter' && agentHighlightedIndex >= 0) {
+                        e.preventDefault();
+                        handleAgentSuggestionClick(agentSuggestions[agentHighlightedIndex]);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Enter') {
+                        setShowSuggestions(false);
+                        onSearchSubmit?.();
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                        setAgentHighlightedIndex(-1);
+                      }
+                    } else if (e.key === 'Enter') {
                       setShowSuggestions(false);
                       onSearchSubmit?.();
                     }
@@ -292,7 +347,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       <button
                         key={`${suggestion.name}-${index}`}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
+                          index === highlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                        }`}
                       >
                         {suggestion.type === 'address' ? (
                           <Home className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -319,11 +377,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {/* Agent Suggestions */}
                 {showSuggestions && searchMode === 'agent' && agentSuggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
-                    {agentSuggestions.map((agent) => (
+                    {agentSuggestions.map((agent, index) => (
                       <button
                         key={agent.id}
                         onClick={() => handleAgentSuggestionClick(agent)}
-                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 border-b border-border last:border-b-0"
+                        onMouseEnter={() => setAgentHighlightedIndex(index)}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
+                          index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                        }`}
                       >
                         <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         <div>
