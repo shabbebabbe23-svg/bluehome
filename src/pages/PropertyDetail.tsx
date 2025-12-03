@@ -298,6 +298,27 @@ const PropertyDetail = () => {
     rooms: 3,
     description: "Exklusiv lägenhet vid Strandvägen med direktutsikt över vattnet. Högklassig standard med genomtänkta detaljer. Tre sovrum, varav ett är master bedroom med eget badrum. Stor balkong med kvällssol och magisk utsikt.",
     features: ["Balkong", "Sjöutsikt", "Hiss", "Parkering", "Nybyggt", "Lyxigt"]
+  }, {
+    id: 101,
+    title: "Såld villa i Danderyd",
+    price: "8 750 000 kr",
+    location: "Danderyd, Stockholm",
+    address: "Enebyvägen 22",
+    vendor: "Täbys Estate",
+    bedrooms: 5,
+    bathrooms: 3,
+    area: 185,
+    images: [property1, property2, property3, property4],
+    type: "Villa",
+    isNew: false,
+    isSold: true,
+    soldDate: new Date("2024-10-02"),
+    sold_price: 9250000,
+    buildYear: 2005,
+    floor: 0,
+    rooms: 5,
+    description: "Vacker villa i attraktivt läge som såldes snabbt till ett konkurrenskraftigt pris. Renoverad och i utmärkt skick med modern köksstandard och nyrenoverade badrum. Stor trädgård med söderläge.",
+    features: ["Trädgård", "Garage", "Nyrenoverat", "Söderläge", "Öppen spis"]
   }];
 
   // Use database property if available, otherwise fallback to hardcoded
