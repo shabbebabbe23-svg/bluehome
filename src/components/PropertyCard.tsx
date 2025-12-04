@@ -285,34 +285,34 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-2 flex-1 flex flex-col justify-between gap-0.5">
+      <CardContent className="p-1.5 flex-1 flex flex-col justify-between gap-0">
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
-          <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+          <h3 className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
           <div className="flex flex-col items-end">
             {isSold && soldPrice ? (
               <>
-                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-[10px] sm:text-xs text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-xs sm:text-sm font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
               </>
             ) : newPrice ? (
               <>
-                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-[10px] sm:text-xs text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-xs sm:text-sm font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
               </>
             ) : (
               <div className="flex flex-col items-end">
-                <span className="text-sm sm:text-base font-bold text-primary whitespace-nowrap">
+                <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                   {price}
                 </span>
                 {hasActiveBidding && !isSold && (
@@ -326,71 +326,63 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <div className="hidden md:flex items-center text-muted-foreground mb-0.5 sm:mb-1">
-          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base truncate">
+        <div className="hidden md:flex items-center text-muted-foreground">
+          <MapPin className="w-3 h-3 mr-0.5 flex-shrink-0" />
+          <span className="text-[10px] sm:text-xs truncate">
             {address ? `${address}, ${location}` : location}
           </span>
         </div>
 
-        {/* Sold date on left side */}
         {isSold && soldDate && (
-          <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
-            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-            <span className="text-xs sm:text-sm md:text-base">
+          <div className="flex items-center text-muted-foreground">
+            <Calendar className="w-3 h-3 mr-0.5 flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs">
               Såld {new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}
             </span>
           </div>
         )}
 
         <div className="mb-0">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bedrooms}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">rum</span>
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
+              <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bedrooms}</span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground">rum</span>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Bath className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bathrooms}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground hidden sm:inline">badrum</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground sm:hidden">bad</span>
-              </div>
+            <div className="flex items-center gap-0.5">
+              <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bathrooms}</span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:inline">bad</span>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Square className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{area}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">m²</span>
-              </div>
+            <div className="flex items-center gap-0.5">
+              <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground">{area}</span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground">m²</span>
             </div>
           </div>
 
           {agent_name && (
-            <div className="mt-2 pt-2 border-t border-border/50">
+            <div className="mt-1.5 pt-1.5 border-t border-border/50">
               <Link
                 to={`/agent/${agent_id}`}
-                className="flex items-center gap-2 hover:bg-muted/30 p-2 rounded-lg transition-colors group/agent relative z-20"
+                className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Avatar className="w-10 h-10 border-2 border-border">
+                <Avatar className="w-7 h-7 border border-border">
                   <AvatarImage src={agent_avatar} className="object-cover" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                    <User className="w-5 h-5" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
+                    <User className="w-3 h-3" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
+                  <p className="text-[10px] sm:text-xs font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
                     {agent_name}
                   </p>
                   {agent_agency && (
-                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                      <Building2 className="w-3 h-3 flex-shrink-0" />
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate flex items-center gap-0.5">
+                      <Building2 className="w-2.5 h-2.5 flex-shrink-0" />
                       {agent_agency}
                     </p>
                   )}
@@ -399,25 +391,24 @@ const PropertyCard = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-shrink-0 h-8 w-8 p-0"
+                    className="flex-shrink-0 h-6 w-6 p-0"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       window.location.href = `tel:${agent_phone}`;
                     }}
                   >
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-3 h-3" />
                   </Button>
                 )}
               </Link>
             </div>
           )}
 
-          {/* Show viewing date only for non-sold properties */}
           {!isSold && (
-            <div className="flex items-center justify-end text-foreground mt-1">
-              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
-              <span className="text-xs sm:text-sm md:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+            <div className="flex items-center justify-end text-foreground mt-0.5">
+              <Calendar className="w-3 h-3 mr-0.5 text-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
             </div>
           )}
         </div>
@@ -431,7 +422,7 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mt-0.5 sm:mt-1">
+        <div className="mt-1">
           {onButtonClick ? (
             <Button
               onClick={(e) => {
@@ -439,18 +430,18 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[10px] sm:text-xs py-1"
             >
               {buttonText || "Visa detaljer"}
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2">
+              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[10px] sm:text-xs py-1">
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>
           )}
-          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-right mt-0.5">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground text-right mt-0.5">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
