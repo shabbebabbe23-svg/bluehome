@@ -168,7 +168,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover or auto-slide */}
-        <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
+        <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
@@ -285,10 +285,10 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-1.5 sm:p-2 md:p-2.5 flex-1 flex flex-col justify-between">
+      <CardContent className="p-2 flex-1 flex flex-col justify-between gap-0.5">
         {/* Address and price on same row */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 mb-0">
-          <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
+          <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
           <div className="flex flex-col items-end">
@@ -297,7 +297,7 @@ const PropertyCard = ({
                 <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
               </>
@@ -306,13 +306,13 @@ const PropertyCard = ({
                 <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
               </>
             ) : (
               <div className="flex flex-col items-end">
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold text-primary whitespace-nowrap">
                   {price}
                 </span>
                 {hasActiveBidding && !isSold && (
@@ -343,8 +343,8 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mb-0.5 sm:mb-1">
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
+        <div className="mb-0">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-0.5 sm:gap-1">
               <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex items-baseline gap-0.5">
@@ -371,9 +371,8 @@ const PropertyCard = ({
             </div>
           </div>
 
-          {/* Agent Information */}
           {agent_name && (
-            <div className="mt-3 pt-3 border-t border-border/50">
+            <div className="mt-2 pt-2 border-t border-border/50">
               <Link
                 to={`/agent/${agent_id}`}
                 className="flex items-center gap-2 hover:bg-muted/30 p-2 rounded-lg transition-colors group/agent relative z-20"
