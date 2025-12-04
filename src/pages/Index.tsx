@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import LazyMap from "@/components/LazyMap";
 import InlineAdBanner from "@/components/InlineAdBanner";
+import PropertyCard from "@/components/PropertyCard";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
 import soffaBanner from "@/assets/soffa-banner.png";
@@ -15,6 +16,7 @@ import property2 from "@/assets/property-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import kitchenAd from "@/assets/kitchen-ad.jpg";
+import { Clock } from "lucide-react";
 
 const Index = () => {
   const [showFinalPrices, setShowFinalPrices] = useState(false);
@@ -101,10 +103,56 @@ const Index = () => {
     fetchProperties();
   }, []);
 
+  // Get the 4 most recent properties
+  const recentProperties = allProperties
+    .filter(p => !p.isSold)
+    .slice(0, 4);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
+      
+      {/* Recent uploads section */}
+      {recentProperties.length > 0 && (
+        <section className="px-3 sm:px-4 lg:px-8 pt-24 pb-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-2 mb-6">
+              <Clock className="w-5 h-5 text-primary" />
+              <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
+                Senast uppladdade objekt
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {recentProperties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  id={property.id}
+                  title={property.title}
+                  price={property.price}
+                  location={property.location}
+                  address={property.address}
+                  bedrooms={property.bedrooms}
+                  bathrooms={property.bathrooms}
+                  area={property.area}
+                  fee={property.fee}
+                  image={property.image}
+                  hoverImage={property.hoverImage}
+                  type={property.type}
+                  viewingDate={property.viewingDate}
+                  vendorLogo={property.vendorLogo}
+                  hasVR={property.hasVR}
+                  agent_name={property.agent_name}
+                  agent_avatar={property.agent_avatar}
+                  agent_phone={property.agent_phone}
+                  agent_agency={property.agent_agency}
+                  agent_id={property.agent_id}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
         <AdBanner
           imageSrc={soffaBanner}
