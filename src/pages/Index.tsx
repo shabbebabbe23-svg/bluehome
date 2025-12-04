@@ -103,10 +103,10 @@ const Index = () => {
     fetchProperties();
   }, []);
 
-  // Get the 5 most recent properties
+  // Get the 6 most recent properties
   const recentProperties = allProperties
     .filter(p => !p.isSold)
-    .slice(0, 5);
+    .slice(0, 6);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
@@ -137,45 +137,6 @@ const Index = () => {
             onBalconyFilterChange={setBalconyFilter}
           />
           <div ref={resultsRef}>
-            {/* Recent uploads section */}
-            {recentProperties.length > 0 && (
-              <section className="mb-8">
-                <div className="flex items-center gap-2 mb-6">
-                  <Clock className="w-5 h-5 text-primary" />
-                  <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
-                    Senast uppladdade objekt
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                  {recentProperties.map((property) => (
-                    <PropertyCard
-                      key={property.id}
-                      id={property.id}
-                      title={property.title}
-                      price={property.price}
-                      location={property.location}
-                      address={property.address}
-                      bedrooms={property.bedrooms}
-                      bathrooms={property.bathrooms}
-                      area={property.area}
-                      fee={property.fee}
-                      image={property.image}
-                      hoverImage={property.hoverImage}
-                      type={property.type}
-                      viewingDate={property.viewingDate}
-                      vendorLogo={property.vendorLogo}
-                      hasVR={property.hasVR}
-                      agent_name={property.agent_name}
-                      agent_avatar={property.agent_avatar}
-                      agent_phone={property.agent_phone}
-                      agent_agency={property.agent_agency}
-                      agent_id={property.agent_id}
-                      autoSlideImages={true}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
             {searchMode === 'property' ? (
               <PropertyGrid
                 showFinalPrices={showFinalPrices}
@@ -198,6 +159,46 @@ const Index = () => {
           className="lg:order-3 order-2 mr-10 transform scale-90"
         />
       </div>
+      
+      {/* Recent uploads section - full width */}
+      {recentProperties.length > 0 && (
+        <section className="w-full px-3 sm:px-4 lg:px-8 py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Clock className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
+              Senast uppladdade objekt
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {recentProperties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                id={property.id}
+                title={property.title}
+                price={property.price}
+                location={property.location}
+                address={property.address}
+                bedrooms={property.bedrooms}
+                bathrooms={property.bathrooms}
+                area={property.area}
+                fee={property.fee}
+                image={property.image}
+                hoverImage={property.hoverImage}
+                type={property.type}
+                viewingDate={property.viewingDate}
+                vendorLogo={property.vendorLogo}
+                hasVR={property.hasVR}
+                agent_name={property.agent_name}
+                agent_avatar={property.agent_avatar}
+                agent_phone={property.agent_phone}
+                agent_agency={property.agent_agency}
+                agent_id={property.agent_id}
+                autoSlideImages={true}
+              />
+            ))}
+          </div>
+        </section>
+      )}
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">
         <LazyMap properties={allProperties} />
       </div>
