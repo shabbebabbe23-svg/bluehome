@@ -34,13 +34,13 @@ const Header = () => {
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? "backdrop-blur-xl border-b border-white/30 shadow-lg shadow-black/5" 
-          : "backdrop-blur-md border-b border-white/20"
+          ? "backdrop-blur-md border-b border-white/20 shadow-sm shadow-black/5" 
+          : "backdrop-blur-sm border-b border-white/10"
       }`}
       style={{
         background: isScrolled 
-          ? 'linear-gradient(135deg, hsl(200 98% 95% / 0.95), hsl(142 76% 95% / 0.95))' 
-          : 'var(--main-gradient)'
+          ? 'linear-gradient(135deg, hsl(200 98% 98% / 0.7), hsl(142 76% 98% / 0.7))' 
+          : 'linear-gradient(135deg, hsl(200 98% 98% / 0.4), hsl(142 76% 98% / 0.4))'
       }}
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
