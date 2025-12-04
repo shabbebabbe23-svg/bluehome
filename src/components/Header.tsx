@@ -32,14 +32,14 @@ const Header = () => {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? "backdrop-blur-xl border-b border-white/30 shadow-lg shadow-black/5" 
+          ? "backdrop-blur-sm border-b border-transparent" 
           : "backdrop-blur-md border-b border-white/20"
       }`}
       style={{
         background: isScrolled 
-          ? 'linear-gradient(135deg, hsl(200 98% 95% / 0.95), hsl(142 76% 95% / 0.95))' 
+          ? 'transparent' 
           : 'var(--main-gradient)'
       }}
     >
