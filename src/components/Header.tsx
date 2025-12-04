@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import NotificationBell from "@/components/NotificationBell";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const {
     user,
     session,
@@ -21,10 +22,27 @@ const Header = () => {
   const isCommercialPage = location.pathname === "/foretag";
   const isAgentPage = location.pathname === "/maklare";
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{
-      background: 'var(--main-gradient)'
-    }}>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? "backdrop-blur-xl border-b border-white/30 shadow-lg shadow-black/5" 
+          : "backdrop-blur-md border-b border-white/20"
+      }`}
+      style={{
+        background: isScrolled 
+          ? 'linear-gradient(135deg, hsl(200 98% 95% / 0.95), hsl(142 76% 95% / 0.95))' 
+          : 'var(--main-gradient)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
