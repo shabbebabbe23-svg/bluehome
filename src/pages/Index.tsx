@@ -103,10 +103,10 @@ const Index = () => {
     fetchProperties();
   }, []);
 
-  // Get the 4 most recent properties
+  // Get the 5 most recent properties
   const recentProperties = allProperties
     .filter(p => !p.isSold)
-    .slice(0, 4);
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
@@ -146,7 +146,7 @@ const Index = () => {
                     Senast uppladdade objekt
                   </h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                   {recentProperties.map((property) => (
                     <PropertyCard
                       key={property.id}
@@ -170,6 +170,7 @@ const Index = () => {
                       agent_phone={property.agent_phone}
                       agent_agency={property.agent_agency}
                       agent_id={property.agent_id}
+                      autoSlideImages={true}
                     />
                   ))}
                 </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ interface PropertyCardProps {
   bulkSelectMode?: boolean;
   isSelected?: boolean;
   onSelect?: (id: string | number) => void;
+  autoSlideImages?: boolean;
 }
 
 const PropertyCard = ({
@@ -85,9 +86,24 @@ const PropertyCard = ({
   bulkSelectMode = false,
   isSelected = false,
   onSelect,
+  autoSlideImages = false,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const isFavorite = isFavoriteHook(String(id));
+  
+  // Auto-slide images state
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [image, hoverImage].filter(Boolean) as string[];
+  
+  useEffect(() => {
+    if (!autoSlideImages || images.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [autoSlideImages, images.length]);
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
   const viewDate = viewingDate ? (() => {
@@ -151,18 +167,48 @@ const PropertyCard = ({
       )}
 
       <div className="relative overflow-hidden">
-        {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
+        {/* Layered images for smooth cross-fade on hover or auto-slide */}
         <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
-          <img
-            src={image}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
-          />
-          <img
-            src={hoverImage ?? image}
-            alt={`${title} - alternativ bild`}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
-          />
+          {autoSlideImages ? (
+            // Auto-slide mode: cycle through images
+            images.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`${title} - bild ${index + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
+                  index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                }`}
+              />
+            ))
+          ) : (
+            // Default hover mode
+            <>
+              <img
+                src={image}
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
+              />
+              <img
+                src={hoverImage ?? image}
+                alt={`${title} - alternativ bild`}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+              />
+            </>
+          )}
+          {/* Image indicator dots for auto-slide */}
+          {autoSlideImages && images.length > 1 && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
         {/* Agency logo area (right side, slightly offset from favorite button) */}
         {!hideControls && (
