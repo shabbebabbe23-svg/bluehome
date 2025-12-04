@@ -103,10 +103,10 @@ const Index = () => {
     fetchProperties();
   }, []);
 
-  // Get the 6 most recent properties
+  // Get the 10 most recent properties
   const recentProperties = allProperties
     .filter(p => !p.isSold)
-    .slice(0, 6);
+    .slice(0, 10);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
@@ -162,14 +162,14 @@ const Index = () => {
       
       {/* Recent uploads section - full width */}
       {recentProperties.length > 0 && (
-        <section className="w-full px-3 sm:px-4 lg:px-8 py-8">
-          <div className="flex items-center gap-2 mb-6">
+        <section className="w-full px-1 sm:px-2 py-8">
+          <div className="flex items-center gap-2 mb-6 px-2 sm:px-4">
             <Clock className="w-5 h-5 text-primary" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
               Senast uppladdade objekt
             </h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-2 sm:gap-3">
             {recentProperties.map((property) => (
               <PropertyCard
                 key={property.id}
