@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ interface PropertyCardProps {
   bulkSelectMode?: boolean;
   isSelected?: boolean;
   onSelect?: (id: string | number) => void;
+  autoSlideImages?: boolean;
 }
 
 const PropertyCard = ({
@@ -85,9 +86,24 @@ const PropertyCard = ({
   bulkSelectMode = false,
   isSelected = false,
   onSelect,
+  autoSlideImages = false,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const isFavorite = isFavoriteHook(String(id));
+  
+  // Auto-slide images state
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [image, hoverImage].filter(Boolean) as string[];
+  
+  useEffect(() => {
+    if (!autoSlideImages || images.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [autoSlideImages, images.length]);
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
   const viewDate = viewingDate ? (() => {
@@ -151,18 +167,48 @@ const PropertyCard = ({
       )}
 
       <div className="relative overflow-hidden">
-        {/* Layered images for smooth cross-fade on hover using CSS (group-hover) */}
-        <div className="w-full h-36 sm:h-40 md:h-44 lg:h-40 xl:h-44 relative">
-          <img
-            src={image}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
-          />
-          <img
-            src={hoverImage ?? image}
-            alt={`${title} - alternativ bild`}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
-          />
+        {/* Layered images for smooth cross-fade on hover or auto-slide */}
+        <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
+          {autoSlideImages ? (
+            // Auto-slide mode: cycle through images
+            images.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`${title} - bild ${index + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
+                  index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                }`}
+              />
+            ))
+          ) : (
+            // Default hover mode
+            <>
+              <img
+                src={image}
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
+              />
+              <img
+                src={hoverImage ?? image}
+                alt={`${title} - alternativ bild`}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+              />
+            </>
+          )}
+          {/* Image indicator dots for auto-slide */}
+          {autoSlideImages && images.length > 1 && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
         {/* Agency logo area (right side, slightly offset from favorite button) */}
         {!hideControls && (
@@ -239,39 +285,39 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-1.5 sm:p-2 md:p-2.5 flex-1 flex flex-col justify-between">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-1.5">
         {/* Address and price on same row */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 mb-0">
-          <h3 className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
+          <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
             {title}
           </h3>
           <div className="flex flex-col items-end">
             {isSold && soldPrice ? (
               <>
-                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-[11px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
               </>
             ) : newPrice ? (
               <>
-                <span className="text-xs sm:text-sm md:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-[11px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
               </>
             ) : (
               <div className="flex flex-col items-end">
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-primary whitespace-nowrap">
+                <span className="text-sm sm:text-base font-bold text-primary whitespace-nowrap">
                   {price}
                 </span>
                 {hasActiveBidding && !isSold && (
-                  <span className="text-xs sm:text-sm text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap flex items-center gap-1">
-                    <FileSignature className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span className="text-sm sm:text-base text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap flex items-center gap-1">
+                    <FileSignature className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Pågående budgivning
                   </span>
                 )}
@@ -280,71 +326,62 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <div className="hidden md:flex items-center text-muted-foreground mb-0.5 sm:mb-1">
-          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-          <span className="text-xs sm:text-sm md:text-base truncate">
+        <div className="hidden md:flex items-center text-muted-foreground">
+          <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+          <span className="text-[11px] sm:text-sm truncate">
             {address ? `${address}, ${location}` : location}
           </span>
         </div>
 
-        {/* Sold date on left side */}
         {isSold && soldDate && (
-          <div className="flex items-center text-muted-foreground mb-0.5 sm:mb-1">
-            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-            <span className="text-xs sm:text-sm md:text-base">
+          <div className="flex items-center text-muted-foreground">
+            <Calendar className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+            <span className="text-[11px] sm:text-sm">
               Såld {new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}
             </span>
           </div>
         )}
 
-        <div className="mb-0.5 sm:mb-1">
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Bed className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bedrooms}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">rum</span>
-              </div>
+        <div className="mb-0">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
+              <Bed className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{bedrooms}</span>
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground">rum</span>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Bath className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{bathrooms}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground hidden sm:inline">badrum</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground sm:hidden">bad</span>
-              </div>
+            <div className="flex items-center gap-0.5">
+              <Bath className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{bathrooms}</span>
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground hidden sm:inline">bad</span>
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Square className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground">{area}</span>
-                <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">m²</span>
-              </div>
+            <div className="flex items-center gap-0.5">
+              <Square className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{area}</span>
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground">m²</span>
             </div>
           </div>
 
-          {/* Agent Information */}
           {agent_name && (
-            <div className="mt-3 pt-3 border-t border-border/50">
+            <div className="mt-1.5 pt-1.5 border-t border-border/50">
               <Link
                 to={`/agent/${agent_id}`}
-                className="flex items-center gap-2 hover:bg-muted/30 p-2 rounded-lg transition-colors group/agent relative z-20"
+                className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Avatar className="w-10 h-10 border-2 border-border">
+                <Avatar className="w-8 h-8 border border-border">
                   <AvatarImage src={agent_avatar} className="object-cover" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                    <User className="w-5 h-5" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-[11px]">
+                    <User className="w-3.5 h-3.5" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
+                  <p className="text-[11px] sm:text-sm font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
                     {agent_name}
                   </p>
                   {agent_agency && (
-                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                    <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-0.5">
                       <Building2 className="w-3 h-3 flex-shrink-0" />
                       {agent_agency}
                     </p>
@@ -354,25 +391,24 @@ const PropertyCard = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-shrink-0 h-8 w-8 p-0"
+                    className="flex-shrink-0 h-6 w-6 p-0"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       window.location.href = `tel:${agent_phone}`;
                     }}
                   >
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-3 h-3" />
                   </Button>
                 )}
               </Link>
             </div>
           )}
 
-          {/* Show viewing date only for non-sold properties */}
           {!isSold && (
-            <div className="flex items-center justify-end text-foreground mt-1">
-              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 text-foreground flex-shrink-0" />
-              <span className="text-xs sm:text-sm md:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+            <div className="flex items-center justify-end text-foreground mt-0.5">
+              <Calendar className="w-3.5 h-3.5 mr-0.5 text-foreground flex-shrink-0" />
+              <span className="text-[11px] sm:text-sm text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
             </div>
           )}
         </div>
@@ -386,7 +422,7 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mt-0.5 sm:mt-1">
+        <div className="mt-1">
           {onButtonClick ? (
             <Button
               onClick={(e) => {
@@ -394,18 +430,18 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1"
             >
               {buttonText || "Visa detaljer"}
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-sm md:text-base py-1.5 sm:py-2">
+            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1">
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>
           )}
-          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground text-right mt-0.5">
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground text-right mt-0.5">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`

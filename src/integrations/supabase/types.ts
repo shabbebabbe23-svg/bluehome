@@ -302,9 +302,12 @@ export type Database = {
           construction_year: number | null
           created_at: string | null
           description: string | null
+          documents: Json | null
           fee: number | null
           floorplan_images: string[] | null
           floorplan_url: string | null
+          has_balcony: boolean | null
+          has_elevator: boolean | null
           has_vr: boolean | null
           housing_association: string | null
           hover_image_url: string | null
@@ -329,6 +332,7 @@ export type Database = {
           user_id: string
           vendor_logo_url: string | null
           viewing_date: string | null
+          vr_image_indices: number[] | null
         }
         Insert: {
           additional_images?: string[] | null
@@ -339,9 +343,12 @@ export type Database = {
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          documents?: Json | null
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
+          has_balcony?: boolean | null
+          has_elevator?: boolean | null
           has_vr?: boolean | null
           housing_association?: string | null
           hover_image_url?: string | null
@@ -366,6 +373,7 @@ export type Database = {
           user_id: string
           vendor_logo_url?: string | null
           viewing_date?: string | null
+          vr_image_indices?: number[] | null
         }
         Update: {
           additional_images?: string[] | null
@@ -376,9 +384,12 @@ export type Database = {
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          documents?: Json | null
           fee?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
+          has_balcony?: boolean | null
+          has_elevator?: boolean | null
           has_vr?: boolean | null
           housing_association?: string | null
           hover_image_url?: string | null
@@ -403,6 +414,7 @@ export type Database = {
           user_id?: string
           vendor_logo_url?: string | null
           viewing_date?: string | null
+          vr_image_indices?: number[] | null
         }
         Relationships: []
       }
@@ -547,6 +559,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_seller_email: {
+        Args: { property_user_id: string }
+        Returns: boolean
+      }
+      get_invitation_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          agency_id: string
+          agency_name: string
+          email: string
+          expires_at: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
+      get_public_bid_info: {
+        Args: { p_property_id: string }
+        Returns: {
+          bid_amount: number
+          bidder_label: string
+          created_at: string
+        }[]
+      }
       get_user_type: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]

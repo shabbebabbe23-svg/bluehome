@@ -1,28 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users } from "lucide-react";
+import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "@/components/NotificationBell";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const {
     user,
     session,
     userType,
     profileName,
+    avatarUrl,
     signOut
   } = useAuth();
   const location = useLocation();
   const isCommercialPage = location.pathname === "/foretag";
   const isAgentPage = location.pathname === "/maklare";
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{
-      background: 'var(--main-gradient)'
-    }}>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? "backdrop-blur-sm border-b border-transparent" 
+          : "backdrop-blur-md border-b border-white/20"
+      }`}
+      style={{
+        background: isScrolled 
+          ? 'transparent' 
+          : 'var(--main-gradient)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
@@ -114,7 +134,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-4 xl:gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-10 ml-8 xl:ml-12">
             <a href="#" className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Köp
             </a>
@@ -139,20 +159,28 @@ const Header = () => {
             <Link to="/om-oss" className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </Link>
+            <Link to="/marknadsanalys" className={`text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+              <TrendingUp className="w-4 h-4" />
+              Marknadsanalys
+            </Link>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-4">
-            {/* User Role Indicator */}
+            {/* User Profile Avatar & Role Indicator */}
             {user && userType && (
-              <div className={`flex items-center gap-1.5 xl:gap-2 px-2 xl:px-4 py-1.5 xl:py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
-                {userType === "superadmin" ? (
+              <div className={`flex items-center gap-2 xl:gap-3 px-2 xl:px-4 py-1.5 xl:py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
+                {/* Profile Avatar */}
+                <Link to={userType === "maklare" ? "/maklare?tab=profile" : "#"} className="hover:scale-110 transition-transform">
+                  <Avatar className="w-8 h-8 xl:w-9 xl:h-9 ring-2 ring-offset-1 ring-offset-transparent ring-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)]" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                    <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                    <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs xl:text-sm font-bold">
+                      {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                {userType === "superadmin" && (
                   <Shield className="w-4 h-4 xl:w-5 xl:h-5 text-[hsl(200,98%,50%)]" fill="currentColor" />
-                ) : (
-                  <span className="relative flex h-2 w-2 xl:h-3 xl:w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/40" style={{ animationDuration: '1.5s' }}></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 xl:h-3 xl:w-3 bg-primary/70"></span>
-                  </span>
                 )}
                 <span className="text-sm xl:text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow max-w-[120px] xl:max-w-none truncate">
                   {profileName || session?.user?.email || "Användare"}
@@ -212,13 +240,25 @@ const Header = () => {
             background: 'var(--main-gradient)'
           }}>
             <nav className="flex flex-col gap-3">
-              {/* User Role Indicator for Mobile */}
+              {/* User Role Indicator with Avatar for Mobile */}
               {user && userType && (
-                <div className={`flex items-center justify-center gap-2 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
-                  {userType === "superadmin" ? <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" /> : <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />}
-                  <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
-                    Inloggad som: {userType === "superadmin" ? "Superadmin" : userType === "agency_admin" ? "Byrå Admin" : userType === "maklare" ? "Mäklare" : "Användare"}
-                  </span>
+                <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
+                  {/* Mobile Profile Avatar */}
+                  <Avatar className="w-10 h-10" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                    <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                    <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-sm font-bold">
+                      {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-green-400 bg-clip-text text-transparent drop-shadow">
+                      {profileName || session?.user?.email || "Användare"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {userType === "superadmin" ? "Superadmin" : userType === "agency_admin" ? "Byrå Admin" : userType === "maklare" ? "Mäklare" : userType === "buyer" ? "Köpare" : "Användare"}
+                    </span>
+                  </div>
+                  {userType === "superadmin" && <Shield className="w-5 h-5 text-[hsl(200,98%,50%)]" fill="currentColor" />}
                 </div>
               )}
 
@@ -286,6 +326,11 @@ const Header = () => {
 
               <Link to="/om-oss" className={`text-lg hover:text-primary transition-colors px-4 py-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`} onClick={() => setIsMenuOpen(false)}>
                 Om oss
+              </Link>
+
+              <Link to="/marknadsanalys" className={`text-lg hover:text-primary transition-colors px-4 py-2 flex items-center gap-2 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`} onClick={() => setIsMenuOpen(false)}>
+                <TrendingUp className="w-5 h-5" />
+                Marknadsanalys
               </Link>
 
               <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">

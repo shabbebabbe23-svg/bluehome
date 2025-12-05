@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -565,10 +565,21 @@ const PropertyDetail = () => {
 
             {/* Property Title and Share Section */}
             <h1 className="text-3xl sm:text-4xl font-bold text-center relative flex items-center justify-center gap-4">
-              <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2 absolute left-0">
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Dela bostad</span>
-              </Button>
+              <div className="absolute left-0 flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
+                  <Share2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dela bostad</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate(`/virtuell-visning/${id}`)} 
+                  className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
+                >
+                  <Move3D className="w-4 h-4" />
+                  <span className="hidden sm:inline">360° Visning</span>
+                </Button>
+              </div>
               {property.title}
             </h1>
 
@@ -754,6 +765,39 @@ const PropertyDetail = () => {
                       </div>
                     </div>
                   </>}
+
+                {/* Documents Section */}
+                {dbProperty?.documents && Array.isArray(dbProperty.documents) && dbProperty.documents.length > 0 && (
+                  <>
+                    <Separator className="my-6" />
+                    <div>
+                      <h2 className="text-xl font-bold mb-3">Dokument</h2>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Ladda ner årsredovisning, stadgar och andra dokument
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {(dbProperty.documents as { url: string; name: string }[]).map((doc, index) => (
+                          <a
+                            key={index}
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={doc.name}
+                            className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors group"
+                          >
+                            <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                              <Download className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{doc.name}</p>
+                              <p className="text-xs text-muted-foreground">Klicka för att ladda ner</p>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {!dbProperty && <>
                     <Separator className="my-6" />

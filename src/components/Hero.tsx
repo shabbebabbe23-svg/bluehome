@@ -21,9 +21,11 @@ interface HeroProps {
   onAreaRangeChange?: (value: [number, number]) => void;
   onRoomRangeChange?: (value: [number, number]) => void;
   onNewConstructionFilterChange?: (value: 'include' | 'only' | 'exclude') => void;
+  onElevatorFilterChange?: (value: boolean) => void;
+  onBalconyFilterChange?: (value: boolean) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -39,6 +41,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
+  const [hasElevator, setHasElevator] = useState(false);
+  const [hasBalcony, setHasBalcony] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -50,12 +54,16 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setShowFinalPrices(false);
     setKeywords("");
     setNewConstructionFilter('include');
+    setHasElevator(false);
+    setHasBalcony(false);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
     onPriceRangeChange?.([0, 20000000]);
     onAreaRangeChange?.([0, 200]);
     onRoomRangeChange?.([0, 7]);
+    onElevatorFilterChange?.(false);
+    onBalconyFilterChange?.(false);
   };
 
   // Call callbacks when filter values change
@@ -75,7 +83,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
-    propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include';
+    propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
+    hasElevator || hasBalcony;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -358,7 +367,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       onSearchSubmit?.();
                     }
                   }}
-                  className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base border-2 border-primary/30 focus:border-primary"
+                  className="pl-8 sm:pl-10 h-10 sm:h-12 md:h-14 text-base sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary"
                 />
 
                 {/* Autocomplete Suggestions */}
@@ -717,11 +726,38 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       </div>
                     </div>
 
+                    {/* Elevator & Balcony Filters */}
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Bekvämligheter</h3>
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setHasElevator(!hasElevator);
+                            onElevatorFilterChange?.(!hasElevator);
+                          }}
+                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasElevator ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                        >
+                          Hiss
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setHasBalcony(!hasBalcony);
+                            onBalconyFilterChange?.(!hasBalcony);
+                          }}
+                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBalcony ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                        >
+                          Balkong
+                        </Button>
+                      </div>
+                    </div>
+
                     {/* Keywords Filter */}
                     <div className="space-y-3 md:space-y-4">
                       <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyckelord</h3>
                       <Input
-                        placeholder="T.ex. balkong, garage, nybyggt..."
+                        placeholder="T.ex. garage, nybyggt..."
                         value={keywords}
                         onChange={(e) => setKeywords(e.target.value)}
                         className="h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"

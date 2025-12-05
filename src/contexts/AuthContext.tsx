@@ -8,6 +8,7 @@ interface AuthContextType {
   session: Session | null;
   userType: "admin" | "moderator" | "user" | "maklare" | "superadmin" | "agency_admin" | "buyer" | null;
   profileName: string | null;
+  avatarUrl: string | null;
   signOut: () => Promise<void>;
 }
 
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [userType, setUserType] = useState<"admin" | "moderator" | "user" | "maklare" | "superadmin" | "agency_admin" | "buyer" | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -47,21 +49,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, email")
+        .select("full_name, email, avatar_url")
         .eq("id", userId)
         .single();
       
       if (error) {
         console.error('Failed to fetch profile:', error);
         setProfileName(null);
+        setAvatarUrl(null);
         return;
       }
       
       console.log('Profile fetched:', data);
       setProfileName(data?.full_name || data?.email || null);
+      setAvatarUrl(data?.avatar_url || null);
     } catch (err) {
       console.error('Error fetching profile:', err);
       setProfileName(null);
+      setAvatarUrl(null);
     }
   };
 
@@ -81,6 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           setUserType(null);
           setProfileName(null);
+          setAvatarUrl(null);
         }
       }
     );
@@ -112,7 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, userType, profileName, signOut }}>
+    <AuthContext.Provider value={{ user, session, userType, profileName, avatarUrl, signOut }}>
       {children}
     </AuthContext.Provider>
   );

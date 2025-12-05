@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Mail, Phone, MapPin, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Linkedin, TrendingUp, Move3D } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -21,8 +22,8 @@ const Footer = () => {
               <span className="text-2xl font-bold">BaraHem</span>
             </div>
             <p className="text-white/80">
-              Sveriges ledande plattform för att köpa, sälja och hyra fastigheter. 
-              Hitta ditt perfekta hem idag.
+              En helt ny plattform för bostadsmarknaden med innovativa funktioner och tjänster. 
+              Upptäck ett smartare sätt att hitta ditt nästa hem.
             </p>
           </div>
 
@@ -30,43 +31,46 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Snabblänkar</h3>
             <div className="space-y-2">
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
+              <Link to="/" className="block text-white/80 hover:text-primary-glow transition-colors">
                 Köp bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Hyra bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
+              </Link>
+              <Link to="/hitta-maklare" className="block text-white/80 hover:text-primary-glow transition-colors">
+                Hitta mäklare
+              </Link>
+              <Link to="/annonsera-pris" className="block text-white/80 hover:text-primary-glow transition-colors">
                 Sälj bostad
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Bostadsvärdering
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Marknadsinsikter
-              </a>
+              </Link>
+              <Link to="/marknadsanalys" className="flex items-center gap-2 text-white/80 hover:text-primary-glow transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                Marknadsanalys
+              </Link>
+              <Link to="/om-oss" className="block text-white/80 hover:text-primary-glow transition-colors">
+                Om oss
+              </Link>
             </div>
           </div>
 
-          {/* Support */}
+          {/* Features */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="text-lg font-semibold mb-4">Funktioner</h3>
             <div className="space-y-2">
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Hjälpcenter
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Kontakta oss
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Användarvillkor
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Integritetspolicy
-              </a>
-              <a href="#" className="block text-white/80 hover:text-primary-glow transition-colors">
-                Cookiepolicy
-              </a>
+              <Link to="/marknadsanalys" className="flex items-center gap-2 text-white/80 hover:text-primary-glow transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                Prishistorik
+              </Link>
+              <span className="flex items-center gap-2 text-white/80">
+                <Move3D className="w-4 h-4" />
+                360° Virtuella visningar
+              </span>
+              <span className="block text-white/80">
+                Sparade sökningar
+              </span>
+              <span className="block text-white/80">
+                Favorithantering
+              </span>
+              <span className="block text-white/80">
+                Push-notifikationer
+              </span>
             </div>
           </div>
 
@@ -74,18 +78,15 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Kontakt</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
-                  <Phone className="w-full h-full text-white" />
-                </div>
-                <span className="text-white/80">+46 8 123 456 78</span>
-              </div>
-              <div className="flex items-center gap-3">
+              <a 
+                href="mailto:info@barahem.se" 
+                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors"
+              >
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <Mail className="w-full h-full text-white" />
                 </div>
-                <span className="text-white/80">info@barahem.se</span>
-              </div>
+                <span>info@barahem.se</span>
+              </a>
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <MapPin className="w-full h-full text-white" />
@@ -111,17 +112,6 @@ const Footer = () => {
                 <span>Facebook</span>
               </a>
               <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
-              >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,100%,50%)] to-[hsl(142,76%,45%)] rounded p-0.5">
-                  <Instagram className="w-full h-full text-white" />
-                </div>
-                <span>Instagram</span>
-              </a>
-              <a 
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -133,22 +123,14 @@ const Footer = () => {
                 <span>LinkedIn</span>
               </a>
               <a 
-                href="https://x.com" 
+                href="https://www.instagram.com/barahem.se/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-pink-500 to-yellow-500 rounded p-0.5">
-                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
-                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="2" />
-                    <circle cx="12" cy="12" r="5" stroke="white" strokeWidth="2" />
-                    <circle cx="17" cy="7" r="1.5" fill="white" />
-                  </svg>
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                  <Instagram className="w-full h-full text-white" />
                 </div>
-                <span>Instagram</span>
-              </a>
-              <a href="https://www.instagram.com/barahem.se/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/80 hover:text-pink-500 transition-colors">
-                <Instagram className="w-5 h-5" />
                 <span>@barahem.se</span>
               </a>
             </div>

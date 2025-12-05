@@ -39,52 +39,25 @@ const InvitationAccept = () => {
 
     const fetchInvitation = async () => {
       try {
-        // Hämta inbjudan först
+        // Use secure function to fetch invitation by token (doesn't expose full table)
         const { data: invitationData, error: invitationError } = await supabase
-          .from("agency_invitations")
-          .select("email, agency_id, role, expires_at, used_at")
-          .eq("token", token)
-          .single();
+          .rpc("get_invitation_by_token", { p_token: token });
 
-        if (invitationError || !invitationData) {
-          toast.error("Inbjudan hittades inte");
-          navigate("/");
-          return;
-        }
-
-        const now = new Date();
-        const isExpired = new Date(invitationData.expires_at) < now;
-
-        if (invitationData.used_at) {
-          setInvitation(null);
-          setLoading(false);
-          return;
-        }
-        if (isExpired) {
+        if (invitationError || !invitationData || invitationData.length === 0) {
+          // Token not found, already used, or expired
           setInvitation(null);
           setLoading(false);
           return;
         }
 
-        // Hämta byrånamn separat
-        let agencyName = "";
-        if (invitationData.agency_id) {
-          const { data: agencyData } = await supabase
-            .from("agencies")
-            .select("name")
-            .eq("id", invitationData.agency_id)
-            .single();
-          
-          agencyName = agencyData?.name || "";
-        }
-
+        const inv = invitationData[0];
         setInvitation({
-          email: invitationData.email,
-          agency_id: invitationData.agency_id,
-          role: invitationData.role,
-          agency_name: agencyName,
-          expires_at: invitationData.expires_at,
-          used_at: invitationData.used_at,
+          email: inv.email,
+          agency_id: inv.agency_id,
+          role: inv.role,
+          agency_name: inv.agency_name || "",
+          expires_at: inv.expires_at,
+          used_at: null, // Function only returns unused invitations
         });
       } catch (error) {
         console.error("Error fetching invitation:", error);

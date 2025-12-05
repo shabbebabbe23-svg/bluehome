@@ -7,17 +7,18 @@ import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import LazyMap from "@/components/LazyMap";
 import InlineAdBanner from "@/components/InlineAdBanner";
+import PropertyCard from "@/components/PropertyCard";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
-import sofaAd from "@/assets/sofa-ad.svg";
+import soffaBanner from "@/assets/soffa-banner.png";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import kitchenAd from "@/assets/kitchen-ad.jpg";
+import { Clock } from "lucide-react";
 
 const Index = () => {
-  const [userSofaSrc, setUserSofaSrc] = useState<string | null>(null);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
@@ -27,6 +28,8 @@ const Index = () => {
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
+  const [elevatorFilter, setElevatorFilter] = useState(false);
+  const [balconyFilter, setBalconyFilter] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const scrollToResults = () => {
@@ -100,21 +103,17 @@ const Index = () => {
     fetchProperties();
   }, []);
 
-  useEffect(() => {
-    // Try to load a user-provided PNG at runtime without causing build errors.
-    const candidate = "/src/assets/soffa-banner.png";
-    const img = new Image();
-    img.onload = () => setUserSofaSrc(candidate);
-    img.onerror = () => { };
-    img.src = candidate;
-  }, []);
+  // Get the 5 most recent properties
+  const recentProperties = allProperties
+    .filter(p => !p.isSold)
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
       <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
         <AdBanner
-          imageSrc={userSofaSrc ?? sofaAd}
+          imageSrc={soffaBanner}
           alt={"Soffa annons"}
           title={"Soffor — Fynda din nya soffa"}
           description={"Letar du efter en ny soffa? Upptäck kvalitetssoffor till bra priser."}
@@ -134,8 +133,46 @@ const Index = () => {
             onAreaRangeChange={setAreaRange}
             onRoomRangeChange={setRoomRange}
             onNewConstructionFilterChange={setNewConstructionFilter}
+            onElevatorFilterChange={setElevatorFilter}
+            onBalconyFilterChange={setBalconyFilter}
           />
           <div ref={resultsRef}>
+            {/* Recent uploads section */}
+            {recentProperties.length > 0 && (
+              <section className="mb-8">
+                <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-6">
+                  Senast uppladdade objekt
+                </h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {recentProperties.map((property) => (
+                    <PropertyCard
+                      key={property.id}
+                      id={property.id}
+                      title={property.title}
+                      price={property.price}
+                      location={property.location}
+                      address={property.address}
+                      bedrooms={property.bedrooms}
+                      bathrooms={property.bathrooms}
+                      area={property.area}
+                      fee={property.fee}
+                      image={property.image}
+                      hoverImage={property.hoverImage}
+                      type={property.type}
+                      viewingDate={property.viewingDate}
+                      vendorLogo={property.vendorLogo}
+                      hasVR={property.hasVR}
+                      agent_name={property.agent_name}
+                      agent_avatar={property.agent_avatar}
+                      agent_phone={property.agent_phone}
+                      agent_agency={property.agent_agency}
+                      agent_id={property.agent_id}
+                      autoSlideImages={true}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
             {searchMode === 'property' ? (
               <PropertyGrid
                 showFinalPrices={showFinalPrices}
@@ -145,6 +182,8 @@ const Index = () => {
                 areaRange={areaRange}
                 roomRange={roomRange}
                 newConstructionFilter={newConstructionFilter}
+                elevatorFilter={elevatorFilter}
+                balconyFilter={balconyFilter}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />
