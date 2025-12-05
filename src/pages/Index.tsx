@@ -140,7 +140,7 @@ const Index = () => {
             {/* Recent uploads section */}
             {recentProperties.length > 0 && (
               <section className="mb-8">
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center justify-center gap-2 mb-6">
                   <Clock className="w-5 h-5 text-primary" />
                   <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
                     Senast uppladdade objekt
