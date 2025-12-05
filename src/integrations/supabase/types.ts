@@ -563,6 +563,16 @@ export type Database = {
         Args: { property_user_id: string }
         Returns: boolean
       }
+      get_invitation_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          agency_id: string
+          agency_name: string
+          email: string
+          expires_at: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       get_public_bid_info: {
         Args: { p_property_id: string }
         Returns: {
