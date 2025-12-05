@@ -1,7 +1,7 @@
 project_id = "qgvloiecyvqbxeplfzwv"
 
 [functions.create-agent]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-agency-invitation]
 verify_jwt = false
