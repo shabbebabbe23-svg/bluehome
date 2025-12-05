@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Heart, User, Menu, X, LogOut, Plus, Archive, BarChart3, UserCircle, Shield, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -19,8 +19,10 @@ const Header = () => {
     signOut
   } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const isCommercialPage = location.pathname === "/foretag";
   const isAgentPage = location.pathname === "/maklare";
+  const isPropertyDetailPage = location.pathname.startsWith("/fastighet/");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +48,27 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
+            {/* Back Arrow for Mobile on Property Detail Pages */}
+            {isPropertyDetailPage && (
+              <svg 
+                width="32" 
+                height="32" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                onClick={() => navigate('/')}
+                className="lg:hidden cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
+              >
+                <defs>
+                  <linearGradient id="headerArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#headerArrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+
             {/* Superadmin Menu Button */}
             {user && userType === "superadmin" && (
               <DropdownMenu>
