@@ -285,7 +285,7 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-1.5 flex-1 flex flex-col justify-between gap-0">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-1.5">
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
           <h3 className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
