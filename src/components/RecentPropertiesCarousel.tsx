@@ -127,7 +127,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
 
         {/* Single centered property card - 50% size */}
         <Card 
-          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-72 sm:w-80"
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-[360px] sm:w-[400px]"
         >
           <Link
             to={`/fastighet/${currentProperty.id}`}
