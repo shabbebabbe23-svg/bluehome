@@ -139,7 +139,7 @@ const Index = () => {
           <div ref={resultsRef}>
             {/* Recent uploads section */}
             {recentProperties.length > 0 && (
-              <section className="mb-8">
+              <section className="mb-4">
                 <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-6">
                   Senast uppladdade objekt
                 </h2>
