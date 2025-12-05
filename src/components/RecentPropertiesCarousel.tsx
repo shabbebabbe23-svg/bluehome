@@ -111,33 +111,23 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   const currentImageIndex = imageCounters[currentPropertyIndex] % currentImages.length;
 
   return (
-    <div className="relative">
-      {/* Navigation arrows */}
-      {properties.length > 1 && (
-        <>
+    <div className="flex flex-col items-center">
+      <div className="flex items-center gap-2">
+        {/* Left arrow */}
+        {properties.length > 1 && (
           <Button
             variant="ghost"
             size="icon"
             onClick={goToPrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background shadow-md rounded-full -ml-4"
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background shadow-md rounded-full -mr-4"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        </>
-      )}
+        )}
 
-      {/* Single centered property card - 50% size */}
-      <div className="flex justify-center">
+        {/* Single centered property card - 50% size */}
         <Card 
-          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full max-w-sm"
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-72 sm:w-80"
         >
           <Link
             to={`/fastighet/${currentProperty.id}`}
@@ -249,6 +239,18 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             </div>
           </CardContent>
         </Card>
+
+        {/* Right arrow */}
+        {properties.length > 1 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNext}
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        )}
       </div>
 
       {/* Property indicators */}
@@ -266,7 +268,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
                 });
               }}
               className={`w-2.5 h-2.5 rounded-full transition-all ${
-                idx === currentPropertyIndex || idx === (currentPropertyIndex + 1) % properties.length
+                idx === currentPropertyIndex
                   ? "bg-primary scale-110"
                   : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
               }`}
