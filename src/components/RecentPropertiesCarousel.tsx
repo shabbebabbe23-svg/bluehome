@@ -205,36 +205,36 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
           </div>
 
           {/* Content */}
-          <CardContent className="p-3">
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="font-semibold text-foreground text-sm line-clamp-1">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-semibold text-foreground text-base line-clamp-1">
                 {currentProperty.title}
               </h3>
-              <span className="font-bold text-primary text-sm whitespace-nowrap ml-2">
+              <span className="font-bold text-primary text-base whitespace-nowrap ml-2">
                 {currentProperty.price}
               </span>
             </div>
 
-            <div className="flex items-center text-muted-foreground text-xs mb-2">
-              <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+            <div className="flex items-center text-muted-foreground text-sm mb-3">
+              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
               <span className="line-clamp-1">{currentProperty.address || currentProperty.location}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
-                <Bed className="w-3 h-3" />
+                <Bed className="w-4 h-4" />
                 <span>{currentProperty.bedrooms}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Bath className="w-3 h-3" />
+                <Bath className="w-4 h-4" />
                 <span>{currentProperty.bathrooms}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Square className="w-3 h-3" />
+                <Square className="w-4 h-4" />
                 <span>{currentProperty.area} m²</span>
               </div>
               {currentProperty.fee && currentProperty.fee > 0 && (
-                <span className="text-[10px]">{currentProperty.fee.toLocaleString('sv-SE')} kr/mån</span>
+                <span className="text-xs">{currentProperty.fee.toLocaleString('sv-SE')} kr/mån</span>
               )}
             </div>
           </CardContent>
