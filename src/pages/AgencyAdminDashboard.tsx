@@ -644,10 +644,10 @@ const AgencyAdminDashboard = () => {
             {/* Logga ut-knapp */}
             <Button
               onClick={signOut}
-              className="bg-hero-gradient hover:scale-105 transition-transform text-white"
+              className="bg-hero-gradient hover:scale-105 transition-transform text-white px-2 sm:px-4"
             >
-              <LogOut className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-              Logga ut
+              <LogOut className="w-4 h-4 lg:w-5 lg:h-5 sm:mr-2" />
+              <span className="hidden sm:inline">Logga ut</span>
             </Button>
           </div>
         </div>
@@ -655,8 +655,8 @@ const AgencyAdminDashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 pt-24">
-        <div className="bg-card rounded-lg border p-6 mb-6">
-          <h1 className="text-4xl font-bold text-foreground">
+        <div className="bg-card rounded-lg border p-4 sm:p-6 mb-6">
+          <h1 className="text-2xl sm:text-4xl font-bold text-foreground">
             Hantera byrå
           </h1>
         </div>
