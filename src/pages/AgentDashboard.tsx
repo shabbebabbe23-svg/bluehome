@@ -525,19 +525,37 @@ const AgentDashboard = () => {
   return <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(${agentDashboardBg})` }}>
       {/* Header */}
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Home className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
+        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Back Arrow for Mobile */}
+            <svg 
+              width="32" 
+              height="32" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={() => navigate('/')}
+              className="sm:hidden cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center flex-shrink-0"
+            >
+              <defs>
+                <linearGradient id="agentArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#agentArrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <Home className="hidden sm:block w-6 h-6 text-primary" />
+            <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
+            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="hidden sm:flex bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
               Till startsidan
             </Button>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
-            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logga ut
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden md:block text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
+            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 sm:px-4">
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logga ut</span>
             </Button>
           </div>
         </div>
