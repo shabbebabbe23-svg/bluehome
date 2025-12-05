@@ -134,136 +134,121 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
         </>
       )}
 
-      {/* Property cards - show 2 at a time on larger screens */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[0, 1].map(offset => {
-          const propertyIndex = (currentPropertyIndex + offset) % properties.length;
-          const property = properties[propertyIndex];
-          if (!property || (offset === 1 && properties.length === 1)) return null;
-          
-          const images = getPropertyImages(property);
-          const imgIndex = offset === 0 
-            ? currentImageIndex 
-            : (imageCounters[propertyIndex] || 0) % images.length;
-          const propertyIsFavorite = isFavorite(String(property.id));
+      {/* Single centered property card - 50% size */}
+      <div className="flex justify-center">
+        <Card 
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full max-w-sm"
+        >
+          <Link
+            to={`/fastighet/${currentProperty.id}`}
+            className="absolute inset-0 z-10"
+            aria-label={`Visa ${currentProperty.title}`}
+          />
 
-          return (
-            <Card 
-              key={`${property.id}-${offset}`}
-              className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1"
-            >
-              <Link
-                to={`/fastighet/${property.id}`}
-                className="absolute inset-0 z-10"
-                aria-label={`Visa ${property.title}`}
-              />
+          {/* Favorite button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(String(currentProperty.id));
+            }}
+            className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
+          >
+            <Heart 
+              className={`w-4 h-4 transition-colors ${
+                isFavorite(String(currentProperty.id))
+                  ? "fill-red-500 text-red-500" 
+                  : "text-gray-600 hover:text-red-500"
+              }`}
+            />
+          </button>
 
-              {/* Favorite button */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleFavorite(String(property.id));
-                }}
-                className="absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
-              >
-                <Heart 
-                  className={`w-5 h-5 transition-colors ${
-                    propertyIsFavorite 
-                      ? "fill-red-500 text-red-500" 
-                      : "text-gray-600 hover:text-red-500"
-                  }`}
-                />
-              </button>
-
-              {/* Image with auto-slide */}
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={images[imgIndex]}
-                  alt={property.title}
-                  className="w-full h-full object-cover transition-transform duration-500"
-                />
-                
-                {/* Image indicators */}
-                {images.length > 1 && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                    {images.slice(0, Math.min(images.length, 5)).map((_, idx) => (
-                      <div
-                        key={idx}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          idx === imgIndex % Math.min(images.length, 5)
-                            ? "bg-white scale-110"
-                            : "bg-white/50"
-                        }`}
-                      />
-                    ))}
-                    {images.length > 5 && (
-                      <span className="text-white text-xs ml-1">+{images.length - 5}</span>
-                    )}
-                  </div>
-                )}
-
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                  <Badge className="bg-primary text-primary-foreground text-xs">
-                    {property.type}
-                  </Badge>
-                  {property.hasVR && (
-                    <Badge className="bg-purple-600 text-white text-xs">
-                      360°
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Vendor logo */}
-                {property.vendorLogo && (
-                  <div className="absolute bottom-3 right-3 z-10">
-                    <img 
-                      src={property.vendorLogo} 
-                      alt="Mäklarbyrå" 
-                      className="h-8 w-auto bg-white/90 rounded px-2 py-1"
-                    />
-                  </div>
+          {/* Image with auto-slide */}
+          <div className="relative aspect-[4/3] overflow-hidden">
+            <img
+              src={currentImages[currentImageIndex]}
+              alt={currentProperty.title}
+              className="w-full h-full object-cover transition-transform duration-500"
+            />
+            
+            {/* Image indicators */}
+            {currentImages.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                {currentImages.slice(0, Math.min(currentImages.length, 5)).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      idx === currentImageIndex % Math.min(currentImages.length, 5)
+                        ? "bg-white scale-110"
+                        : "bg-white/50"
+                    }`}
+                  />
+                ))}
+                {currentImages.length > 5 && (
+                  <span className="text-white text-[10px] ml-1">+{currentImages.length - 5}</span>
                 )}
               </div>
+            )}
 
-              {/* Content */}
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-foreground text-base line-clamp-1">
-                    {property.title}
-                  </h3>
-                  <span className="font-bold text-primary text-base whitespace-nowrap ml-2">
-                    {property.price}
-                  </span>
-                </div>
+            {/* Badges */}
+            <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+              <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5">
+                {currentProperty.type}
+              </Badge>
+              {currentProperty.hasVR && (
+                <Badge className="bg-purple-600 text-white text-[10px] px-1.5 py-0.5">
+                  360°
+                </Badge>
+              )}
+            </div>
 
-                <div className="flex items-center text-muted-foreground text-sm mb-3">
-                  <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                  <span className="line-clamp-1">{property.address || property.location}</span>
-                </div>
+            {/* Vendor logo */}
+            {currentProperty.vendorLogo && (
+              <div className="absolute bottom-2 right-2 z-10">
+                <img 
+                  src={currentProperty.vendorLogo} 
+                  alt="Mäklarbyrå" 
+                  className="h-6 w-auto bg-white/90 rounded px-1.5 py-0.5"
+                />
+              </div>
+            )}
+          </div>
 
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Bed className="w-4 h-4" />
-                    <span>{property.bedrooms}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Bath className="w-4 h-4" />
-                    <span>{property.bathrooms}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Square className="w-4 h-4" />
-                    <span>{property.area} m²</span>
-                  </div>
-                  {property.fee && property.fee > 0 && (
-                    <span className="text-xs">{property.fee.toLocaleString('sv-SE')} kr/mån</span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+          {/* Content */}
+          <CardContent className="p-3">
+            <div className="flex justify-between items-start mb-1">
+              <h3 className="font-semibold text-foreground text-sm line-clamp-1">
+                {currentProperty.title}
+              </h3>
+              <span className="font-bold text-primary text-sm whitespace-nowrap ml-2">
+                {currentProperty.price}
+              </span>
+            </div>
+
+            <div className="flex items-center text-muted-foreground text-xs mb-2">
+              <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+              <span className="line-clamp-1">{currentProperty.address || currentProperty.location}</span>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Bed className="w-3 h-3" />
+                <span>{currentProperty.bedrooms}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Bath className="w-3 h-3" />
+                <span>{currentProperty.bathrooms}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Square className="w-3 h-3" />
+                <span>{currentProperty.area} m²</span>
+              </div>
+              {currentProperty.fee && currentProperty.fee > 0 && (
+                <span className="text-[10px]">{currentProperty.fee.toLocaleString('sv-SE')} kr/mån</span>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Property indicators */}
