@@ -559,6 +559,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_seller_email: {
+        Args: { property_user_id: string }
+        Returns: boolean
+      }
+      get_public_bid_info: {
+        Args: { p_property_id: string }
+        Returns: {
+          bid_amount: number
+          bidder_label: string
+          created_at: string
+        }[]
+      }
       get_user_type: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
