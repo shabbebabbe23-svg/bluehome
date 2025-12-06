@@ -60,6 +60,7 @@ const AgentDashboard = () => {
   const [bidderPhone, setBidderPhone] = useState("");
   const [bidderLabel, setBidderLabel] = useState("");
   const [isNewProduction, setIsNewProduction] = useState(false);
+  const [showViewerCount, setShowViewerCount] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -170,6 +171,7 @@ const AgentDashboard = () => {
   const handleEditProperty = (property: any) => {
     setEditingProperty(property);
     setIsNewProduction(property.is_new_production || false);
+    setShowViewerCount(property.show_viewer_count || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -501,6 +503,7 @@ const AgentDashboard = () => {
         floorplan_images: floorplanImagesUrls,
         additional_images: additionalImagesUrls,
         is_new_production: isNewProduction,
+        show_viewer_count: showViewerCount,
       }).eq("id", editingProperty.id);
       
       if (error) throw error;
@@ -848,6 +851,27 @@ const AgentDashboard = () => {
                     </div>
                     <p className="text-sm text-muted-foreground mt-2 ml-8">
                       Markera om detta är en nyproducerad fastighet
+                    </p>
+                  </Card>
+                </div>
+
+                {/* Show Viewer Count toggle */}
+                <div className="md:col-span-2">
+                  <Card className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="edit-show-viewer-count"
+                        checked={showViewerCount}
+                        onChange={(e) => setShowViewerCount(e.target.checked)}
+                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+                      />
+                      <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-semibold text-base">
+                        Visa "X personer tittar just nu"
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2 ml-8">
+                      Visar besökare hur många andra som tittar på objektet i realtid
                     </p>
                   </Card>
                 </div>
