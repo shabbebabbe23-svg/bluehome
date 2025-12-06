@@ -257,12 +257,11 @@ export const ProfileForm = () => {
                 </Label>
                 <Input
                   id="agencyEmail"
-                  value={agencyEmail || "Ingen byrå kopplad"}
-                  readOnly
-                  disabled
-                  className="bg-muted"
+                  value={agencyEmail || ""}
+                  onChange={(e) => setAgencyEmail(e.target.value)}
+                  placeholder="Ange byråns e-postadress"
                 />
-                <p className="text-xs text-muted-foreground">Byråns registrerade e-postadress (kan inte ändras här)</p>
+                <p className="text-xs text-muted-foreground">Byråns e-postadress för kontakt</p>
               </div>
 
               <div className="space-y-1">
