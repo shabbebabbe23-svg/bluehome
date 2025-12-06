@@ -251,7 +251,10 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="w-6 h-6 text-primary" strokeWidth={2.5} /> : <Menu className="w-6 h-6 text-primary" strokeWidth={2.5} />}
+            <div className="relative w-6 h-6">
+              <Menu className={`absolute inset-0 w-6 h-6 text-primary transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`} strokeWidth={2.5} />
+              <X className={`absolute inset-0 w-6 h-6 text-primary transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`} strokeWidth={2.5} />
+            </div>
           </Button>
         </div>
 
