@@ -32,6 +32,7 @@ export const ProfileForm = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [agencyEmail, setAgencyEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -53,7 +54,7 @@ export const ProfileForm = () => {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select("*, agencies(email)")
       .eq("id", user.id)
       .single();
 
@@ -71,6 +72,11 @@ export const ProfileForm = () => {
       setValue("area", data.area || "");
       setValue("bio", data.bio || "");
       setAvatarUrl(data.avatar_url);
+      
+      // Set agency email from joined agencies table
+      if (data.agencies && typeof data.agencies === 'object' && 'email' in data.agencies) {
+        setAgencyEmail((data.agencies as { email: string | null }).email);
+      }
     }
   };
 
@@ -245,6 +251,20 @@ export const ProfileForm = () => {
               Företagsinformation
             </h3>
             <div className="grid gap-4 max-w-2xl">
+              <div className="space-y-1">
+                <Label htmlFor="agencyEmail" className="flex items-center gap-2">
+                  E-post till byrå
+                </Label>
+                <Input
+                  id="agencyEmail"
+                  value={agencyEmail || "Ingen byrå kopplad"}
+                  readOnly
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">Byråns registrerade e-postadress (kan inte ändras här)</p>
+              </div>
+
               <div className="space-y-1">
                 <Label htmlFor="agency" className="flex items-center gap-2">
                   Mäklarbyrå
