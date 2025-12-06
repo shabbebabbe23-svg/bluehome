@@ -912,10 +912,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="pt-0 pb-3 md:pb-5 px-3 sm:px-4">
+    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
-        <div className="text-center mb-2 md:mb-3 animate-fade-in">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 md:mb-1.5 text-foreground">
+        <div className="text-center mb-1 md:mb-2 animate-fade-in">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-0.5 md:mb-1 text-foreground">
             {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
