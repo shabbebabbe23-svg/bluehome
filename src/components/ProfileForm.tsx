@@ -35,6 +35,7 @@ export const ProfileForm = () => {
   const [agencyEmail, setAgencyEmail] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const {
@@ -152,6 +153,11 @@ export const ProfileForm = () => {
   };
 
   const handlePasswordChange = async () => {
+    if (!currentPassword) {
+      toast.error("Ange ditt nuvarande lösenord");
+      return;
+    }
+
     if (!newPassword || !confirmPassword) {
       toast.error("Fyll i båda lösenordsfälten");
       return;
@@ -170,6 +176,19 @@ export const ProfileForm = () => {
     setPasswordLoading(true);
 
     try {
+      // First verify current password by re-authenticating
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        toast.error("Nuvarande lösenord är felaktigt");
+        setPasswordLoading(false);
+        return;
+      }
+
+      // Then update to new password
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -177,6 +196,7 @@ export const ProfileForm = () => {
       if (error) throw error;
 
       toast.success("Lösenord uppdaterat!");
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error: any) {
@@ -326,6 +346,16 @@ export const ProfileForm = () => {
           </h3>
           <div className="grid gap-4 max-w-2xl">
             <div className="space-y-1">
+              <Label htmlFor="currentPassword">Nuvarande lösenord</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Ange ditt nuvarande lösenord"
+              />
+            </div>
+            <div className="space-y-1">
               <Label htmlFor="newPassword">Nytt lösenord</Label>
               <Input
                 id="newPassword"
@@ -336,13 +366,13 @@ export const ProfileForm = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+              <Label htmlFor="confirmPassword">Bekräfta nytt lösenord</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Upprepa lösenordet"
+                placeholder="Upprepa det nya lösenordet"
               />
             </div>
             <Button 
