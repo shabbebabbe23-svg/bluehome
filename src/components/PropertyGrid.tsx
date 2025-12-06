@@ -952,8 +952,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 </div>
               )}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[140px] sm:w-[180px] h-8 text-xs sm:text-sm bg-hero-gradient text-white border-transparent">
-                  <ArrowUpDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <SelectTrigger className="w-[154px] sm:w-[200px] h-9 text-sm bg-hero-gradient text-white border-transparent">
+                  <ArrowUpDown className="w-4 h-4 mr-2" />
                   <SelectValue placeholder="Sortera" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border z-50">
@@ -972,9 +972,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
               <Button
                 variant="outline"
-                size="sm"
                 onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="hidden sm:flex gap-1 h-8"
+                className="hidden sm:flex gap-1.5 h-9 px-4 text-sm"
               >
                 {viewMode === "grid" ? (
                   <>
