@@ -179,7 +179,7 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link to="/om-oss" className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+            <Link to="/om-oss" className={`text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </Link>
             <Link to="/marknadsanalys" className={`text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
