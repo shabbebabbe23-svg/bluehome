@@ -924,11 +924,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               ? "Se slutpriser på nyligen sålda fastigheter"
               : "Upptäck vårt handplockade urval av premiumfastigheter"}
           </p>
-        </div>
-        
-        {/* Sort and View Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 mb-2 md:mb-3">
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          {/* Sort and View Toggle */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-2">
           {!showFinalPrices && (
             <div className="flex gap-2 w-full sm:w-auto">
               {!bulkSelectMode ? null : (
