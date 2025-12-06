@@ -921,7 +921,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
             </h2>
             {/* Sort and View Toggle */}
-            <div className="absolute right-0 flex items-center gap-2">
+            <div className="absolute right-0 flex flex-col items-end gap-1">
               {!showFinalPrices && bulkSelectMode && (
                 <div className="hidden sm:flex gap-2">
                   <Button
