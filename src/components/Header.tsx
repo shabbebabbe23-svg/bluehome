@@ -179,7 +179,7 @@ const Header = () => {
             <Link to="/om-oss" className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               Om oss
             </Link>
-            <Link to="/marknadsanalys" className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 whitespace-nowrap ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+            <Link to="/marknadsanalys" className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 whitespace-nowrap mr-4 lg:mr-6 xl:mr-8 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
               <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="hidden lg:inline">Marknadsanalys</span>
               <span className="lg:hidden">Marknad</span>
