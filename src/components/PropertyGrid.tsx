@@ -915,7 +915,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
         {/* Header with Sort and View Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 md:mb-3 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2 md:mb-3 animate-fade-in">
+          <div className="hidden sm:block sm:w-[280px]"></div>
           <div className="text-center flex-1">
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-0.5 text-foreground">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
