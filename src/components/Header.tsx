@@ -195,7 +195,7 @@ const Header = () => {
               <div className={`flex items-center gap-2 xl:gap-3 px-2 xl:px-4 py-1.5 xl:py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                 {/* Profile Avatar */}
                 <Link to={userType === "maklare" ? "/maklare?tab=profile" : "#"} className="hover:scale-110 transition-transform relative">
-                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-primary to-[hsl(142,76%,36%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
+                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,50%)] to-[hsl(142,76%,50%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
                   <Avatar className="relative w-8 h-8 xl:w-9 xl:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                     <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
                     <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs xl:text-sm font-bold">
@@ -269,7 +269,7 @@ const Header = () => {
                 <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                   {/* Mobile Profile Avatar */}
                   <div className="relative">
-                    <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-primary to-[hsl(142,76%,36%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
+                    <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,50%)] to-[hsl(142,76%,50%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
                     <Avatar className="relative w-10 h-10" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                       <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
                       <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-sm font-bold">
