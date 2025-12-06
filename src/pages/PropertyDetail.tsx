@@ -67,11 +67,18 @@ const PropertyDetail = () => {
     const fetchProperty = async () => {
       if (!id) return;
       try {
-        // Try to fetch from database first
+        // Try to fetch from database first - explicitly exclude seller_email for security
         const {
           data,
           error
-        } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
+        } = await supabase.from('properties').select(`
+          id, user_id, title, address, location, type, price, bedrooms, bathrooms, area,
+          fee, viewing_date, listed_date, is_sold, is_deleted, has_vr, created_at, updated_at,
+          sold_date, sold_price, new_price, is_manual_price_change, is_coming_soon,
+          operating_cost, construction_year, is_new_production, vr_image_indices,
+          has_elevator, has_balcony, documents, description, image_url, hover_image_url,
+          vendor_logo_url, additional_images, floorplan_url, floorplan_images, housing_association
+        `).eq('id', id).maybeSingle();
         if (data) {
           setDbProperty(data);
 

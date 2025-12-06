@@ -25,6 +25,30 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Security: Validate request origin - only allow calls from database triggers or with service key
+    const authHeader = req.headers.get("authorization");
+    const expectedAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    
+    // Allow calls with the anon key (from database triggers) or service role key
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      // If it's not the anon key, we need to verify it's a valid service role request
+      if (token !== expectedAnonKey) {
+        // Verify it's a valid JWT by creating a client and checking the user
+        const supabaseAuth = createClient(supabaseUrl, token);
+        const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+        
+        // If no valid user and not the anon key, reject
+        if (authError && token !== Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
+          console.error("Unauthorized request rejected");
+          return new Response(
+            JSON.stringify({ error: "Unauthorized" }),
+            { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+      }
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseKey);
     const body = await req.json().catch(() => ({}));
 

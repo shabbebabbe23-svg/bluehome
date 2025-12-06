@@ -4,10 +4,10 @@ project_id = "qgvloiecyvqbxeplfzwv"
 verify_jwt = true
 
 [functions.send-agency-invitation]
-verify_jwt = false
+verify_jwt = true
 
 [functions.notify-favorite]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-property-statistics]
 verify_jwt = false
