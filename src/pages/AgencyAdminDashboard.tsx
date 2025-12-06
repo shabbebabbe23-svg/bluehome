@@ -25,6 +25,7 @@ interface UserProfile {
 interface AgencyInfo {
   name: string;
   email_domain: string;
+  email: string | null;
   address: string | null;
   phone: string | null;
   org_number: string | null;
@@ -382,6 +383,7 @@ const AgencyAdminDashboard = () => {
       .from("agencies")
       .update({
         name: info.name,
+        email: info.email,
         address: info.address,
         phone: info.phone,
         org_number: info.org_number,
@@ -703,6 +705,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -721,6 +724,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -732,6 +736,26 @@ const AgencyAdminDashboard = () => {
                       }), email_domain: e.target.value })}
                       placeholder="E-postdomän"
                     />
+                    <Label htmlFor="agency-email">E-post till kontoret</Label>
+                    <Input
+                      id="agency-email"
+                      type="email"
+                      value={agencyInfo?.email || ""}
+                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
+                        name: "",
+                        email_domain: "",
+                        email: "",
+                        address: "",
+                        phone: "",
+                        org_number: "",
+                        website: "",
+                        description: "",
+                        logo_url: "",
+                        area: "",
+                        owner: ""
+                      }), email: e.target.value })}
+                      placeholder="kontor@foretag.se"
+                    />
                     <Label htmlFor="address">Adress</Label>
                     <Input
                       id="address"
@@ -739,6 +763,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -757,6 +782,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -775,6 +801,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -795,6 +822,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -813,6 +841,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -831,6 +860,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
@@ -849,6 +879,7 @@ const AgencyAdminDashboard = () => {
                       onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
                         name: "",
                         email_domain: "",
+                        email: "",
                         address: "",
                         phone: "",
                         org_number: "",
