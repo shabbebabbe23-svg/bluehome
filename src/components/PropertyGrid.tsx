@@ -914,19 +914,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   return (
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
-        <div className="text-center mb-1 md:mb-2 animate-fade-in">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-0.5 md:mb-1 text-foreground">
-            {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            {showFinalPrices
-              ? "Se slutpriser på nyligen sålda fastigheter"
-              : "Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige"}
-          </p>
-        </div>
-
-        {/* Sort Dropdown, Bulk Actions, and View Toggle */}
-        <div className="flex flex-col items-end gap-2 mb-3 md:mb-4">
+        {/* Header with Sort and View Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 md:mb-3 animate-fade-in">
+          <div className="text-center sm:text-left">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-0.5 text-foreground">
+              {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              {showFinalPrices
+                ? "Se slutpriser på nyligen sålda fastigheter"
+                : "Upptäck vårt handplockade urval av premiumfastigheter"}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
           {!showFinalPrices && (
             <div className="flex gap-2 w-full sm:w-auto">
               {!bulkSelectMode ? null : (
@@ -996,6 +996,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               </>
             )}
           </Button>
+          </div>
         </div>
 
         <div className={viewMode === "grid"
