@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Heart, MapPin, Bed, Bath, Square, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { MapPin, Bed, Bath, Square, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { useFavorites } from "@/hooks/useFavorites";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 
@@ -36,7 +35,6 @@ interface RecentSoldCarouselProps {
 const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
   const [currentPropertyIndex, setCurrentPropertyIndex] = useState(0);
   const [imageCounters, setImageCounters] = useState<number[]>(properties.map(() => 0));
-  const { toggleFavorite, isFavorite } = useFavorites();
   
   const IMAGES_BEFORE_SWITCH = 5;
   const IMAGE_INTERVAL = 3000; // 3 seconds per image
@@ -145,23 +143,6 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
             aria-label={`Visa ${currentProperty.title}`}
           />
 
-          {/* Favorite button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleFavorite(String(currentProperty.id));
-            }}
-            className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
-          >
-            <Heart 
-              className={`w-4 h-4 transition-colors ${
-                isFavorite(String(currentProperty.id))
-                  ? "fill-red-500 text-red-500" 
-                  : "text-gray-600 hover:text-red-500"
-              }`}
-            />
-          </button>
 
           {/* Image with auto-slide */}
           <div className="relative aspect-[4/3] overflow-hidden">
