@@ -914,19 +914,20 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   return (
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
-        {/* Header with Sort and View Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2 md:mb-3 animate-fade-in">
-          <div className="hidden sm:block sm:w-[280px]"></div>
-          <div className="text-center flex-1">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-0.5 text-foreground">
-              {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
-            </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              {showFinalPrices
-                ? "Se slutpriser på nyligen sålda fastigheter"
-                : "Upptäck vårt handplockade urval av premiumfastigheter"}
-            </p>
-          </div>
+        {/* Header */}
+        <div className="text-center mb-2 md:mb-3 animate-fade-in">
+          <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-1">
+            {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            {showFinalPrices
+              ? "Se slutpriser på nyligen sålda fastigheter"
+              : "Upptäck vårt handplockade urval av premiumfastigheter"}
+          </p>
+        </div>
+        
+        {/* Sort and View Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 mb-2 md:mb-3">
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
           {!showFinalPrices && (
             <div className="flex gap-2 w-full sm:w-auto">
