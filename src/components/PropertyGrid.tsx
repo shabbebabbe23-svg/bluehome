@@ -916,7 +916,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       <div className="w-full">
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-1">
+          <div className="flex items-center justify-between mb-1">
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
             </h2>
