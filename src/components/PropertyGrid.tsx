@@ -833,10 +833,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     }
   };
 
+  // Filter properties based on showFinalPrices toggle
+  // When showFinalPrices is ON, show only sold properties
+  // When showFinalPrices is OFF, show only active (non-sold) properties
   const currentProperties = showFinalPrices
-    ? soldProperties
-    : dbProperties;
-  const filteredProperties = filterByType(currentProperties);
+    ? dbProperties.filter(p => p.isSold === true)
+    : dbProperties.filter(p => p.isSold !== true);
+  
+  // Fallback to static mock data if no DB properties exist
+  const propertiesWithFallback = currentProperties.length > 0 
+    ? currentProperties 
+    : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
+  
+  const filteredProperties = filterByType(propertiesWithFallback);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
