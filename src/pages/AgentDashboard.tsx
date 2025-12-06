@@ -528,15 +528,15 @@ const AgentDashboard = () => {
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
         <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Back Arrow for Mobile */}
+            {/* Back Arrow */}
             <svg 
-              width="32" 
-              height="32" 
+              width="36" 
+              height="36" 
               viewBox="0 0 24 24" 
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
               onClick={() => navigate('/')}
-              className="sm:hidden cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center flex-shrink-0"
+              className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center flex-shrink-0"
             >
               <defs>
                 <linearGradient id="agentArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -548,9 +548,6 @@ const AgentDashboard = () => {
             </svg>
             <Home className="hidden sm:block w-6 h-6 text-primary" />
             <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="hidden sm:flex bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
-              Till startsidan
-            </Button>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Profile Avatar with Glow */}
