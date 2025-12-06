@@ -324,6 +324,7 @@ export type Database = {
           operating_cost: number | null
           price: number
           seller_email: string | null
+          show_viewer_count: boolean | null
           sold_date: string | null
           sold_price: number | null
           title: string
@@ -365,6 +366,7 @@ export type Database = {
           operating_cost?: number | null
           price: number
           seller_email?: string | null
+          show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
           title: string
@@ -406,6 +408,7 @@ export type Database = {
           operating_cost?: number | null
           price?: number
           seller_email?: string | null
+          show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
           title?: string
