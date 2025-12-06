@@ -53,6 +53,7 @@ export type Database = {
           area: string | null
           created_at: string | null
           description: string | null
+          email: string | null
           email_domain: string
           id: string
           is_active: boolean | null
@@ -69,6 +70,7 @@ export type Database = {
           area?: string | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           email_domain: string
           id?: string
           is_active?: boolean | null
@@ -85,6 +87,7 @@ export type Database = {
           area?: string | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           email_domain?: string
           id?: string
           is_active?: boolean | null
