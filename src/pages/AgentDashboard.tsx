@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import confetti from 'canvas-confetti';
 import agentDashboardBg from "@/assets/agent-dashboard-bg.jpg";
 import { Button } from "@/components/ui/button";
@@ -78,7 +79,7 @@ const AgentDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, avatar_url")
         .eq("id", user?.id)
         .single();
       if (error) throw error;
@@ -552,7 +553,17 @@ const AgentDashboard = () => {
             </Button>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="hidden md:block text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
+            {/* Profile Avatar with Glow */}
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+              <Avatar className="relative w-8 h-8 sm:w-10 sm:h-10" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Profil"} />
+                <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                  {profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <span className="hidden md:block text-xl bg-clip-text text-transparent bg-hero-gradient font-bold">{profile?.full_name || user?.email}</span>
             <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 sm:px-4">
               <LogOut className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">Logga ut</span>
