@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Upload, Building2 } from "lucide-react";
+import { User, Upload, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,6 +33,9 @@ export const ProfileForm = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [agencyEmail, setAgencyEmail] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const {
     register,
@@ -145,6 +148,42 @@ export const ProfileForm = () => {
       toast.error("Kunde inte uppdatera profil");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Fyll i båda lösenordsfälten");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Lösenorden matchar inte");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Lösenordet måste vara minst 6 tecken");
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      toast.success("Lösenord uppdaterat!");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.error("Error updating password:", error);
+      toast.error(error.message || "Kunde inte uppdatera lösenord");
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -276,6 +315,47 @@ export const ProfileForm = () => {
             {loading ? "Sparar..." : "Spara profil"}
           </Button>
         </form>
+
+        <Separator className="my-6" />
+
+        {/* Password Change Section */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Lock className="w-5 h-5" />
+            Byt lösenord
+          </h3>
+          <div className="grid gap-4 max-w-2xl">
+            <div className="space-y-1">
+              <Label htmlFor="newPassword">Nytt lösenord</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Minst 6 tecken"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Upprepa lösenordet"
+              />
+            </div>
+            <Button 
+              type="button" 
+              onClick={handlePasswordChange} 
+              disabled={passwordLoading}
+              variant="outline"
+              className="w-full"
+            >
+              {passwordLoading ? "Uppdaterar..." : "Uppdatera lösenord"}
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
