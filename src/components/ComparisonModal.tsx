@@ -74,22 +74,22 @@ function PropertyImageCarousel({
         <Badge className="absolute top-2 left-2 bg-destructive">Såld</Badge>
       )}
 
-      {/* Navigation arrows - show on hover */}
+      {/* Navigation arrows - always visible */}
       {images.length > 1 && (
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-md transition-colors duration-200"
             aria-label="Föregående bild"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-md transition-colors duration-200"
             aria-label="Nästa bild"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </>
       )}
