@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PropertyCard from "./PropertyCard";
+import RecentSoldCarousel from "./RecentSoldCarousel";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -88,6 +89,7 @@ export interface Property {
   agent_agency?: string;
   agent_id?: string;
   createdAt?: Date;
+  additional_images?: string[];
 }
 
 export const allProperties: Property[] = [
@@ -655,6 +657,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
             createdAt: new Date(prop.created_at),
+            additional_images: prop.additional_images || [],
           }));
           setDbProperties(formattedProperties);
 
@@ -1005,6 +1008,36 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </p>
         </div>
 
+        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
+        {showFinalPrices && propertiesWithFallback.length > 0 && (
+          <section className="mb-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-4">
+              Senaste sålda objekt
+            </h3>
+            <RecentSoldCarousel 
+              properties={propertiesWithFallback.slice(0, 5).map(p => ({
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                priceValue: p.priceValue,
+                location: p.location,
+                address: p.address,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+                area: p.area,
+                fee: p.fee,
+                image: p.image,
+                hoverImage: p.hoverImage,
+                type: p.type,
+                vendorLogo: p.vendorLogo,
+                hasVR: p.hasVR,
+                soldDate: p.soldDate,
+                sold_price: p.sold_price,
+                additional_images: (p as any).additional_images,
+              }))}
+            />
+          </section>
+        )}
         <div className={viewMode === "grid"
           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-4 md:mb-6"
           : "flex flex-col gap-2 mb-4 md:mb-6"
