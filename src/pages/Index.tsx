@@ -137,8 +137,8 @@ const Index = () => {
             onBalconyFilterChange={setBalconyFilter}
           />
           <div ref={resultsRef}>
-            {/* Recent uploads section */}
-            {recentProperties.length > 0 && (
+            {/* Recent uploads section - only show when NOT viewing final prices */}
+            {!showFinalPrices && recentProperties.length > 0 && (
               <section className="mb-2">
                 <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-6">
                   Senast uppladdade objekt
