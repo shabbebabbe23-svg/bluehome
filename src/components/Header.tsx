@@ -158,9 +158,6 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-10 ml-8 xl:ml-12">
-            <a href="#" className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
-              Köp
-            </a>
 
             <DropdownMenu>
               <DropdownMenuTrigger className={`text-base xl:text-xl hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
