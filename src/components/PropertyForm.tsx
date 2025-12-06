@@ -53,6 +53,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [hasBalcony, setHasBalcony] = useState(false);
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
+  const [showViewerCount, setShowViewerCount] = useState(false);
 
   const {
     register,
@@ -333,6 +334,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
         documents: uploadedDocuments,
+        show_viewer_count: showViewerCount,
       });
 
       if (error) throw error;
@@ -354,6 +356,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setHasBalcony(false);
       setDocuments([]);
       setDocumentNames([]);
+      setShowViewerCount(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error creating property:", error);
@@ -657,6 +660,27 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             </div>
             <p className="text-sm text-muted-foreground mt-2 ml-8">
               Bostaden har balkong
+            </p>
+          </Card>
+        </div>
+
+        {/* Visa antal som tittar just nu */}
+        <div className="md:col-span-2">
+          <Card className="p-4 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="show_viewer_count"
+                checked={showViewerCount}
+                onChange={(e) => setShowViewerCount(e.target.checked)}
+                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="show_viewer_count" className="cursor-pointer font-semibold text-base">
+                Visa "X personer tittar just nu"
+              </Label>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2 ml-8">
+              Visar besökare hur många som tittar på objektet i realtid. Detta kan skapa intresse och känsla av efterfrågan.
             </p>
           </Card>
         </div>

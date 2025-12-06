@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import confetti from 'canvas-confetti';
 import agentDashboardBg from "@/assets/agent-dashboard-bg.jpg";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ const AgentDashboard = () => {
   const [bidderPhone, setBidderPhone] = useState("");
   const [bidderLabel, setBidderLabel] = useState("");
   const [isNewProduction, setIsNewProduction] = useState(false);
+  const [showViewerCount, setShowViewerCount] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -78,7 +80,7 @@ const AgentDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, avatar_url")
         .eq("id", user?.id)
         .single();
       if (error) throw error;
@@ -169,6 +171,7 @@ const AgentDashboard = () => {
   const handleEditProperty = (property: any) => {
     setEditingProperty(property);
     setIsNewProduction(property.is_new_production || false);
+    setShowViewerCount(property.show_viewer_count || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -500,6 +503,7 @@ const AgentDashboard = () => {
         floorplan_images: floorplanImagesUrls,
         additional_images: additionalImagesUrls,
         is_new_production: isNewProduction,
+        show_viewer_count: showViewerCount,
       }).eq("id", editingProperty.id);
       
       if (error) throw error;
@@ -525,19 +529,44 @@ const AgentDashboard = () => {
   return <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(${agentDashboardBg})` }}>
       {/* Header */}
       <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Home className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="bg-white text-foreground hover:bg-hero-gradient hover:text-white border-white font-semibold transition-all">
-              Till startsidan
-            </Button>
+        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Back Arrow */}
+            <svg 
+              width="36" 
+              height="36" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={() => navigate('/')}
+              className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center flex-shrink-0"
+            >
+              <defs>
+                <linearGradient id="agentArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#agentArrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <Home className="hidden sm:block w-6 h-6 text-primary" />
+            <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xl bg-clip-text text-transparent bg-hero-gradient">{profile?.full_name || user?.email}</span>
-            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logga ut
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Profile Avatar with Glow */}
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+              <Avatar className="relative w-8 h-8 xl:w-9 xl:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Profil"} />
+                <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                  {profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <span className="hidden md:block text-xl bg-clip-text text-transparent bg-hero-gradient font-bold">{profile?.full_name || user?.email}</span>
+            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 sm:px-4">
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logga ut</span>
             </Button>
           </div>
         </div>
@@ -551,26 +580,31 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5 p-1 bg-hero-gradient">
-                <TabsTrigger value="add" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+              <TabsList className="flex flex-wrap w-full gap-1 p-1 h-auto bg-hero-gradient">
+                <TabsTrigger value="add" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
                   <Plus className="w-4 h-4 flex-shrink-0" />
-                  {activeTab === "add" && <span className="text-[10px] sm:text-sm truncate">Lägg till ny bostad</span>}
+                  <span className="hidden sm:inline truncate">Lägg till ny bostad</span>
+                  <span className="sm:hidden truncate">Ny</span>
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                <TabsTrigger value="existing" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
                   <Home className="w-4 h-4 flex-shrink-0" />
-                  {activeTab === "existing" && <span className="text-[10px] sm:text-sm truncate">Befintliga bostäder</span>}
+                  <span className="hidden sm:inline truncate">Befintliga bostäder</span>
+                  <span className="sm:hidden truncate">Aktiva</span>
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                <TabsTrigger value="removed" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
                   <Archive className="w-4 h-4 flex-shrink-0" />
-                  {activeTab === "removed" && <span className="text-[10px] sm:text-sm truncate">Borttagna bostäder</span>}
+                  <span className="hidden sm:inline truncate">Borttagna bostäder</span>
+                  <span className="sm:hidden truncate">Borttagna</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                <TabsTrigger value="statistics" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
                   <BarChart3 className="w-4 h-4 flex-shrink-0" />
-                  {activeTab === "statistics" && <span className="text-[10px] sm:text-sm truncate">Din statistik</span>}
+                  <span className="hidden sm:inline truncate">Din statistik</span>
+                  <span className="sm:hidden truncate">Statistik</span>
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 sm:py-auto">
+                <TabsTrigger value="profile" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
                   <UserCircle className="w-4 h-4 flex-shrink-0" />
-                  {activeTab === "profile" && <span className="text-[10px] sm:text-sm truncate">Min profil</span>}
+                  <span className="hidden sm:inline truncate">Min profil</span>
+                  <span className="sm:hidden truncate">Profil</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -822,6 +856,27 @@ const AgentDashboard = () => {
                     </div>
                     <p className="text-sm text-muted-foreground mt-2 ml-8">
                       Markera om detta är en nyproducerad fastighet
+                    </p>
+                  </Card>
+                </div>
+
+                {/* Show Viewer Count toggle */}
+                <div className="md:col-span-2">
+                  <Card className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="edit-show-viewer-count"
+                        checked={showViewerCount}
+                        onChange={(e) => setShowViewerCount(e.target.checked)}
+                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
+                      />
+                      <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-semibold text-base">
+                        Visa "X personer tittar just nu"
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2 ml-8">
+                      Visar besökare hur många andra som tittar på objektet i realtid
                     </p>
                   </Card>
                 </div>

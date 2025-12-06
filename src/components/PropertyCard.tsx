@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2 } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2, Scale, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useComparison } from "@/contexts/ComparisonContext";
+import { toast } from "sonner";
 
 interface PropertyCardProps {
   id: string | number;
@@ -19,6 +21,7 @@ interface PropertyCardProps {
   fee?: number;
   image: string;
   hoverImage?: string;
+  additionalImages?: string[];
   type: string;
   viewingDate?: Date | string;
   isNew?: boolean;
@@ -46,6 +49,10 @@ interface PropertyCardProps {
   isSelected?: boolean;
   onSelect?: (id: string | number) => void;
   autoSlideImages?: boolean;
+  hasElevator?: boolean;
+  hasBalcony?: boolean;
+  constructionYear?: number;
+  operatingCost?: number;
 }
 
 const PropertyCard = ({
@@ -60,6 +67,7 @@ const PropertyCard = ({
   fee = 0,
   image,
   hoverImage,
+  additionalImages,
   viewingDate,
   type,
   isNew = false,
@@ -87,9 +95,15 @@ const PropertyCard = ({
   isSelected = false,
   onSelect,
   autoSlideImages = false,
+  hasElevator,
+  hasBalcony,
+  constructionYear,
+  operatingCost,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
+  const { toggleComparison, isInComparison, canAddMore } = useComparison();
   const isFavorite = isFavoriteHook(String(id));
+  const isComparing = isInComparison(String(id));
   
   // Auto-slide images state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -250,38 +264,87 @@ const PropertyCard = ({
           </Badge>
         </div>
 
-        {/* Favorite button */}
-        {!hideControls && (
-          <Button
-            variant="secondary"
-            size="icon"
-            className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-colors group/heart z-20"
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleFavorite(String(id));
-            }}
-          >
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-              <defs>
-                <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-            </svg>
-            <Heart
-              className={`w-4 h-4 transition-all duration-300 ${isFavorite
-                ? "fill-red-500 text-red-500"
-                : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
-                }`}
-              style={
-                !isFavorite
-                  ? { stroke: 'currentColor' }
-                  : undefined
-              }
-            />
-          </Button>
+        {/* Favorite and Compare buttons - hide for sold properties */}
+        {!hideControls && !isSold && (
+          <div className="absolute top-4 right-4 flex gap-2 z-20">
+            {/* Compare button */}
+            <Button
+              variant="secondary"
+              size="icon"
+              className={`${isComparing ? 'bg-primary' : 'bg-white/90 hover:bg-white'} transition-colors`}
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isComparing && !canAddMore) {
+                  toast.error('Du kan endast jämföra 2 fastigheter');
+                  return;
+                }
+                toggleComparison({
+                  id: String(id),
+                  title,
+                  price,
+                  location,
+                  address,
+                  bedrooms,
+                  bathrooms,
+                  area,
+                  fee,
+                  image,
+                  additionalImages,
+                  type,
+                  soldPrice,
+                  newPrice,
+                  isSold,
+                  hasElevator,
+                  hasBalcony,
+                  constructionYear,
+                  operatingCost,
+                });
+                if (!isComparing) {
+                  toast.success('Tillagd i jämförelse');
+                }
+              }}
+              title={isComparing ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+            >
+              {isComparing ? (
+                <Check className="w-4 h-4 text-white" />
+              ) : (
+                <Scale className="w-4 h-4 text-muted-foreground" />
+              )}
+            </Button>
+
+            {/* Favorite button */}
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-white/90 hover:bg-white transition-colors group/heart"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFavorite(String(id));
+              }}
+            >
+              <svg width="0" height="0" style={{ position: 'absolute' }}>
+                <defs>
+                  <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <Heart
+                className={`w-4 h-4 transition-all duration-300 ${isFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-muted-foreground group-hover/heart:fill-[url(#heart-gradient)]"
+                  }`}
+                style={
+                  !isFavorite
+                    ? { stroke: 'currentColor' }
+                    : undefined
+                }
+              />
+            </Button>
+          </div>
         )}
       </div>
 

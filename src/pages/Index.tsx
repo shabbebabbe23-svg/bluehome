@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
 import LazyMap from "@/components/LazyMap";
 import InlineAdBanner from "@/components/InlineAdBanner";
-import PropertyCard from "@/components/PropertyCard";
+import RecentPropertiesCarousel from "@/components/RecentPropertiesCarousel";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
 import soffaBanner from "@/assets/soffa-banner.png";
@@ -16,7 +16,6 @@ import property2 from "@/assets/property-2.jpg";
 import logo1 from "@/assets/logo-1.svg";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import kitchenAd from "@/assets/kitchen-ad.jpg";
-import { Clock } from "lucide-react";
 
 const Index = () => {
   const [showFinalPrices, setShowFinalPrices] = useState(false);
@@ -91,6 +90,7 @@ const Index = () => {
               agent_email: profile?.email,
               agent_agency: profile?.agency,
               agent_id: profile?.id,
+              additional_images: prop.additional_images || [],
             };
           });
           setAllProperties(formattedProperties);
@@ -137,40 +137,35 @@ const Index = () => {
             onBalconyFilterChange={setBalconyFilter}
           />
           <div ref={resultsRef}>
-            {/* Recent uploads section */}
-            {recentProperties.length > 0 && (
-              <section className="mb-8">
+            {/* Recent uploads section - only show when NOT viewing final prices */}
+            {!showFinalPrices && recentProperties.length > 0 && (
+              <section className="mb-2">
                 <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-6">
                   Senast uppladdade objekt
                 </h2>
-                <div className="grid grid-cols-1 gap-4">
-                  {recentProperties.map((property) => (
-                    <PropertyCard
-                      key={property.id}
-                      id={property.id}
-                      title={property.title}
-                      price={property.price}
-                      location={property.location}
-                      address={property.address}
-                      bedrooms={property.bedrooms}
-                      bathrooms={property.bathrooms}
-                      area={property.area}
-                      fee={property.fee}
-                      image={property.image}
-                      hoverImage={property.hoverImage}
-                      type={property.type}
-                      viewingDate={property.viewingDate}
-                      vendorLogo={property.vendorLogo}
-                      hasVR={property.hasVR}
-                      agent_name={property.agent_name}
-                      agent_avatar={property.agent_avatar}
-                      agent_phone={property.agent_phone}
-                      agent_agency={property.agent_agency}
-                      agent_id={property.agent_id}
-                      autoSlideImages={true}
-                    />
-                  ))}
-                </div>
+                <RecentPropertiesCarousel 
+                  properties={recentProperties.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    location: p.location,
+                    address: p.address,
+                    bedrooms: p.bedrooms,
+                    bathrooms: p.bathrooms,
+                    area: p.area,
+                    fee: p.fee,
+                    image: p.image,
+                    hoverImage: p.hoverImage,
+                    type: p.type,
+                    viewingDate: p.viewingDate,
+                    vendorLogo: p.vendorLogo,
+                    hasVR: p.hasVR,
+                    agent_name: p.agent_name,
+                    agent_avatar: p.agent_avatar,
+                    agent_agency: p.agent_agency,
+                    additional_images: (p as any).additional_images,
+                  }))}
+                />
               </section>
             )}
             {searchMode === 'property' ? (

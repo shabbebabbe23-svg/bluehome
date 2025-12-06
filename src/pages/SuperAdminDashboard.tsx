@@ -726,23 +726,24 @@ const SuperAdminDashboard = () => {
       <Header />
       
       <div className="container mx-auto px-4 pt-24 pb-8">
-        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
               Superadmin Dashboard
             </h1>
-            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-xs sm:text-sm md:text-base">
               Hantera mäklarbyråer och deras konton
             </p>
           </div>
 
           <Button
-            size="lg"
-            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0"
+            size="default"
+            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0 text-sm sm:text-base"
             onClick={() => navigate("/skapa-byra-manuellt")}
           >
             <Plus className="w-4 h-4" />
-            Skapa ny byrå manuellt
+            <span className="hidden sm:inline">Skapa ny byrå manuellt</span>
+            <span className="sm:hidden">Skapa byrå</span>
           </Button>
 
           {/* Edit Agency Dialog */}

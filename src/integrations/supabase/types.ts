@@ -53,6 +53,7 @@ export type Database = {
           area: string | null
           created_at: string | null
           description: string | null
+          email: string | null
           email_domain: string
           id: string
           is_active: boolean | null
@@ -69,6 +70,7 @@ export type Database = {
           area?: string | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           email_domain: string
           id?: string
           is_active?: boolean | null
@@ -85,6 +87,7 @@ export type Database = {
           area?: string | null
           created_at?: string | null
           description?: string | null
+          email?: string | null
           email_domain?: string
           id?: string
           is_active?: boolean | null
@@ -324,6 +327,7 @@ export type Database = {
           operating_cost: number | null
           price: number
           seller_email: string | null
+          show_viewer_count: boolean | null
           sold_date: string | null
           sold_price: number | null
           title: string
@@ -365,6 +369,7 @@ export type Database = {
           operating_cost?: number | null
           price: number
           seller_email?: string | null
+          show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
           title: string
@@ -406,6 +411,7 @@ export type Database = {
           operating_cost?: number | null
           price?: number
           seller_email?: string | null
+          show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
           title?: string

@@ -32,6 +32,7 @@ export const ProfileForm = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [agencyEmail, setAgencyEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -53,7 +54,7 @@ export const ProfileForm = () => {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select("*, agencies(email)")
       .eq("id", user.id)
       .single();
 
@@ -71,6 +72,11 @@ export const ProfileForm = () => {
       setValue("area", data.area || "");
       setValue("bio", data.bio || "");
       setAvatarUrl(data.avatar_url);
+      
+      // Set agency email from joined agencies table
+      if (data.agencies && typeof data.agencies === 'object' && 'email' in data.agencies) {
+        setAgencyEmail((data.agencies as { email: string | null }).email);
+      }
     }
   };
 
@@ -236,64 +242,6 @@ export const ProfileForm = () => {
             </div>
           </div>
 
-          <Separator />
-
-          {/* Business Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <Building2 className="w-5 h-5" />
-              Företagsinformation
-            </h3>
-            <div className="grid gap-4 max-w-2xl">
-              <div className="space-y-1">
-                <Label htmlFor="agency" className="flex items-center gap-2">
-                  Mäklarbyrå
-                  <Badge variant="destructive" className="text-xs">Viktigt!</Badge>
-                </Label>
-                <Input
-                  id="agency"
-                  {...register("agency")}
-                  placeholder="t.ex. Hemnet Mäkleri AB"
-                />
-                {errors.agency && (
-                  <p className="text-sm text-destructive">{errors.agency.message}</p>
-                )}
-                <p className="text-xs text-muted-foreground">Visas direkt under ditt namn på fastighetsannonser</p>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="office" className="flex items-center gap-2">
-                  Kontor
-                  <Badge variant="secondary" className="text-xs">Rekommenderad</Badge>
-                </Label>
-                <Input
-                  id="office"
-                  {...register("office")}
-                  placeholder="t.ex. Stockholm City"
-                />
-                {errors.office && (
-                  <p className="text-sm text-destructive">{errors.office.message}</p>
-                )}
-                <p className="text-xs text-muted-foreground">Kontorets plats eller namn</p>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="area" className="flex items-center gap-2">
-                  Område
-                  <Badge variant="outline" className="text-xs">Valfri</Badge>
-                </Label>
-                <Input
-                  id="area"
-                  {...register("area")}
-                  placeholder="t.ex. Stockholm, Södermalm, Vasastan"
-                />
-                {errors.area && (
-                  <p className="text-sm text-destructive">{errors.area.message}</p>
-                )}
-                <p className="text-xs text-muted-foreground">Områden där du är verksam</p>
-              </div>
-            </div>
-          </div>
 
           <Separator />
 

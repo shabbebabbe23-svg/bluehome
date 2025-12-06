@@ -9,8 +9,10 @@ import { useState, useEffect } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
+import { usePropertyPresence } from "@/hooks/usePropertyPresence";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -49,6 +51,7 @@ const PropertyDetail = () => {
     id
   } = useParams();
   const navigate = useNavigate();
+  const { user, profileName, avatarUrl } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [dbProperty, setDbProperty] = useState<any>(null);
@@ -61,15 +64,27 @@ const PropertyDetail = () => {
 
   // Track property view
   usePropertyViewTracking(id || "");
+  
+  // Real-time viewer presence
+  const { viewerCount } = usePropertyPresence(id);
+  
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
       try {
-        // Try to fetch from database first
+        // Try to fetch from database first - explicitly exclude seller_email for security
         const {
           data,
           error
-        } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
+        } = await supabase.from('properties').select(`
+          id, user_id, title, address, location, type, price, bedrooms, bathrooms, area,
+          fee, viewing_date, listed_date, is_sold, is_deleted, has_vr, created_at, updated_at,
+          sold_date, sold_price, new_price, is_manual_price_change, is_coming_soon,
+          operating_cost, construction_year, is_new_production, vr_image_indices,
+          has_elevator, has_balcony, documents, description, image_url, hover_image_url,
+          vendor_logo_url, additional_images, floorplan_url, floorplan_images, housing_association,
+          show_viewer_count
+        `).eq('id', id).maybeSingle();
         if (data) {
           setDbProperty(data);
 
@@ -476,7 +491,7 @@ const PropertyDetail = () => {
             </span>
           </Link>
           
-          <div className="flex gap-1 sm:gap-2">
+          <div className="flex gap-1 sm:gap-2 items-center">
             <svg 
               width="36" 
               height="36" 
@@ -518,6 +533,19 @@ const PropertyDetail = () => {
                 fill={isFavorite ? "url(#heartGradient)" : "none"}
               />
             </svg>
+
+            {/* Profile Avatar with Glow */}
+            {user && (
+              <Link to="/maklare?tab=profile" className="relative ml-2">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                  <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                  <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                    {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -582,6 +610,16 @@ const PropertyDetail = () => {
               </div>
               {property.title}
             </h1>
+
+            {/* Real-time viewer count */}
+            {dbProperty?.show_viewer_count && viewerCount > 0 && (
+              <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-foreground">
+                  {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
+                </span>
+              </div>
+            )}
 
             {/* Property Info */}
             <Card>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PropertyCard from "./PropertyCard";
+import RecentSoldCarousel from "./RecentSoldCarousel";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -88,6 +89,7 @@ export interface Property {
   agent_agency?: string;
   agent_id?: string;
   createdAt?: Date;
+  additional_images?: string[];
 }
 
 export const allProperties: Property[] = [
@@ -655,6 +657,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
             createdAt: new Date(prop.created_at),
+            additional_images: prop.additional_images || [],
           }));
           setDbProperties(formattedProperties);
 
@@ -833,10 +836,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     }
   };
 
+  // Filter properties based on showFinalPrices toggle
+  // When showFinalPrices is ON, show only sold properties
+  // When showFinalPrices is OFF, show only active (non-sold) properties
   const currentProperties = showFinalPrices
-    ? soldProperties
-    : dbProperties;
-  const filteredProperties = filterByType(currentProperties);
+    ? dbProperties.filter(p => p.isSold === true)
+    : dbProperties.filter(p => p.isSold !== true);
+  
+  // Fallback to static mock data if no DB properties exist
+  const propertiesWithFallback = currentProperties.length > 0 
+    ? currentProperties 
+    : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
+  
+  const filteredProperties = filterByType(propertiesWithFallback);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
@@ -912,29 +924,22 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="py-3 md:py-5 px-3 sm:px-4">
+    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
-        <div className="text-center mb-3 md:mb-4 animate-fade-in">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1.5 md:mb-2 text-foreground">
-            {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            {showFinalPrices
-              ? "Se slutpriser på nyligen sålda fastigheter"
-              : "Upptäck vårt handplockade urval av premiumfastigheter över hela Sverige"}
-          </p>
-        </div>
-
-        {/* Sort Dropdown, Bulk Actions, and View Toggle */}
-        <div className="flex flex-col items-end gap-2 mb-3 md:mb-4">
-          {!showFinalPrices && (
-            <div className="flex gap-2 w-full sm:w-auto">
-              {!bulkSelectMode ? null : (
-                <>
+        {/* Header */}
+        <div className="mb-2 md:mb-3 animate-fade-in">
+          <div className="relative flex items-center justify-center mb-1">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
+              {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
+            </h2>
+            {/* Sort and View Toggle */}
+            <div className="absolute right-0 flex flex-col items-end gap-1">
+              {!showFinalPrices && bulkSelectMode && (
+                <div className="hidden sm:flex gap-2">
                   <Button
                     onClick={toggleSelectAll}
                     variant="outline"
-                    className="flex-1 sm:flex-initial"
+                    size="sm"
                   >
                     {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
                   </Button>
@@ -942,7 +947,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                     onClick={handleBulkDelete}
                     disabled={selectedProperties.length === 0 || isDeleting}
                     variant="destructive"
-                    className="flex-1 sm:flex-initial"
+                    size="sm"
                   >
                     {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
                   </Button>
@@ -952,52 +957,87 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                       setSelectedProperties([]);
                     }}
                     variant="ghost"
+                    size="sm"
                   >
                     Avbryt
                   </Button>
-                </>
+                </div>
               )}
-            </div>
-          )}
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Sortera efter" />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border z-50">
-              <SelectItem value="default">Sortera efter</SelectItem>
-              <SelectItem value="newest">Senaste tillagda</SelectItem>
-              <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
-              <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
-              <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
-              <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
-              <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
-              <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
-              <SelectItem value="address-az">Adress: A-Ö</SelectItem>
-              <SelectItem value="address-za">Adress: Ö-A</SelectItem>
-            </SelectContent>
-          </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[154px] sm:w-[200px] h-9 text-sm bg-hero-gradient text-white border-transparent">
+                  <ArrowUpDown className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Sortera" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border z-50">
+                  <SelectItem value="default">Sortera efter</SelectItem>
+                  <SelectItem value="newest">Senaste tillagda</SelectItem>
+                  <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
+                  <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
+                  <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
+                  <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
+                  <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
+                  <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
+                  <SelectItem value="address-az">Adress: A-Ö</SelectItem>
+                  <SelectItem value="address-za">Adress: Ö-A</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="hidden sm:flex sm:w-auto gap-2"
-          >
-            {viewMode === "grid" ? (
-              <>
-                <List className="w-4 h-4" />
-                Listvy
-              </>
-            ) : (
-              <>
-                <Grid3x3 className="w-4 h-4" />
-                Rutnätsvy
-              </>
-            )}
-          </Button>
+              <Button
+                variant="outline"
+                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                className="hidden sm:flex gap-1.5 h-9 px-4 text-sm"
+              >
+                {viewMode === "grid" ? (
+                  <>
+                    <List className="w-4 h-4" />
+                    <span className="hidden md:inline">Listvy</span>
+                  </>
+                ) : (
+                  <>
+                    <Grid3x3 className="w-4 h-4" />
+                    <span className="hidden md:inline">Rutnätsvy</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+          <p className="text-sm sm:text-base text-muted-foreground text-center">
+            {showFinalPrices
+              ? "Se slutpriser på nyligen sålda fastigheter"
+              : "Upptäck vårt handplockade urval av premiumfastigheter"}
+          </p>
         </div>
 
+        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
+        {showFinalPrices && propertiesWithFallback.length > 0 && (
+          <section className="mb-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-4">
+              Senaste sålda objekt
+            </h3>
+            <RecentSoldCarousel 
+              properties={propertiesWithFallback.slice(0, 5).map(p => ({
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                priceValue: p.priceValue,
+                location: p.location,
+                address: p.address,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+                area: p.area,
+                fee: p.fee,
+                image: p.image,
+                hoverImage: p.hoverImage,
+                type: p.type,
+                vendorLogo: p.vendorLogo,
+                hasVR: p.hasVR,
+                soldDate: p.soldDate,
+                sold_price: p.sold_price,
+                additional_images: (p as any).additional_images,
+              }))}
+            />
+          </section>
+        )}
         <div className={viewMode === "grid"
           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-4 md:mb-6"
           : "flex flex-col gap-2 mb-4 md:mb-6"
