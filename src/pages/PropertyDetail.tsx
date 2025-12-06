@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
+import { usePropertyPresence } from "@/hooks/usePropertyPresence";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,6 +64,10 @@ const PropertyDetail = () => {
 
   // Track property view
   usePropertyViewTracking(id || "");
+  
+  // Real-time viewer presence
+  const { viewerCount } = usePropertyPresence(id);
+  
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
@@ -77,7 +82,8 @@ const PropertyDetail = () => {
           sold_date, sold_price, new_price, is_manual_price_change, is_coming_soon,
           operating_cost, construction_year, is_new_production, vr_image_indices,
           has_elevator, has_balcony, documents, description, image_url, hover_image_url,
-          vendor_logo_url, additional_images, floorplan_url, floorplan_images, housing_association
+          vendor_logo_url, additional_images, floorplan_url, floorplan_images, housing_association,
+          show_viewer_count
         `).eq('id', id).maybeSingle();
         if (data) {
           setDbProperty(data);
@@ -604,6 +610,16 @@ const PropertyDetail = () => {
               </div>
               {property.title}
             </h1>
+
+            {/* Real-time viewer count */}
+            {dbProperty?.show_viewer_count && viewerCount > 0 && (
+              <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-foreground">
+                  {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
+                </span>
+              </div>
+            )}
 
             {/* Property Info */}
             <Card>
