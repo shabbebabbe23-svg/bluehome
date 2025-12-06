@@ -915,25 +915,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
         {/* Header */}
-        <div className="text-center mb-2 md:mb-3 animate-fade-in">
-          <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-1">
-            {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            {showFinalPrices
-              ? "Se slutpriser på nyligen sålda fastigheter"
-              : "Upptäck vårt handplockade urval av premiumfastigheter"}
-          </p>
-          {/* Sort and View Toggle */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-2">
-          {!showFinalPrices && (
-            <div className="flex gap-2 w-full sm:w-auto">
-              {!bulkSelectMode ? null : (
-                <>
+        <div className="mb-2 md:mb-3 animate-fade-in">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-1">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
+              {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
+            </h2>
+            {/* Sort and View Toggle */}
+            <div className="flex items-center gap-2">
+              {!showFinalPrices && bulkSelectMode && (
+                <div className="hidden sm:flex gap-2">
                   <Button
                     onClick={toggleSelectAll}
                     variant="outline"
-                    className="flex-1 sm:flex-initial"
+                    size="sm"
                   >
                     {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
                   </Button>
@@ -941,7 +935,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                     onClick={handleBulkDelete}
                     disabled={selectedProperties.length === 0 || isDeleting}
                     variant="destructive"
-                    className="flex-1 sm:flex-initial"
+                    size="sm"
                   >
                     {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
                   </Button>
@@ -951,51 +945,56 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                       setSelectedProperties([]);
                     }}
                     variant="ghost"
+                    size="sm"
                   >
                     Avbryt
                   </Button>
-                </>
+                </div>
               )}
-            </div>
-          )}
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[280px] bg-hero-gradient text-white border-transparent">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Sortera efter" />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border z-50">
-              <SelectItem value="default">Sortera efter</SelectItem>
-              <SelectItem value="newest">Senaste tillagda</SelectItem>
-              <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
-              <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
-              <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
-              <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
-              <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
-              <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
-              <SelectItem value="address-az">Adress: A-Ö</SelectItem>
-              <SelectItem value="address-za">Adress: Ö-A</SelectItem>
-            </SelectContent>
-          </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[140px] sm:w-[180px] h-8 text-xs sm:text-sm bg-hero-gradient text-white border-transparent">
+                  <ArrowUpDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <SelectValue placeholder="Sortera" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border z-50">
+                  <SelectItem value="default">Sortera efter</SelectItem>
+                  <SelectItem value="newest">Senaste tillagda</SelectItem>
+                  <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
+                  <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
+                  <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
+                  <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
+                  <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
+                  <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
+                  <SelectItem value="address-az">Adress: A-Ö</SelectItem>
+                  <SelectItem value="address-za">Adress: Ö-A</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="hidden sm:flex sm:w-auto gap-2"
-          >
-            {viewMode === "grid" ? (
-              <>
-                <List className="w-4 h-4" />
-                Listvy
-              </>
-            ) : (
-              <>
-                <Grid3x3 className="w-4 h-4" />
-                Rutnätsvy
-              </>
-            )}
-          </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                className="hidden sm:flex gap-1 h-8"
+              >
+                {viewMode === "grid" ? (
+                  <>
+                    <List className="w-4 h-4" />
+                    <span className="hidden md:inline">Listvy</span>
+                  </>
+                ) : (
+                  <>
+                    <Grid3x3 className="w-4 h-4" />
+                    <span className="hidden md:inline">Rutnätsvy</span>
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
+          <p className="text-sm sm:text-base text-muted-foreground text-center">
+            {showFinalPrices
+              ? "Se slutpriser på nyligen sålda fastigheter"
+              : "Upptäck vårt handplockade urval av premiumfastigheter"}
+          </p>
         </div>
 
         <div className={viewMode === "grid"
