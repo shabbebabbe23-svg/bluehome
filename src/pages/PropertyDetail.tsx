@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -49,6 +50,7 @@ const PropertyDetail = () => {
     id
   } = useParams();
   const navigate = useNavigate();
+  const { user, profileName, avatarUrl } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [dbProperty, setDbProperty] = useState<any>(null);
@@ -476,7 +478,7 @@ const PropertyDetail = () => {
             </span>
           </Link>
           
-          <div className="flex gap-1 sm:gap-2">
+          <div className="flex gap-1 sm:gap-2 items-center">
             <svg 
               width="36" 
               height="36" 
@@ -518,6 +520,19 @@ const PropertyDetail = () => {
                 fill={isFavorite ? "url(#heartGradient)" : "none"}
               />
             </svg>
+
+            {/* Profile Avatar with Glow */}
+            {user && (
+              <Link to="/maklare?tab=profile" className="relative ml-2">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                  <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                  <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                    {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            )}
           </div>
         </div>
       </header>
