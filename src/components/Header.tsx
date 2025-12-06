@@ -191,7 +191,7 @@ const Header = () => {
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-4">
             {/* User Profile Avatar & Role Indicator */}
-            {user && userType && (
+            {user && (
               <div className={`flex items-center gap-2 xl:gap-3 px-2 xl:px-4 py-1.5 xl:py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                 {/* Profile Avatar */}
                 <Link to={userType === "maklare" ? "/maklare?tab=profile" : "#"} className="hover:scale-110 transition-transform relative">
@@ -265,7 +265,7 @@ const Header = () => {
           }}>
             <nav className="flex flex-col gap-3">
               {/* User Role Indicator with Avatar for Mobile */}
-              {user && userType && (
+              {user && (
                 <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                   {/* Mobile Profile Avatar */}
                   <div className="relative">
