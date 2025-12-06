@@ -11,6 +11,7 @@ export interface ComparisonProperty {
   area: number;
   fee?: number;
   image: string;
+  additionalImages?: string[];
   type: string;
   soldPrice?: string;
   newPrice?: string;

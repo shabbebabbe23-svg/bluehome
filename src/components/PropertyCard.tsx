@@ -21,6 +21,7 @@ interface PropertyCardProps {
   fee?: number;
   image: string;
   hoverImage?: string;
+  additionalImages?: string[];
   type: string;
   viewingDate?: Date | string;
   isNew?: boolean;
@@ -66,6 +67,7 @@ const PropertyCard = ({
   fee = 0,
   image,
   hoverImage,
+  additionalImages,
   viewingDate,
   type,
   isNew = false,
@@ -288,6 +290,7 @@ const PropertyCard = ({
                   area,
                   fee,
                   image,
+                  additionalImages,
                   type,
                   soldPrice,
                   newPrice,
