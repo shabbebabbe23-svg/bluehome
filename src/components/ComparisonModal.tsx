@@ -79,14 +79,14 @@ function PropertyImageCarousel({
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-md transition-colors duration-200"
+            className="absolute left-1 top-1/2 -translate-y-1/2 bg-background hover:bg-background/90 rounded-full p-1.5 shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-colors duration-200"
             aria-label="Föregående bild"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-md transition-colors duration-200"
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-background hover:bg-background/90 rounded-full p-1.5 shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-colors duration-200"
             aria-label="Nästa bild"
           >
             <ChevronRight className="w-5 h-5" />
