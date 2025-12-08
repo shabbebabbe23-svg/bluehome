@@ -243,7 +243,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   };
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-8 md:pt-0 md:pb-0">
+    <section className="relative min-h-[70vh] md:min-h-screen flex items-start md:items-center justify-center overflow-hidden pt-20 pb-8 md:pt-24 md:pb-0">
       {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -267,7 +267,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 animate-slide-up max-w-5xl mx-auto min-h-[520px] sm:min-h-[560px] md:min-h-[600px] flex flex-col">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 animate-slide-up max-w-5xl mx-auto">
           <div className="space-y-3 md:space-y-5">
             {/* Search Mode Toggle */}
             <div className="flex gap-2">
