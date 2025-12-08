@@ -183,16 +183,16 @@ const AgentProfile = () => {
                     <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       Mäklarens sociala medier
                     </h3>
-                    <div className="flex gap-3 justify-center sm:justify-start pb-6">
+                    <div className="flex gap-2 justify-center sm:justify-start pb-5">
                       {agentProfile.instagram_url && (
                         <a 
                           href={agentProfile.instagram_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                          className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300"
                         >
-                          <Instagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                          <span className="absolute -bottom-5 text-[10px] sm:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <span className="absolute -bottom-4 text-[9px] sm:text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             Instagram
                           </span>
                         </a>
@@ -203,10 +203,10 @@ const AgentProfile = () => {
                           href={agentProfile.tiktok_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#00F2EA] via-[#000000] to-[#FF0050] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                          className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-[#00F2EA] via-[#000000] to-[#FF0050] flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300"
                         >
-                          <TikTokIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                          <span className="absolute -bottom-5 text-[10px] sm:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          <TikTokIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <span className="absolute -bottom-4 text-[9px] sm:text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             TikTok
                           </span>
                         </a>
