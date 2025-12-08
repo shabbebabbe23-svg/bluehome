@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Upload, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Upload, Lock, Eye, EyeOff, Instagram } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -24,6 +25,8 @@ const profileSchema = z.object({
   office: z.string().max(100, "Kontor får vara max 100 tecken").optional(),
   area: z.string().max(100, "Område får vara max 100 tecken").optional(),
   bio: z.string().max(1000, "Presentation får vara max 1000 tecken").optional(),
+  instagram_url: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
+  tiktok_url: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -41,6 +44,8 @@ export const ProfileForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [hasInstagram, setHasInstagram] = useState(false);
+  const [hasTiktok, setHasTiktok] = useState(false);
 
   const getPasswordStrength = (password: string): { score: number; label: string; color: string } => {
     if (!password) return { score: 0, label: "", color: "" };
@@ -99,7 +104,11 @@ export const ProfileForm = () => {
       setValue("office", data.office || "");
       setValue("area", data.area || "");
       setValue("bio", data.bio || "");
+      setValue("instagram_url", data.instagram_url || "");
+      setValue("tiktok_url", data.tiktok_url || "");
       setAvatarUrl(data.avatar_url);
+      setHasInstagram(!!data.instagram_url);
+      setHasTiktok(!!data.tiktok_url);
       
       // Set agency email from joined agencies table
       if (data.agencies && typeof data.agencies === 'object' && 'email' in data.agencies) {
@@ -162,6 +171,8 @@ export const ProfileForm = () => {
           office: data.office || null,
           area: data.area || null,
           bio: data.bio || null,
+          instagram_url: hasInstagram ? (data.instagram_url || null) : null,
+          tiktok_url: hasTiktok ? (data.tiktok_url || null) : null,
         })
         .eq("id", user.id);
 
@@ -352,6 +363,70 @@ export const ProfileForm = () => {
               <p className="text-xs text-muted-foreground">
                 Din presentation visas på din publika mäklarprofil. Max 1000 tecken.
               </p>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Social Media Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Instagram className="w-5 h-5" />
+              Sociala medier
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Kryssa i vilka sociala medier du har och lägg till länkarna. Dessa visas på din publika profil.
+            </p>
+            <div className="grid gap-4 max-w-2xl">
+              {/* Instagram */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id="has_instagram" 
+                    checked={hasInstagram}
+                    onCheckedChange={(checked) => setHasInstagram(checked === true)}
+                  />
+                  <Label htmlFor="has_instagram" className="cursor-pointer">
+                    Jag har Instagram
+                  </Label>
+                </div>
+                {hasInstagram && (
+                  <div className="ml-6">
+                    <Input
+                      {...register("instagram_url")}
+                      placeholder="https://instagram.com/ditt-användarnamn"
+                    />
+                    {errors.instagram_url && (
+                      <p className="text-sm text-destructive mt-1">{errors.instagram_url.message}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* TikTok */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id="has_tiktok" 
+                    checked={hasTiktok}
+                    onCheckedChange={(checked) => setHasTiktok(checked === true)}
+                  />
+                  <Label htmlFor="has_tiktok" className="cursor-pointer">
+                    Jag har TikTok
+                  </Label>
+                </div>
+                {hasTiktok && (
+                  <div className="ml-6">
+                    <Input
+                      {...register("tiktok_url")}
+                      placeholder="https://tiktok.com/@ditt-användarnamn"
+                    />
+                    {errors.tiktok_url && (
+                      <p className="text-sm text-destructive mt-1">{errors.tiktok_url.message}</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
