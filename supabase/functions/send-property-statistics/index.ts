@@ -25,48 +25,90 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Security: Validate request origin - only allow calls from database triggers or with service key
-    const authHeader = req.headers.get("authorization");
-    const expectedAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    
-    // Allow calls with the anon key (from database triggers) or service role key
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      // If it's not the anon key, we need to verify it's a valid service role request
-      if (token !== expectedAnonKey) {
-        // Verify it's a valid JWT by creating a client and checking the user
-        const supabaseAuth = createClient(supabaseUrl, token);
-        const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
-        
-        // If no valid user and not the anon key, reject
-        if (authError && token !== Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
-          console.error("Unauthorized request rejected");
-          return new Response(
-            JSON.stringify({ error: "Unauthorized" }),
-            { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-          );
-        }
-      }
-    }
-    
     const supabase = createClient(supabaseUrl, supabaseKey);
     const body = await req.json().catch(() => ({}));
+    
+    // Security: Validate authorization
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      console.error("Missing authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - missing authorization" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    
+    const token = authHeader.replace("Bearer ", "");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    // Only allow requests with service role key or anon key (from database triggers)
+    const isServiceRole = token === serviceRoleKey;
+    const isAnonKey = token === anonKey;
+    
+    if (!isServiceRole && !isAnonKey) {
+      // Verify it's a valid authenticated user with proper role
+      const supabaseAuth = createClient(supabaseUrl, token);
+      const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("Unauthorized request rejected - invalid token");
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      // Check if user has maklare or admin role
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("user_type")
+        .eq("user_id", user.id)
+        .single();
+      
+      const allowedRoles = ["maklare", "agency_admin", "superadmin"];
+      if (!roles || !allowedRoles.includes(roles.user_type)) {
+        console.error("Unauthorized request - insufficient permissions");
+        return new Response(
+          JSON.stringify({ error: "Forbidden - insufficient permissions" }),
+          { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    }
 
     // Check if this is a "sold" notification for a specific property
     if (body.property_id && body.is_sold) {
       console.log(`Sending sold notification for property ${body.property_id}`);
       
+      // Security: Validate property exists and is actually sold
       const { data: property, error: propError } = await supabase
         .from("properties")
-        .select("id, title, address, seller_email, sold_price, sold_date")
+        .select("id, title, address, seller_email, sold_price, sold_date, is_sold")
         .eq("id", body.property_id)
         .single();
 
-      if (propError || !property || !property.seller_email) {
-        console.error("Property not found or missing seller email:", propError);
+      if (propError || !property) {
+        console.error("Property not found:", propError);
         return new Response(
-          JSON.stringify({ error: "Property not found or missing seller email" }),
+          JSON.stringify({ error: "Property not found" }),
           { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      // Verify property is actually sold (prevents unauthorized email triggers)
+      if (!property.is_sold) {
+        console.error("Security: Attempted to send sold notification for non-sold property");
+        return new Response(
+          JSON.stringify({ error: "Property is not marked as sold" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      if (!property.seller_email) {
+        console.log("No seller email for property, skipping notification");
+        return new Response(
+          JSON.stringify({ success: true, message: "No seller email configured" }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
 
