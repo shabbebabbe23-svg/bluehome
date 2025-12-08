@@ -592,24 +592,31 @@ const PropertyDetail = () => {
             </Card>
 
             {/* Property Title and Share Section */}
-            <h1 className="text-3xl sm:text-4xl font-bold text-center relative flex items-center justify-center gap-4">
-              <div className="absolute left-0 flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setIsShareDialogOpen(true)} className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2">
+            <div className="flex flex-col gap-4">
+              <h1 className="text-3xl sm:text-4xl font-bold text-center">
+                {property.title}
+              </h1>
+              <div className="flex items-center justify-center gap-3">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsShareDialogOpen(true)} 
+                  className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
+                >
                   <Share2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Dela bostad</span>
+                  <span>Dela bostad</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => navigate(`/virtuell-visning/${id}`)} 
-                  className="hover:bg-hero-gradient hover:text-white hover:scale-105 transition-transform gap-2"
+                  className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
                 >
                   <Move3D className="w-4 h-4" />
-                  <span className="hidden sm:inline">360° Visning</span>
+                  <span>360° Visning</span>
                 </Button>
               </div>
-              {property.title}
-            </h1>
+            </div>
 
             {/* Real-time viewer count */}
             {dbProperty?.show_viewer_count && viewerCount > 0 && (
