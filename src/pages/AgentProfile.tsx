@@ -96,129 +96,135 @@ const AgentProfile = () => {
         {/* Agent Profile Header */}
         <Card className="mb-8">
           <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row items-start gap-8">
-              {/* Avatar - larger size */}
-              <div className="flex-shrink-0">
-                <Avatar className="w-48 h-48 md:w-64 md:h-64 border-4 border-border">
-                  <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
-                  <AvatarFallback className="bg-primary text-white text-4xl">
-                    <User className="w-24 h-24 md:w-32 md:h-32" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              
-              {/* Right side - Bio and info moved up */}
-              <div className="flex-1 space-y-6">
-                {/* Name and Agency */}
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">
-                    {agentProfile.full_name || "Mäklare"}
-                  </h1>
-                  
-                  {agentProfile.agency && (
-                    <div className="flex items-center gap-2 text-lg text-muted-foreground">
-                      <Building2 className="w-5 h-5" />
-                      <span>{agentProfile.agency}</span>
+            <div className="flex flex-col gap-6">
+              {/* Top row: Avatar + Info */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  <Avatar className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 border-4 border-border">
+                    <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
+                    <AvatarFallback className="bg-primary text-white text-3xl md:text-4xl">
+                      <User className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                
+                {/* Main info */}
+                <div className="flex-1 text-center sm:text-left space-y-4 min-w-0">
+                  {/* Name - responsive text size with word break */}
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words">
+                      {agentProfile.full_name || "Mäklare"}
+                    </h1>
+                    
+                    {agentProfile.agency && (
+                      <div className="flex items-center gap-2 text-base sm:text-lg text-muted-foreground justify-center sm:justify-start">
+                        <Building2 className="w-5 h-5 flex-shrink-0" />
+                        <span className="break-words">{agentProfile.agency}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bio Section */}
+                  {agentProfile.bio && (
+                    <div className="text-foreground leading-relaxed">
+                      <p className="text-sm sm:text-base">{agentProfile.bio}</p>
                     </div>
                   )}
-                </div>
 
-                {/* Bio Section - moved up and to the right */}
-                {agentProfile.bio && (
-                  <div className="text-foreground leading-relaxed">
-                    <p className="text-base">{agentProfile.bio}</p>
+                  {/* Contact Info */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {agentProfile.area && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{agentProfile.area}</span>
+                      </div>
+                    )}
+                    
+                    {agentProfile.office && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
+                        <Building2 className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">Kontor: {agentProfile.office}</span>
+                      </div>
+                    )}
+                    
+                    {agentProfile.email && (
+                      <div className="flex items-center gap-2 text-sm justify-center sm:justify-start">
+                        <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <a 
+                          href={`mailto:${agentProfile.email}`}
+                          className="hover:text-primary transition-colors truncate"
+                        >
+                          {agentProfile.email}
+                        </a>
+                      </div>
+                    )}
+
+                    {agentProfile.phone && (
+                      <div className="flex items-center gap-2 text-sm justify-center sm:justify-start">
+                        <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <a 
+                          href={`tel:${agentProfile.phone}`}
+                          className="hover:text-primary transition-colors"
+                        >
+                          {agentProfile.phone}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom row: Social Media + Property Count */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 pt-4 border-t border-border">
+                {/* Social Media Section */}
+                {(agentProfile.instagram_url || agentProfile.tiktok_url) && (
+                  <div className="text-center sm:text-left space-y-3">
+                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      Mäklarens sociala medier
+                    </h3>
+                    <div className="flex gap-3 justify-center sm:justify-start pb-6">
+                      {agentProfile.instagram_url && (
+                        <a 
+                          href={agentProfile.instagram_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                        >
+                          <Instagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                          <span className="absolute -bottom-5 text-[10px] sm:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            Instagram
+                          </span>
+                        </a>
+                      )}
+                      
+                      {agentProfile.tiktok_url && (
+                        <a 
+                          href={agentProfile.tiktok_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#00F2EA] via-[#000000] to-[#FF0050] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                        >
+                          <TikTokIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                          <span className="absolute -bottom-5 text-[10px] sm:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            TikTok
+                          </span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
 
-                {/* Contact Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {agentProfile.area && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4" />
-                      <span>{agentProfile.area}</span>
+                {/* Property count */}
+                <div className="text-center sm:text-right">
+                  <div className="bg-primary/10 rounded-lg p-4">
+                    <div className="text-3xl sm:text-4xl font-bold text-primary mb-1">
+                      {properties?.length || 0}
                     </div>
-                  )}
-                  
-                  {agentProfile.office && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Building2 className="w-4 h-4" />
-                      <span>Kontor: {agentProfile.office}</span>
+                    <div className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 justify-center sm:justify-end">
+                      <Home className="w-4 h-4" />
+                      Aktiva fastigheter
                     </div>
-                  )}
-                  
-                  {agentProfile.email && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="w-4 h-4 text-muted-foreground" />
-                      <a 
-                        href={`mailto:${agentProfile.email}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        {agentProfile.email}
-                      </a>
-                    </div>
-                  )}
-
-                  
-                  {agentProfile.phone && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="w-4 h-4 text-muted-foreground" />
-                      <a 
-                        href={`tel:${agentProfile.phone}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        {agentProfile.phone}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Social Media Section */}
-              {(agentProfile.instagram_url || agentProfile.tiktok_url) && (
-                <div className="text-center md:text-left space-y-3">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Mäklarens sociala medier
-                  </h3>
-                  <div className="flex gap-3 justify-center md:justify-start">
-                    {agentProfile.instagram_url && (
-                      <a 
-                        href={agentProfile.instagram_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
-                      >
-                        <Instagram className="w-6 h-6 text-white" />
-                        <span className="absolute -bottom-6 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                          Instagram
-                        </span>
-                      </a>
-                    )}
-                    
-                    {agentProfile.tiktok_url && (
-                      <a 
-                        href={agentProfile.tiktok_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#00F2EA] via-[#000000] to-[#FF0050] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
-                      >
-                        <TikTokIcon className="w-6 h-6 text-white" />
-                        <span className="absolute -bottom-6 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                          TikTok
-                        </span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center md:text-right">
-                <div className="bg-primary/10 rounded-lg p-4">
-                  <div className="text-4xl font-bold text-primary mb-1">
-                    {properties?.length || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Home className="w-4 h-4" />
-                    Aktiva fastigheter
                   </div>
                 </div>
               </div>
