@@ -92,7 +92,7 @@ const AgentProfile = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-12 sm:py-16">
         {/* Agent Profile Header */}
         <Card className="mb-8">
           <CardContent className="pt-6">
