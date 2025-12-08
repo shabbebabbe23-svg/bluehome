@@ -267,7 +267,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 max-w-5xl mx-auto">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 max-w-5xl mx-auto transition-all duration-300 ease-out origin-top">
           <div className="space-y-3 md:space-y-5">
             {/* Search Mode Toggle */}
             <div className="flex gap-2">
@@ -301,8 +301,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               </Button>
             </div>
 
-            {/* Område Section - animated on mode change */}
-            <div key={searchMode} className="animate-fade-in">
+            {/* Område Section */}
+            <div>
               <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">
                 {searchMode === 'property' ? 'Område' : 'Sök mäklare'}
               </h2>
