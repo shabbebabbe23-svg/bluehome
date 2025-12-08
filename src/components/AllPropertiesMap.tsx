@@ -18,15 +18,35 @@ interface PropertyWithCoords extends Property {
   lng: number;
 }
 
+const PROPERTY_TYPES = ['Villa', 'Lägenhet', 'Radhus', 'Parhus', 'Tomt', 'Fritidshus'] as const;
+
 const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [propertiesWithCoords, setPropertiesWithCoords] = useState<PropertyWithCoords[]>([]);
   const [loading, setLoading] = useState(true);
   const [geocodingProgress, setGeocodingProgress] = useState(0);
   const [fromAddress, setFromAddress] = useState('');
   const [toAddress, setToAddress] = useState('');
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([...PROPERTY_TYPES]);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<any>(null);
+  const markersRef = useRef<L.Marker[]>([]);
+
+  const toggleType = (type: string) => {
+    setSelectedTypes(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  const toggleAllTypes = () => {
+    if (selectedTypes.length === PROPERTY_TYPES.length) {
+      setSelectedTypes([]);
+    } else {
+      setSelectedTypes([...PROPERTY_TYPES]);
+    }
+  };
 
   useEffect(() => {
     const geocodeProperties = async () => {
@@ -137,8 +157,14 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
       });
     };
 
-    // Add markers
-    propertiesWithCoords.forEach((property) => {
+    // Clear existing markers
+    markersRef.current.forEach(m => m.remove());
+    markersRef.current = [];
+
+    // Add markers for filtered properties
+    const filteredProperties = propertiesWithCoords.filter(p => selectedTypes.includes(p.type));
+    
+    filteredProperties.forEach((property) => {
       const icon = createColoredIcon(property.type);
       const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
       
@@ -166,6 +192,8 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         maxWidth: 300,
         className: 'property-popup'
       });
+
+      markersRef.current.push(marker);
     });
 
     mapInstanceRef.current = map;
@@ -181,7 +209,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         mapInstanceRef.current = null;
       }
     };
-  }, [propertiesWithCoords, loading, properties]);
+  }, [propertiesWithCoords, loading, properties, selectedTypes]);
 
   const handleRouteSearch = async () => {
     if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
@@ -293,49 +321,101 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           </div>
         </div>
 
-        {/* Legend */}
+        {/* Legend - Clickable Filters */}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <div className="font-semibold">Fastighetstyper:</div>
-          <div className="flex gap-3 text-sm flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center">
-                <Home className="w-4 h-4 text-white" />
+          <div className="flex items-center gap-3">
+            <span className="font-semibold">Filtrera:</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleAllTypes}
+              className="text-xs"
+            >
+              {selectedTypes.length === PROPERTY_TYPES.length ? 'Avmarkera alla' : 'Visa alla'}
+            </Button>
+          </div>
+          <div className="flex gap-2 text-sm flex-wrap">
+            <button
+              onClick={() => toggleType('Villa')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Villa') 
+                  ? 'border-blue-500 bg-blue-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-blue-500 flex items-center justify-center">
+                <Home className="w-3 h-3 text-white" />
               </div>
               <span>Villa</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-green-500 flex items-center justify-center">
-                <Building className="w-4 h-4 text-white" />
+            </button>
+            <button
+              onClick={() => toggleType('Lägenhet')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Lägenhet') 
+                  ? 'border-green-500 bg-green-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-green-500 flex items-center justify-center">
+                <Building className="w-3 h-3 text-white" />
               </div>
               <span>Lägenhet</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-purple-500 flex items-center justify-center">
+            </button>
+            <button
+              onClick={() => toggleType('Radhus')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Radhus') 
+                  ? 'border-purple-500 bg-purple-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-purple-500 flex items-center justify-center">
                 <div className="flex -ml-0.5">
-                  <Home className="w-3 h-3 text-white -mr-0.5" />
-                  <Home className="w-3 h-3 text-white" />
+                  <Home className="w-2 h-2 text-white -mr-0.5" />
+                  <Home className="w-2 h-2 text-white" />
                 </div>
               </div>
               <span>Radhus</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center">
-                <Home className="w-4 h-4 text-white" />
+            </button>
+            <button
+              onClick={() => toggleType('Parhus')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Parhus') 
+                  ? 'border-teal-500 bg-teal-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-teal-500 flex items-center justify-center">
+                <Home className="w-3 h-3 text-white" />
               </div>
               <span>Parhus</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center">
-                <Square className="w-4 h-4 text-white" />
+            </button>
+            <button
+              onClick={() => toggleType('Tomt')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Tomt') 
+                  ? 'border-orange-500 bg-orange-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-orange-500 flex items-center justify-center">
+                <Square className="w-3 h-3 text-white" />
               </div>
               <span>Tomt</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-pink-500 flex items-center justify-center">
-                <TreePine className="w-4 h-4 text-white" />
+            </button>
+            <button
+              onClick={() => toggleType('Fritidshus')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                selectedTypes.includes('Fritidshus') 
+                  ? 'border-pink-500 bg-pink-500/10 opacity-100' 
+                  : 'border-muted opacity-40 hover:opacity-60'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-pink-500 flex items-center justify-center">
+                <TreePine className="w-3 h-3 text-white" />
               </div>
               <span>Fritidshus</span>
-            </div>
+            </button>
           </div>
         </div>
         <div 
