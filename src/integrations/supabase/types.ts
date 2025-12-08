@@ -253,8 +253,10 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          instagram_url: string | null
           office: string | null
           phone: string | null
+          tiktok_url: string | null
           updated_at: string
         }
         Insert: {
@@ -267,8 +269,10 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          instagram_url?: string | null
           office?: string | null
           phone?: string | null
+          tiktok_url?: string | null
           updated_at?: string
         }
         Update: {
@@ -281,8 +285,10 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          instagram_url?: string | null
           office?: string | null
           phone?: string | null
+          tiktok_url?: string | null
           updated_at?: string
         }
         Relationships: [
