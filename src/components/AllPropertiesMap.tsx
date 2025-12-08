@@ -90,15 +90,53 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     }
   }, [properties]);
 
-  // Initialize map when coordinates are loaded
+  // Function to create colored icons based on property type
+  const createColoredIcon = (type: string) => {
+    let color = '#3b82f6'; // Default blue
+    
+    switch(type) {
+      case 'Villa':
+        color = '#3b82f6'; // Blue
+        break;
+      case 'Lägenhet':
+        color = '#22c55e'; // Green
+        break;
+      case 'Radhus':
+        color = '#a855f7'; // Purple
+        break;
+      case 'Parhus':
+        color = '#14b8a6'; // Teal
+        break;
+      case 'Tomt':
+        color = '#f59e0b'; // Orange
+        break;
+      case 'Fritidshus':
+        color = '#ec4899'; // Pink
+        break;
+      default:
+        color = '#6b7280'; // Gray for others
+    }
+
+    const svgIcon = `
+      <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.5 0C5.6 0 0 5.6 0 12.5c0 9.4 12.5 28.5 12.5 28.5S25 21.9 25 12.5C25 5.6 19.4 0 12.5 0z" fill="${color}"/>
+        <circle cx="12.5" cy="12.5" r="7" fill="white"/>
+      </svg>
+    `;
+
+    return L.divIcon({
+      html: svgIcon,
+      className: 'custom-marker',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+    });
+  };
+
+  // Initialize map once when coordinates are first loaded
   useEffect(() => {
     if (!mapRef.current || propertiesWithCoords.length === 0 || loading) return;
-
-    // Clean up existing map
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
+    if (mapInstanceRef.current) return; // Map already initialized
 
     // Center on first property or Stockholm
     const center: [number, number] = propertiesWithCoords.length > 0 
@@ -114,48 +152,24 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
       maxZoom: 19
     }).addTo(map);
 
-    // Function to create colored icons based on property type
-    const createColoredIcon = (type: string) => {
-      let color = '#3b82f6'; // Default blue
-      
-      switch(type) {
-        case 'Villa':
-          color = '#3b82f6'; // Blue
-          break;
-        case 'Lägenhet':
-          color = '#22c55e'; // Green
-          break;
-        case 'Radhus':
-          color = '#a855f7'; // Purple
-          break;
-        case 'Parhus':
-          color = '#14b8a6'; // Teal
-          break;
-        case 'Tomt':
-          color = '#f59e0b'; // Orange
-          break;
-        case 'Fritidshus':
-          color = '#ec4899'; // Pink
-          break;
-        default:
-          color = '#6b7280'; // Gray for others
+    mapInstanceRef.current = map;
+
+    // Cleanup
+    return () => {
+      if (routingControlRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
       }
-
-      const svgIcon = `
-        <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12.5 0C5.6 0 0 5.6 0 12.5c0 9.4 12.5 28.5 12.5 28.5S25 21.9 25 12.5C25 5.6 19.4 0 12.5 0z" fill="${color}"/>
-          <circle cx="12.5" cy="12.5" r="7" fill="white"/>
-        </svg>
-      `;
-
-      return L.divIcon({
-        html: svgIcon,
-        className: 'custom-marker',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-      });
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
     };
+  }, [propertiesWithCoords, loading]);
+
+  // Update markers when selectedTypes or propertiesWithCoords change (without affecting zoom)
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
 
     // Clear existing markers
     markersRef.current.forEach(m => m.remove());
@@ -166,7 +180,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     
     filteredProperties.forEach((property) => {
       const icon = createColoredIcon(property.type);
-      const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
+      const marker = L.marker([property.lat, property.lng], { icon }).addTo(mapInstanceRef.current!);
       
       // Find the property in allProperties to get the image
       const fullProperty = properties.find(p => p.id === property.id);
@@ -195,21 +209,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
 
       markersRef.current.push(marker);
     });
-
-    mapInstanceRef.current = map;
-
-    // Cleanup
-    return () => {
-      if (routingControlRef.current && mapInstanceRef.current) {
-        mapInstanceRef.current.removeControl(routingControlRef.current);
-        routingControlRef.current = null;
-      }
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [propertiesWithCoords, loading, properties, selectedTypes]);
+  }, [propertiesWithCoords, selectedTypes, properties]);
 
   const handleRouteSearch = async () => {
     if (!mapInstanceRef.current || !fromAddress || !toAddress) return;
