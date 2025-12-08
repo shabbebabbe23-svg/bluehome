@@ -158,34 +158,6 @@ const AgentProfile = () => {
                     </div>
                   )}
 
-                  {/* Social Media Links */}
-                  {agentProfile.instagram_url && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Instagram className="w-4 h-4 text-muted-foreground" />
-                      <a 
-                        href={agentProfile.instagram_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-primary transition-colors"
-                      >
-                        Instagram
-                      </a>
-                    </div>
-                  )}
-                  
-                  {agentProfile.tiktok_url && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <TikTokIcon className="w-4 h-4 text-muted-foreground" />
-                      <a 
-                        href={agentProfile.tiktok_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-primary transition-colors"
-                      >
-                        TikTok
-                      </a>
-                    </div>
-                  )}
                   
                   {agentProfile.phone && (
                     <div className="flex items-center gap-2 text-sm">
@@ -201,6 +173,44 @@ const AgentProfile = () => {
                 </div>
               </div>
               
+              {/* Social Media Section */}
+              {(agentProfile.instagram_url || agentProfile.tiktok_url) && (
+                <div className="text-center md:text-left space-y-3">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Mäklarens sociala medier
+                  </h3>
+                  <div className="flex gap-3 justify-center md:justify-start">
+                    {agentProfile.instagram_url && (
+                      <a 
+                        href={agentProfile.instagram_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                      >
+                        <Instagram className="w-6 h-6 text-white" />
+                        <span className="absolute -bottom-6 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                          Instagram
+                        </span>
+                      </a>
+                    )}
+                    
+                    {agentProfile.tiktok_url && (
+                      <a 
+                        href={agentProfile.tiktok_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#00F2EA] via-[#000000] to-[#FF0050] flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
+                      >
+                        <TikTokIcon className="w-6 h-6 text-white" />
+                        <span className="absolute -bottom-6 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                          TikTok
+                        </span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="text-center md:text-right">
                 <div className="bg-primary/10 rounded-lg p-4">
                   <div className="text-4xl font-bold text-primary mb-1">
