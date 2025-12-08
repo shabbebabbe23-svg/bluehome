@@ -964,8 +964,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 </div>
               )}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[154px] sm:w-[200px] h-9 text-sm bg-hero-gradient text-white border-transparent">
-                  <ArrowUpDown className="w-4 h-4 mr-2" />
+                <SelectTrigger className="w-[130px] sm:w-[160px] h-8 text-xs bg-hero-gradient text-white border-transparent">
+                  <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
                   <SelectValue placeholder="Sortera" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border z-50">

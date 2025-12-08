@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Upload, Building2 } from "lucide-react";
+import { User, Upload, Lock, Eye, EyeOff, Instagram } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -23,6 +25,8 @@ const profileSchema = z.object({
   office: z.string().max(100, "Kontor får vara max 100 tecken").optional(),
   area: z.string().max(100, "Område får vara max 100 tecken").optional(),
   bio: z.string().max(1000, "Presentation får vara max 1000 tecken").optional(),
+  instagram_url: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
+  tiktok_url: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -33,6 +37,35 @@ export const ProfileForm = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [agencyEmail, setAgencyEmail] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [hasInstagram, setHasInstagram] = useState(false);
+  const [hasTiktok, setHasTiktok] = useState(false);
+
+  const getPasswordStrength = (password: string): { score: number; label: string; color: string } => {
+    if (!password) return { score: 0, label: "", color: "" };
+    
+    let score = 0;
+    if (password.length >= 6) score += 20;
+    if (password.length >= 10) score += 20;
+    if (/[a-z]/.test(password)) score += 15;
+    if (/[A-Z]/.test(password)) score += 15;
+    if (/[0-9]/.test(password)) score += 15;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 15;
+    
+    if (score <= 20) return { score, label: "Mycket svagt", color: "bg-red-500" };
+    if (score <= 40) return { score, label: "Svagt", color: "bg-orange-500" };
+    if (score <= 60) return { score, label: "Godkänt", color: "bg-yellow-500" };
+    if (score <= 80) return { score, label: "Starkt", color: "bg-green-500" };
+    return { score, label: "Mycket starkt", color: "bg-emerald-500" };
+  };
+
+  const passwordStrength = getPasswordStrength(newPassword);
 
   const {
     register,
@@ -71,7 +104,11 @@ export const ProfileForm = () => {
       setValue("office", data.office || "");
       setValue("area", data.area || "");
       setValue("bio", data.bio || "");
+      setValue("instagram_url", data.instagram_url || "");
+      setValue("tiktok_url", data.tiktok_url || "");
       setAvatarUrl(data.avatar_url);
+      setHasInstagram(!!data.instagram_url);
+      setHasTiktok(!!data.tiktok_url);
       
       // Set agency email from joined agencies table
       if (data.agencies && typeof data.agencies === 'object' && 'email' in data.agencies) {
@@ -134,6 +171,8 @@ export const ProfileForm = () => {
           office: data.office || null,
           area: data.area || null,
           bio: data.bio || null,
+          instagram_url: hasInstagram ? (data.instagram_url || null) : null,
+          tiktok_url: hasTiktok ? (data.tiktok_url || null) : null,
         })
         .eq("id", user.id);
 
@@ -145,6 +184,61 @@ export const ProfileForm = () => {
       toast.error("Kunde inte uppdatera profil");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!currentPassword) {
+      toast.error("Ange ditt nuvarande lösenord");
+      return;
+    }
+
+    if (!newPassword || !confirmPassword) {
+      toast.error("Fyll i båda lösenordsfälten");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Lösenorden matchar inte");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Lösenordet måste vara minst 6 tecken");
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      // First verify current password by re-authenticating
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        toast.error("Nuvarande lösenord är felaktigt");
+        setPasswordLoading(false);
+        return;
+      }
+
+      // Then update to new password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      toast.success("Lösenord uppdaterat!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.error("Error updating password:", error);
+      toast.error(error.message || "Kunde inte uppdatera lösenord");
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -272,10 +366,177 @@ export const ProfileForm = () => {
             </div>
           </div>
 
+          <Separator />
+
+          {/* Social Media Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Instagram className="w-5 h-5" />
+              Sociala medier
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Kryssa i vilka sociala medier du har och lägg till länkarna. Dessa visas på din publika profil.
+            </p>
+            <div className="grid gap-4 max-w-2xl">
+              {/* Instagram */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id="has_instagram" 
+                    checked={hasInstagram}
+                    onCheckedChange={(checked) => setHasInstagram(checked === true)}
+                  />
+                  <Label htmlFor="has_instagram" className="cursor-pointer">
+                    Jag har Instagram
+                  </Label>
+                </div>
+                {hasInstagram && (
+                  <div className="ml-6">
+                    <Input
+                      {...register("instagram_url")}
+                      placeholder="https://instagram.com/ditt-användarnamn"
+                    />
+                    {errors.instagram_url && (
+                      <p className="text-sm text-destructive mt-1">{errors.instagram_url.message}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* TikTok */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id="has_tiktok" 
+                    checked={hasTiktok}
+                    onCheckedChange={(checked) => setHasTiktok(checked === true)}
+                  />
+                  <Label htmlFor="has_tiktok" className="cursor-pointer">
+                    Jag har TikTok
+                  </Label>
+                </div>
+                {hasTiktok && (
+                  <div className="ml-6">
+                    <Input
+                      {...register("tiktok_url")}
+                      placeholder="https://tiktok.com/@ditt-användarnamn"
+                    />
+                    {errors.tiktok_url && (
+                      <p className="text-sm text-destructive mt-1">{errors.tiktok_url.message}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           <Button type="submit" disabled={loading} className="w-full" size="lg">
             {loading ? "Sparar..." : "Spara profil"}
           </Button>
         </form>
+
+        <Separator className="my-6" />
+
+        {/* Password Change Section */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Lock className="w-5 h-5" />
+            Byt lösenord
+          </h3>
+          <div className="grid gap-4 max-w-2xl">
+            <div className="space-y-1">
+              <Label htmlFor="currentPassword">Nuvarande lösenord</Label>
+              <div className="relative">
+                <Input
+                  id="currentPassword"
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Ange ditt nuvarande lösenord"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Nytt lösenord</Label>
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Minst 6 tecken"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {newPassword && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Lösenordsstyrka:</span>
+                    <span className={`font-medium ${passwordStrength.color.replace('bg-', 'text-')}`}>
+                      {passwordStrength.label}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-300 ${passwordStrength.color}`}
+                      style={{ width: `${passwordStrength.score}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tips: Använd stora och små bokstäver, siffror och specialtecken
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword">Bekräfta nytt lösenord</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Upprepa det nya lösenordet"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {confirmPassword && newPassword !== confirmPassword && (
+                <p className="text-xs text-destructive">Lösenorden matchar inte</p>
+              )}
+            </div>
+            <Button 
+              type="button" 
+              onClick={handlePasswordChange} 
+              disabled={passwordLoading}
+              variant="outline"
+              className="w-full"
+            >
+              {passwordLoading ? "Uppdaterar..." : "Uppdatera lösenord"}
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
