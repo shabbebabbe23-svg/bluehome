@@ -224,9 +224,9 @@ const PropertyCard = ({
             </div>
           )}
         </div>
-        {/* Agency logo area (right side, slightly offset from favorite button) */}
+        {/* Agency logo area (right side, offset from favorite and compare buttons) */}
         {!hideControls && (
-          <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
+          <div className="absolute top-4 right-28 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden z-10">
             {vendorLogo ? (
               <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
             ) : (
