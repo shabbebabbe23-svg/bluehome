@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import loginHero from "@/assets/login-hero.jpg";
+import { ArrowLeft } from "lucide-react";
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255),
@@ -25,8 +26,10 @@ const authSchema = z.object({
   path: ["confirmPassword"],
 });
 
+type AuthMode = 'login' | 'signup' | 'forgot-password';
+
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -44,19 +47,59 @@ const Login = () => {
     });
   }, [navigate]);
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const emailSchema = z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255);
+      emailSchema.parse(email);
+
+      const redirectUrl = `${window.location.origin}/aterstall-losenord`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        toast({
+          title: "Något gick fel",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Återställningslänk skickad",
+          description: "Kontrollera din e-post för att återställa ditt lösenord.",
+        });
+        setAuthMode('login');
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Valideringsfel",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       // Validate input
-      const validationData = isLogin 
+      const validationData = authMode === 'login' 
         ? { email, password }
         : { email, password, confirmPassword, fullName };
       
       authSchema.parse(validationData);
 
-      if (isLogin) {
+      if (authMode === 'login') {
         // Login
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -125,7 +168,7 @@ const Login = () => {
             title: "Konto skapat!",
             description: "Kontrollera din e-post för att bekräfta ditt konto.",
           });
-          setIsLogin(true);
+          setAuthMode('login');
         }
       }
     } catch (error) {
@@ -138,6 +181,22 @@ const Login = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getTitle = () => {
+    switch (authMode) {
+      case 'login': return "Logga in";
+      case 'signup': return "Skapa konto";
+      case 'forgot-password': return "Glömt lösenord";
+    }
+  };
+
+  const getDescription = () => {
+    switch (authMode) {
+      case 'login': return "Ange dina uppgifter för att logga in";
+      case 'signup': return "Fyll i formuläret för att skapa ett konto";
+      case 'forgot-password': return "Ange din e-postadress så skickar vi en återställningslänk";
     }
   };
 
@@ -155,89 +214,132 @@ const Login = () => {
         <Card className="w-full max-w-md bg-white/85 backdrop-blur-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
-              {isLogin ? "Logga in" : "Skapa konto"}
+              {getTitle()}
             </CardTitle>
             <CardDescription className="text-center">
-              {isLogin 
-                ? "Ange dina uppgifter för att logga in" 
-                : "Fyll i formuläret för att skapa ett konto"}
+              {getDescription()}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
-              {!isLogin && (
+            {authMode === 'forgot-password' ? (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Fullständigt namn</Label>
+                  <Label htmlFor="email">E-post</Label>
                   <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Ditt namn"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
+                    id="email"
+                    type="email"
+                    placeholder="namn@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="email">E-post</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="namn@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Lösenord</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {!isLogin && (
+                <Button 
+                  type="submit" 
+                  variant="premium"
+                  className="w-full" 
+                  disabled={loading}
+                >
+                  {loading ? "Skickar..." : "Skicka återställningslänk"}
+                </Button>
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('login')}
+                    className="text-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Tillbaka till inloggning
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleAuth} className="space-y-4">
+                {authMode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Fullständigt namn</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="Ditt namn"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required={authMode === 'signup'}
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Upprepa lösenord</Label>
+                  <Label htmlFor="email">E-post</Label>
                   <Input
-                    id="confirmPassword"
+                    id="email"
+                    type="email"
+                    placeholder="namn@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Lösenord</Label>
+                    {authMode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => setAuthMode('forgot-password')}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Glömt lösenord?
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
                     type="password"
                     placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required={!isLogin}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                 </div>
-              )}
-              <Button 
-                type="submit" 
-                variant="premium"
-                className="w-full" 
-                disabled={loading}
-              >
-                {loading ? "Laddar..." : (isLogin ? "Logga in" : "Skapa konto")}
-              </Button>
-              <div className="text-center text-sm space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary hover:underline"
+                {authMode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Upprepa lösenord</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required={authMode === 'signup'}
+                    />
+                  </div>
+                )}
+                <Button 
+                  type="submit" 
+                  variant="premium"
+                  className="w-full" 
+                  disabled={loading}
                 >
-                  {isLogin 
-                    ? "Har du inget konto? Registrera dig här" 
-                    : "Har du redan ett konto? Logga in här"}
-                </button>
-                <div>
-                  <Link to="/" className="text-muted-foreground hover:underline">
-                    Tillbaka till startsidan
-                  </Link>
+                  {loading ? "Laddar..." : (authMode === 'login' ? "Logga in" : "Skapa konto")}
+                </Button>
+                <div className="text-center text-sm space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
+                    className="text-primary hover:underline"
+                  >
+                    {authMode === 'login' 
+                      ? "Har du inget konto? Registrera dig här" 
+                      : "Har du redan ett konto? Logga in här"}
+                  </button>
+                  <div>
+                    <Link to="/" className="text-muted-foreground hover:underline">
+                      Tillbaka till startsidan
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
