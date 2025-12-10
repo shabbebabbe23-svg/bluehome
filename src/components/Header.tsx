@@ -276,7 +276,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-fade-in" style={{
+          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-md animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top" style={{
             background: 'var(--main-gradient)'
           }}>
             <nav className="flex flex-col gap-3">
