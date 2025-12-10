@@ -250,27 +250,8 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <div className="relative w-6 h-5 flex flex-col justify-between">
-              {/* Top line */}
-              <span 
-                className={`block h-0.5 w-6 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] transform transition-all duration-300 ease-out origin-center ${
-                  isMenuOpen ? 'rotate-45 translate-y-2' : 'rotate-0 translate-y-0'
-                }`}
-              />
-              {/* Middle line */}
-              <span 
-                className={`block h-0.5 w-6 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] transform transition-all duration-200 ease-out ${
-                  isMenuOpen ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100'
-                }`}
-              />
-              {/* Bottom line */}
-              <span 
-                className={`block h-0.5 w-6 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] transform transition-all duration-300 ease-out origin-center ${
-                  isMenuOpen ? '-rotate-45 -translate-y-2' : 'rotate-0 translate-y-0'
-                }`}
-              />
-            </div>
+          <Button variant="ghost" size="icon" className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 hover:bg-white/20" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Menu strokeWidth={2.5} className="w-6 h-6 text-primary drop-shadow-lg" />
           </Button>
         </div>
 
