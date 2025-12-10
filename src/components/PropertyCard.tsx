@@ -389,10 +389,11 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <div className="hidden md:flex items-center text-muted-foreground">
+        <div className="flex items-center text-muted-foreground">
           <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
           <span className="text-[11px] sm:text-sm truncate">
-            {address ? `${address}, ${location}` : location}
+            <span className="md:hidden">{location}</span>
+            <span className="hidden md:inline">{address ? `${address}, ${location}` : location}</span>
           </span>
         </div>
 
