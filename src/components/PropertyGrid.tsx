@@ -928,12 +928,12 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       <div className="w-full">
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className="relative flex items-center justify-center mb-1">
-            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-1">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center sm:text-left">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
             </h2>
             {/* Sort and View Toggle */}
-            <div className="absolute right-0 flex flex-col items-end gap-1">
+            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
               {!showFinalPrices && bulkSelectMode && (
                 <div className="hidden sm:flex gap-2">
                   <Button
@@ -964,8 +964,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 </div>
               )}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[130px] sm:w-[160px] h-8 text-xs bg-hero-gradient text-white border-transparent">
-                  <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+                <SelectTrigger className="w-[120px] sm:w-[160px] h-8 text-xs bg-hero-gradient text-white border-transparent">
+                  <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
                   <SelectValue placeholder="Sortera" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border z-50">
