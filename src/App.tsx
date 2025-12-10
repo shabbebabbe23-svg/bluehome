@@ -23,6 +23,7 @@ import CreateAgencyManual from "./pages/CreateAgencyManual";
 import ManageAgents from "./pages/ManageAgents";
 import MarketAnalysis from "./pages/MarketAnalysis";
 import VirtualTour from "./pages/VirtualTour";
+import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import { ComparisonFloatingButton } from "@/components/ComparisonFloatingButton";
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/om-oss" element={<AboutUs />} />
               <Route path="/marknadsanalys" element={<MarketAnalysis />} />
               <Route path="/virtuell-visning/:id" element={<VirtualTour />} />
+              <Route path="/aterstall-losenord" element={<ResetPassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
