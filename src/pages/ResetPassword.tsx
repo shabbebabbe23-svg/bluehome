@@ -31,17 +31,38 @@ const ResetPassword = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check URL hash for recovery token (handles case where event fires before mount)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    const accessToken = hashParams.get('access_token');
+    
+    if (type === 'recovery' && accessToken) {
+      setIsRecoveryMode(true);
+    }
+
     // Listen for PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecoveryMode(true);
+      }
+      // Also check if user is in a valid session from recovery
+      if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        // Check if this might be a recovery session
+        const hash = window.location.hash;
+        if (hash.includes('type=recovery')) {
+          setIsRecoveryMode(true);
+        }
       }
     });
 
     // Check if we're already in a recovery session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        setIsRecoveryMode(true);
+        // If there's a session and URL indicates recovery, enable recovery mode
+        const hash = window.location.hash;
+        if (hash.includes('type=recovery') || hash.includes('access_token')) {
+          setIsRecoveryMode(true);
+        }
       }
     });
 
@@ -86,7 +107,7 @@ const ResetPassword = () => {
         // Sign out and redirect to login after a short delay
         setTimeout(async () => {
           await supabase.auth.signOut();
-          navigate("/login");
+          navigate("/logga-in");
         }, 2000);
       }
     } catch (error) {
@@ -128,7 +149,7 @@ const ResetPassword = () => {
               <Button 
                 variant="premium"
                 className="w-full" 
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/logga-in")}
               >
                 Gå till inloggning
               </Button>
