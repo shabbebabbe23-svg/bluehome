@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Download, RefreshCw, Mail, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,16 +10,42 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
 const ManageAgents = () => {
+  const { user, userType } = useAuth();
+  const navigate = useNavigate();
   const [agents, setAgents] = useState<any[]>([]);
   const [form, setForm] = useState({ name: "", email: "" });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
   const [search, setSearch] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ name: "", email: "" });
 
+  // Authentication and authorization check
   useEffect(() => {
-    fetchAgents();
-  }, []);
+    if (!user) {
+      navigate('/logga-in');
+      return;
+    }
+    
+    // Only allow superadmin or agency_admin
+    if (userType !== 'superadmin' && userType !== 'agency_admin') {
+      toast({ 
+        title: "Åtkomst nekad", 
+        description: "Du har inte behörighet att hantera mäklare.", 
+        variant: "destructive" 
+      });
+      navigate('/');
+      return;
+    }
+    
+    setAuthChecked(true);
+  }, [user, userType, navigate]);
+
+  useEffect(() => {
+    if (authChecked) {
+      fetchAgents();
+    }
+  }, [authChecked]);
 
   // Fix invalid characters and ensure proper handling of user_id
   const fetchAgents = async () => {
@@ -149,6 +177,15 @@ const ManageAgents = () => {
     // Mockad, implementera riktig e-post vid behov
     toast({ title: "Återställ lösenord", description: "Länk för återställning skickad till mäklaren." });
   };
+
+  // Show loading while checking auth
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center text-muted-foreground">Laddar...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
