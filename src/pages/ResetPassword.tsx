@@ -31,38 +31,22 @@ const ResetPassword = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check URL hash for recovery token (handles case where event fires before mount)
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    const accessToken = hashParams.get('access_token');
-    
-    if (type === 'recovery' && accessToken) {
-      setIsRecoveryMode(true);
-    }
-
     // Listen for PASSWORD_RECOVERY event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecoveryMode(true);
       }
-      // Also check if user is in a valid session from recovery
-      if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-        // Check if this might be a recovery session
-        const hash = window.location.hash;
-        if (hash.includes('type=recovery')) {
-          setIsRecoveryMode(true);
-        }
+      // If user signs in on this page, they came from recovery link
+      if (event === 'SIGNED_IN' && session) {
+        setIsRecoveryMode(true);
       }
     });
 
-    // Check if we're already in a recovery session
+    // Check if we already have a session - if user landed on this page with a session,
+    // they came from the recovery email link (Supabase server-side verification)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        // If there's a session and URL indicates recovery, enable recovery mode
-        const hash = window.location.hash;
-        if (hash.includes('type=recovery') || hash.includes('access_token')) {
-          setIsRecoveryMode(true);
-        }
+        setIsRecoveryMode(true);
       }
     });
 
