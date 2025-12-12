@@ -224,13 +224,13 @@ const PropertyCard = ({
             </div>
           )}
         </div>
-        {/* Agency logo area (right side, slightly offset from favorite button) */}
+        {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && (
-          <div className="absolute top-4 right-16 w-20 h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden">
+          <div className="absolute bottom-4 right-4 w-16 sm:w-20 h-10 sm:h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden z-10">
             {vendorLogo ? (
               <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
             ) : (
-              <span>Mäklarlogo</span>
+              <span className="text-[10px] sm:text-xs">Mäklarlogo</span>
             )}
           </div>
         )}
@@ -389,10 +389,11 @@ const PropertyCard = ({
           </div>
         </div>
 
-        <div className="hidden md:flex items-center text-muted-foreground">
+        <div className="flex items-center text-muted-foreground">
           <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
           <span className="text-[11px] sm:text-sm truncate">
-            {address ? `${address}, ${location}` : location}
+            <span className="md:hidden">{location}</span>
+            <span className="hidden md:inline">{address ? `${address}, ${location}` : location}</span>
           </span>
         </div>
 

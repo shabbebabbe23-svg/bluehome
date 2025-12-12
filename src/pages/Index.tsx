@@ -8,6 +8,7 @@ import AdBanner from "@/components/AdBanner";
 import LazyMap from "@/components/LazyMap";
 import InlineAdBanner from "@/components/InlineAdBanner";
 import RecentPropertiesCarousel from "@/components/RecentPropertiesCarousel";
+import { Separator } from "@/components/ui/separator";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
 import soffaBanner from "@/assets/soffa-banner.png";
@@ -140,7 +141,7 @@ const Index = () => {
             {/* Recent uploads section - only show when NOT viewing final prices */}
             {!showFinalPrices && recentProperties.length > 0 && (
               <section className="mb-2">
-                <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mt-6 mb-6">
                   Senast uppladdade objekt
                 </h2>
                 <RecentPropertiesCarousel 
@@ -166,6 +167,7 @@ const Index = () => {
                     additional_images: (p as any).additional_images,
                   }))}
                 />
+                <Separator className="mt-8 opacity-30" />
               </section>
             )}
             {searchMode === 'property' ? (
