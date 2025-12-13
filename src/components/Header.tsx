@@ -69,11 +69,11 @@ const Header = () => {
               </svg>
             )}
 
-            {/* Menu Button for logged in users */}
+            {/* Menu Button for logged in users - Desktop only */}
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300">
+                  <Button variant="ghost" size="icon" className="hidden md:flex h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300">
                     <Menu className="w-6 h-6 sm:w-8 sm:h-8 text-primary" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
