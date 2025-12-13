@@ -160,9 +160,9 @@ const PropertyCard = ({
           />
         )}
 
-        <div className="flex max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row max-w-4xl mx-auto">
           {/* Image section */}
-          <div className="relative w-[240px] h-[160px] flex-shrink-0">
+          <div className="relative w-full sm:w-[240px] h-[200px] sm:h-[160px] flex-shrink-0">
             <img
               src={image}
               alt={title}
@@ -199,58 +199,58 @@ const PropertyCard = ({
           </div>
 
           {/* Content section */}
-          <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+          <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0">
             {/* Top row: Title and Price */}
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+            <div className="flex items-start justify-between gap-2 sm:gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {title}
                 </h3>
-                <p className="text-base text-muted-foreground mt-0.5">
+                <p className="text-sm sm:text-base text-muted-foreground mt-0.5 line-clamp-1">
                   {location} · {address}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
-                  <span className="text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary">
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary">
                     {newPrice}
                   </span>
                 ) : (
-                  <span className="text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary">
                     {price}
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Description */}
+            {/* Description - hidden on mobile */}
             {description && (
-              <p className="text-base text-muted-foreground mt-2 line-clamp-2">
+              <p className="hidden sm:block text-base text-muted-foreground mt-2 line-clamp-2">
                 {description}
               </p>
             )}
 
             {/* Bottom row: Details and Days on market */}
-            <div className="flex items-end justify-between mt-3">
-              <div className="flex items-center gap-4 text-base text-muted-foreground">
+            <div className="flex items-end justify-between mt-2 sm:mt-3">
+              <div className="flex items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Bed className="w-5 h-5" />
+                  <Bed className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{bedrooms} rum</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Bath className="w-5 h-5" />
+                  <Bath className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{bathrooms} bad</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Square className="w-5 h-5" />
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{area} m²</span>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
                   : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
