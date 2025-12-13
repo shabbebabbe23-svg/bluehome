@@ -227,6 +227,13 @@ const PropertyCard = ({
               </div>
             </div>
 
+            {/* Description */}
+            {description && (
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                {description}
+              </p>
+            )}
+
             {/* Bottom row: Details and Days on market */}
             <div className="flex items-end justify-between mt-3">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
