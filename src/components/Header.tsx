@@ -246,15 +246,6 @@ const Header = () => {
             className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 relative" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <Menu 
-              strokeWidth={2.5} 
-              className={`w-6 h-6 text-primary drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
-            />
-            <X 
-              strokeWidth={2.5} 
-              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
-              style={{ stroke: 'url(#mobileMenuGradient)' }}
-            />
             <svg width="0" height="0" className="absolute">
               <defs>
                 <linearGradient id="mobileMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -263,6 +254,16 @@ const Header = () => {
                 </linearGradient>
               </defs>
             </svg>
+            <Menu 
+              strokeWidth={2.5} 
+              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
+              style={{ stroke: 'url(#mobileMenuGradient)' }}
+            />
+            <X 
+              strokeWidth={2.5} 
+              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
+              style={{ stroke: 'url(#mobileMenuGradient)' }}
+            />
           </Button>
         </div>
 
