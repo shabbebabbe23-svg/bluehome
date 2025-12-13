@@ -243,7 +243,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   };
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-8 md:pt-0 md:pb-0">
+    <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-6 sm:pt-20 sm:pb-8 md:pt-0 md:pb-0">
       {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -253,37 +253,37 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-none px-3 sm:px-4 md:px-6 text-center text-white">
+      <div className="relative z-10 w-full max-w-none px-2 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-5 leading-tight">
+          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
             </span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 md:mb-8 text-white/90 max-w-2xl mx-auto px-4">
+          <p className="text-xs sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 md:mb-8 text-white/90 max-w-2xl mx-auto px-2 sm:px-4">
             Upptäck tusentals fastigheter över hela Sverige med BaraHem
           </p>
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-3 sm:p-4 md:p-6 lg:p-8 max-w-5xl mx-auto transition-all duration-300 ease-out origin-top">
-          <div className="space-y-3 md:space-y-5">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-2.5 sm:p-4 md:p-6 lg:p-8 max-w-5xl mx-auto transition-all duration-300 ease-out origin-top">
+          <div className="space-y-2.5 sm:space-y-3 md:space-y-5">
             {/* Search Mode Toggle */}
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2">
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearchMode('property');
                   onSearchModeChange?.('property');
                 }}
-                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${searchMode === 'property'
+                className={`flex-1 h-9 sm:h-12 text-xs sm:text-base font-semibold border-2 ${searchMode === 'property'
                   ? 'bg-hero-gradient text-white border-transparent hover:text-black'
                   : 'hover:border-primary'
                   }`}
               >
-                <Home className="w-4 h-4 mr-1 sm:mr-2" />
-                Sök bostad
+                <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Sök</span> bostad
               </Button>
               <Button
                 variant="outline"
@@ -291,23 +291,23 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   setSearchMode('agent');
                   onSearchModeChange?.('agent');
                 }}
-                className={`flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${searchMode === 'agent'
+                className={`flex-1 h-9 sm:h-12 text-xs sm:text-base font-semibold border-2 ${searchMode === 'agent'
                   ? 'bg-hero-gradient text-white border-transparent hover:text-black'
                   : 'hover:border-primary'
                   }`}
               >
-                <User className="w-4 h-4 mr-1 sm:mr-2" />
-                Sök mäklare
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Sök</span> mäklare
               </Button>
             </div>
 
             {/* Område Section */}
             <div>
-              <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">
+              <h2 className="text-base sm:text-xl md:text-3xl font-bold text-foreground mb-2 sm:mb-3 md:mb-4">
                 {searchMode === 'property' ? 'Område' : 'Sök mäklare'}
               </h2>
               <div className="relative" ref={searchRef}>
-                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5 z-10" />
+                <Search className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5 z-10" />
                 <Input
                   placeholder={searchMode === 'property' ? 'Skriv område eller adress' : 'Sök på namn, byrå eller område'}
                   value={searchLocation}
@@ -367,7 +367,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       onSearchSubmit?.();
                     }
                   }}
-                  className="pl-8 sm:pl-10 h-10 sm:h-12 md:h-14 text-base sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary"
+                  className="pl-8 sm:pl-10 h-9 sm:h-12 md:h-14 text-sm sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary"
                 />
 
                 {/* Autocomplete Suggestions */}
