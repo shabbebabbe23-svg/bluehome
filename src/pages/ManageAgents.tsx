@@ -83,7 +83,17 @@ const ManageAgents = () => {
     setLoading(false);
   };
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Ta bort mäklare?")) return;
+    // Profile deletion is only allowed for superadmins via RLS policy
+    // Users should be deleted through proper auth flow, not direct profile deletion
+    if (userType !== 'superadmin') {
+      toast({ 
+        title: "Åtkomst nekad", 
+        description: "Endast superadmin kan ta bort användare.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    if (!window.confirm("Ta bort mäklare? Detta kommer radera all associerad data.")) return;
     setLoading(true);
     const { error } = await supabase.from("profiles").delete().eq("id", id);
     if (error) toast({ title: "Fel", description: "Kunde inte ta bort mäklare.", variant: "destructive" });
@@ -92,18 +102,10 @@ const ManageAgents = () => {
     setLoading(false);
   };
 
-  // Gör handleEdit till en async-funktion
-  const handleEdit = async (agent: any) => {
+  // Start edit mode for an agent (no direct profile creation)
+  const handleEdit = (agent: any) => {
     setEditId(agent.id);
-    const newId = crypto.randomUUID();
-    const { error } = await supabase
-      .from("profiles")
-      .insert({ id: newId, full_name: form.name, email: form.email });
-    if (error) {
-      toast({ title: "Fel", description: "Kunde inte uppdatera mäklare.", variant: "destructive" });
-    } else {
-      toast({ title: "Mäklare uppdaterad!" });
-    }
+    setEditForm({ name: agent.full_name || "", email: agent.email || "" });
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -138,21 +140,18 @@ const ManageAgents = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    // Direct profile creation is not allowed - use invitation flow instead
+    // The invitation flow properly creates users through auth.users which triggers handle_new_user
     if (!form.name || !form.email) {
       toast({ title: "Ofullständig information", description: "Fyll i alla fält.", variant: "destructive" });
-      setLoading(false);
       return;
     }
-    const newId = crypto.randomUUID();
-    const { error } = await supabase
-      .from("profiles")
-      .insert({ id: newId, full_name: form.name, email: form.email });
-    if (error) toast({ title: "Fel", description: "Kunde inte lägga till mäklare.", variant: "destructive" });
-    else toast({ title: "Mäklare tillagd!", description: "Ny mäklare är nu registrerad." });
-    setForm({ name: "", email: "" });
-    fetchAgents();
-    setLoading(false);
+    // Redirect to invitation flow
+    await handleInvite();
+    toast({ 
+      title: "Använd inbjudan", 
+      description: "Nya mäklare måste läggas till via inbjudningslänken för korrekt kontoregistrering." 
+    });
   };
 
   const handleInvite = async () => {
