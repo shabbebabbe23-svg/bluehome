@@ -1056,6 +1056,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 <PropertyCard
                   {...property}
                   title={property.address}
+                  description={property.description}
                   isFavorite={favorites.includes(property.id)}
                   onFavoriteToggle={handleFavoriteToggle}
                   isSold={property.isSold || false}
