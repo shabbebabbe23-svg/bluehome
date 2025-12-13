@@ -160,9 +160,9 @@ const PropertyCard = ({
           />
         )}
 
-        <div className="flex">
+        <div className="flex max-w-4xl mx-auto">
           {/* Image section */}
-          <div className="relative w-[280px] h-[180px] flex-shrink-0">
+          <div className="relative w-[240px] h-[160px] flex-shrink-0">
             <img
               src={image}
               alt={title}
@@ -171,7 +171,7 @@ const PropertyCard = ({
             
             {/* Property type badge */}
             <div className="absolute top-3 left-3">
-              <Badge variant="secondary" className="bg-muted/90 text-foreground text-xs">
+              <Badge variant="secondary" className="bg-muted/90 text-foreground text-sm">
                 {type}
               </Badge>
             </div>
@@ -203,24 +203,24 @@ const PropertyCard = ({
             {/* Top row: Title and Price */}
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <h3 className="font-semibold text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {title}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-0.5">
+                <p className="text-base text-muted-foreground mt-0.5">
                   {location} · {address}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
-                  <span className="text-lg font-bold text-primary">
+                  <span className="text-xl font-bold text-primary">
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-lg font-bold text-primary">
+                  <span className="text-xl font-bold text-primary">
                     {newPrice}
                   </span>
                 ) : (
-                  <span className="text-lg font-bold text-primary">
+                  <span className="text-xl font-bold text-primary">
                     {price}
                   </span>
                 )}
@@ -229,28 +229,28 @@ const PropertyCard = ({
 
             {/* Description */}
             {description && (
-              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+              <p className="text-base text-muted-foreground mt-2 line-clamp-2">
                 {description}
               </p>
             )}
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex items-end justify-between mt-3">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-4 text-base text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Bed className="w-4 h-4" />
+                  <Bed className="w-5 h-5" />
                   <span>{bedrooms} rum</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Bath className="w-4 h-4" />
+                  <Bath className="w-5 h-5" />
                   <span>{bathrooms} bad</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Square className="w-4 h-4" />
+                  <Square className="w-5 h-5" />
                   <span>{area} m²</span>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
                   : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
