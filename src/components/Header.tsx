@@ -147,10 +147,10 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-3 lg:gap-6 xl:gap-10 ml-4 lg:ml-8 xl:ml-12">
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2 xl:gap-3 ml-4 lg:ml-8 xl:ml-12 bg-background/80 backdrop-blur-sm rounded-full px-2 py-1 border border-border/50 shadow-sm">
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap text-foreground font-medium">
+              <DropdownMenuTrigger className="text-sm lg:text-base xl:text-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 whitespace-nowrap text-foreground font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-full">
                 Sälj
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-72 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500">
@@ -166,10 +166,10 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link to="/om-oss" className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap text-foreground font-medium">
+            <Link to="/om-oss" className="text-sm lg:text-base xl:text-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 whitespace-nowrap text-foreground font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-full">
               Om oss
             </Link>
-            <Link to="/marknadsanalys" className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 whitespace-nowrap mr-4 lg:mr-6 xl:mr-8 text-foreground font-medium">
+            <Link to="/marknadsanalys" className="text-sm lg:text-base xl:text-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 flex items-center gap-1 whitespace-nowrap text-foreground font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-full">
               <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="hidden lg:inline">Marknadsanalys</span>
               <span className="lg:hidden">Marknad</span>
