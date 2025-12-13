@@ -69,8 +69,8 @@ const Header = () => {
               </svg>
             )}
 
-            {/* Superadmin Menu Button */}
-            {user && userType === "superadmin" && (
+            {/* Menu Button for logged in users */}
+            {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300">
@@ -78,62 +78,44 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/superadmin" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Admin Dashboard</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
-            {/* Agency Admin Menu Button */}
-            {user && (userType === "agency_admin" || user?.email === "info@barahem.se") && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300 hover:bg-white/20">
-                    <Menu strokeWidth={2.5} className="text-primary drop-shadow-lg w-6 h-6 sm:w-8 sm:h-8" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/byra-admin" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <User className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Hantera byrå</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <Home className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Hantera fastigheter</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
-            {/* Agent Menu Button */}
-            {user && userType === "maklare" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300">
-                    <Menu className="w-6 h-6 sm:w-8 sm:h-8 text-primary" strokeWidth={2.5} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <Home className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Hantera fastigheter</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/maklare?tab=profile" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <UserCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Hantera konto</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  {/* Superadmin specific */}
+                  {userType === "superadmin" && (
+                    <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                      <Link to="/superadmin" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
+                        <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <span className="font-medium text-base sm:text-lg">Admin Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {/* Agency Admin specific */}
+                  {userType === "agency_admin" && (
+                    <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                      <Link to="/byra-admin" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
+                        <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <span className="font-medium text-base sm:text-lg">Hantera byrå</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {/* Property management for superadmin, agency_admin, maklare */}
+                  {(userType === "superadmin" || userType === "agency_admin" || userType === "maklare") && (
+                    <>
+                      <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                        <Link to="/maklare" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
+                          <Home className="w-5 h-5 sm:w-6 sm:h-6" />
+                          <span className="font-medium text-base sm:text-lg">Hantera fastigheter</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                        <Link to="/maklare?tab=profile" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
+                          <UserCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                          <span className="font-medium text-base sm:text-lg">Hantera konto</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -293,6 +275,14 @@ const Header = () => {
                     <BarChart3 className="w-5 h-5" />
                     <span className="font-medium text-base">Admin Dashboard</span>
                   </Link>
+                  <Link to="/maklare" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Home className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera fastigheter</span>
+                  </Link>
+                  <Link to="/maklare?tab=profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <UserCircle className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera konto</span>
+                  </Link>
                 </div>
               )}
 
@@ -306,6 +296,10 @@ const Header = () => {
                   <Link to="/maklare" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <Home className="w-5 h-5" />
                     <span className="font-medium text-base">Hantera fastigheter</span>
+                  </Link>
+                  <Link to="/maklare?tab=profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <UserCircle className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera konto</span>
                   </Link>
                 </div>
               )}
