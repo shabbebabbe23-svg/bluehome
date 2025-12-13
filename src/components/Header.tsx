@@ -243,13 +243,17 @@ const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`md:hidden h-10 w-10 hover:scale-110 transition-all duration-500 ease-out hover:bg-white/20 group/mobilemenu ${isMenuOpen ? 'rotate-90' : 'rotate-0'}`} 
+            className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 relative" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu 
               strokeWidth={2.5} 
-              className={`w-6 h-6 drop-shadow-lg transition-all duration-300 ${isMenuOpen ? 'text-transparent' : 'text-primary'}`}
-              style={{ stroke: isMenuOpen ? 'url(#mobileMenuGradient)' : undefined }}
+              className={`w-6 h-6 text-primary drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
+            />
+            <X 
+              strokeWidth={2.5} 
+              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
+              style={{ stroke: 'url(#mobileMenuGradient)' }}
             />
             <svg width="0" height="0" className="absolute">
               <defs>
