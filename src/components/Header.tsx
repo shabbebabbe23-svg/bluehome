@@ -297,7 +297,7 @@ const Header = () => {
               )}
 
               {/* Agency Admin Menu Items for Mobile */}
-              {user && userType === "agency_admin" && (
+              {user && (userType === "agency_admin" || user?.email === "info@barahem.se") && (
                 <div className="flex flex-col gap-2 px-4 pb-3 border-b border-white/20">
                   <Link to="/byra-admin" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <User className="w-5 h-5" />
