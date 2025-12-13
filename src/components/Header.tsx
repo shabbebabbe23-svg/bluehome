@@ -116,24 +116,6 @@ const Header = () => {
                     </>
                   )}
                   
-                  {/* Favorites for all users */}
-                  <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
-                    <Link to="/favoriter" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
-                      <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Mina favoriter</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  
-                  {/* Logout for all users */}
-                  <DropdownMenuItem 
-                    onClick={signOut}
-                    className="hover:bg-accent transition-colors duration-200 cursor-pointer py-3 sm:py-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="font-medium text-base sm:text-lg">Logga ut</span>
-                    </div>
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
