@@ -146,6 +146,117 @@ const PropertyCard = ({
     sessionStorage.setItem('scrollPosition', window.scrollY.toString());
   };
 
+  // List view layout
+  if (viewMode === "list") {
+    return (
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+        {/* Full-card clickable overlay */}
+        {!bulkSelectMode && (
+          <Link
+            to={`/fastighet/${id}`}
+            className="absolute inset-0 z-10"
+            aria-label={`Visa ${title}`}
+            onClick={handleNavigateToDetail}
+          />
+        )}
+
+        <div className="flex">
+          {/* Image section */}
+          <div className="relative w-[280px] h-[180px] flex-shrink-0">
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Property type badge */}
+            <div className="absolute top-3 left-3">
+              <Badge variant="secondary" className="bg-muted/90 text-foreground text-xs">
+                {type}
+              </Badge>
+            </div>
+
+            {/* Favorite button - hide for sold properties */}
+            {!hideControls && !isSold && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute top-3 right-3 h-8 w-8 bg-white/90 hover:bg-white transition-colors z-20"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite(String(id));
+                }}
+              >
+                <Heart
+                  className={`w-4 h-4 transition-all duration-300 ${isFavorite
+                    ? "fill-red-500 text-red-500"
+                    : "text-muted-foreground"
+                    }`}
+                />
+              </Button>
+            )}
+          </div>
+
+          {/* Content section */}
+          <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+            {/* Top row: Title and Price */}
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h3 className="font-semibold text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                  {title}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {location} · {address}
+                </p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                {isSold && soldPrice ? (
+                  <span className="text-lg font-bold text-primary">
+                    {soldPrice}
+                  </span>
+                ) : newPrice ? (
+                  <span className="text-lg font-bold text-primary">
+                    {newPrice}
+                  </span>
+                ) : (
+                  <span className="text-lg font-bold text-primary">
+                    {price}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom row: Details and Days on market */}
+            <div className="flex items-end justify-between mt-3">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Bed className="w-4 h-4" />
+                  <span>{bedrooms} rum</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Bath className="w-4 h-4" />
+                  <span>{bathrooms} bad</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Square className="w-4 h-4" />
+                  <span>{area} m²</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {isSold && soldDate
+                  ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
+                  : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Grid view layout (original)
   return (
     <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
@@ -476,15 +587,6 @@ const PropertyCard = ({
             </div>
           )}
         </div>
-
-        {/* Description - Only show in list view */}
-        {viewMode === "list" && description && (
-          <div className="mb-2 sm:mb-3">
-            <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
-              {description}
-            </p>
-          </div>
-        )}
 
         <div className="mt-1">
           {onButtonClick ? (
