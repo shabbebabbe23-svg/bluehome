@@ -293,11 +293,19 @@ const Header = () => {
                     <BarChart3 className="w-5 h-5" />
                     <span className="font-medium text-base">Admin Dashboard</span>
                   </Link>
+                  <Link to="/maklare" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Home className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera fastigheter</span>
+                  </Link>
+                  <Link to="/maklare?tab=profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <UserCircle className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera konto</span>
+                  </Link>
                 </div>
               )}
 
               {/* Agency Admin Menu Items for Mobile */}
-              {user && (userType === "agency_admin" || user?.email === "info@barahem.se") && (
+              {user && userType === "agency_admin" && (
                 <div className="flex flex-col gap-2 px-4 pb-3 border-b border-white/20">
                   <Link to="/byra-admin" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <User className="w-5 h-5" />
@@ -306,6 +314,10 @@ const Header = () => {
                   <Link to="/maklare" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
                     <Home className="w-5 h-5" />
                     <span className="font-medium text-base">Hantera fastigheter</span>
+                  </Link>
+                  <Link to="/maklare?tab=profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <UserCircle className="w-5 h-5" />
+                    <span className="font-medium text-base">Hantera konto</span>
                   </Link>
                 </div>
               )}
