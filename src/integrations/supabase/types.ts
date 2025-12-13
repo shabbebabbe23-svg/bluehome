@@ -606,6 +606,10 @@ export type Database = {
       }
       is_agency_admin: { Args: { _user_id: string }; Returns: boolean }
       is_superadmin: { Args: { _user_id: string }; Returns: boolean }
+      users_in_same_agency: {
+        Args: { _user_id1: string; _user_id2: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
