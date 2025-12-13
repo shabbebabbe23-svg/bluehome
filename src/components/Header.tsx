@@ -150,7 +150,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-3 lg:gap-6 xl:gap-10 ml-4 lg:ml-8 xl:ml-12">
 
             <DropdownMenu>
-              <DropdownMenuTrigger className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+              <DropdownMenuTrigger className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap text-foreground font-medium">
                 Sälj
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-72 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500">
@@ -166,10 +166,10 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link to="/om-oss" className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+            <Link to="/om-oss" className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors whitespace-nowrap text-foreground font-medium">
               Om oss
             </Link>
-            <Link to="/marknadsanalys" className={`text-sm lg:text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 whitespace-nowrap mr-4 lg:mr-6 xl:mr-8 ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
+            <Link to="/marknadsanalys" className="text-sm lg:text-base xl:text-xl hover:text-primary transition-colors flex items-center gap-1 whitespace-nowrap mr-4 lg:mr-6 xl:mr-8 text-foreground font-medium">
               <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="hidden lg:inline">Marknadsanalys</span>
               <span className="lg:hidden">Marknad</span>
