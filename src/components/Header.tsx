@@ -70,6 +70,7 @@ const Header = () => {
             )}
 
             {/* Menu Button for logged in users */}
+            {user && (() => { console.log('Header userType:', userType, 'user email:', user?.email); return null; })()}
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
