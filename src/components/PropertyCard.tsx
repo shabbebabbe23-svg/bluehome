@@ -182,7 +182,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover or auto-slide */}
-        <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
+        <div className="w-full h-40 xs:h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
@@ -226,11 +226,11 @@ const PropertyCard = ({
         </div>
         {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && (
-          <div className="absolute bottom-4 right-4 w-16 sm:w-20 h-10 sm:h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden z-10">
+          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-12 sm:w-20 h-8 sm:h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden z-10">
             {vendorLogo ? (
-              <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-1" />
+              <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-0.5 sm:p-1" />
             ) : (
-              <span className="text-[10px] sm:text-xs">Mäklarlogo</span>
+              <span className="text-[8px] sm:text-xs">Mäklarlogo</span>
             )}
           </div>
         )}
@@ -243,7 +243,7 @@ const PropertyCard = ({
         )}
 
         {/* Overlay with badges */}
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
           {isSold && (
             <Badge className="bg-destructive text-white">
               Såld
@@ -266,12 +266,12 @@ const PropertyCard = ({
 
         {/* Favorite and Compare buttons - hide for sold properties */}
         {!hideControls && !isSold && (
-          <div className="absolute top-4 right-4 flex gap-2 z-20">
+          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-1.5 sm:gap-2 z-20">
             {/* Compare button */}
             <Button
               variant="secondary"
               size="icon"
-              className={`${isComparing ? 'bg-primary' : 'bg-white/90 hover:bg-white'} transition-colors`}
+              className={`h-8 w-8 sm:h-10 sm:w-10 ${isComparing ? 'bg-primary' : 'bg-white/90 hover:bg-white'} transition-colors`}
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -317,7 +317,7 @@ const PropertyCard = ({
             <Button
               variant="secondary"
               size="icon"
-              className="bg-white/90 hover:bg-white transition-colors group/heart"
+              className="h-8 w-8 sm:h-10 sm:w-10 bg-white/90 hover:bg-white transition-colors group/heart"
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 e.stopPropagation();
