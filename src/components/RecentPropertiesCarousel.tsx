@@ -111,23 +111,23 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   const currentImageIndex = imageCounters[currentPropertyIndex] % currentImages.length;
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col items-center w-full px-4 sm:px-0">
+      <div className="flex items-center gap-1 sm:gap-2 w-full max-w-[500px] sm:max-w-none sm:w-auto">
         {/* Left arrow */}
         {properties.length > 1 && (
           <Button
             variant="ghost"
             size="icon"
             onClick={goToPrevious}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         )}
 
-        {/* Single centered property card - 50% size */}
+        {/* Single centered property card - responsive width */}
         <Card 
-          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-[360px] sm:w-[400px]"
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full sm:w-[400px] md:w-[450px]"
         >
           <Link
             to={`/fastighet/${currentProperty.id}`}
@@ -246,9 +246,9 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             variant="ghost"
             size="icon"
             onClick={goToNext}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         )}
       </div>
