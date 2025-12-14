@@ -1048,7 +1048,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               return (
               <div
                 key={property.id}
-                className="animate-slide-up"
+                className="animate-slide-up h-full"
                 style={{
                   animationDelay: `${index * 0.1}s`
                 }}

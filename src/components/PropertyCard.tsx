@@ -265,7 +265,7 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
@@ -466,7 +466,7 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-1.5">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5">
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
           <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
@@ -595,7 +595,7 @@ const PropertyCard = ({
           )}
         </div>
 
-        <div className="mt-1">
+        <div className="mt-auto pt-1">
           {onButtonClick ? (
             <Button
               onClick={(e) => {
