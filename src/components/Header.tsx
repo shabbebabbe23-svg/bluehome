@@ -73,15 +73,21 @@ const Header = () => {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 hover:rotate-180 transition-all duration-500 ease-out group/menu">
-                    <Menu className="w-6 h-6 sm:w-8 sm:h-8 text-primary group-hover/menu:text-transparent group-hover/menu:bg-hero-gradient group-hover/menu:bg-clip-text transition-all duration-300" strokeWidth={2.5} style={{ stroke: 'url(#menuGradient)' }} />
-                    <svg width="0" height="0" className="absolute">
+                  <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 hover:rotate-180 transition-all duration-500 ease-out">
+                    <svg 
+                      width="28" 
+                      height="28" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <defs>
-                        <linearGradient id="menuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
-                          <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)' }} />
+                        <linearGradient id="desktopMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#0276B1" />
+                          <stop offset="100%" stopColor="#12873D" />
                         </linearGradient>
                       </defs>
+                      <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#desktopMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </Button>
                 </DropdownMenuTrigger>
