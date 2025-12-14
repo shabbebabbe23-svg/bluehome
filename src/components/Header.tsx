@@ -91,7 +91,7 @@ const Header = () => {
                     </svg>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50 animate-in slide-in-from-top-4 fade-in-0 duration-500 origin-top">
+                <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50">
                   {/* Superadmin specific */}
                   {userType === "superadmin" && (
                     <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
