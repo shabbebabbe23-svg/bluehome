@@ -73,7 +73,7 @@ const Header = () => {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 hover:rotate-180 transition-all duration-500 ease-out">
+                  <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300 ease-out">
                     <svg 
                       width="28" 
                       height="28" 
