@@ -136,6 +136,12 @@ const PropertyCard = ({
   const dayLabel = viewDate ? (isSameDay(viewDate, now) ? "Idag" : viewDate.toLocaleDateString("sv-SE", { day: "numeric", month: "short" })) : "Idag";
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
+  const truncatedListDescription = description
+    ? description.length > 310
+      ? `${description.slice(0, 310)}…`
+      : description
+    : "";
+
   // Calculate days on bluehome
   const daysOnMarket = listedDate
     ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -149,7 +155,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 sm:h-[140px] md:h-[160px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -160,9 +166,9 @@ const PropertyCard = ({
           />
         )}
 
-        <div className="flex flex-col sm:flex-row w-full">
+        <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-[140px] md:h-[160px] flex-shrink-0">
+          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-full flex-shrink-0">
             <img
               src={image}
               alt={title}
@@ -199,58 +205,53 @@ const PropertyCard = ({
           </div>
 
           {/* Content section */}
-          <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0">
+          <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0 sm:h-full overflow-hidden">
             {/* Top row: Title and Price */}
             <div className="flex items-start justify-between gap-2 sm:gap-4">
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {title}
                 </h3>
-                <p className="text-sm sm:text-base text-muted-foreground mt-0.5 line-clamp-1">
-                  {location} · {address}
-                </p>
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
-                  <span className="text-lg sm:text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-lg sm:text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
                     {newPrice}
                   </span>
                 ) : (
-                  <span className="text-lg sm:text-xl font-bold text-primary">
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
                     {price}
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Description - hidden on mobile */}
-            {description && (
-              <p className="hidden md:block text-sm text-muted-foreground mt-2 line-clamp-1">
-                {description}
-              </p>
-            )}
+            {/* Description - hidden on mobile (reserve height for consistency) */}
+            <p className="hidden md:block text-sm text-muted-foreground mt-2 line-clamp-2 min-h-10">
+              {truncatedListDescription || "\u00A0"}
+            </p>
 
             {/* Bottom row: Details and Days on market */}
-            <div className="flex items-end justify-between mt-2 sm:mt-3">
-              <div className="flex items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground">
-                <div className="flex items-center gap-1">
+            <div className="flex items-end justify-between gap-2 mt-2 sm:mt-3 min-w-0">
+              <div className="flex flex-1 items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Bed className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>{bedrooms} rum</span>
+                  <span className="whitespace-nowrap">{bedrooms} rum</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Bath className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>{bathrooms} bad</span>
+                  <span className="whitespace-nowrap">{bathrooms} bad</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Square className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>{area} m²</span>
+                  <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+              <p className="text-xs sm:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[90px] sm:max-w-[140px] md:max-w-[200px] text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
                   : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`

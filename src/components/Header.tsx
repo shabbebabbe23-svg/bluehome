@@ -9,6 +9,7 @@ import NotificationBell from "@/components/NotificationBell";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const {
     user,
@@ -71,24 +72,48 @@ const Header = () => {
 
             {/* Menu Button for logged in users - Desktop only */}
             {user && (
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={setIsDesktopMenuOpen}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 hover:scale-110 transition-all duration-300 ease-out">
-                    <svg 
-                      width="28" 
-                      height="28" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <defs>
-                        <linearGradient id="desktopMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#0276B1" />
-                          <stop offset="100%" stopColor="#12873D" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#desktopMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-[44px] w-[44px] sm:h-[53px] sm:w-[53px] hover:scale-110 transition-all duration-300 ease-out">
+                    <span className="relative top-[1px] block h-8 w-8">
+                      {/* Menu Icon with gradient */}
+                      <svg 
+                        width="31" 
+                        height="31" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
+                        aria-hidden="true"
+                      >
+                        <defs>
+                          <linearGradient id="desktopMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#0276B1" />
+                            <stop offset="100%" stopColor="#12873D" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#desktopMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+
+                      {/* X Icon with gradient */}
+                      <svg 
+                        width="31" 
+                        height="31" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
+                        aria-hidden="true"
+                      >
+                        <defs>
+                          <linearGradient id="desktopCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#0276B1" />
+                            <stop offset="100%" stopColor="#12873D" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M18 6L6 18M6 6l12 12" stroke="url(#desktopCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56 sm:w-64 bg-card z-50">
@@ -249,34 +274,19 @@ const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center" 
+            className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? (
-              /* X Icon with gradient */
+            <span className="relative top-[1px] block h-8 w-8">
+              {/* Menu Icon with gradient */}
               <svg 
-                width="28" 
-                height="28" 
+                width="31" 
+                height="31" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="mobileCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#0276B1" />
-                    <stop offset="100%" stopColor="#12873D" />
-                  </linearGradient>
-                </defs>
-                <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            ) : (
-              /* Menu Icon with gradient */
-              <svg 
-                width="28" 
-                height="28" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
+                className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
+                aria-hidden="true"
               >
                 <defs>
                   <linearGradient id="mobileMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -286,16 +296,42 @@ const Header = () => {
                 </defs>
                 <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            )}
+
+              {/* X Icon with gradient */}
+              <svg 
+                width="31" 
+                height="31" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="mobileCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0276B1" />
+                    <stop offset="100%" stopColor="#12873D" />
+                  </linearGradient>
+                </defs>
+                <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
           </Button>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-md" style={{
+        <div
+          className={`md:hidden border-t border-white/20 backdrop-blur-md overflow-hidden transform-gpu transition-all duration-300 ease-out ${
+            isMenuOpen
+              ? "max-h-[80vh] opacity-100 translate-y-0 py-4"
+              : "max-h-0 opacity-0 -translate-y-2 py-0 pointer-events-none"
+          }`}
+          style={{
             background: 'var(--main-gradient)'
-          }}>
-            <nav className="flex flex-col gap-3">
+          }}
+          aria-hidden={!isMenuOpen}
+        >
+          <nav className="flex flex-col gap-3">
               {/* User Role Indicator with Avatar for Mobile */}
               {user && (
                 <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
@@ -437,8 +473,7 @@ const Header = () => {
                 )}
               </div>
             </nav>
-          </div>
-        )}
+        </div>
       </div>
     </header>
   );
