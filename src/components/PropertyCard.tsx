@@ -162,7 +162,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[240px] h-[200px] sm:h-[160px] flex-shrink-0">
+          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-[140px] md:h-[160px] flex-shrink-0">
             <img
               src={image}
               alt={title}
@@ -229,7 +229,7 @@ const PropertyCard = ({
 
             {/* Description - hidden on mobile */}
             {description && (
-              <p className="hidden sm:block text-base text-muted-foreground mt-2 line-clamp-2">
+              <p className="hidden md:block text-sm text-muted-foreground mt-2 line-clamp-1">
                 {description}
               </p>
             )}
