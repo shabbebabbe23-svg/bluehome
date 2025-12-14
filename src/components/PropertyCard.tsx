@@ -136,6 +136,12 @@ const PropertyCard = ({
   const dayLabel = viewDate ? (isSameDay(viewDate, now) ? "Idag" : viewDate.toLocaleDateString("sv-SE", { day: "numeric", month: "short" })) : "Idag";
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
+  const truncatedListDescription = description
+    ? description.length > 310
+      ? `${description.slice(0, 310)}…`
+      : description
+    : "";
+
   // Calculate days on bluehome
   const daysOnMarket = listedDate
     ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -146,6 +152,119 @@ const PropertyCard = ({
     sessionStorage.setItem('scrollPosition', window.scrollY.toString());
   };
 
+  // List view layout
+  if (viewMode === "list") {
+    return (
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 sm:h-[140px] md:h-[160px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+        {/* Full-card clickable overlay */}
+        {!bulkSelectMode && (
+          <Link
+            to={`/fastighet/${id}`}
+            className="absolute inset-0 z-10"
+            aria-label={`Visa ${title}`}
+            onClick={handleNavigateToDetail}
+          />
+        )}
+
+        <div className="flex flex-col sm:flex-row w-full sm:h-full">
+          {/* Image section */}
+          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-full flex-shrink-0">
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Property type badge */}
+            <div className="absolute top-3 left-3">
+              <Badge variant="secondary" className="bg-muted/90 text-foreground text-sm">
+                {type}
+              </Badge>
+            </div>
+
+            {/* Favorite button - hide for sold properties */}
+            {!hideControls && !isSold && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute top-3 right-3 h-8 w-8 bg-white/90 hover:bg-white transition-colors z-20"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite(String(id));
+                }}
+              >
+                <Heart
+                  className={`w-4 h-4 transition-all duration-300 ${isFavorite
+                    ? "fill-red-500 text-red-500"
+                    : "text-muted-foreground"
+                    }`}
+                />
+              </Button>
+            )}
+          </div>
+
+          {/* Content section */}
+          <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0 sm:h-full overflow-hidden">
+            {/* Top row: Title and Price */}
+            <div className="flex items-start justify-between gap-2 sm:gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                  {title}
+                </h3>
+              </div>
+              <div className="text-right flex-shrink-0">
+                {isSold && soldPrice ? (
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                    {soldPrice}
+                  </span>
+                ) : newPrice ? (
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                    {newPrice}
+                  </span>
+                ) : (
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                    {price}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Description - hidden on mobile (reserve height for consistency) */}
+            <p className="hidden md:block text-sm text-muted-foreground mt-2 line-clamp-2 min-h-10">
+              {truncatedListDescription || "\u00A0"}
+            </p>
+
+            {/* Bottom row: Details and Days on market */}
+            <div className="flex items-end justify-between gap-2 mt-2 sm:mt-3 min-w-0">
+              <div className="flex flex-1 items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Bed className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap">{bedrooms} rum</span>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Bath className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap">{bathrooms} bad</span>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap">{area} m²</span>
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[90px] sm:max-w-[140px] md:max-w-[200px] text-right">
+                {isSold && soldDate
+                  ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
+                  : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Grid view layout (original)
   return (
     <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
@@ -182,7 +301,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover or auto-slide */}
-        <div className="w-full h-40 xs:h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
+        <div className="w-full aspect-video relative">
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
@@ -348,7 +467,7 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-1.5">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5">
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
           <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
@@ -477,16 +596,7 @@ const PropertyCard = ({
           )}
         </div>
 
-        {/* Description - Only show in list view */}
-        {viewMode === "list" && description && (
-          <div className="mb-2 sm:mb-3">
-            <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
-              {description}
-            </p>
-          </div>
-        )}
-
-        <div className="mt-1">
+        <div className="mt-auto pt-1">
           {onButtonClick ? (
             <Button
               onClick={(e) => {

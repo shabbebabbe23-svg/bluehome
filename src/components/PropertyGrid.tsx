@@ -1045,7 +1045,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)
             const isDbProperty = dbProperties.some(p => String(p.id) === String(property.id));
-            return (
+              return (
               <div
                 key={property.id}
                 className="animate-slide-up h-full"
@@ -1056,6 +1056,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                 <PropertyCard
                   {...property}
                   title={property.address}
+                  description={property.description}
                   isFavorite={favorites.includes(property.id)}
                   onFavoriteToggle={handleFavoriteToggle}
                   isSold={property.isSold || false}
