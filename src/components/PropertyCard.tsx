@@ -300,7 +300,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth cross-fade on hover or auto-slide */}
-        <div className="w-full h-40 xs:h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative">
+        <div className="w-full aspect-[4/3] relative">
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
