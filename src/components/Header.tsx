@@ -246,24 +246,40 @@ const Header = () => {
             className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 relative" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <svg width="0" height="0" className="absolute">
+            {/* Menu Icon with gradient */}
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className={`absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
+            >
               <defs>
                 <linearGradient id="mobileMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
                   <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)' }} />
                 </linearGradient>
               </defs>
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <Menu 
-              strokeWidth={2.5} 
-              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
-              style={{ stroke: 'url(#mobileMenuGradient)' }}
-            />
-            <X 
-              strokeWidth={2.5} 
-              className={`w-6 h-6 drop-shadow-lg absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
-              style={{ stroke: 'url(#mobileMenuGradient)' }}
-            />
+            {/* X Icon with gradient */}
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className={`absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
+            >
+              <defs>
+                <linearGradient id="mobileCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 36%)' }} />
+                </linearGradient>
+              </defs>
+              <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </Button>
         </div>
 
