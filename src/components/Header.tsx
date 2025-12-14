@@ -243,43 +243,44 @@ const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 relative" 
+            className="md:hidden h-10 w-10 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {/* Menu Icon with gradient */}
-            <svg 
-              width="28" 
-              height="28" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              className={`absolute transition-all duration-300 ${isMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`}
-            >
-              <defs>
-                <linearGradient id="mobileMenuGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#0276B1" />
-                  <stop offset="100%" stopColor="#12873D" />
-                </linearGradient>
-              </defs>
-              <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            {/* X Icon with gradient */}
-            <svg 
-              width="28" 
-              height="28" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              className={`absolute transition-all duration-300 ${isMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`}
-            >
-              <defs>
-                <linearGradient id="mobileCloseGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#0276B1" />
-                  <stop offset="100%" stopColor="#12873D" />
-                </linearGradient>
-              </defs>
-              <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient2)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            {isMenuOpen ? (
+              /* X Icon with gradient */
+              <svg 
+                width="28" 
+                height="28" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient id="mobileCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0276B1" />
+                    <stop offset="100%" stopColor="#12873D" />
+                  </linearGradient>
+                </defs>
+                <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              /* Menu Icon with gradient */
+              <svg 
+                width="28" 
+                height="28" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient id="mobileMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0276B1" />
+                    <stop offset="100%" stopColor="#12873D" />
+                  </linearGradient>
+                </defs>
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
           </Button>
         </div>
 
