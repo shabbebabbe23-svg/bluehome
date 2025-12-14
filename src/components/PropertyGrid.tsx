@@ -1045,10 +1045,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)
             const isDbProperty = dbProperties.some(p => String(p.id) === String(property.id));
-            return (
+              return (
               <div
                 key={property.id}
-                className="animate-slide-up h-full"
+                className="animate-slide-up"
                 style={{
                   animationDelay: `${index * 0.1}s`
                 }}
