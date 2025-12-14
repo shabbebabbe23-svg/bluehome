@@ -160,7 +160,7 @@ const PropertyCard = ({
           />
         )}
 
-        <div className="flex flex-col sm:flex-row max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row w-full">
           {/* Image section */}
           <div className="relative w-full sm:w-[240px] h-[200px] sm:h-[160px] flex-shrink-0">
             <img
