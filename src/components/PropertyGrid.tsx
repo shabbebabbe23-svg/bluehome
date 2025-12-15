@@ -589,7 +589,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     return saved === 'true';
   });
   const [sortBy, setSortBy] = useState<string>("default");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
+    const saved = sessionStorage.getItem('propertyGridViewMode');
+    return saved === 'list' ? 'list' : 'grid';
+  });
   const [dbProperties, setDbProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [propertyBids, setPropertyBids] = useState<Record<string, boolean>>({});
@@ -601,6 +604,11 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   useEffect(() => {
     sessionStorage.setItem('propertyGridShowAll', showAll.toString());
   }, [showAll]);
+
+  // Save view mode to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('propertyGridViewMode', viewMode);
+  }, [viewMode]);
 
   // Restore scroll position after properties load
   useEffect(() => {
@@ -928,8 +936,9 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       <div className="w-full">
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-1">
-            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center sm:text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1">
+            <div className="hidden sm:block" />
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center justify-self-center">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
             </h2>
             {/* Sort and View Toggle */}
@@ -1001,11 +1010,6 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               </Button>
             </div>
           </div>
-          <p className="text-sm sm:text-base text-muted-foreground text-center">
-            {showFinalPrices
-              ? "Se slutpriser på nyligen sålda fastigheter"
-              : "Upptäck vårt handplockade urval av premiumfastigheter"}
-          </p>
         </div>
 
         {/* Recent sold carousel - only shown when showFinalPrices is ON */}
@@ -1039,7 +1043,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 mb-4 md:mb-6"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-2 mb-4 md:mb-6"
           : "flex flex-col gap-2 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
