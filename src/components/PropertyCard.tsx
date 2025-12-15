@@ -30,6 +30,7 @@ interface PropertyCardProps {
   vendorLogo?: string;
   isSold?: boolean;
   listedDate?: Date | string;
+  createdAt?: Date | string;
   soldDate?: Date | string;
   hasVR?: boolean;
   description?: string;
@@ -76,6 +77,7 @@ const PropertyCard = ({
   vendorLogo,
   isSold = false,
   listedDate,
+  createdAt,
   soldDate,
   hasVR = false,
   description,
@@ -143,9 +145,24 @@ const PropertyCard = ({
     : "";
 
   // Calculate days on bluehome
-  const daysOnMarket = listedDate
-    ? Math.floor((now.getTime() - new Date(listedDate).getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
+  const toValidDate = (value?: Date | string) => {
+    if (!value) return null;
+    const dateObj = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(dateObj.getTime()) ? null : dateObj;
+  };
+
+  const daysOnMarket = (() => {
+    const baseDate = toValidDate(listedDate) ?? toValidDate(createdAt);
+    if (!baseDate) return null;
+    const diffDays = Math.floor((now.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  })();
+
+  const daysOnMarketText = daysOnMarket === null
+    ? ""
+    : daysOnMarket === 0
+      ? "Ny idag"
+      : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`;
 
   // Save scroll position before navigating to detail page
   const handleNavigateToDetail = () => {
@@ -155,7 +172,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 sm:h-[140px] md:h-[160px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] sm:h-[140px] md:h-[160px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -168,12 +185,28 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-full flex-shrink-0">
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-full flex-shrink-0 overflow-hidden">
+            {/* Hover image cross-fade (same as grid view) */}
+            {hoverImage ? (
+              <>
+                <img
+                  src={image}
+                  alt={title}
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
+                />
+                <img
+                  src={hoverImage}
+                  alt={`${title} - alternativ bild`}
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+                />
+              </>
+            ) : (
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-full object-cover"
+              />
+            )}
             
             {/* Property type badge */}
             <div className="absolute top-3 left-3">
@@ -254,7 +287,7 @@ const PropertyCard = ({
               <p className="text-xs sm:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[90px] sm:max-w-[140px] md:max-w-[200px] text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
-                  : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
+                  : daysOnMarketText
                 }
               </p>
             </div>
@@ -266,7 +299,7 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.02] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
@@ -618,7 +651,7 @@ const PropertyCard = ({
           <p className="text-[10px] sm:text-[11px] text-muted-foreground text-right mt-0.5">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
-              : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`
+              : daysOnMarketText
             }
           </p>
         </div>
