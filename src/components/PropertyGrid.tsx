@@ -53,6 +53,8 @@ interface PropertyGridProps {
   newConstructionFilter?: 'include' | 'only' | 'exclude';
   elevatorFilter?: boolean;
   balconyFilter?: boolean;
+  biddingFilter?: boolean;
+  waterDistanceRange?: [number, number];
 }
 
 export interface Property {
@@ -82,6 +84,7 @@ export interface Property {
   is_new_production?: boolean;
   has_elevator?: boolean;
   has_balcony?: boolean;
+  water_distance?: number;
   agent_name?: string;
   agent_avatar?: string;
   agent_phone?: string;
@@ -581,7 +584,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, waterDistanceRange }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -664,6 +667,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
+            water_distance: prop.water_distance || undefined,
             createdAt: new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
@@ -808,6 +812,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     // Filter by balcony
     if (balconyFilter) {
       filtered = filtered.filter(property => property.has_balcony === true);
+    }
+
+    // Filter by active bidding
+    if (biddingFilter) {
+      filtered = filtered.filter(property => propertyBids[property.id as string] === true);
+    }
+
+    // Filter by water distance
+    if (waterDistanceRange && (waterDistanceRange[0] !== 50 || waterDistanceRange[1] !== 10000)) {
+      filtered = filtered.filter(property => {
+        if (!property.water_distance) return false;
+        return property.water_distance >= waterDistanceRange[0] && property.water_distance <= waterDistanceRange[1];
+      });
     }
 
     return filtered;
@@ -1043,7 +1060,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-2 mb-4 md:mb-6"
+          ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-2 mb-4 md:mb-6"
           : "flex flex-col gap-2 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {

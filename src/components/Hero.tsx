@@ -23,9 +23,11 @@ interface HeroProps {
   onNewConstructionFilterChange?: (value: 'include' | 'only' | 'exclude') => void;
   onElevatorFilterChange?: (value: boolean) => void;
   onBalconyFilterChange?: (value: boolean) => void;
+  onBiddingFilterChange?: (value: boolean) => void;
+  onWaterDistanceRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onWaterDistanceRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -43,6 +45,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [newConstructionFilter, setNewConstructionFilter] = useState<'include' | 'only' | 'exclude'>('include');
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [hasBidding, setHasBidding] = useState(false);
+  const [waterDistanceRange, setWaterDistanceRange] = useState([50, 10000]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -56,6 +60,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setNewConstructionFilter('include');
     setHasElevator(false);
     setHasBalcony(false);
+    setHasBidding(false);
+    setWaterDistanceRange([50, 10000]);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -64,6 +70,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onRoomRangeChange?.([0, 7]);
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
+    onBiddingFilterChange?.(false);
+    onWaterDistanceRangeChange?.([50, 10000]);
   };
 
   // Call callbacks when filter values change
@@ -84,7 +92,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony;
+    hasElevator || hasBalcony || hasBidding || waterDistanceRange[0] !== 50 || waterDistanceRange[1] !== 10000;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -450,41 +458,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   />
                 </div>
 
-                {/* New Construction Filter */}
-                <div className="flex flex-col items-end space-y-1">
-                  <h3 className="text-sm sm:text-base font-semibold text-foreground">Nyproduktion</h3>
-                  <ToggleGroup
-                    type="single" 
-                    value={newConstructionFilter}
-                    onValueChange={(value) => {
-                      if (value) {
-                        setNewConstructionFilter(value as 'include' | 'only' | 'exclude');
-                        onNewConstructionFilterChange?.(value as 'include' | 'only' | 'exclude');
-                      }
-                    }}
-                    className="border border-primary/30 rounded-md p-0.5 bg-muted/30"
-                  >
-                    <ToggleGroupItem 
-                      value="include" 
-                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
-                    >
-                      Inkluderar
-                    </ToggleGroupItem>
-                    <ToggleGroupItem 
-                      value="only" 
-                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
-                    >
-                      Endast
-                    </ToggleGroupItem>
-                    <ToggleGroupItem 
-                      value="exclude" 
-                      className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
-                    >
-                      Exkluderar
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </div>
-
                 {/* Property Type Buttons */}
                 <div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3">Bostadstyp</h3>
@@ -728,7 +701,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                     {/* Elevator & Balcony Filters */}
                     <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Bekvämligheter</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Objekt med</h3>
                       <div className="flex flex-wrap gap-3">
                         <Button
                           variant="outline"
@@ -750,7 +723,52 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         >
                           Balkong
                         </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setHasBidding(!hasBidding);
+                            onBiddingFilterChange?.(!hasBidding);
+                          }}
+                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                        >
+                          Pågående budgivning
+                        </Button>
                       </div>
+                    </div>
+
+                    {/* New Construction Filter */}
+                    <div className="space-y-3 md:space-y-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyproduktion</h3>
+                      <ToggleGroup
+                        type="single" 
+                        value={newConstructionFilter}
+                        onValueChange={(value) => {
+                          if (value) {
+                            setNewConstructionFilter(value as 'include' | 'only' | 'exclude');
+                            onNewConstructionFilterChange?.(value as 'include' | 'only' | 'exclude');
+                          }
+                        }}
+                        className="border border-primary/30 rounded-sm p-px bg-muted/30 inline-flex"
+                      >
+                        <ToggleGroupItem 
+                          value="include" 
+                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                        >
+                          Inkluderar
+                        </ToggleGroupItem>
+                        <ToggleGroupItem 
+                          value="only" 
+                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                        >
+                          Endast
+                        </ToggleGroupItem>
+                        <ToggleGroupItem 
+                          value="exclude" 
+                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                        >
+                          Exkluderar
+                        </ToggleGroupItem>
+                      </ToggleGroup>
                     </div>
 
                     {/* Keywords Filter */}
@@ -762,6 +780,31 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onChange={(e) => setKeywords(e.target.value)}
                         className="h-12 sm:h-14 text-base sm:text-lg border-2 border-primary/30 focus:border-primary"
                       />
+                    </div>
+
+                    {/* Water Distance Filter */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Avstånd till vatten</h3>
+                        <span className="text-sm font-medium text-foreground">
+                          {waterDistanceRange[0] >= 1000 ? `${(waterDistanceRange[0] / 1000).toFixed(1)} km` : `${waterDistanceRange[0]} m`} - {waterDistanceRange[1] >= 1000 ? `${(waterDistanceRange[1] / 1000).toFixed(1)} km` : `${waterDistanceRange[1]} m`}
+                        </span>
+                      </div>
+                      <Slider
+                        min={50}
+                        max={10000}
+                        step={50}
+                        value={waterDistanceRange}
+                        onValueChange={(value) => {
+                          setWaterDistanceRange(value);
+                          onWaterDistanceRangeChange?.(value as [number, number]);
+                        }}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>50 m</span>
+                        <span>10 km</span>
+                      </div>
                     </div>
 
                   </>
