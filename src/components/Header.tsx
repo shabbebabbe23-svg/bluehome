@@ -75,15 +75,13 @@ const Header = () => {
               <DropdownMenu onOpenChange={setIsDesktopMenuOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="hidden md:flex items-center justify-center h-[44px] w-[44px] sm:h-[53px] sm:w-[53px] hover:scale-110 transition-all duration-300 ease-out">
-                    <span className="relative top-[1px] block h-8 w-8">
+                    <span className="relative top-[1px] block h-[34px] w-[34px] sm:h-[38px] sm:w-[38px]">
                       {/* Menu Icon with gradient */}
                       <svg 
-                        width="31" 
-                        height="31" 
                         viewBox="0 0 24 24" 
                         fill="none" 
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
+                        className={`absolute inset-0 w-full h-full transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
                         aria-hidden="true"
                       >
                         <defs>
@@ -97,12 +95,10 @@ const Header = () => {
 
                       {/* X Icon with gradient */}
                       <svg 
-                        width="31" 
-                        height="31" 
                         viewBox="0 0 24 24" 
                         fill="none" 
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
+                        className={`absolute inset-0 w-full h-full transform-gpu transition-all duration-300 ease-out ${isDesktopMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
                         aria-hidden="true"
                       >
                         <defs>
@@ -277,15 +273,13 @@ const Header = () => {
             className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <span className="relative top-[1px] block h-8 w-8">
+            <span className="relative top-[1px] block h-[34px] w-[34px] sm:h-[36px] sm:w-[36px]">
               {/* Menu Icon with gradient */}
               <svg 
-                width="31" 
-                height="31" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
-                className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
+                className={`absolute inset-0 w-full h-full transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}`}
                 aria-hidden="true"
               >
                 <defs>
@@ -299,12 +293,10 @@ const Header = () => {
 
               {/* X Icon with gradient */}
               <svg 
-                width="31" 
-                height="31" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
-                className={`absolute inset-0 transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
+                className={`absolute inset-0 w-full h-full transform-gpu transition-all duration-300 ease-out ${isMenuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}`}
                 aria-hidden="true"
               >
                 <defs>
