@@ -1011,17 +1011,17 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               <Button
                 variant="outline"
                 onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="hidden sm:flex gap-1.5 h-9 px-4 text-sm"
+                className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
               >
                 {viewMode === "grid" ? (
                   <>
                     <List className="w-4 h-4" />
-                    <span className="hidden md:inline">Listvy</span>
+                    <span className="hidden sm:inline">Listvy</span>
                   </>
                 ) : (
                   <>
                     <Grid3x3 className="w-4 h-4" />
-                    <span className="hidden md:inline">Rutnätsvy</span>
+                    <span className="hidden sm:inline">Rutnätsvy</span>
                   </>
                 )}
               </Button>
@@ -1060,8 +1060,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-2 mb-4 md:mb-6"
-          : "flex flex-col gap-2 mb-4 md:mb-6"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
+          : "flex flex-col gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)

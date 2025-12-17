@@ -10,6 +10,7 @@ import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
 import { usePropertyPresence } from "@/hooks/usePropertyPresence";
+import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,8 +53,8 @@ const PropertyDetail = () => {
   } = useParams();
   const navigate = useNavigate();
   const { user, profileName, avatarUrl } = useAuth();
+  const { toggleFavorite, isFavorite: checkIsFavorite } = useFavorites();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [dbProperty, setDbProperty] = useState<any>(null);
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,15 @@ const PropertyDetail = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [hasActiveBidding, setHasActiveBidding] = useState(false);
+  const [isPWA, setIsPWA] = useState(false);
+
+  // Detect if running as PWA
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+      || (window.navigator as any).standalone 
+      || document.referrer.includes('android-app://');
+    setIsPWA(isStandalone);
+  }, []);
 
   // Track property view
   usePropertyViewTracking(id || "");
@@ -492,30 +502,32 @@ const PropertyDetail = () => {
           </Link>
           
           <div className="flex gap-1 sm:gap-2 items-center">
-            <svg 
-              width="36" 
-              height="36" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              onClick={() => window.print()}
-              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
-            >
-              <defs>
-                <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            {!isPWA && (
+              <svg 
+                width="36" 
+                height="36" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                onClick={() => window.print()}
+                className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+              >
+                <defs>
+                  <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
             
             <svg 
               width="36" 
               height="36" 
               viewBox="0 0 24 24" 
               xmlns="http://www.w3.org/2000/svg"
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={() => id && toggleFavorite(String(id))}
               className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
             >
               <defs>
@@ -530,7 +542,7 @@ const PropertyDetail = () => {
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round"
-                fill={isFavorite ? "url(#heartGradient)" : "none"}
+                fill={id && checkIsFavorite(String(id)) ? "url(#heartGradient)" : "none"}
               />
             </svg>
 
