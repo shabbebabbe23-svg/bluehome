@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: 'BaraHem - Hitta ditt drömhem',
         short_name: 'BaraHem',
-        description: 'Sveriges ledande fastighetsplattform',
+        description: 'Sveriges modernaste fastighetsplattform',
         theme_color: '#0077B6',
         background_color: '#ffffff',
         display: 'standalone',
