@@ -172,7 +172,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] sm:h-[140px] md:h-[160px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[120px] md:h-[130px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -185,7 +185,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[200px] md:w-[280px] lg:w-[320px] h-[180px] sm:h-full flex-shrink-0 overflow-hidden">
+          <div className="relative w-full sm:w-[160px] md:w-[200px] lg:w-[240px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
@@ -238,25 +238,25 @@ const PropertyCard = ({
           </div>
 
           {/* Content section */}
-          <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0 sm:h-full overflow-hidden">
+          <div className="flex-1 p-2 sm:p-3 flex flex-col justify-between min-w-0 sm:h-full overflow-hidden">
             {/* Top row: Title and Price */}
-            <div className="flex items-start justify-between gap-2 sm:gap-4">
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {title}
                 </h3>
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
-                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                  <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                  <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
                     {newPrice}
                   </span>
                 ) : (
-                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                  <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
                     {price}
                   </span>
                 )}
@@ -264,29 +264,29 @@ const PropertyCard = ({
             </div>
 
             {/* Description - hidden on mobile (reserve height for consistency) */}
-            <p className="hidden md:block text-sm text-muted-foreground mt-2 line-clamp-2 min-h-10">
+            <p className="hidden md:block text-xs text-muted-foreground mt-1 line-clamp-1 min-h-4">
               {truncatedListDescription || "\u00A0"}
             </p>
 
             {/* Bottom row: Details and Days on market */}
-            <div className="flex items-end justify-between gap-2 mt-2 sm:mt-3 min-w-0">
-              <div className="flex flex-1 items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Bed className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="whitespace-nowrap">{bedrooms} rum</span>
+            <div className="flex items-end justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
+              <div className="flex flex-1 items-center gap-1.5 sm:gap-3 text-xs sm:text-sm text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <Bed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="whitespace-nowrap">{bedrooms}</span>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Bath className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="whitespace-nowrap">{bathrooms} bad</span>
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <Bath className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="whitespace-nowrap">{bathrooms}</span>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Square className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[90px] sm:max-w-[140px] md:max-w-[200px] text-right">
+              <p className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[70px] sm:max-w-[100px] md:max-w-[150px] text-right">
                 {isSold && soldDate
-                  ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
+                  ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                   : daysOnMarketText
                 }
               </p>
