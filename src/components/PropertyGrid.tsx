@@ -953,13 +953,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       <div className="w-full">
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1">
+          <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1">
             <div className="hidden sm:block" />
-            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center justify-self-center">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
             </h2>
             {/* Sort and View Toggle */}
-            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
+            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
               {!showFinalPrices && bulkSelectMode && (
                 <div className="hidden sm:flex gap-2">
                   <Button

@@ -63,6 +63,7 @@ export const AgentStatistics = () => {
         const propertyStatsMap = new Map<string, PropertyStats>();
         let totalViewCount = 0;
         let totalTimeSum = 0;
+        let viewsWithTime = 0;
 
         properties.forEach(prop => {
           propertyStatsMap.set(prop.id, {
@@ -76,13 +77,26 @@ export const AgentStatistics = () => {
           });
         });
 
+        // Track views with actual time spent for each property
+        const propertyTimeData = new Map<string, { totalTime: number; viewsWithTime: number }>();
+
         views?.forEach(view => {
           const stat = propertyStatsMap.get(view.property_id);
           if (stat) {
             stat.total_views += 1;
-            stat.avg_time_spent += view.time_spent_seconds || 0;
             totalViewCount += 1;
-            totalTimeSum += view.time_spent_seconds || 0;
+            
+            // Only count time if it's > 0
+            const timeSpent = view.time_spent_seconds || 0;
+            if (timeSpent > 0) {
+              const timeData = propertyTimeData.get(view.property_id) || { totalTime: 0, viewsWithTime: 0 };
+              timeData.totalTime += timeSpent;
+              timeData.viewsWithTime += 1;
+              propertyTimeData.set(view.property_id, timeData);
+              
+              totalTimeSum += timeSpent;
+              viewsWithTime += 1;
+            }
           }
         });
 
@@ -97,7 +111,13 @@ export const AgentStatistics = () => {
         // Calculate averages and location distribution
         propertyStatsMap.forEach(stat => {
           if (stat.total_views > 0) {
-            stat.avg_time_spent = Math.round(stat.avg_time_spent / stat.total_views);
+            // Calculate average time only from views with actual time data
+            const timeData = propertyTimeData.get(stat.property_id);
+            if (timeData && timeData.viewsWithTime > 0) {
+              stat.avg_time_spent = Math.round(timeData.totalTime / timeData.viewsWithTime);
+            } else {
+              stat.avg_time_spent = 0;
+            }
             
             // Calculate unique sessions for this property
             const propertyImageViews = imageViews?.filter(iv => iv.property_id === stat.property_id) || [];
@@ -130,7 +150,8 @@ export const AgentStatistics = () => {
 
         setStats(statsArray);
         setTotalViews(totalViewCount);
-        setTotalAvgTime(totalViewCount > 0 ? Math.round(totalTimeSum / totalViewCount) : 0);
+        // Calculate average only from views that have time data
+        setTotalAvgTime(viewsWithTime > 0 ? Math.round(totalTimeSum / viewsWithTime) : 0);
       } catch (error) {
         console.error("Error fetching statistics:", error);
       } finally {

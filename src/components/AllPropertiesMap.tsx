@@ -27,6 +27,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
   const [fromAddress, setFromAddress] = useState('');
   const [toAddress, setToAddress] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([...PROPERTY_TYPES]);
+  const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<any>(null);
@@ -153,6 +154,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     }).addTo(map);
 
     mapInstanceRef.current = map;
+    setMapReady(true);
 
     // Cleanup
     return () => {
@@ -169,7 +171,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
 
   // Update markers when selectedTypes or propertiesWithCoords change (without affecting zoom)
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapInstanceRef.current || !mapReady) return;
 
     // Clear existing markers
     markersRef.current.forEach(m => m.remove());
@@ -209,7 +211,7 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
 
       markersRef.current.push(marker);
     });
-  }, [propertiesWithCoords, selectedTypes, properties]);
+  }, [propertiesWithCoords, selectedTypes, properties, mapReady]);
 
   const handleRouteSearch = async () => {
     if (!mapInstanceRef.current || !fromAddress || !toAddress) return;

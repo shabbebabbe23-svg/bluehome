@@ -63,13 +63,10 @@ const Footer = () => {
                 360° Virtuella visningar
               </span>
               <span className="block text-white/80">
-                Sparade sökningar
+                VR-funktion
               </span>
               <span className="block text-white/80">
-                Favorithantering
-              </span>
-              <span className="block text-white/80">
-                Push-notifikationer
+                Statistik i realtid
               </span>
             </div>
           </div>
@@ -131,7 +128,7 @@ const Footer = () => {
                 <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
                   <Instagram className="w-full h-full text-white" />
                 </div>
-                <span>@barahem.se</span>
+                <span>barahem.se</span>
               </a>
             </div>
           </div>
