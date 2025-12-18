@@ -667,7 +667,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
-            water_distance: prop.water_distance || undefined,
+            
             createdAt: new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
