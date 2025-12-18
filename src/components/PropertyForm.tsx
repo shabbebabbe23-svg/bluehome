@@ -51,7 +51,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
-  const [waterDistance, setWaterDistance] = useState<number | undefined>(undefined);
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [showViewerCount, setShowViewerCount] = useState(false);
@@ -414,7 +413,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
-        water_distance: waterDistance || null,
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
       });
@@ -434,7 +432,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
-      setWaterDistance(undefined);
       setDocuments([]);
       setDocumentNames([]);
       setShowViewerCount(false);
@@ -742,47 +739,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             </div>
             <p className="text-sm text-muted-foreground mt-2 ml-8">
               Bostaden har balkong
-            </p>
-          </Card>
-        </div>
-
-        {/* Avstånd till vatten */}
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center gap-2">
-              <Waves className="w-5 h-5 text-primary" />
-              <Label htmlFor="water_distance" className="font-semibold text-base">
-                Avstånd till vatten
-              </Label>
-            </div>
-            <Select
-              value={waterDistance?.toString() || ''}
-              onValueChange={(value) => setWaterDistance(value ? parseInt(value) : undefined)}
-            >
-              <SelectTrigger className="mt-2">
-                <div className="flex items-center gap-2">
-                  <Waves className="w-4 h-4 text-muted-foreground" />
-                  <SelectValue placeholder="Välj avstånd till vatten" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="50">50 meter</SelectItem>
-                <SelectItem value="100">100 meter</SelectItem>
-                <SelectItem value="200">200 meter</SelectItem>
-                <SelectItem value="300">300 meter</SelectItem>
-                <SelectItem value="500">500 meter</SelectItem>
-                <SelectItem value="750">750 meter</SelectItem>
-                <SelectItem value="1000">1 km</SelectItem>
-                <SelectItem value="1500">1,5 km</SelectItem>
-                <SelectItem value="2000">2 km</SelectItem>
-                <SelectItem value="3000">3 km</SelectItem>
-                <SelectItem value="5000">5 km</SelectItem>
-                <SelectItem value="7500">7,5 km</SelectItem>
-                <SelectItem value="10000">10 km+</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-muted-foreground mt-2">
-              Ange avståndet till närmaste vatten (sjö, hav, å)
             </p>
           </Card>
         </div>
