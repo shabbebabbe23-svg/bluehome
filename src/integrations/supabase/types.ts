@@ -343,7 +343,6 @@ export type Database = {
           vendor_logo_url: string | null
           viewing_date: string | null
           vr_image_indices: number[] | null
-          water_distance: number | null
         }
         Insert: {
           additional_images?: string[] | null
@@ -386,7 +385,6 @@ export type Database = {
           vendor_logo_url?: string | null
           viewing_date?: string | null
           vr_image_indices?: number[] | null
-          water_distance?: number | null
         }
         Update: {
           additional_images?: string[] | null
@@ -429,7 +427,6 @@ export type Database = {
           vendor_logo_url?: string | null
           viewing_date?: string | null
           vr_image_indices?: number[] | null
-          water_distance?: number | null
         }
         Relationships: []
       }
