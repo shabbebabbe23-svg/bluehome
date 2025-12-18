@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Upload, Loader2, FileText, X, Move3D, Waves } from "lucide-react";
+import { Upload, Loader2, FileText, X, Move3D, Waves, ImagePlus, PencilRuler, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -38,16 +39,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImage, setMainImage] = useState<File | null>(null);
-  const [hoverImage, setHoverImage] = useState<File | null>(null);
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
-  const [floorplan, setFloorplan] = useState<File | null>(null);
+  const [floorplans, setFloorplans] = useState<File[]>([]);
   const [mainImagePreview, setMainImagePreview] = useState<string>("");
-  const [hoverImagePreview, setHoverImagePreview] = useState<string>("");
   const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
-  const [floorplanPreview, setFloorplanPreview] = useState<string>("");
+  const [floorplanPreviews, setFloorplanPreviews] = useState<string[]>([]);
   const [isNewProduction, setIsNewProduction] = useState(false);
   const [agencyLogoUrl, setAgencyLogoUrl] = useState<string | null>(null);
   const [vrImageIndices, setVrImageIndices] = useState<number[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
@@ -55,6 +55,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [showViewerCount, setShowViewerCount] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const {
     register,
@@ -112,10 +113,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     fetchAgencyLogo();
   }, [user]);
 
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    type: "main" | "hover" | "floorplan"
-  ) => {
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -125,27 +123,57 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (type === "main") {
-          setMainImage(file);
-          setMainImagePreview(reader.result as string);
-        } else if (type === "hover") {
-          setHoverImage(file);
-          setHoverImagePreview(reader.result as string);
-        } else if (type === "floorplan") {
-          setFloorplan(file);
-          setFloorplanPreview(reader.result as string);
-        }
+        setMainImage(file);
+        setMainImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const handleFloorplanChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    if (floorplans.length + files.length > 4) {
+      toast.error("Du kan lägga till max 4 ritningar");
+      return;
+    }
+
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Varje ritning får max vara 5MB");
+        return;
+      }
+    }
+
+    const newPreviews: string[] = [];
+    let filesRead = 0;
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        filesRead++;
+        
+        if (filesRead === files.length) {
+          setFloorplans([...floorplans, ...files]);
+          setFloorplanPreviews([...floorplanPreviews, ...newPreviews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeFloorplan = (index: number) => {
+    setFloorplans(floorplans.filter((_, i) => i !== index));
+    setFloorplanPreviews(floorplanPreviews.filter((_, i) => i !== index));
+  };
+
   const handleAdditionalImagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     
-    // Check if adding these files would exceed the limit of 6 additional images
-    if (additionalImages.length + files.length > 6) {
-      toast.error("Du kan lägga till max 6 extra bilder");
+    // Check if adding these files would exceed the limit of 19 additional images
+    if (additionalImages.length + files.length > 19) {
+      toast.error("Du kan lägga till max 19 extra bilder");
       return;
     }
 
@@ -170,6 +198,63 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         if (filesRead === files.length) {
           setAdditionalImages([...additionalImages, ...files]);
           setAdditionalImagesPreviews([...additionalImagesPreviews, ...newPreviews]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    if (files.length === 0) {
+      toast.error("Endast bildfiler är tillåtna");
+      return;
+    }
+
+    // Check if adding these files would exceed the limit
+    if (additionalImages.length + files.length > 20) {
+      toast.error("Du kan lägga till max 20 extra bilder");
+      return;
+    }
+
+    // Check file sizes
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Varje bild får max vara 5MB");
+        return;
+      }
+    }
+
+    // Read all files and create previews
+    const newPreviews: string[] = [];
+    let filesRead = 0;
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        filesRead++;
+        
+        if (filesRead === files.length) {
+          setAdditionalImages([...additionalImages, ...files]);
+          setAdditionalImagesPreviews([...additionalImagesPreviews, ...newPreviews]);
+          toast.success(`${files.length} bild${files.length > 1 ? 'er' : ''} tillagda`);
         }
       };
       reader.readAsDataURL(file);
@@ -267,14 +352,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         `${user.id}/${timestamp}-main-${mainImage.name}`
       );
 
-      let hoverImageUrl = null;
-      if (hoverImage) {
-        hoverImageUrl = await uploadImage(
-          hoverImage,
-          `${user.id}/${timestamp}-hover-${hoverImage.name}`
-        );
-      }
-
       // Upload additional images
       const additionalImageUrls: string[] = [];
       for (let i = 0; i < additionalImages.length; i++) {
@@ -286,13 +363,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         additionalImageUrls.push(url);
       }
 
-      // Upload floorplan
-      let floorplanUrl = null;
-      if (floorplan) {
-        floorplanUrl = await uploadImage(
-          floorplan,
-          `${user.id}/${timestamp}-floorplan-${floorplan.name}`
+      // Upload floorplans (up to 4)
+      const floorplanUrls: string[] = [];
+      for (let i = 0; i < floorplans.length; i++) {
+        const file = floorplans[i];
+        const url = await uploadImage(
+          file,
+          `${user.id}/${timestamp}-floorplan-${i}-${file.name}`
         );
+        floorplanUrls.push(url);
       }
 
       // Upload documents
@@ -322,9 +401,10 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         operating_cost: data.operating_cost || 0,
         description: data.description,
         image_url: mainImageUrl,
-        hover_image_url: hoverImageUrl,
+        hover_image_url: null,
         additional_images: additionalImageUrls,
-        floorplan_url: floorplanUrl,
+        floorplan_url: floorplanUrls[0] || null,
+        floorplan_urls: floorplanUrls,
         viewing_date: data.viewing_date || null,
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
@@ -344,13 +424,11 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       toast.success("Fastighet tillagd!");
       reset();
       setMainImage(null);
-      setHoverImage(null);
       setAdditionalImages([]);
-      setFloorplan(null);
+      setFloorplans([]);
       setMainImagePreview("");
-      setHoverImagePreview("");
       setAdditionalImagesPreviews([]);
-      setFloorplanPreview("");
+      setFloorplanPreviews([]);
       setIsNewProduction(false);
       setVrImageIndices([]);
       setIsMainImage360(false);
@@ -739,7 +817,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                   <img
                     src={mainImagePreview}
                     alt="Preview"
-                    className={`w-full h-48 object-cover rounded ${isMainImage360 ? 'ring-2 ring-primary' : ''}`}
+                    className={`w-full h-40 sm:h-44 md:h-48 object-contain rounded-lg bg-muted ${isMainImage360 ? 'ring-2 ring-primary' : ''}`}
                   />
                   {isMainImage360 && (
                     <Badge className="absolute top-2 left-2 bg-gradient-to-r from-primary to-green-500">
@@ -747,6 +825,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                       360°
                     </Badge>
                   )}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8"
+                    onClick={() => setPreviewImage(mainImagePreview)}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                   <Button
                     type="button"
                     variant={isMainImage360 ? "default" : "outline"}
@@ -759,61 +846,37 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                   </Button>
                 </div>
               ) : (
-                <div className="w-full h-48 bg-muted rounded flex items-center justify-center">
-                  <Upload className="w-12 h-12 text-muted-foreground" />
+                <div className="flex flex-col items-center gap-2 p-6 border-2 border-dashed rounded-lg border-muted-foreground/25 hover:border-muted-foreground/50 transition-all">
+                  <div className="p-4 rounded-full bg-muted">
+                    <ImagePlus className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <p className="font-medium text-foreground">Välj huvudbild</p>
+                  <p className="text-sm text-muted-foreground">Max 5MB</p>
                 </div>
               )}
               <Input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageChange(e, "main")}
-                className="cursor-pointer"
+                onChange={handleImageChange}
+                className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
               />
-              <p className="text-sm text-muted-foreground">Max 5MB</p>
-            </div>
-          </Card>
-        </div>
-
-        {/* Hover-bild */}
-        <div className="md:col-span-2">
-          <Label>Hover-bild (valfritt)</Label>
-          <Card className="p-4">
-            <div className="flex flex-col items-center gap-4">
-              {hoverImagePreview ? (
-                <img
-                  src={hoverImagePreview}
-                  alt="Preview"
-                  className="w-full h-48 object-cover rounded"
-                />
-              ) : (
-                <div className="w-full h-48 bg-muted rounded flex items-center justify-center">
-                  <Upload className="w-12 h-12 text-muted-foreground" />
-                </div>
-              )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "hover")}
-                className="cursor-pointer"
-              />
-              <p className="text-sm text-muted-foreground">Max 5MB</p>
             </div>
           </Card>
         </div>
 
         {/* Fler bilder */}
         <div className="md:col-span-2">
-          <Label>Fler bilder (valfritt, max 6 st)</Label>
+          <Label>Fler bilder</Label>
           <Card className="p-4">
             <div className="space-y-4">
               {additionalImagesPreviews.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                   {additionalImagesPreviews.map((preview, index) => (
-                    <div key={index} className={`relative rounded overflow-hidden ${vrImageIndices.includes(index) ? 'ring-2 ring-primary' : ''}`}>
+                    <div key={index} className={`relative rounded-lg overflow-hidden bg-muted ${vrImageIndices.includes(index) ? 'ring-2 ring-primary' : ''}`}>
                       <img
                         src={preview}
                         alt={`Additional ${index + 1}`}
-                        className="w-full h-32 object-cover"
+                        className="w-full h-24 sm:h-28 md:h-32 object-contain"
                       />
                       {vrImageIndices.includes(index) && (
                         <Badge className="absolute top-2 left-2 bg-gradient-to-r from-primary to-green-500 text-xs">
@@ -822,6 +885,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                         </Badge>
                       )}
                       <div className="absolute top-2 right-2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setPreviewImage(preview)}
+                        >
+                          <Eye className="w-3 h-3" />
+                        </Button>
                         <Button
                           type="button"
                           variant="destructive"
@@ -846,20 +918,37 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                   ))}
                 </div>
               )}
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-full h-32 bg-muted rounded flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-muted-foreground" />
+              <div 
+                className={`flex flex-col items-center gap-4 p-6 border-2 border-dashed rounded-lg transition-all ${
+                  isDragging 
+                    ? 'border-primary bg-primary/5 scale-[1.02]' 
+                    : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+                } ${additionalImages.length >= 19 ? 'opacity-50 pointer-events-none' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div className={`p-4 rounded-full transition-colors ${isDragging ? 'bg-primary/10' : 'bg-muted'}`}>
+                    <ImagePlus className={`w-10 h-10 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {isDragging ? 'Släpp bilderna här' : 'Dra och släpp bilder här'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">eller klicka för att välja filer</p>
+                  </div>
                 </div>
                 <Input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleAdditionalImagesChange}
-                  className="cursor-pointer"
-                  disabled={additionalImages.length >= 6}
+                  className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
+                  disabled={additionalImages.length >= 19}
                 />
-                <p className="text-sm text-muted-foreground">
-                  {additionalImages.length}/6 bilder uppladdade • Max 5MB per bild
+                <p className="text-sm text-muted-foreground text-center">
+                  {additionalImages.length}/19 bilder uppladdade • Max 5MB per bild
                   {vrImageIndices.length > 0 && ` • ${vrImageIndices.length} markerade som 360°`}
                 </p>
               </div>
@@ -869,70 +958,112 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
         {/* Ritning */}
         <div className="md:col-span-2">
-          <Label>Ritning/Planlösning (valfritt)</Label>
+          <Label>Ritningar/Planlösningar (valfritt, max 4 st)</Label>
           <Card className="p-4">
-            <div className="flex flex-col items-center gap-4">
-              {floorplanPreview ? (
-                <img
-                  src={floorplanPreview}
-                  alt="Ritning preview"
-                  className="w-full h-48 object-contain rounded bg-muted"
-                />
-              ) : (
-                <div className="w-full h-48 bg-muted rounded flex items-center justify-center">
-                  <FileText className="w-12 h-12 text-muted-foreground" />
+            <div className="space-y-4">
+              {floorplanPreviews.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {floorplanPreviews.map((preview, index) => (
+                    <div key={index} className="relative rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={preview}
+                        alt={`Ritning ${index + 1}`}
+                        className="w-full h-24 sm:h-28 md:h-32 object-contain"
+                      />
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setPreviewImage(preview)}
+                        >
+                          <Eye className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => removeFloorplan(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "floorplan")}
-                className="cursor-pointer"
-              />
-              <p className="text-sm text-muted-foreground">Max 5MB</p>
+              <div className={`flex flex-col items-center gap-4 p-6 border-2 border-dashed rounded-lg transition-all border-muted-foreground/25 hover:border-muted-foreground/50 ${floorplans.length >= 4 ? 'opacity-50 pointer-events-none' : ''}`}>
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div className="p-4 rounded-full bg-muted">
+                    <PencilRuler className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <p className="font-medium text-foreground">Välj ritningar</p>
+                  <p className="text-sm text-muted-foreground">Max 5MB per fil</p>
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFloorplanChange}
+                  className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
+                  disabled={floorplans.length >= 4}
+                />
+                <p className="text-sm text-muted-foreground text-center">
+                  {floorplans.length}/4 ritningar uppladdade
+                </p>
+              </div>
             </div>
-        </Card>
+          </Card>
         </div>
 
         {/* Dokument */}
         <div className="md:col-span-2">
           <Label>Dokument (valfritt, max 10 st)</Label>
-          <p className="text-sm text-muted-foreground mb-2">
-            Ladda upp dokument som årsredovisning, stadgar, etc. Alla besökare kan ladda ner dessa.
-          </p>
           <Card className="p-4">
             <div className="space-y-4">
               {documentNames.length > 0 && (
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                   {documentNames.map((name, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm truncate max-w-[200px]">{name}</span>
+                    <div key={index} className="relative rounded-lg overflow-hidden bg-muted p-3">
+                      <div className="flex flex-col items-center gap-2">
+                        <FileText className="w-8 h-8 text-muted-foreground" />
+                        <span className="text-xs text-center truncate w-full">{name}</span>
                       </div>
                       <Button
                         type="button"
-                        variant="ghost"
-                        size="sm"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-5 w-5"
                         onClick={() => removeDocument(index)}
-                        className="text-destructive hover:text-destructive"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3 h-3" />
                       </Button>
                     </div>
                   ))}
                 </div>
               )}
-              <Input
-                type="file"
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-                multiple
-                onChange={handleDocumentChange}
-                className="cursor-pointer"
-              />
-              <p className="text-sm text-muted-foreground">
-                {documents.length}/10 dokument • Max 20MB per fil • PDF, Word, Excel
-              </p>
+              <div className={`flex flex-col items-center gap-4 p-6 border-2 border-dashed rounded-lg transition-all border-muted-foreground/25 hover:border-muted-foreground/50 ${documents.length >= 10 ? 'opacity-50 pointer-events-none' : ''}`}>
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div className="p-4 rounded-full bg-muted">
+                    <FileText className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <p className="font-medium text-foreground">Välj dokument</p>
+                  <p className="text-sm text-muted-foreground">PDF, Word, Excel • Max 20MB per fil</p>
+                </div>
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  multiple
+                  onChange={handleDocumentChange}
+                  className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
+                  disabled={documents.length >= 10}
+                />
+                <p className="text-sm text-muted-foreground text-center">
+                  {documents.length}/10 dokument uppladdade
+                </p>
+              </div>
             </div>
           </Card>
         </div>
@@ -974,23 +1105,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 .from('property-images')
                 .getPublicUrl(mainImagePath);
 
-              // Upload hover image if exists
-              let hoverImageUrl = null;
-              if (hoverImage) {
-                const hoverImageExt = hoverImage.name.split('.').pop();
-                const hoverImagePath = `${user.id}/${Date.now()}_hover.${hoverImageExt}`;
-                const { error: hoverImageError } = await supabase.storage
-                  .from('property-images')
-                  .upload(hoverImagePath, hoverImage);
-
-                if (hoverImageError) throw hoverImageError;
-
-                const { data: { publicUrl } } = supabase.storage
-                  .from('property-images')
-                  .getPublicUrl(hoverImagePath);
-                hoverImageUrl = publicUrl;
-              }
-
               // Upload additional images if exist
               const additionalImageUrls: string[] = [];
               for (const image of additionalImages) {
@@ -1008,11 +1122,11 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 additionalImageUrls.push(publicUrl);
               }
 
-              // Upload floorplan if exists
-              let floorplanUrl = null;
-              if (floorplan) {
+              // Upload floorplans if exist
+              const floorplanUrls: string[] = [];
+              for (const floorplan of floorplans) {
                 const floorplanExt = floorplan.name.split('.').pop();
-                const floorplanPath = `${user.id}/${Date.now()}_floorplan.${floorplanExt}`;
+                const floorplanPath = `${user.id}/${Date.now()}_floorplan_${Math.random()}.${floorplanExt}`;
                 const { error: floorplanError } = await supabase.storage
                   .from('property-images')
                   .upload(floorplanPath, floorplan);
@@ -1022,7 +1136,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 const { data: { publicUrl } } = supabase.storage
                   .from('property-images')
                   .getPublicUrl(floorplanPath);
-                floorplanUrl = publicUrl;
+                floorplanUrls.push(publicUrl);
               }
 
               // Create property with is_coming_soon = true
@@ -1039,9 +1153,10 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 fee: data.fee,
                 description: data.description,
                 image_url: mainImageUrl,
-                hover_image_url: hoverImageUrl,
+                hover_image_url: null,
                 additional_images: additionalImageUrls,
-                floorplan_url: floorplanUrl,
+                floorplan_url: floorplanUrls[0] || null,
+                floorplan_urls: floorplanUrls,
                 viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
                 is_coming_soon: true,
                 is_new_production: isNewProduction,
@@ -1053,13 +1168,11 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               toast.success("Fastighet tillagd som kommande försäljning!");
               reset();
               setMainImage(null);
-              setHoverImage(null);
               setAdditionalImages([]);
-              setFloorplan(null);
+              setFloorplans([]);
               setMainImagePreview("");
-              setHoverImagePreview("");
               setAdditionalImagesPreviews([]);
-              setFloorplanPreview("");
+              setFloorplanPreviews([]);
               setIsNewProduction(false);
               onSuccess?.();
             } catch (error) {
@@ -1093,6 +1206,30 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </Button>
       </div>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={!!previewImage} onOpenChange={(open) => !open && setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl p-0 bg-black/95">
+          <div className="relative w-full h-[80vh] flex items-center justify-center p-4">
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Förhandsgranskning"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            )}
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              className="absolute top-4 right-4 h-10 w-10"
+              onClick={() => setPreviewImage(null)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 };
