@@ -439,9 +439,10 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setDocumentNames([]);
       setShowViewerCount(false);
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating property:", error);
-      toast.error("Kunde inte lägga till fastighet");
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error);
+      toast.error(`Kunde inte lägga till fastighet: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
