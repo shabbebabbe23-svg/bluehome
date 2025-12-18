@@ -811,12 +811,14 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                   <p className="text-sm text-muted-foreground">Max 5MB</p>
                 </div>
               )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
-              />
+              <div className="flex justify-center w-full">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
+                />
+              </div>
             </div>
           </Card>
         </div>
