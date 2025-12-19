@@ -24,10 +24,9 @@ interface HeroProps {
   onElevatorFilterChange?: (value: boolean) => void;
   onBalconyFilterChange?: (value: boolean) => void;
   onBiddingFilterChange?: (value: boolean) => void;
-  onWaterDistanceRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onWaterDistanceRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -46,7 +45,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
   const [hasBidding, setHasBidding] = useState(false);
-  const [waterDistanceRange, setWaterDistanceRange] = useState([50, 10000]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -61,7 +59,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasElevator(false);
     setHasBalcony(false);
     setHasBidding(false);
-    setWaterDistanceRange([50, 10000]);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -71,7 +68,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
-    onWaterDistanceRangeChange?.([50, 10000]);
   };
 
   // Call callbacks when filter values change
@@ -92,7 +88,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony || hasBidding || waterDistanceRange[0] !== 50 || waterDistanceRange[1] !== 10000;
+    hasElevator || hasBalcony || hasBidding;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -782,30 +778,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       />
                     </div>
 
-                    {/* Water Distance Filter */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Avstånd till vatten</h3>
-                        <span className="text-sm font-medium text-foreground">
-                          {waterDistanceRange[0] >= 1000 ? `${(waterDistanceRange[0] / 1000).toFixed(1)} km` : `${waterDistanceRange[0]} m`} - {waterDistanceRange[1] >= 1000 ? `${(waterDistanceRange[1] / 1000).toFixed(1)} km` : `${waterDistanceRange[1]} m`}
-                        </span>
-                      </div>
-                      <Slider
-                        min={50}
-                        max={10000}
-                        step={50}
-                        value={waterDistanceRange}
-                        onValueChange={(value) => {
-                          setWaterDistanceRange(value);
-                          onWaterDistanceRangeChange?.(value as [number, number]);
-                        }}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>50 m</span>
-                        <span>10 km</span>
-                      </div>
-                    </div>
 
                   </>
                 )}

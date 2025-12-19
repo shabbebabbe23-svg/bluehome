@@ -31,7 +31,6 @@ const Index = () => {
   const [elevatorFilter, setElevatorFilter] = useState(false);
   const [balconyFilter, setBalconyFilter] = useState(false);
   const [biddingFilter, setBiddingFilter] = useState(false);
-  const [waterDistanceRange, setWaterDistanceRange] = useState<[number, number]>([50, 10000]);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const scrollToResults = () => {
@@ -139,7 +138,6 @@ const Index = () => {
             onElevatorFilterChange={setElevatorFilter}
             onBalconyFilterChange={setBalconyFilter}
             onBiddingFilterChange={setBiddingFilter}
-            onWaterDistanceRangeChange={setWaterDistanceRange}
           />
           <div ref={resultsRef}>
             {/* Recent uploads section - only show when NOT viewing final prices */}
@@ -186,7 +184,6 @@ const Index = () => {
                 elevatorFilter={elevatorFilter}
                 balconyFilter={balconyFilter}
                 biddingFilter={biddingFilter}
-                waterDistanceRange={waterDistanceRange}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />
