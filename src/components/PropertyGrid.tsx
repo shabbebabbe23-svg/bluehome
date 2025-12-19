@@ -54,6 +54,7 @@ interface PropertyGridProps {
   elevatorFilter?: boolean;
   balconyFilter?: boolean;
   biddingFilter?: boolean;
+  feeRange?: [number, number];
 }
 
 export interface Property {
@@ -582,7 +583,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000] }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -815,6 +816,14 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     // Filter by active bidding
     if (biddingFilter) {
       filtered = filtered.filter(property => propertyBids[property.id as string] === true);
+    }
+
+    // Filter by fee
+    if (feeRange && (feeRange[0] > 0 || feeRange[1] < 15000)) {
+      filtered = filtered.filter(property => {
+        const fee = property.fee || 0;
+        return fee <= feeRange[1];
+      });
     }
 
 

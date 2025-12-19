@@ -24,14 +24,16 @@ interface HeroProps {
   onElevatorFilterChange?: (value: boolean) => void;
   onBalconyFilterChange?: (value: boolean) => void;
   onBiddingFilterChange?: (value: boolean) => void;
+  onFeeRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
   const [roomRange, setRoomRange] = useState([0, 7]);
+  const [feeRange, setFeeRange] = useState([0, 15000]);
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -52,6 +54,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setPriceRange([0, 20000000]);
     setAreaRange([0, 200]);
     setRoomRange([0, 7]);
+    setFeeRange([0, 15000]);
     setPropertyType("");
     setShowFinalPrices(false);
     setKeywords("");
@@ -65,6 +68,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onPriceRangeChange?.([0, 20000000]);
     onAreaRangeChange?.([0, 200]);
     onRoomRangeChange?.([0, 7]);
+    onFeeRangeChange?.([0, 15000]);
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
@@ -83,10 +87,15 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onRoomRangeChange?.(roomRange as [number, number]);
   }, [roomRange, onRoomRangeChange]);
 
+  useEffect(() => {
+    onFeeRangeChange?.(feeRange as [number, number]);
+  }, [feeRange, onFeeRangeChange]);
+
   const hasActiveFilters = searchLocation !== "" || 
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
+    feeRange[0] !== 0 || feeRange[1] !== 15000 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
     hasElevator || hasBalcony || hasBidding;
 
@@ -729,6 +738,37 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         >
                           Pågående budgivning
                         </Button>
+                      </div>
+                    </div>
+
+                    {/* Fee Filter */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Max avgift</h3>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            value={feeRange[1]}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              setFeeRange([feeRange[0], Math.min(15000, Math.max(0, value))]);
+                            }}
+                            className="w-20 h-8 text-sm text-center border-primary/30"
+                          />
+                          <span className="text-xs text-muted-foreground">kr/mån</span>
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={15000}
+                        step={500}
+                        value={[feeRange[1]]}
+                        onValueChange={([value]) => setFeeRange([0, value])}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>0 kr</span>
+                        <span>15 000+ kr</span>
                       </div>
                     </div>
 
