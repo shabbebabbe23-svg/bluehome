@@ -666,7 +666,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
-            
+
             createdAt: new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
@@ -820,9 +820,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
     // Filter by fee
     if (feeRange && (feeRange[0] > 0 || feeRange[1] < 15000)) {
+      const [minFee, maxFee] = feeRange;
       filtered = filtered.filter(property => {
         const fee = property.fee || 0;
-        return fee <= feeRange[1];
+        return fee >= minFee && (maxFee >= 15000 || fee <= maxFee);
       });
     }
 
@@ -867,12 +868,12 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const currentProperties = showFinalPrices
     ? dbProperties.filter(p => p.isSold === true)
     : dbProperties.filter(p => p.isSold !== true);
-  
+
   // Fallback to static mock data if no DB properties exist
-  const propertiesWithFallback = currentProperties.length > 0 
-    ? currentProperties 
+  const propertiesWithFallback = currentProperties.length > 0
+    ? currentProperties
     : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
-  
+
   const filteredProperties = filterByType(propertiesWithFallback);
   const sortedProperties = sortProperties(filteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
@@ -953,7 +954,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       <div className="w-full">
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1">
+          <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full lg:w-[90%] mx-auto" : ""}`}>
             <div className="hidden sm:block" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
@@ -1035,7 +1036,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-4">
               Senaste sålda objekt
             </h3>
-            <RecentSoldCarousel 
+            <RecentSoldCarousel
               properties={propertiesWithFallback.slice(0, 5).map(p => ({
                 id: p.id,
                 title: p.title,
@@ -1060,13 +1061,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
           : "flex flex-col gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)
             const isDbProperty = dbProperties.some(p => String(p.id) === String(property.id));
-              return (
+            return (
               <div
                 key={property.id}
                 className="animate-slide-up h-full"
