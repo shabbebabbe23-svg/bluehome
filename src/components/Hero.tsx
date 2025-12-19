@@ -604,9 +604,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 kr</span>
-                        <span>20+ milj kr</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kr</span>
+                        <span className="text-primary font-medium">20+ milj kr</span>
                       </div>
                     </div>
 
@@ -651,9 +651,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 kvm</span>
-                        <span>200+ kvm</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kvm</span>
+                        <span className="text-primary font-medium">200+ kvm</span>
                       </div>
                     </div>
 
@@ -698,9 +698,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 rum</span>
-                        <span>7+ rum</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 rum</span>
+                        <span className="text-primary font-medium">7+ rum</span>
                       </div>
                     </div>
 
@@ -766,9 +766,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={([value]) => setFeeRange([0, value])}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 kr</span>
-                        <span>15 000+ kr</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kr</span>
+                        <span className="text-primary font-medium">15 000+ kr</span>
                       </div>
                     </div>
 
