@@ -54,7 +54,7 @@ interface PropertyGridProps {
   elevatorFilter?: boolean;
   balconyFilter?: boolean;
   biddingFilter?: boolean;
-  waterDistanceRange?: [number, number];
+  feeRange?: [number, number];
 }
 
 export interface Property {
@@ -84,7 +84,6 @@ export interface Property {
   is_new_production?: boolean;
   has_elevator?: boolean;
   has_balcony?: boolean;
-  water_distance?: number;
   agent_name?: string;
   agent_avatar?: string;
   agent_phone?: string;
@@ -584,7 +583,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, waterDistanceRange }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000] }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -667,7 +666,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
-            water_distance: prop.water_distance || undefined,
+            
             createdAt: new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
@@ -819,13 +818,14 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       filtered = filtered.filter(property => propertyBids[property.id as string] === true);
     }
 
-    // Filter by water distance
-    if (waterDistanceRange && (waterDistanceRange[0] !== 50 || waterDistanceRange[1] !== 10000)) {
+    // Filter by fee
+    if (feeRange && (feeRange[0] > 0 || feeRange[1] < 15000)) {
       filtered = filtered.filter(property => {
-        if (!property.water_distance) return false;
-        return property.water_distance >= waterDistanceRange[0] && property.water_distance <= waterDistanceRange[1];
+        const fee = property.fee || 0;
+        return fee <= feeRange[1];
       });
     }
+
 
     return filtered;
   };

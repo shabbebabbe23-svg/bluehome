@@ -24,15 +24,16 @@ interface HeroProps {
   onElevatorFilterChange?: (value: boolean) => void;
   onBalconyFilterChange?: (value: boolean) => void;
   onBiddingFilterChange?: (value: boolean) => void;
-  onWaterDistanceRangeChange?: (value: [number, number]) => void;
+  onFeeRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onWaterDistanceRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
   const [areaRange, setAreaRange] = useState([0, 200]);
   const [roomRange, setRoomRange] = useState([0, 7]);
+  const [feeRange, setFeeRange] = useState([0, 15000]);
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -46,7 +47,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
   const [hasBidding, setHasBidding] = useState(false);
-  const [waterDistanceRange, setWaterDistanceRange] = useState([50, 10000]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -54,6 +54,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setPriceRange([0, 20000000]);
     setAreaRange([0, 200]);
     setRoomRange([0, 7]);
+    setFeeRange([0, 15000]);
     setPropertyType("");
     setShowFinalPrices(false);
     setKeywords("");
@@ -61,17 +62,16 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasElevator(false);
     setHasBalcony(false);
     setHasBidding(false);
-    setWaterDistanceRange([50, 10000]);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
     onPriceRangeChange?.([0, 20000000]);
     onAreaRangeChange?.([0, 200]);
     onRoomRangeChange?.([0, 7]);
+    onFeeRangeChange?.([0, 15000]);
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
-    onWaterDistanceRangeChange?.([50, 10000]);
   };
 
   // Call callbacks when filter values change
@@ -87,12 +87,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onRoomRangeChange?.(roomRange as [number, number]);
   }, [roomRange, onRoomRangeChange]);
 
+  useEffect(() => {
+    onFeeRangeChange?.(feeRange as [number, number]);
+  }, [feeRange, onFeeRangeChange]);
+
   const hasActiveFilters = searchLocation !== "" || 
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
+    feeRange[0] !== 0 || feeRange[1] !== 15000 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony || hasBidding || waterDistanceRange[0] !== 50 || waterDistanceRange[1] !== 10000;
+    hasElevator || hasBalcony || hasBidding;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -599,9 +604,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 kr</span>
-                        <span>20+ milj kr</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kr</span>
+                        <span className="text-primary font-medium">20+ milj kr</span>
                       </div>
                     </div>
 
@@ -646,9 +651,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 kvm</span>
-                        <span>200+ kvm</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kvm</span>
+                        <span className="text-primary font-medium">200+ kvm</span>
                       </div>
                     </div>
 
@@ -693,9 +698,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>0 rum</span>
-                        <span>7+ rum</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 rum</span>
+                        <span className="text-primary font-medium">7+ rum</span>
                       </div>
                     </div>
 
@@ -733,6 +738,37 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         >
                           Pågående budgivning
                         </Button>
+                      </div>
+                    </div>
+
+                    {/* Fee Filter */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Max avgift</h3>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            value={feeRange[1]}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              setFeeRange([feeRange[0], Math.min(15000, Math.max(0, value))]);
+                            }}
+                            className="w-20 h-8 text-sm text-center border-primary/30"
+                          />
+                          <span className="text-xs text-muted-foreground">kr/mån</span>
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={15000}
+                        step={500}
+                        value={[feeRange[1]]}
+                        onValueChange={([value]) => setFeeRange([0, value])}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 kr</span>
+                        <span className="text-primary font-medium">15 000+ kr</span>
                       </div>
                     </div>
 
@@ -782,30 +818,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       />
                     </div>
 
-                    {/* Water Distance Filter */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Avstånd till vatten</h3>
-                        <span className="text-sm font-medium text-foreground">
-                          {waterDistanceRange[0] >= 1000 ? `${(waterDistanceRange[0] / 1000).toFixed(1)} km` : `${waterDistanceRange[0]} m`} - {waterDistanceRange[1] >= 1000 ? `${(waterDistanceRange[1] / 1000).toFixed(1)} km` : `${waterDistanceRange[1]} m`}
-                        </span>
-                      </div>
-                      <Slider
-                        min={50}
-                        max={10000}
-                        step={50}
-                        value={waterDistanceRange}
-                        onValueChange={(value) => {
-                          setWaterDistanceRange(value);
-                          onWaterDistanceRangeChange?.(value as [number, number]);
-                        }}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>50 m</span>
-                        <span>10 km</span>
-                      </div>
-                    </div>
 
                   </>
                 )}

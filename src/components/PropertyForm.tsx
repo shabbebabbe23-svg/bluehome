@@ -51,7 +51,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
-  const [waterDistance, setWaterDistance] = useState<number | undefined>(undefined);
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [showViewerCount, setShowViewerCount] = useState(false);
@@ -404,7 +403,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         hover_image_url: null,
         additional_images: additionalImageUrls,
         floorplan_url: floorplanUrls[0] || null,
-        floorplan_urls: floorplanUrls,
+        floorplan_images: floorplanUrls,
         viewing_date: data.viewing_date || null,
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
@@ -414,7 +413,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
-        water_distance: waterDistance || null,
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
       });
@@ -434,14 +432,14 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
-      setWaterDistance(undefined);
       setDocuments([]);
       setDocumentNames([]);
       setShowViewerCount(false);
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating property:", error);
-      toast.error("Kunde inte lägga till fastighet");
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error);
+      toast.error(`Kunde inte lägga till fastighet: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -745,47 +743,6 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           </Card>
         </div>
 
-        {/* Avstånd till vatten */}
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center gap-2">
-              <Waves className="w-5 h-5 text-primary" />
-              <Label htmlFor="water_distance" className="font-semibold text-base">
-                Avstånd till vatten
-              </Label>
-            </div>
-            <Select
-              value={waterDistance?.toString() || ''}
-              onValueChange={(value) => setWaterDistance(value ? parseInt(value) : undefined)}
-            >
-              <SelectTrigger className="mt-2">
-                <div className="flex items-center gap-2">
-                  <Waves className="w-4 h-4 text-muted-foreground" />
-                  <SelectValue placeholder="Välj avstånd till vatten" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="50">50 meter</SelectItem>
-                <SelectItem value="100">100 meter</SelectItem>
-                <SelectItem value="200">200 meter</SelectItem>
-                <SelectItem value="300">300 meter</SelectItem>
-                <SelectItem value="500">500 meter</SelectItem>
-                <SelectItem value="750">750 meter</SelectItem>
-                <SelectItem value="1000">1 km</SelectItem>
-                <SelectItem value="1500">1,5 km</SelectItem>
-                <SelectItem value="2000">2 km</SelectItem>
-                <SelectItem value="3000">3 km</SelectItem>
-                <SelectItem value="5000">5 km</SelectItem>
-                <SelectItem value="7500">7,5 km</SelectItem>
-                <SelectItem value="10000">10 km+</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-muted-foreground mt-2">
-              Ange avståndet till närmaste vatten (sjö, hav, å)
-            </p>
-          </Card>
-        </div>
-
         {/* Visa antal som tittar just nu */}
         <div className="md:col-span-2">
           <Card className="p-4 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
@@ -854,12 +811,14 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                   <p className="text-sm text-muted-foreground">Max 5MB</p>
                 </div>
               )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
-              />
+              <div className="flex justify-center w-full">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="cursor-pointer w-full max-w-[280px] sm:max-w-sm border-2 border-primary/30 rounded-lg sm:rounded-xl py-0.5 sm:py-1 px-1.5 sm:px-2 file:mr-2 sm:file:mr-3 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:rounded-md sm:file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#0276B1] file:to-[#12873D] file:text-white file:cursor-pointer hover:file:opacity-90 file:transition-all file:shadow-md hover:file:shadow-lg text-xs sm:text-sm text-muted-foreground"
+                />
+              </div>
             </div>
           </Card>
         </div>
@@ -1156,7 +1115,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 hover_image_url: null,
                 additional_images: additionalImageUrls,
                 floorplan_url: floorplanUrls[0] || null,
-                floorplan_urls: floorplanUrls,
+                floorplan_images: floorplanUrls,
                 viewing_date: data.viewing_date ? new Date(data.viewing_date).toISOString() : null,
                 is_coming_soon: true,
                 is_new_production: isNewProduction,
