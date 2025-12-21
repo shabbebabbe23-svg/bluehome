@@ -66,18 +66,18 @@ const PropertyDetail = () => {
 
   // Detect if running as PWA
   useEffect(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-      || (window.navigator as any).standalone 
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone
       || document.referrer.includes('android-app://');
     setIsPWA(isStandalone);
   }, []);
 
   // Track property view
   usePropertyViewTracking(id || "");
-  
+
   // Real-time viewer presence
   const { viewerCount } = usePropertyPresence(id);
-  
+
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
@@ -353,33 +353,33 @@ const PropertyDetail = () => {
   }
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg">Laddar fastighet...</p>
-        </div>
-      </div>;
+      <div className="text-center">
+        <p className="text-lg">Laddar fastighet...</p>
+      </div>
+    </div>;
   }
   if (!property) {
     return <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Fastighet hittades inte</h1>
-          <Link to="/">
-            <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
-          </Link>
-        </div>
-      </div>;
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Fastighet hittades inte</h1>
+        <Link to="/">
+          <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
+        </Link>
+      </div>
+    </div>;
   }
 
   // Handle images for both database and hardcoded properties
   const images = dbProperty ? [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) : property.images || [property1];
-  
+
   // Track image views
   const trackImageView = async (imageIndex: number) => {
     if (!id) return;
-    
+
     try {
-      const sessionId = sessionStorage.getItem('session_id') || 
+      const sessionId = sessionStorage.getItem('session_id') ||
         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       if (!sessionStorage.getItem('session_id')) {
         sessionStorage.setItem('session_id', sessionId);
       }
@@ -394,7 +394,7 @@ const PropertyDetail = () => {
       console.error('Error tracking image view:', error);
     }
   };
-  
+
   const handlePreviousImage = () => {
     const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
     setCurrentImageIndex(newIndex);
@@ -470,703 +470,703 @@ const PropertyDetail = () => {
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
   return <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
+    {/* Header */}
+    <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
       background: 'var(--main-gradient)'
     }}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
-          <svg 
-            width="36" 
-            height="36" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            xmlns="http://www.w3.org/2000/svg"
-            onClick={() => navigate('/')}
-            className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
-          >
-            <defs>
-              <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-              </linearGradient>
-            </defs>
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          
-          {/* BaraHem Logo - Center */}
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
-            <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-            <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
-              BaraHem
-            </span>
-          </Link>
-          
-          <div className="flex gap-1 sm:gap-2 items-center">
-            {!isPWA && (
-              <svg 
-                width="36" 
-                height="36" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                onClick={() => window.print()}
-                className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
-              >
-                <defs>
-                  <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-                  </linearGradient>
-                </defs>
-                <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
-            
-            <svg 
-              width="36" 
-              height="36" 
-              viewBox="0 0 24 24" 
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          onClick={() => navigate('/')}
+          className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
+        >
+          <defs>
+            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+            </linearGradient>
+          </defs>
+          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#arrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+
+        {/* BaraHem Logo - Center */}
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
+          <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+          <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+            BaraHem
+          </span>
+        </Link>
+
+        <div className="flex gap-1 sm:gap-2 items-center">
+          {!isPWA && (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              onClick={() => id && toggleFavorite(String(id))}
+              onClick={() => window.print()}
               className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
             >
               <defs>
-                <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
                   <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
-              <path 
-                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
-                stroke="url(#heartGradient)" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                fill={id && checkIsFavorite(String(id)) ? "url(#heartGradient)" : "none"}
-              />
+              <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+          )}
 
-            {/* Profile Avatar with Glow */}
-            {user && (
-              <Link to="/maklare?tab=profile" className="relative ml-2">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-                <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
-                  <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
-                  <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
-                    {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="w-full max-w-none px-3 sm:px-4 py-4 md:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
-          {/* Left Ad */}
-          <div className="hidden lg:flex lg:justify-center lg:items-start">
-            <AdBanner className="order-1" />
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            {/* Image Gallery */}
-            <Card className="overflow-hidden">
-              <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
-                <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setIsImageModalOpen(true)} />
-                
-                {/* Navigation Buttons */}
-                <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-                <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handleNextImage}>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-                
-                {/* Image Counter */}
-                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
-                  {currentImageIndex + 1} / {images.length}
-                </div>
-              </div>
-              
-              {/* Thumbnail Gallery */}
-              <div className="p-2 sm:p-4 bg-muted/30 mx-0">
-                <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
-                  {images.map((image, index) => <button key={index} onClick={() => {
-                      setCurrentImageIndex(index);
-                      trackImageView(index);
-                    }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
-                      <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
-                    </button>)}
-                </div>
-              </div>
-            </Card>
-
-            {/* Property Title and Share Section */}
-            <div className="flex flex-col gap-4">
-              <h1 className="text-3xl sm:text-4xl font-bold text-center">
-                {property.title}
-              </h1>
-              <div className="flex items-center justify-center gap-3">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsShareDialogOpen(true)} 
-                  className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
-                >
-                  <Share2 className="w-4 h-4" />
-                  <span>Dela bostad</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => navigate(`/virtuell-visning/${id}`)} 
-                  className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
-                >
-                  <Move3D className="w-4 h-4" />
-                  <span>360° Visning</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Real-time viewer count */}
-            {dbProperty?.show_viewer_count && viewerCount > 0 && (
-              <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-foreground">
-                  {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
-                </span>
-              </div>
-            )}
-
-            {/* Property Info */}
-            <Card>
-              <CardContent className="p-4 sm:p-6">
-                <div className="mb-4">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <Badge variant="secondary" className="text-sm px-4 py-1.5">{property.type}</Badge>
-                    {property.isNew && <Badge className="bg-success text-white text-sm px-4 py-1.5">Ny</Badge>}
-                    {dbProperty?.is_new_production && <Badge className="bg-blue-600 text-white text-sm px-4 py-1.5 font-semibold">Nyproduktion</Badge>}
-                    {property.is_deleted && <Badge className="bg-red-600 text-white text-sm px-4 py-1.5 font-semibold">Borttagen</Badge>}
-                    {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
-                    {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && <>
-                        <Badge className="bg-orange-500 text-white text-sm px-4 py-1.5">Pågående budgivning</Badge>
-                        {dbProperty?.bidCount && <Badge variant="outline" className="text-sm px-4 py-1.5">
-                            {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
-                          </Badge>}
-                      </>}
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold">{property.address}</h1>
-                    <div className="flex flex-col items-end">
-                      {(property.is_sold || property.isSold) && property.sold_price ? <>
-                          <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
-                            {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                          </p>
-                          <p className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
-                            {`${property.sold_price.toLocaleString('sv-SE')} kr`}
-                          </p>
-                        </> : property.new_price ? <>
-                          <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
-                            {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                          </p>
-                          <p className="text-2xl sm:text-3xl font-bold text-[#FF6B2C] whitespace-nowrap">
-                            {dbProperty ? `${property.new_price.toLocaleString('sv-SE')} kr` : property.price}
-                          </p>
-                        </> : <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
-                          {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
-                        </p>}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between text-muted-foreground mt-2">
-                    <div className="flex items-center">
-                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                      <span className="text-sm sm:text-2xl">{property.location}</span>
-                    </div>
-                    {dbProperty?.listed_date && (() => {
-                      const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
-                      return (
-                        <span className="text-xs sm:text-sm text-muted-foreground">
-                          {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                {/* Quick Facts */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <div className="flex items-center gap-2">
-                    <Bed className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-muted-foreground text-xl">Sovrum</p>
-                      <p className="font-semibold">{property.bedrooms}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Bath className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-muted-foreground text-xl">Badrum</p>
-                      <p className="font-semibold">{property.bathrooms}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Square className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-muted-foreground text-xl">Boarea</p>
-                      <p className="font-semibold">{property.area} m²</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Home className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-muted-foreground text-xl">Byggår</p>
-                      <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                {/* Description */}
-                <div>
-                  <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-                  <p className="text-xl text-muted-foreground leading-relaxed">
-                    {property.description || 'Ingen beskrivning tillgänglig'}
-                  </p>
-                </div>
-
-                <Separator className="my-6" />
-
-                {/* Detailed Information */}
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                    {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
-                        <span className="text-muted-foreground">Slutpris</span>
-                        <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
-                      </div>}
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Bostadstyp</span>
-                      <span className="font-semibold">{property.type || 'Villa'}</span>
-                    </div>
-                    {property.new_price && property.is_manual_price_change && <div className="flex justify-between py-2 border-b border-border">
-                        <span className="text-muted-foreground">Prisutveckling</span>
-                        <span className="font-semibold text-[#FF6B2C]">
-                          +{(property.new_price - property.price).toLocaleString('sv-SE')} kr 
-                          ({Math.round((property.new_price - property.price) / property.price * 100)}%)
-                        </span>
-                      </div>}
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Upplåtelseform</span>
-                      <span className="font-semibold">Äganderätt</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Utgångspris</span>
-                      <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Antal rum</span>
-                      <span className="font-semibold">{property.bedrooms} rum</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Pris/m²</span>
-                      <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Boarea</span>
-                      <span className="font-semibold">{property.area} m²</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Driftkostnad</span>
-                      <span className="font-semibold">5 650 kr/år</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Biarea</span>
-                      <span className="font-semibold">25 m²</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Byggår</span>
-                      <span className="font-semibold">{property.buildYear || '2021'}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Tomtarea</span>
-                      <span className="font-semibold">850 m²</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Energiklass</span>
-                      <span className="font-semibold">B</span>
-                    </div>
-                    {dbProperty?.housing_association && (
-                      <div className="flex justify-between py-2 border-b border-border">
-                        <span className="text-muted-foreground">Bostadsförening</span>
-                        <span className="font-semibold">{dbProperty.housing_association}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {(property?.floorplan_images?.length > 0 || property?.floorplan_url) && <>
-                    <Separator className="my-6" />
-                    <div>
-                      <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                      <div className="space-y-4">
-                        {property?.floorplan_images?.length > 0 ? property.floorplan_images.map((imageUrl: string, index: number) => <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                              <img src={getImageUrl(imageUrl) || imageUrl} alt={`Planritning ${index + 1}`} className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
-                            </div>) : <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                            <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
-                          </div>}
-                      </div>
-                    </div>
-                  </>}
-
-                {/* Documents Section */}
-                {dbProperty?.documents && Array.isArray(dbProperty.documents) && dbProperty.documents.length > 0 && (
-                  <>
-                    <Separator className="my-6" />
-                    <div>
-                      <h2 className="text-xl font-bold mb-3">Dokument</h2>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Ladda ner årsredovisning, stadgar och andra dokument
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {(dbProperty.documents as { url: string; name: string }[]).map((doc, index) => (
-                          <a
-                            key={index}
-                            href={doc.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            download={doc.name}
-                            className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors group"
-                          >
-                            <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                              <Download className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm truncate">{doc.name}</p>
-                              <p className="text-xs text-muted-foreground">Klicka för att ladda ner</p>
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {!dbProperty && <>
-                    <Separator className="my-6" />
-
-                    {/* Floor Plan */}
-                    <div>
-                      <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                        <img src={floorplan} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
-                      </div>
-                    </div>
-
-                    <Separator className="my-6" />
-
-                    {/* Features */}
-                    <div>
-                      <h2 className="text-xl font-bold mb-3">Highlights</h2>
-                      <div className="grid grid-cols-2 gap-2">
-                        {property.features.map((feature, index) => <div key={index} className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <span className="text-muted-foreground">{feature}</span>
-                          </div>)}
-                      </div>
-                    </div>
-                  </>}
-              </CardContent>
-            </Card>
-
-            {/* Map */}
-            <PropertyDetailMap address={property.address} location={property.location} />
-            
-            {/* Cost Breakdown */}
-            <PropertyCostBreakdown 
-              price={property.price} 
-              fee={property.fee || 0} 
-              area={property.area} 
-              type={property.type}
-              operatingCost={property.operating_cost || 0}
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            onClick={() => id && toggleFavorite(String(id))}
+            className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+          >
+            <defs>
+              <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              stroke="url(#heartGradient)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill={id && checkIsFavorite(String(id)) ? "url(#heartGradient)" : "none"}
             />
+          </svg>
+
+          {/* Profile Avatar with Glow */}
+          {user && (
+            <Link to="/maklare?tab=profile" className="relative ml-2">
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+              <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+                <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                  {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
+        {/* Left Ad */}
+        <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">
+          <AdBanner className="order-1" />
+        </div>
+
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          {/* Image Gallery */}
+          <Card className="overflow-hidden">
+            <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
+              <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setIsImageModalOpen(true)} />
+
+              {/* Navigation Buttons */}
+              <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+              <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handleNextImage}>
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+
+              {/* Image Counter */}
+              <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
+                {currentImageIndex + 1} / {images.length}
+              </div>
+            </div>
+
+            {/* Thumbnail Gallery */}
+            <div className="p-2 sm:p-4 bg-muted/30 mx-0">
+              <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
+                {images.map((image, index) => <button key={index} onClick={() => {
+                  setCurrentImageIndex(index);
+                  trackImageView(index);
+                }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
+                  <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
+                </button>)}
+              </div>
+            </div>
+          </Card>
+
+          {/* Property Title and Share Section */}
+          <div className="flex flex-col gap-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-center">
+              {property.title}
+            </h1>
+            <div className="flex items-center justify-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsShareDialogOpen(true)}
+                className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Dela bostad</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/virtuell-visning/${id}`)}
+                className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
+              >
+                <Move3D className="w-4 h-4" />
+                <span>360° Visning</span>
+              </Button>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Contact Card */}
-            <Card className="sticky top-24">
-              <CardContent className="p-6">
-                {/* Days on market badge - right side */}
-                {dbProperty?.listed_date && (() => {
-                  const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
-                  return (
-                    <div className="mb-4 p-3 bg-muted/30 rounded-lg">
-                      <p className="text-sm text-center font-semibold text-muted-foreground">
-                        {daysOnMarket === 0 ? "Ny idag på BaraHem" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
-                      </p>
-                    </div>
-                  );
-                })()}
-                
-                {agentProfile ?
-              // Show real agent profile
-              <>
-                    <div className="flex flex-col items-center gap-4 mb-6">
-                      <Link to={`/agent/${property.user_id}`} className="z-20 hover:scale-105 transition-transform">
-                        <Avatar className="w-64 h-64 border-4 border-border cursor-pointer">
-                          <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
-                          <AvatarFallback className="bg-primary text-white text-2xl">
-                            <User className="w-32 h-32" />
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground mb-1">Kontakta mäklaren</p>
-                        <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
-                          <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
-                        </Link>
-                        {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
-                            <Building2 className="w-3 h-3" />
-                            {agentProfile.agency}
-                          </p>}
-                      </div>
-                    </div>
+          {/* Real-time viewer count */}
+          {dbProperty?.show_viewer_count && viewerCount > 0 && (
+            <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-foreground">
+                {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
+              </span>
+            </div>
+          )}
 
-                    {/* Agent Info */}
-                    <div className="space-y-3 mb-6 bg-muted/30 rounded-lg p-4">
-                      {agentProfile.phone && <div className="flex items-center gap-2 text-sm">
-                          <Phone className="w-4 h-4 text-muted-foreground" />
-                          <span>{agentProfile.phone}</span>
-                        </div>}
-                      {agentProfile.email && <div className="flex items-center gap-2 text-sm">
-                          <Mail className="w-4 h-4 text-muted-foreground" />
-                          <span className="truncate">{agentProfile.email}</span>
-                        </div>}
-                      {agentProfile.office && <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          <span>{agentProfile.office}</span>
-                        </div>}
-                      {agentProfile.area && <div className="flex items-center gap-2 text-sm">
-                          <Home className="w-4 h-4 text-muted-foreground" />
-                          <span>{agentProfile.area}</span>
-                        </div>}
-                    </div>
-
-                    <div className="space-y-3">
-                      {agentProfile.phone && <Button 
-                          className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                          size="lg"
-                          onClick={() => window.open(`tel:${agentProfile.phone}`, '_self')}
-                        >
-                          <Phone className="w-4 h-4 mr-2" />
-                          Ring mig
-                        </Button>}
-                      <Button 
-                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                        size="lg"
-                        onClick={() => {
-                          const subject = `Intresserad av: ${property.address}`;
-                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        }}
-                      >
-                        <Mail className="w-4 h-4 mr-2" />
-                        Skicka meddelande
-                      </Button>
-                      <Button 
-                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                        size="lg"
-                        onClick={() => {
-                          const subject = `Boka visning: ${property.address}`;
-                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        }}
-                      >
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Boka visning
-                      </Button>
-                    </div>
-                  </> :
-              // Show placeholder for hardcoded properties
-              <>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
-                        SB
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Kontakta mäklaren</p>
-                        <p className="text-lg font-semibold">Shahab Barani</p>
-                        <p className="text-sm text-muted-foreground">{property.vendor}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <Button 
-                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                        size="lg"
-                        onClick={() => toast.info('Kontakta mäklaren via email för telefonnummer')}
-                      >
-                        Visa telefonnummer
-                      </Button>
-                      <Button 
-                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                        size="lg"
-                        onClick={() => {
-                          const subject = `Intresserad av: ${property.address}`;
-                          const body = `Hej,\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        }}
-                      >
-                        Skicka meddelande
-                      </Button>
-                      <Button 
-                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105" 
-                        size="lg"
-                        onClick={() => {
-                          const subject = `Boka visning: ${property.address}`;
-                          const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        }}
-                      >
-                        Boka visning
-                      </Button>
-                    </div>
+          {/* Property Info */}
+          <Card>
+            <CardContent className="p-4 sm:p-6">
+              <div className="mb-4">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <Badge variant="secondary" className="text-sm px-4 py-1.5">{property.type}</Badge>
+                  {property.isNew && <Badge className="bg-success text-white text-sm px-4 py-1.5">Ny</Badge>}
+                  {dbProperty?.is_new_production && <Badge className="bg-blue-600 text-white text-sm px-4 py-1.5 font-semibold">Nyproduktion</Badge>}
+                  {property.is_deleted && <Badge className="bg-red-600 text-white text-sm px-4 py-1.5 font-semibold">Borttagen</Badge>}
+                  {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
+                  {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && <>
+                    <Badge className="bg-orange-500 text-white text-sm px-4 py-1.5">Pågående budgivning</Badge>
+                    {dbProperty?.bidCount && <Badge variant="outline" className="text-sm px-4 py-1.5">
+                      {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
+                    </Badge>}
                   </>}
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold">{property.address}</h1>
+                  <div className="flex flex-col items-end">
+                    {(property.is_sold || property.isSold) && property.sold_price ? <>
+                      <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
+                        {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                        {`${property.sold_price.toLocaleString('sv-SE')} kr`}
+                      </p>
+                    </> : property.new_price ? <>
+                      <p className="text-lg sm:text-xl text-muted-foreground line-through whitespace-nowrap">
+                        {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold text-[#FF6B2C] whitespace-nowrap">
+                        {dbProperty ? `${property.new_price.toLocaleString('sv-SE')} kr` : property.price}
+                      </p>
+                    </> : <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
+                      {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
+                    </p>}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground mt-2">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span className="text-sm sm:text-2xl">{property.location}</span>
+                  </div>
+                  {dbProperty?.listed_date && (() => {
+                    const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
+                    return (
+                      <span className="text-xs sm:text-sm text-muted-foreground">
+                        {daysOnMarket === 0 ? "Ny idag" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Quick Facts */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="flex items-center gap-2">
+                  <Bed className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground text-xl">Sovrum</p>
+                    <p className="font-semibold">{property.bedrooms}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Bath className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground text-xl">Badrum</p>
+                    <p className="font-semibold">{property.bathrooms}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Square className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground text-xl">Boarea</p>
+                    <p className="font-semibold">{property.area} m²</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Home className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground text-xl">Byggår</p>
+                    <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Description */}
+              <div>
+                <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  {property.description || 'Ingen beskrivning tillgänglig'}
+                </p>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Detailed Information */}
+              <div>
+                <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                  {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Slutpris</span>
+                    <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
+                  </div>}
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Bostadstyp</span>
+                    <span className="font-semibold">{property.type || 'Villa'}</span>
+                  </div>
+                  {property.new_price && property.is_manual_price_change && <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Prisutveckling</span>
+                    <span className="font-semibold text-[#FF6B2C]">
+                      +{(property.new_price - property.price).toLocaleString('sv-SE')} kr
+                      ({Math.round((property.new_price - property.price) / property.price * 100)}%)
+                    </span>
+                  </div>}
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Upplåtelseform</span>
+                    <span className="font-semibold">Äganderätt</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Utgångspris</span>
+                    <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Antal rum</span>
+                    <span className="font-semibold">{property.bedrooms} rum</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Pris/m²</span>
+                    <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Boarea</span>
+                    <span className="font-semibold">{property.area} m²</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Driftkostnad</span>
+                    <span className="font-semibold">5 650 kr/år</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Biarea</span>
+                    <span className="font-semibold">25 m²</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Byggår</span>
+                    <span className="font-semibold">{property.buildYear || '2021'}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Tomtarea</span>
+                    <span className="font-semibold">850 m²</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Energiklass</span>
+                    <span className="font-semibold">B</span>
+                  </div>
+                  {dbProperty?.housing_association && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Bostadsförening</span>
+                      <span className="font-semibold">{dbProperty.housing_association}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {(property?.floorplan_images?.length > 0 || property?.floorplan_url) && <>
+                <Separator className="my-6" />
+                <div>
+                  <h2 className="text-xl font-bold mb-3">Planritning</h2>
+                  <div className="space-y-4">
+                    {property?.floorplan_images?.length > 0 ? property.floorplan_images.map((imageUrl: string, index: number) => <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                      <img src={getImageUrl(imageUrl) || imageUrl} alt={`Planritning ${index + 1}`} className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                    </div>) : <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                      <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                    </div>}
+                  </div>
+                </div>
+              </>}
+
+              {/* Documents Section */}
+              {dbProperty?.documents && Array.isArray(dbProperty.documents) && dbProperty.documents.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  <div>
+                    <h2 className="text-xl font-bold mb-3">Dokument</h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Ladda ner årsredovisning, stadgar och andra dokument
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(dbProperty.documents as { url: string; name: string }[]).map((doc, index) => (
+                        <a
+                          key={index}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={doc.name}
+                          className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors group"
+                        >
+                          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                            <Download className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">{doc.name}</p>
+                            <p className="text-xs text-muted-foreground">Klicka för att ladda ner</p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {!dbProperty && <>
+                <Separator className="my-6" />
+
+                {/* Floor Plan */}
+                <div>
+                  <h2 className="text-xl font-bold mb-3">Planritning</h2>
+                  <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                    <img src={floorplan} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
+                  </div>
+                </div>
 
                 <Separator className="my-6" />
 
+                {/* Features */}
                 <div>
-                  <h4 className="font-semibold mb-3">Visningar</h4>
-                  <div className="space-y-2">
-                    <button onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
-                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                      <div className="flex-1 text-left">
-                        <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
-                <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
-                <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
-                      </div>
-                      <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                    </button>
-                    <button onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
-                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                      <div className="flex-1 text-left">
-              <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
-              <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
-              <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
-                      </div>
-                      <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                    </button>
+                  <h2 className="text-xl font-bold mb-3">Highlights</h2>
+                  <div className="grid grid-cols-2 gap-2">
+                    {property.features.map((feature, index) => <div key={index} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </div>)}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </>}
+            </CardContent>
+          </Card>
+
+          {/* Map */}
+          <PropertyDetailMap address={property.address} location={property.location} />
+
+          {/* Cost Breakdown */}
+          <PropertyCostBreakdown
+            price={property.price}
+            fee={property.fee || 0}
+            area={property.area}
+            type={property.type}
+            operatingCost={property.operating_cost || 0}
+          />
         </div>
 
-        {/* Ad Banners Below */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DetailAdBanner />
-          <aside className="w-full">
-            <div className="p-2 sm:p-4">
-              <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <img src={bathroomAd} alt="Badrumrenovering" className="w-full h-32 sm:h-40 md:h-48 object-cover" />
-                <div className="p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3 md:space-y-4">
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
-                    Drömbadrum?
-                  </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm">
-                    Vi hjälper dig från idé till verklighet. Kvalitet och stilren design.
-                  </p>
-                  <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
-                    <li>✓ Kostnadsfri hembesök</li>
-                    <li>✓ Moderna lösningar</li>
-                    <li>✓ 10 års garanti</li>
-                    <li>✓ Fast pris</li>
-                  </ul>
-                  <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-sm sm:text-base">
-                    Begär offert
-                  </Button>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
-                    Kampanj: 15% rabatt på arbetskostnad i april
-                  </p>
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Contact Card */}
+          <Card className="sticky top-24">
+            <CardContent className="p-6">
+              {/* Days on market badge - right side */}
+              {dbProperty?.listed_date && (() => {
+                const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
+                return (
+                  <div className="mb-4 p-3 bg-muted/30 rounded-lg">
+                    <p className="text-sm text-center font-semibold text-muted-foreground">
+                      {daysOnMarket === 0 ? "Ny idag på BaraHem" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
+                    </p>
+                  </div>
+                );
+              })()}
+
+              {agentProfile ?
+                // Show real agent profile
+                <>
+                  <div className="flex flex-col items-center gap-4 mb-6">
+                    <Link to={`/agent/${property.user_id}`} className="z-20 hover:scale-105 transition-transform">
+                      <Avatar className="w-64 h-64 border-4 border-border cursor-pointer">
+                        <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
+                        <AvatarFallback className="bg-primary text-white text-2xl">
+                          <User className="w-32 h-32" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
+                    <div className="text-center">
+                      <p className="text-sm text-muted-foreground mb-1">Kontakta mäklaren</p>
+                      <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
+                        <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
+                      </Link>
+                      {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                        <Building2 className="w-3 h-3" />
+                        {agentProfile.agency}
+                      </p>}
+                    </div>
+                  </div>
+
+                  {/* Agent Info */}
+                  <div className="space-y-3 mb-6 bg-muted/30 rounded-lg p-4">
+                    {agentProfile.phone && <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span>{agentProfile.phone}</span>
+                    </div>}
+                    {agentProfile.email && <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="truncate">{agentProfile.email}</span>
+                    </div>}
+                    {agentProfile.office && <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span>{agentProfile.office}</span>
+                    </div>}
+                    {agentProfile.area && <div className="flex items-center gap-2 text-sm">
+                      <Home className="w-4 h-4 text-muted-foreground" />
+                      <span>{agentProfile.area}</span>
+                    </div>}
+                  </div>
+
+                  <div className="space-y-3">
+                    {agentProfile.phone && <Button
+                      className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => window.open(`tel:${agentProfile.phone}`, '_self')}
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Ring mig
+                    </Button>}
+                    <Button
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => {
+                        const subject = `Intresserad av: ${property.address}`;
+                        const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                        window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      }}
+                    >
+                      <Mail className="w-4 h-4 mr-2" />
+                      Skicka meddelande
+                    </Button>
+                    <Button
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => {
+                        const subject = `Boka visning: ${property.address}`;
+                        const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                        window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      }}
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Boka visning
+                    </Button>
+                  </div>
+                </> :
+                // Show placeholder for hardcoded properties
+                <>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-lg">
+                      SB
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Kontakta mäklaren</p>
+                      <p className="text-lg font-semibold">Shahab Barani</p>
+                      <p className="text-sm text-muted-foreground">{property.vendor}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <Button
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => toast.info('Kontakta mäklaren via email för telefonnummer')}
+                    >
+                      Visa telefonnummer
+                    </Button>
+                    <Button
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => {
+                        const subject = `Intresserad av: ${property.address}`;
+                        const body = `Hej,\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      }}
+                    >
+                      Skicka meddelande
+                    </Button>
+                    <Button
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                      size="lg"
+                      onClick={() => {
+                        const subject = `Boka visning: ${property.address}`;
+                        const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      }}
+                    >
+                      Boka visning
+                    </Button>
+                  </div>
+                </>}
+
+              <Separator className="my-6" />
+
+              <div>
+                <h4 className="font-semibold mb-3">Visningar</h4>
+                <div className="space-y-2">
+                  <button onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
+                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                    <div className="flex-1 text-left">
+                      <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
+                      <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
+                      <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
+                    </div>
+                    <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                  </button>
+                  <button onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
+                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                    <div className="flex-1 text-left">
+                      <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
+                      <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
+                      <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
+                    </div>
+                    <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                  </button>
                 </div>
               </div>
-            </div>
-          </aside>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {/* Share Dialog */}
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Dela bostad</h3>
-              <p className="text-sm text-muted-foreground">Välj hur du vill dela denna bostad</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareFacebook}>
-                <Facebook className="w-8 h-8" />
-                <span className="text-sm">Facebook</span>
-              </Button>
-              
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareX}>
-                <XLogo className="w-8 h-8" />
-                <span className="text-sm">X</span>
-              </Button>
-              
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareInstagram}>
-                <Instagram className="w-8 h-8" />
-                <span className="text-sm">Instagram</span>
-              </Button>
-              
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareWhatsApp}>
-                <MessageCircle className="w-8 h-8" />
-                <span className="text-sm">WhatsApp</span>
-              </Button>
-              
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareEmail}>
-                <Mail className="w-8 h-8" />
-                <span className="text-sm">Email</span>
-              </Button>
-              
-              <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleCopyUrl}>
-                {copiedUrl ? <Check className="w-8 h-8" /> : <Copy className="w-8 h-8" />}
-                <span className="text-sm">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
-              </Button>
+      {/* Ad Banners Below */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DetailAdBanner />
+        <aside className="w-full">
+          <div className="p-2 sm:p-4">
+            <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              <img src={bathroomAd} alt="Badrumrenovering" className="w-full h-32 sm:h-40 md:h-48 object-cover" />
+              <div className="p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3 md:space-y-4">
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
+                  Drömbadrum?
+                </h3>
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  Vi hjälper dig från idé till verklighet. Kvalitet och stilren design.
+                </p>
+                <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
+                  <li>✓ Kostnadsfri hembesök</li>
+                  <li>✓ Moderna lösningar</li>
+                  <li>✓ 10 års garanti</li>
+                  <li>✓ Fast pris</li>
+                </ul>
+                <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-sm sm:text-base">
+                  Begär offert
+                </Button>
+                <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
+                  Kampanj: 15% rabatt på arbetskostnad i april
+                </p>
+              </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </aside>
+      </div>
+    </div>
 
-      {/* Image Modal */}
-      <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
-          <div className="relative w-full h-full flex items-center justify-center bg-black/90">
-            <img src={images[currentImageIndex]} alt={property.title} className="max-w-full max-h-[90vh] object-contain" />
-            
-            {/* Navigation Buttons */}
-            {images.length > 1 && <>
-                <Button variant="secondary" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handlePreviousImage}>
-                  <ChevronLeft className="w-5 h-5" />
-                </Button>
-                <Button variant="secondary" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handleNextImage}>
-                  <ChevronRight className="w-5 h-5" />
-                </Button>
-              </>}
-            
-            {/* Image Counter */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
-              {currentImageIndex + 1} / {images.length}
-            </div>
+    {/* Share Dialog */}
+    <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Dela bostad</h3>
+            <p className="text-sm text-muted-foreground">Välj hur du vill dela denna bostad</p>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>;
+
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareFacebook}>
+              <Facebook className="w-8 h-8" />
+              <span className="text-sm">Facebook</span>
+            </Button>
+
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareX}>
+              <XLogo className="w-8 h-8" />
+              <span className="text-sm">X</span>
+            </Button>
+
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareInstagram}>
+              <Instagram className="w-8 h-8" />
+              <span className="text-sm">Instagram</span>
+            </Button>
+
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareWhatsApp}>
+              <MessageCircle className="w-8 h-8" />
+              <span className="text-sm">WhatsApp</span>
+            </Button>
+
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleShareEmail}>
+              <Mail className="w-8 h-8" />
+              <span className="text-sm">Email</span>
+            </Button>
+
+            <Button variant="outline" className="flex flex-col items-center gap-2 h-auto py-6 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all" onClick={handleCopyUrl}>
+              {copiedUrl ? <Check className="w-8 h-8" /> : <Copy className="w-8 h-8" />}
+              <span className="text-sm">{copiedUrl ? 'Kopierad!' : 'Kopiera URL'}</span>
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Image Modal */}
+    <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+      <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+        <div className="relative w-full h-full flex items-center justify-center bg-black/90">
+          <img src={images[currentImageIndex]} alt={property.title} className="max-w-full max-h-[90vh] object-contain" />
+
+          {/* Navigation Buttons */}
+          {images.length > 1 && <>
+            <Button variant="secondary" size="icon" className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handlePreviousImage}>
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button variant="secondary" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" onClick={handleNextImage}>
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </>}
+
+          {/* Image Counter */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+            {currentImageIndex + 1} / {images.length}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </div>;
 };
 export default PropertyDetail;

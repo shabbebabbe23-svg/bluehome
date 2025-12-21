@@ -114,7 +114,7 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 px-3 sm:px-4 lg:px-8">
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[1440px] mx-auto">
         <AdBanner
           imageSrc={soffaBanner}
           alt={"Soffa annons"}
@@ -123,7 +123,7 @@ const Index = () => {
           bullets={["✓ Fri hemleverans", "✓ 0% delbetalning", "✓ Många tyger och färger"]}
           buttonText={"Se erbjudanden"}
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
-          className="lg:order-1 order-3 ml-10 transform scale-90"
+          className="lg:order-1 order-3 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
         />
         <main className="order-1 lg:order-2 flex-1 w-full">
           <Hero
@@ -148,7 +148,7 @@ const Index = () => {
                 <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mt-6 mb-6">
                   Senast uppladdade objekt
                 </h2>
-                <RecentPropertiesCarousel 
+                <RecentPropertiesCarousel
                   properties={recentProperties.map(p => ({
                     id: p.id,
                     title: p.title,
@@ -195,7 +195,7 @@ const Index = () => {
         </main>
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
-          className="lg:order-3 order-2 mr-10 transform scale-90"
+          className="lg:order-3 order-2 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
         />
       </div>
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">

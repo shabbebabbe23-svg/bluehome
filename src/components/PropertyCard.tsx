@@ -106,18 +106,18 @@ const PropertyCard = ({
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
   const isFavorite = isFavoriteHook(String(id));
   const isComparing = isInComparison(String(id));
-  
+
   // Auto-slide images state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = [image, hoverImage].filter(Boolean) as string[];
-  
+
   useEffect(() => {
     if (!autoSlideImages || images.length <= 1) return;
-    
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [autoSlideImages, images.length]);
   // Normalize viewing date and prepare label/time
@@ -172,7 +172,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[120px] md:h-[130px] ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[120px] md:h-[130px] w-full lg:w-[90%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -185,7 +185,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[160px] md:w-[200px] lg:w-[240px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
+          <div className="relative w-full sm:w-[160px] md:w-[200px] lg:w-[200px] xl:w-[240px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
@@ -207,7 +207,7 @@ const PropertyCard = ({
                 className="w-full h-full object-cover"
               />
             )}
-            
+
             {/* Property type badge */}
             <div className="absolute top-3 left-3">
               <Badge variant="secondary" className="bg-muted/90 text-foreground text-sm">
@@ -342,9 +342,8 @@ const PropertyCard = ({
                 key={index}
                 src={img}
                 alt={`${title} - bild ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
-                  index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-                }`}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                  }`}
               />
             ))
           ) : (
@@ -368,9 +367,8 @@ const PropertyCard = ({
               {images.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'
+                    }`}
                 />
               ))}
             </div>
@@ -504,7 +502,7 @@ const PropertyCard = ({
         {/* Address and price on same row */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
           <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
-            {title}
+            {address || title}
           </h3>
           <div className="flex flex-col items-end">
             {isSold && soldPrice ? (
@@ -544,8 +542,8 @@ const PropertyCard = ({
         <div className="flex items-center text-muted-foreground">
           <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
           <span className="text-[11px] sm:text-sm truncate">
-            <span className="md:hidden">{location}</span>
-            <span className="hidden md:inline">{address ? `${address}, ${location}` : location}</span>
+            <span className="md:hidden">{title}</span>
+            <span className="hidden md:inline">{title}</span>
           </span>
         </div>
 
@@ -643,7 +641,7 @@ const PropertyCard = ({
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-            <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1">
+              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1">
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>

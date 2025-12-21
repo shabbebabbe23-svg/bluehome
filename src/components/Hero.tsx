@@ -91,7 +91,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onFeeRangeChange?.(feeRange as [number, number]);
   }, [feeRange, onFeeRangeChange]);
 
-  const hasActiveFilters = searchLocation !== "" || 
+  const hasActiveFilters = searchLocation !== "" ||
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
@@ -334,12 +334,12 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     if (searchMode === 'property' && showSuggestions && suggestions.length > 0) {
                       if (e.key === 'ArrowDown') {
                         e.preventDefault();
-                        setHighlightedIndex(prev => 
+                        setHighlightedIndex(prev =>
                           prev < suggestions.length - 1 ? prev + 1 : 0
                         );
                       } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
-                        setHighlightedIndex(prev => 
+                        setHighlightedIndex(prev =>
                           prev > 0 ? prev - 1 : suggestions.length - 1
                         );
                       } else if (e.key === 'Enter' && highlightedIndex >= 0) {
@@ -356,12 +356,12 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     } else if (searchMode === 'agent' && showSuggestions && agentSuggestions.length > 0) {
                       if (e.key === 'ArrowDown') {
                         e.preventDefault();
-                        setAgentHighlightedIndex(prev => 
+                        setAgentHighlightedIndex(prev =>
                           prev < agentSuggestions.length - 1 ? prev + 1 : 0
                         );
                       } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
-                        setAgentHighlightedIndex(prev => 
+                        setAgentHighlightedIndex(prev =>
                           prev > 0 ? prev - 1 : agentSuggestions.length - 1
                         );
                       } else if (e.key === 'Enter' && agentHighlightedIndex >= 0) {
@@ -391,9 +391,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         key={`${suggestion.name}-${index}`}
                         onClick={() => handleSuggestionClick(suggestion)}
                         onMouseEnter={() => setHighlightedIndex(index)}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
-                          index === highlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
-                        }`}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${index === highlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                          }`}
                       >
                         {suggestion.type === 'address' ? (
                           <Home className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -405,10 +404,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         <div className="flex-1">
                           <p className="font-medium text-foreground">{suggestion.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {suggestion.type === 'address' 
+                            {suggestion.type === 'address'
                               ? `${suggestion.county}${suggestion.price ? ` • ${suggestion.price.toLocaleString('sv-SE')} kr` : ''}`
-                              : suggestion.type === 'area' 
-                                ? 'Område' 
+                              : suggestion.type === 'area'
+                                ? 'Område'
                                 : suggestion.county}
                           </p>
                         </div>
@@ -425,9 +424,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         key={agent.id}
                         onClick={() => handleAgentSuggestionClick(agent)}
                         onMouseEnter={() => setAgentHighlightedIndex(index)}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${
-                          index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
-                        }`}
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
+                          }`}
                       >
                         <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         <div>
@@ -459,7 +457,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       setShowFinalPrices(value);
                       onFinalPricesChange?.(value);
                     }}
-                    className="data-[state=checked]:bg-success"
+                    className="data-[state=checked]:bg-gray-500"
                   />
                 </div>
 
@@ -565,7 +563,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {showAdvancedFilters && (
                   <>
                     {/* Price Filter */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
                         <div className="flex items-center gap-2">
@@ -604,14 +602,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
+                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">0 kr</span>
                         <span className="text-primary font-medium">20+ milj kr</span>
                       </div>
                     </div>
 
                     {/* Area Filter */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
                         <div className="flex items-center gap-2">
@@ -640,7 +638,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             placeholder="Max"
                             className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-xs text-muted-foreground">kvm</span>
                         </div>
                       </div>
                       <Slider
@@ -651,14 +648,14 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
+                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">0 kvm</span>
                         <span className="text-primary font-medium">200+ kvm</span>
                       </div>
                     </div>
 
                     {/* Room Filter */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
                         <div className="flex items-center gap-2">
@@ -687,7 +684,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             placeholder="Max"
                             className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-xs text-muted-foreground">rum</span>
                         </div>
                       </div>
                       <Slider
@@ -698,7 +694,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
+                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">0 rum</span>
                         <span className="text-primary font-medium">7+ rum</span>
                       </div>
@@ -742,33 +738,48 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     </div>
 
                     {/* Fee Filter */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Max avgift</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Månadsavgift</h3>
                         <div className="flex items-center gap-2">
                           <Input
-                            type="number"
-                            value={feeRange[1]}
+                            type="text"
+                            inputMode="numeric"
+                            value={feeRange[0] === 0 ? '' : feeRange[0].toLocaleString('sv-SE')}
                             onChange={(e) => {
-                              const value = parseInt(e.target.value) || 0;
-                              setFeeRange([feeRange[0], Math.min(15000, Math.max(0, value))]);
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, feeRange[1]);
+                              setFeeRange([clampedValue, feeRange[1]]);
                             }}
-                            className="w-20 h-8 text-sm text-center border-primary/30"
+                            placeholder="Min"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-xs text-muted-foreground">kr/mån</span>
+                          <span className="text-muted-foreground">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={feeRange[1] >= 15000 ? '' : feeRange[1].toLocaleString('sv-SE')}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '')) || 15000;
+                              const clampedValue = Math.max(value, feeRange[0]);
+                              setFeeRange([feeRange[0], Math.min(clampedValue, 15000)]);
+                            }}
+                            placeholder="Max"
+                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                          />
                         </div>
                       </div>
                       <Slider
                         min={0}
                         max={15000}
                         step={500}
-                        value={[feeRange[1]]}
-                        onValueChange={([value]) => setFeeRange([0, value])}
+                        value={feeRange}
+                        onValueChange={setFeeRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
+                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">0 kr</span>
-                        <span className="text-primary font-medium">15 000+ kr</span>
+                        <span className="text-primary font-medium">15 000+ kr/mån</span>
                       </div>
                     </div>
 
@@ -776,7 +787,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     <div className="space-y-3 md:space-y-4">
                       <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyproduktion</h3>
                       <ToggleGroup
-                        type="single" 
+                        type="single"
                         value={newConstructionFilter}
                         onValueChange={(value) => {
                           if (value) {
@@ -786,20 +797,20 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         }}
                         className="border border-primary/30 rounded-sm p-px bg-muted/30 inline-flex"
                       >
-                        <ToggleGroupItem 
-                          value="include" 
+                        <ToggleGroupItem
+                          value="include"
                           className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                         >
                           Inkluderar
                         </ToggleGroupItem>
-                        <ToggleGroupItem 
-                          value="only" 
+                        <ToggleGroupItem
+                          value="only"
                           className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                         >
                           Endast
                         </ToggleGroupItem>
-                        <ToggleGroupItem 
-                          value="exclude" 
+                        <ToggleGroupItem
+                          value="exclude"
                           className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
                         >
                           Exkluderar
@@ -825,8 +836,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             )}
 
             {/* Search Button */}
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               onClick={() => onSearchSubmit?.()}
               className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-hero-gradient hover:scale-[1.02] transition-transform"
             >

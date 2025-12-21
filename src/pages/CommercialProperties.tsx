@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AdBanner from "@/components/AdBanner";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, MapPin, Square, Search, Filter, Grid3x3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";

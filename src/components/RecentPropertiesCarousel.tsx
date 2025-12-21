@@ -36,7 +36,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   const [currentPropertyIndex, setCurrentPropertyIndex] = useState(0);
   const [imageCounters, setImageCounters] = useState<number[]>(properties.map(() => 0));
   const { toggleFavorite, isFavorite } = useFavorites();
-  
+
   const IMAGES_BEFORE_SWITCH = 5;
   const IMAGE_INTERVAL = 3000; // 3 seconds per image
 
@@ -61,11 +61,11 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
         const currentCounter = newCounters[currentPropertyIndex];
         const currentImages = getPropertyImages(properties[currentPropertyIndex]);
         const totalImagesViewed = currentCounter + 1;
-        
+
         // Check if we've viewed enough images to switch property
         if (totalImagesViewed >= IMAGES_BEFORE_SWITCH) {
           // Switch to next property
-          setCurrentPropertyIndex(prevIndex => 
+          setCurrentPropertyIndex(prevIndex =>
             (prevIndex + 1) % properties.length
           );
           // Reset counter for current property
@@ -74,7 +74,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
           // Just increment counter (which cycles through images)
           newCounters[currentPropertyIndex] = totalImagesViewed;
         }
-        
+
         return newCounters;
       });
     }, IMAGE_INTERVAL);
@@ -83,7 +83,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   }, [properties, currentPropertyIndex, getPropertyImages]);
 
   const goToPrevious = () => {
-    setCurrentPropertyIndex(prev => 
+    setCurrentPropertyIndex(prev =>
       prev === 0 ? properties.length - 1 : prev - 1
     );
     setImageCounters(prev => {
@@ -94,7 +94,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   };
 
   const goToNext = () => {
-    setCurrentPropertyIndex(prev => 
+    setCurrentPropertyIndex(prev =>
       (prev + 1) % properties.length
     );
     setImageCounters(prev => {
@@ -126,7 +126,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
         )}
 
         {/* Single centered property card - responsive width */}
-        <Card 
+        <Card
           className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full sm:w-[400px] md:w-[450px]"
         >
           <Link
@@ -144,12 +144,11 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             }}
             className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
           >
-            <Heart 
-              className={`w-4 h-4 transition-colors ${
-                isFavorite(String(currentProperty.id))
-                  ? "fill-red-500 text-red-500" 
-                  : "text-gray-600 hover:text-red-500"
-              }`}
+            <Heart
+              className={`w-4 h-4 transition-colors ${isFavorite(String(currentProperty.id))
+                ? "fill-red-500 text-red-500"
+                : "text-gray-600 hover:text-red-500"
+                }`}
             />
           </button>
 
@@ -160,18 +159,17 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
               alt={currentProperty.title}
               className="w-full h-full object-cover transition-transform duration-500"
             />
-            
+
             {/* Image indicators */}
             {currentImages.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {currentImages.slice(0, Math.min(currentImages.length, 5)).map((_, idx) => (
                   <div
                     key={idx}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      idx === currentImageIndex % Math.min(currentImages.length, 5)
-                        ? "bg-white scale-110"
-                        : "bg-white/50"
-                    }`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentImageIndex % Math.min(currentImages.length, 5)
+                      ? "bg-white scale-110"
+                      : "bg-white/50"
+                      }`}
                   />
                 ))}
                 {currentImages.length > 5 && (
@@ -195,9 +193,9 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             {/* Vendor logo */}
             {currentProperty.vendorLogo && (
               <div className="absolute bottom-2 right-2 z-10">
-                <img 
-                  src={currentProperty.vendorLogo} 
-                  alt="Mäklarbyrå" 
+                <img
+                  src={currentProperty.vendorLogo}
+                  alt="Mäklarbyrå"
                   className="h-6 w-auto bg-white/90 rounded px-1.5 py-0.5"
                 />
               </div>
@@ -208,7 +206,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
           <CardContent className="p-4">
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-semibold text-foreground text-base line-clamp-1">
-                {currentProperty.title}
+                {currentProperty.address || currentProperty.title}
               </h3>
               <span className="font-bold text-primary text-base whitespace-nowrap ml-2">
                 {currentProperty.price}
@@ -217,7 +215,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
 
             <div className="flex items-center text-muted-foreground text-sm mb-3">
               <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-              <span className="line-clamp-1">{currentProperty.address || currentProperty.location}</span>
+              <span className="line-clamp-1">{currentProperty.title}</span>
             </div>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -267,11 +265,10 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
                   return newCounters;
                 });
               }}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
-                idx === currentPropertyIndex
-                  ? "bg-primary scale-110"
-                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              }`}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${idx === currentPropertyIndex
+                ? "bg-primary scale-110"
+                : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                }`}
             />
           ))}
         </div>
