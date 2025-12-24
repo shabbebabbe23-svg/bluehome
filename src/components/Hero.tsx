@@ -320,7 +320,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {searchMode === 'property' ? 'Område' : 'Sök mäklare'}
               </h2>
               <div className="relative" ref={searchRef}>
-                <Search className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5 z-10" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
                 <Input
                   placeholder={searchMode === 'property' ? 'Skriv område eller adress' : 'Sök på namn, byrå eller område'}
                   value={searchLocation}
@@ -380,7 +380,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       onSearchSubmit?.();
                     }
                   }}
-                  className="pl-8 sm:pl-10 h-9 sm:h-12 md:h-14 text-sm sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary"
+                  className="pl-10 sm:pl-12 h-12 sm:h-14 md:h-16 text-base sm:text-lg md:text-xl border-2 border-primary/30 focus:border-primary min-h-[48px]"
                 />
 
                 {/* Autocomplete Suggestions */}
@@ -563,10 +563,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                 {showAdvancedFilters && (
                   <>
                     {/* Price Filter */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Prisintervall</h3>
-                        <div className="flex items-center gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Pris</h3>
+                        <div className="flex items-center gap-1">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -577,9 +577,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([clampedValue, priceRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-20 sm:w-24 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-muted-foreground text-xs">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -590,7 +590,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
                             }}
                             placeholder="Max"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-20 sm:w-24 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -602,17 +602,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">0 kr</span>
-                        <span className="text-primary font-medium">20+ milj kr</span>
+                        <span className="text-primary font-medium">20+ milj</span>
                       </div>
                     </div>
 
                     {/* Area Filter */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Yta</h3>
-                        <div className="flex items-center gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Yta</h3>
+                        <div className="flex items-center gap-1">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -623,9 +623,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([clampedValue, areaRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-muted-foreground text-xs">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -636,7 +636,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
                             }}
                             placeholder="Max"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -648,17 +648,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">0 kvm</span>
-                        <span className="text-primary font-medium">200+ kvm</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">0 m²</span>
+                        <span className="text-primary font-medium">200+ m²</span>
                       </div>
                     </div>
 
                     {/* Room Filter */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Antal rum</h3>
-                        <div className="flex items-center gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Rum</h3>
+                        <div className="flex items-center gap-1">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -669,9 +669,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([clampedValue, roomRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-14 sm:w-16 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-muted-foreground text-xs">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -682,7 +682,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
                             }}
                             placeholder="Max"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-14 sm:w-16 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -694,7 +694,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">0 rum</span>
                         <span className="text-primary font-medium">7+ rum</span>
                       </div>
@@ -738,10 +738,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     </div>
 
                     {/* Fee Filter */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Månadsavgift</h3>
-                        <div className="flex items-center gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Avgift</h3>
+                        <div className="flex items-center gap-1">
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -752,9 +752,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setFeeRange([clampedValue, feeRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-muted-foreground text-xs">-</span>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -765,7 +765,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setFeeRange([feeRange[0], Math.min(clampedValue, 15000)]);
                             }}
                             placeholder="Max"
-                            className="w-24 sm:w-28 h-8 text-xs sm:text-sm border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -777,9 +777,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setFeeRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">0 kr</span>
-                        <span className="text-primary font-medium">15 000+ kr/mån</span>
+                        <span className="text-primary font-medium">15k+/mån</span>
                       </div>
                     </div>
 
