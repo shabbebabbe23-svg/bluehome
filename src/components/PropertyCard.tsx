@@ -648,16 +648,28 @@ const PropertyCard = ({
       </div>
 
       <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5">
-        {/* Price section - more prominent */}
+        {/* Address and Price row */}
         <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col">
+          {/* Left side - Address */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+              {address || title}
+            </h3>
+            <div className="flex items-center text-muted-foreground">
+              <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+              <span className="text-[11px] sm:text-sm truncate">{title}</span>
+            </div>
+          </div>
+
+          {/* Right side - Price */}
+          <div className="flex flex-col items-end flex-shrink-0">
             {isSold && soldPrice ? (
               <>
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
-                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
-                  Utgångspris: {price}
+                <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                  {price}
                 </span>
               </>
             ) : newPrice ? (
@@ -665,8 +677,8 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
-                  Tidigare: {price}
+                <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                  {price}
                 </span>
               </>
             ) : (
@@ -675,32 +687,19 @@ const PropertyCard = ({
                   {price}
                 </span>
                 {fee && fee > 0 && (
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                     {fee.toLocaleString('sv-SE')} kr/mån
                   </span>
                 )}
               </>
             )}
+            {hasActiveBidding && !isSold && (
+              <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 flex items-center gap-0.5 mt-0.5">
+                <FileSignature className="w-3 h-3" />
+                Bud
+              </Badge>
+            )}
           </div>
-          {hasActiveBidding && !isSold && (
-            <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 flex items-center gap-0.5">
-              <FileSignature className="w-3 h-3" />
-              Bud
-            </Badge>
-          )}
-        </div>
-
-        {/* Address/Title */}
-        <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
-          {address || title}
-        </h3>
-
-        <div className="flex items-center text-muted-foreground">
-          <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
-          <span className="text-[11px] sm:text-sm truncate">
-            <span className="md:hidden">{title}</span>
-            <span className="hidden md:inline">{title}</span>
-          </span>
         </div>
 
         {isSold && soldDate && (
