@@ -284,7 +284,7 @@ const PropertyCard = ({
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 whitespace-nowrap truncate max-w-[70px] sm:max-w-[100px] md:max-w-[150px] text-right">
+              <p className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                   : daysOnMarketText
