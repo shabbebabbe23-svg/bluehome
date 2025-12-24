@@ -114,7 +114,7 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[1440px] mx-auto">
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[2250px] mx-auto">
         <AdBanner
           imageSrc={soffaBanner}
           alt={"Soffa annons"}

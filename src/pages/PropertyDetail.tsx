@@ -1,11 +1,11 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
@@ -14,6 +14,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useComparison } from "@/contexts/ComparisonContext";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -47,6 +48,49 @@ const XLogo = ({
 }) => <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>;
+
+// Expandable Description Component
+const ExpandableDescription = ({ description }: { description?: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  if (!description) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Ingen beskrivning tillgänglig
+        </p>
+      </div>
+    );
+  }
+
+  // Check if description is long enough to need truncation (roughly 3-4 lines)
+  const shouldTruncate = description.length > 250;
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+      <div className="relative">
+        <p 
+          className={`text-base text-muted-foreground leading-relaxed transition-all duration-300 ${
+            !isExpanded && shouldTruncate ? 'line-clamp-4' : ''
+          }`}
+        >
+          {description}
+        </p>
+        {shouldTruncate && (
+          <Button
+            variant="link"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-0 h-auto mt-2 text-primary font-semibold hover:underline"
+          >
+            {isExpanded ? 'Visa mindre' : 'Visa hela beskrivningen'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
 const PropertyDetail = () => {
   const {
     id
@@ -54,6 +98,7 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const { user, profileName, avatarUrl } = useAuth();
   const { toggleFavorite, isFavorite: checkIsFavorite } = useFavorites();
+  const { toggleComparison, isInComparison, canAddMore } = useComparison();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dbProperty, setDbProperty] = useState<any>(null);
   const [agentProfile, setAgentProfile] = useState<any>(null);
@@ -588,6 +633,55 @@ const PropertyDetail = () => {
               <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                 {currentImageIndex + 1} / {images.length}
               </div>
+
+              {/* Compare Button - inside image */}
+              {!(property.is_sold || property.isSold) && (
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${
+                    id && isInComparison(String(id)) 
+                      ? 'bg-primary hover:bg-primary/90' 
+                      : 'bg-white/90 hover:bg-white'
+                  }`}
+                  onClick={() => {
+                    if (!id) return;
+                    const comparing = isInComparison(String(id));
+                    if (!comparing && !canAddMore) {
+                      toast.error('Du kan endast jämföra 2 fastigheter');
+                      return;
+                    }
+                    toggleComparison({
+                      id: String(id),
+                      title: property.title,
+                      price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
+                      location: property.location,
+                      address: property.address,
+                      bedrooms: property.bedrooms,
+                      bathrooms: property.bathrooms,
+                      area: property.area,
+                      fee: property.fee,
+                      image: images[0],
+                      additionalImages: property.additional_images,
+                      type: property.type,
+                      soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
+                      newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
+                      isSold: property.is_sold || property.isSold,
+                      hasElevator: property.has_elevator,
+                      hasBalcony: property.has_balcony,
+                      constructionYear: property.construction_year || property.buildYear,
+                      operatingCost: property.operating_cost,
+                    });
+                  }}
+                  aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+                >
+                  {id && isInComparison(String(id)) ? (
+                    <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  ) : (
+                    <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+                  )}
+                </Button>
+              )}
             </div>
 
             {/* Thumbnail Gallery */}
@@ -732,12 +826,7 @@ const PropertyDetail = () => {
               <Separator className="my-6" />
 
               {/* Description */}
-              <div>
-                <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                  {property.description || 'Ingen beskrivning tillgänglig'}
-                </p>
-              </div>
+              <ExpandableDescription description={property.description} />
 
               <Separator className="my-6" />
 

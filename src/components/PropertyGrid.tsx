@@ -957,7 +957,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full lg:w-[90%] mx-auto" : ""}`}>
             <div className="hidden sm:block" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
-              {showFinalPrices ? "Sålda fastigheter" : "Utvalda fastigheter"}
+              {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
             </h2>
             {/* Sort and View Toggle */}
             <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
@@ -1061,7 +1061,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
           : "flex flex-col gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
