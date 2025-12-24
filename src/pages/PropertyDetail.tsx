@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useComparison } from "@/contexts/ComparisonContext";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -97,6 +98,7 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const { user, profileName, avatarUrl } = useAuth();
   const { toggleFavorite, isFavorite: checkIsFavorite } = useFavorites();
+  const { toggleComparison, isInComparison, canAddMore } = useComparison();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dbProperty, setDbProperty] = useState<any>(null);
   const [agentProfile, setAgentProfile] = useState<any>(null);
@@ -562,6 +564,65 @@ const PropertyDetail = () => {
                 </linearGradient>
               </defs>
               <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+
+          {/* Compare button */}
+          {!(property.is_sold || property.isSold) && (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={() => {
+                if (!id) return;
+                const isComparing = isInComparison(String(id));
+                if (!isComparing && !canAddMore) {
+                  toast.error('Du kan endast jämföra 2 fastigheter');
+                  return;
+                }
+                toggleComparison({
+                  id: String(id),
+                  title: property.title,
+                  price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
+                  location: property.location,
+                  address: property.address,
+                  bedrooms: property.bedrooms,
+                  bathrooms: property.bathrooms,
+                  area: property.area,
+                  fee: property.fee,
+                  image: images[0],
+                  additionalImages: property.additional_images,
+                  type: property.type,
+                  soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
+                  newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
+                  isSold: property.is_sold || property.isSold,
+                  hasElevator: property.has_elevator,
+                  hasBalcony: property.has_balcony,
+                  constructionYear: property.construction_year || property.buildYear,
+                  operatingCost: property.operating_cost,
+                });
+              }}
+              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+              aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+            >
+              <defs>
+                <linearGradient id="scaleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <path
+                d="M12 3v18M3 7l9-4 9 4M3 7v10l9 4 9-4V7"
+                stroke="url(#scaleGradient)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill={id && isInComparison(String(id)) ? "url(#scaleGradient)" : "none"}
+              />
+              {id && isInComparison(String(id)) && (
+                <circle cx="18" cy="6" r="4" fill="hsl(142 76% 36%)" stroke="white" strokeWidth="1" />
+              )}
             </svg>
           )}
 
