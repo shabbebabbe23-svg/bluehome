@@ -215,25 +215,71 @@ const PropertyCard = ({
               </Badge>
             </div>
 
-            {/* Favorite button - hide for sold properties */}
+            {/* Favorite and Compare buttons - hide for sold properties */}
             {!hideControls && !isSold && (
-              <Button
-                variant="secondary"
-                size="icon"
-                className="absolute top-3 right-3 h-8 w-8 bg-white/90 hover:bg-white transition-colors z-20"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleFavorite(String(id));
-                }}
-              >
-                <Heart
-                  className={`w-4 h-4 transition-all duration-300 ${isFavorite
-                    ? "fill-red-500 text-red-500"
-                    : "text-muted-foreground"
-                    }`}
-                />
-              </Button>
+              <div className="absolute top-3 right-3 flex gap-1.5 z-20">
+                {/* Compare button */}
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className={`h-8 w-8 ${isComparing ? 'bg-primary' : 'bg-white/90 hover:bg-white'} transition-colors`}
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!isComparing && !canAddMore) {
+                      toast.error('Du kan endast jämföra 2 fastigheter');
+                      return;
+                    }
+                    toggleComparison({
+                      id: String(id),
+                      title,
+                      price,
+                      location,
+                      address,
+                      bedrooms,
+                      bathrooms,
+                      area,
+                      fee,
+                      image,
+                      additionalImages,
+                      type,
+                      soldPrice,
+                      newPrice,
+                      isSold,
+                      hasElevator,
+                      hasBalcony,
+                      constructionYear,
+                      operatingCost,
+                    });
+                  }}
+                  title={isComparing ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+                >
+                  {isComparing ? (
+                    <Check className="w-4 h-4 text-white" />
+                  ) : (
+                    <Scale className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </Button>
+
+                {/* Favorite button */}
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 bg-white/90 hover:bg-white transition-colors"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleFavorite(String(id));
+                  }}
+                >
+                  <Heart
+                    className={`w-4 h-4 transition-all duration-300 ${isFavorite
+                      ? "fill-red-500 text-red-500"
+                      : "text-muted-foreground"
+                      }`}
+                  />
+                </Button>
+              </div>
             )}
           </div>
 
@@ -450,9 +496,6 @@ const PropertyCard = ({
                   constructionYear,
                   operatingCost,
                 });
-                if (!isComparing) {
-                  toast.success('Tillagd i jämförelse');
-                }
               }}
               title={isComparing ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
             >
