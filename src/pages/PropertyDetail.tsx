@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
@@ -47,6 +47,49 @@ const XLogo = ({
 }) => <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>;
+
+// Expandable Description Component
+const ExpandableDescription = ({ description }: { description?: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  if (!description) {
+    return (
+      <div>
+        <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Ingen beskrivning tillgänglig
+        </p>
+      </div>
+    );
+  }
+
+  // Check if description is long enough to need truncation (roughly 3-4 lines)
+  const shouldTruncate = description.length > 250;
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
+      <div className="relative">
+        <p 
+          className={`text-base text-muted-foreground leading-relaxed transition-all duration-300 ${
+            !isExpanded && shouldTruncate ? 'line-clamp-4' : ''
+          }`}
+        >
+          {description}
+        </p>
+        {shouldTruncate && (
+          <Button
+            variant="link"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-0 h-auto mt-2 text-primary font-semibold hover:underline"
+          >
+            {isExpanded ? 'Visa mindre' : 'Visa hela beskrivningen'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
 const PropertyDetail = () => {
   const {
     id
@@ -732,12 +775,7 @@ const PropertyDetail = () => {
               <Separator className="my-6" />
 
               {/* Description */}
-              <div>
-                <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                  {property.description || 'Ingen beskrivning tillgänglig'}
-                </p>
-              </div>
+              <ExpandableDescription description={property.description} />
 
               <Separator className="my-6" />
 
