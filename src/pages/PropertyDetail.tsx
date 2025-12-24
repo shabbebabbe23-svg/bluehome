@@ -567,65 +567,6 @@ const PropertyDetail = () => {
             </svg>
           )}
 
-          {/* Compare button */}
-          {!(property.is_sold || property.isSold) && (
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              onClick={() => {
-                if (!id) return;
-                const isComparing = isInComparison(String(id));
-                if (!isComparing && !canAddMore) {
-                  toast.error('Du kan endast jämföra 2 fastigheter');
-                  return;
-                }
-                toggleComparison({
-                  id: String(id),
-                  title: property.title,
-                  price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
-                  location: property.location,
-                  address: property.address,
-                  bedrooms: property.bedrooms,
-                  bathrooms: property.bathrooms,
-                  area: property.area,
-                  fee: property.fee,
-                  image: images[0],
-                  additionalImages: property.additional_images,
-                  type: property.type,
-                  soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
-                  newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
-                  isSold: property.is_sold || property.isSold,
-                  hasElevator: property.has_elevator,
-                  hasBalcony: property.has_balcony,
-                  constructionYear: property.construction_year || property.buildYear,
-                  operatingCost: property.operating_cost,
-                });
-              }}
-              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
-              aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
-            >
-              <defs>
-                <linearGradient id="scaleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <path
-                d="M12 3v18M3 7l9-4 9 4M3 7v10l9 4 9-4V7"
-                stroke="url(#scaleGradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill={id && isInComparison(String(id)) ? "url(#scaleGradient)" : "none"}
-              />
-              {id && isInComparison(String(id)) && (
-                <circle cx="18" cy="6" r="4" fill="hsl(142 76% 36%)" stroke="white" strokeWidth="1" />
-              )}
-            </svg>
-          )}
-
           <svg
             width="36"
             height="36"
@@ -692,6 +633,55 @@ const PropertyDetail = () => {
               <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                 {currentImageIndex + 1} / {images.length}
               </div>
+
+              {/* Compare Button - inside image */}
+              {!(property.is_sold || property.isSold) && (
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${
+                    id && isInComparison(String(id)) 
+                      ? 'bg-primary hover:bg-primary/90' 
+                      : 'bg-white/90 hover:bg-white'
+                  }`}
+                  onClick={() => {
+                    if (!id) return;
+                    const comparing = isInComparison(String(id));
+                    if (!comparing && !canAddMore) {
+                      toast.error('Du kan endast jämföra 2 fastigheter');
+                      return;
+                    }
+                    toggleComparison({
+                      id: String(id),
+                      title: property.title,
+                      price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
+                      location: property.location,
+                      address: property.address,
+                      bedrooms: property.bedrooms,
+                      bathrooms: property.bathrooms,
+                      area: property.area,
+                      fee: property.fee,
+                      image: images[0],
+                      additionalImages: property.additional_images,
+                      type: property.type,
+                      soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
+                      newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
+                      isSold: property.is_sold || property.isSold,
+                      hasElevator: property.has_elevator,
+                      hasBalcony: property.has_balcony,
+                      constructionYear: property.construction_year || property.buildYear,
+                      operatingCost: property.operating_cost,
+                    });
+                  }}
+                  aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+                >
+                  {id && isInComparison(String(id)) ? (
+                    <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  ) : (
+                    <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+                  )}
+                </Button>
+              )}
             </div>
 
             {/* Thumbnail Gallery */}
