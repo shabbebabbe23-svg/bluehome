@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2, Scale, Check } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -107,8 +107,13 @@ const PropertyCard = ({
   const isFavorite = isFavoriteHook(String(id));
   const isComparing = isInComparison(String(id));
 
-  // Auto-slide images state
+  // Image gallery state for scrolling through images
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const allImages = [image, ...(additionalImages || [])].filter(Boolean) as string[];
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
 
   useEffect(() => {
@@ -120,6 +125,47 @@ const PropertyCard = ({
 
     return () => clearInterval(interval);
   }, [autoSlideImages, images.length]);
+
+  // Handle touch events for swiping
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0 && currentImageIndex < allImages.length - 1) {
+        // Swipe left - next image
+        setCurrentImageIndex(prev => prev + 1);
+      } else if (diff < 0 && currentImageIndex > 0) {
+        // Swipe right - previous image
+        setCurrentImageIndex(prev => prev - 1);
+      }
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }, [currentImageIndex, allImages.length]);
+
+  const goToPrevImage = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex(prev => Math.max(0, prev - 1));
+  }, []);
+
+  const goToNextImage = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex(prev => Math.min(allImages.length - 1, prev + 1));
+  }, [allImages.length]);
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
   const viewDate = viewingDate ? (() => {
@@ -379,8 +425,13 @@ const PropertyCard = ({
       )}
 
       <div className="relative overflow-hidden">
-        {/* Layered images for smooth cross-fade on hover or auto-slide */}
-        <div className="w-full aspect-[4/3] sm:aspect-video relative">
+        {/* Layered images for smooth scrolling/swiping */}
+        <div 
+          className="w-full aspect-[4/3] sm:aspect-video relative touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
@@ -392,8 +443,63 @@ const PropertyCard = ({
                   }`}
               />
             ))
+          ) : allImages.length > 1 ? (
+            // Scrollable gallery mode
+            <>
+              {allImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`${title} - bild ${index + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${
+                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              ))}
+              
+              {/* Navigation arrows */}
+              {currentImageIndex > 0 && (
+                <button
+                  onClick={goToPrevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Föregående bild"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+              {currentImageIndex < allImages.length - 1 && (
+                <button
+                  onClick={goToNextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Nästa bild"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+              
+              {/* Image counter/dots */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                {allImages.slice(0, 5).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCurrentImageIndex(index);
+                    }}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
+                    }`}
+                    aria-label={`Visa bild ${index + 1}`}
+                  />
+                ))}
+                {allImages.length > 5 && (
+                  <span className="text-white text-[10px] ml-1">+{allImages.length - 5}</span>
+                )}
+              </div>
+            </>
           ) : (
-            // Default hover mode
+            // Single image (original hover effect)
             <>
               <img
                 src={image}
@@ -542,45 +648,52 @@ const PropertyCard = ({
       </div>
 
       <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5">
-        {/* Address and price on same row */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0">
-          <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
-            {address || title}
-          </h3>
-          <div className="flex flex-col items-end">
+        {/* Price section - more prominent */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col">
             {isSold && soldPrice ? (
               <>
-                <span className="text-[11px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
-                  {price}
-                </span>
-                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
+                </span>
+                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
+                  Utgångspris: {price}
                 </span>
               </>
             ) : newPrice ? (
               <>
-                <span className="text-[11px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
-                  {price}
-                </span>
-                <span className="text-sm sm:text-base font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
+                </span>
+                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
+                  Tidigare: {price}
                 </span>
               </>
             ) : (
-              <div className="flex flex-col items-end">
-                <span className="text-sm sm:text-base font-bold text-primary whitespace-nowrap">
+              <>
+                <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
                   {price}
                 </span>
-                {hasActiveBidding && !isSold && (
-                  <span className="text-sm sm:text-base text-amber-600 dark:text-amber-500 font-semibold whitespace-nowrap flex items-center gap-1">
-                    <FileSignature className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    Pågående budgivning
+                {fee && fee > 0 && (
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {fee.toLocaleString('sv-SE')} kr/mån
                   </span>
                 )}
-              </div>
+              </>
             )}
           </div>
+          {hasActiveBidding && !isSold && (
+            <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 flex items-center gap-0.5">
+              <FileSignature className="w-3 h-3" />
+              Bud
+            </Badge>
+          )}
         </div>
+
+        {/* Address/Title */}
+        <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+          {address || title}
+        </h3>
 
         <div className="flex items-center text-muted-foreground">
           <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
