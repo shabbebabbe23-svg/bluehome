@@ -24,10 +24,6 @@ export function CompareButton({ property, className }: CompareButtonProps) {
     }
     
     toggleComparison(property);
-    
-    if (!isSelected) {
-      toast.success('Tillagd i jämförelse');
-    }
   };
 
   return (
