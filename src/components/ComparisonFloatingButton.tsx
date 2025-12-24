@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useComparison } from '@/contexts/ComparisonContext';
 
 export function ComparisonFloatingButton() {
-  const { comparisonList, removeFromComparison, setIsCompareModalOpen } = useComparison();
+  const { comparisonList, removeFromComparison, setIsCompareModalOpen, clearComparison } = useComparison();
 
   if (comparisonList.length === 0) return null;
 
@@ -15,6 +15,14 @@ export function ComparisonFloatingButton() {
 
   return (
     <div className="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-scale-in w-auto max-w-[calc(100%-1rem)] sm:max-w-lg">
+      {/* Clear all button */}
+      <button
+        onClick={clearComparison}
+        className="absolute -top-2 -right-2 w-6 h-6 bg-muted hover:bg-destructive text-muted-foreground hover:text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10"
+        aria-label="Rensa jämförelse"
+      >
+        <X className="w-3.5 h-3.5" />
+      </button>
       <div className="bg-card/95 backdrop-blur-md border border-border shadow-2xl rounded-2xl px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-center gap-3 sm:gap-4">
         {/* Property thumbnails with addresses */}
         <div className="flex items-center gap-2 sm:gap-3">
