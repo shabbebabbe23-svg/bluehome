@@ -280,7 +280,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
         </div>
 
         {/* Search Card */}
-        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-2.5 sm:p-4 md:p-6 lg:p-8 max-w-6xl mx-auto transition-all duration-300 ease-out origin-top">
+        <Card className="bg-white/85 backdrop-blur-md border-white/20 p-2.5 sm:p-4 md:p-6 lg:p-8 max-w-[980px] mx-auto transition-all duration-300 ease-out origin-top">
           <div className="space-y-2.5 sm:space-y-3 md:space-y-5">
             {/* Search Mode Toggle */}
             <div className="flex gap-1.5 sm:gap-2">
