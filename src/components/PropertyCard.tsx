@@ -723,76 +723,74 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mb-0">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5">
-              <Bed className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{bedrooms}</span>
-              <span className="text-[10px] sm:text-[11px] text-muted-foreground">rum</span>
-            </div>
-
-            <div className="flex items-center gap-0.5">
-              <Bath className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{bathrooms}</span>
-              <span className="text-[10px] sm:text-[11px] text-muted-foreground hidden sm:inline">bad</span>
-            </div>
-
-            <div className="flex items-center gap-0.5">
-              <Square className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-              <span className="text-[11px] sm:text-sm font-semibold text-foreground">{area}</span>
-              <span className="text-[10px] sm:text-[11px] text-muted-foreground">m²</span>
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5">
+            <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bedrooms}</span>
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground">rum</span>
           </div>
 
-          {agent_name && (
-            <div className="mt-1.5 pt-1.5 border-t border-border/50">
-              <Link
-                to={`/agent/${agent_id}`}
-                className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Avatar className="w-8 h-8 border border-border">
-                  <AvatarImage src={agent_avatar} className="object-cover" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-[11px]">
-                    <User className="w-3.5 h-3.5" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] sm:text-sm font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
-                    {agent_name}
-                  </p>
-                  {agent_agency && (
-                    <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-0.5">
-                      <Building2 className="w-3 h-3 flex-shrink-0" />
-                      {agent_agency}
-                    </p>
-                  )}
-                </div>
-                {agent_phone && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-shrink-0 h-6 w-6 p-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      window.location.href = `tel:${agent_phone}`;
-                    }}
-                  >
-                    <Phone className="w-3 h-3" />
-                  </Button>
-                )}
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center gap-0.5">
+            <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bathrooms}</span>
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:inline">bad</span>
+          </div>
 
-          {!isSold && (
-            <div className="flex items-center justify-end text-foreground mt-0.5">
-              <Calendar className="w-3.5 h-3.5 mr-0.5 text-foreground flex-shrink-0" />
-              <span className="text-[11px] sm:text-sm text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-0.5">
+            <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{area}</span>
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground">m²</span>
+          </div>
         </div>
+
+        {agent_name && (
+          <div className="mt-1 pt-1 border-t border-border/50">
+            <Link
+              to={`/agent/${agent_id}`}
+              className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Avatar className="w-7 h-7 border border-border">
+                <AvatarImage src={agent_avatar} className="object-cover" />
+                <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
+                  <User className="w-3 h-3" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] sm:text-xs font-semibold text-foreground group-hover/agent:text-primary transition-colors truncate">
+                  {agent_name}
+                </p>
+                {agent_agency && (
+                  <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate flex items-center gap-0.5">
+                    <Building2 className="w-2.5 h-2.5 flex-shrink-0" />
+                    {agent_agency}
+                  </p>
+                )}
+              </div>
+              {agent_phone && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex-shrink-0 h-5 w-5 p-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = `tel:${agent_phone}`;
+                  }}
+                >
+                  <Phone className="w-2.5 h-2.5" />
+                </Button>
+              )}
+            </Link>
+          </div>
+        )}
+
+        {!isSold && (
+          <div className="flex items-center justify-end text-foreground mt-0.5">
+            <Calendar className="w-3 h-3 mr-0.5 text-foreground flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+          </div>
+        )}
 
         <div className="mt-auto pt-1">
           {onButtonClick ? (
@@ -813,7 +811,7 @@ const PropertyCard = ({
               </Button>
             </Link>
           )}
-          <p className="text-[10px] sm:text-[11px] text-muted-foreground text-right mt-0.5">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground text-right mt-0.5">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
               : daysOnMarketText
