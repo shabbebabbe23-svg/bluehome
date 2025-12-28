@@ -89,10 +89,10 @@ export const usePropertyViewTracking = (propertyId: string) => {
       }
     };
 
-    // Set up interval to update time spent every 10 seconds (for accuracy if user closes tab)
+    // Set up interval to update time spent every 3 seconds (for accuracy if user closes tab)
     const intervalId = setInterval(() => {
       updateTimeSpent();
-    }, 10000);
+    }, 3000);
 
     // Update when component unmounts or page unloads
     const handleBeforeUnload = () => {

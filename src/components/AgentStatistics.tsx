@@ -32,7 +32,7 @@ export const AgentStatistics = () => {
         // Fetch all properties for the agent
         const { data: properties, error: propertiesError } = await supabase
           .from("properties")
-          .select("id, title")
+          .select("id, title, address")
           .eq("user_id", user.id);
 
         if (propertiesError) throw propertiesError;
@@ -68,7 +68,7 @@ export const AgentStatistics = () => {
         properties.forEach(prop => {
           propertyStatsMap.set(prop.id, {
             property_id: prop.id,
-            property_title: prop.title,
+            property_title: prop.address || prop.title,
             total_views: 0,
             avg_time_spent: 0,
             image_views: 0,
