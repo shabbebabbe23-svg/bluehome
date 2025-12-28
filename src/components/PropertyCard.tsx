@@ -208,8 +208,8 @@ const PropertyCard = ({
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
   const truncatedListDescription = description
-    ? description.length > 310
-      ? `${description.slice(0, 310)}…`
+    ? description.length > 254
+      ? `${description.slice(0, 254)}…`
       : description
     : "";
 
@@ -378,6 +378,10 @@ const PropertyCard = ({
               </div>
             </div>
 
+            {/* Description - hidden on mobile */}
+            <p className="hidden md:block text-xs text-muted-foreground mt-1 line-clamp-1 min-h-4">
+              {truncatedListDescription || "\u00A0"}
+            </p>
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex items-end justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
