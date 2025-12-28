@@ -659,12 +659,12 @@ const PropertyCard = ({
         )}
       </div>
 
-      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5 overflow-hidden">
         {/* Address and Price row */}
         <div className="flex items-start justify-between gap-2">
           {/* Left side - Address */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors truncate">
               {address || title}
             </h3>
             <div className="flex items-center text-muted-foreground">
@@ -811,9 +811,9 @@ const PropertyCard = ({
               </Button>
             </Link>
           )}
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground text-right mt-0.5">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground text-right mt-0.5 truncate">
             {isSold && soldDate
-              ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}`
+              ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
               : daysOnMarketText
             }
           </p>
