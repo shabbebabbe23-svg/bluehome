@@ -241,7 +241,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[99%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[99%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -414,7 +414,7 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.02] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.07] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
