@@ -19,6 +19,17 @@ import PropertyCard from "@/components/PropertyCard";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 const AgentDashboard = () => {
@@ -644,9 +655,27 @@ const AgentDashboard = () => {
                           onButtonClick={() => handleEditProperty(property)}
                         />
                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button size="icon" variant="destructive" onClick={() => handleDeleteProperty(property.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="icon" variant="destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Ta bort fastighet?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Är du säker på att du vill ta bort "{property.address}"? Fastigheten flyttas till borttagna objekt.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteProperty(property.id)}>
+                                  Ta bort
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>)}
                   </div> : <div className="text-center py-12">

@@ -1032,7 +1032,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
         {/* Recent sold carousel removed - sold properties now shown in same grid as available properties */}
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
+          ? "grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 md:mb-6"
           : "flex flex-col gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {

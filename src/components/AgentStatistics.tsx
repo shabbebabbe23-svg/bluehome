@@ -237,49 +237,47 @@ export const AgentStatistics = () => {
               <p className="text-sm">Klick kommer att visas här när personer besöker dina objekt</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {stats.map((stat) => (
                 <div
                   key={stat.property_id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="flex flex-col p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
-                  <div className="flex-1">
-                    <h4 className="font-medium">{stat.property_title}</h4>
-                    <div className="flex flex-wrap gap-3 sm:gap-4 mt-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {stat.total_views} visningar
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {formatTime(stat.avg_time_spent)} snitt
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Image className="w-4 h-4" />
-                        {stat.avg_images_per_session} bilder/besök
-                      </span>
-                    </div>
-                    {stat.visitor_locations.length > 0 && (
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1 mb-1">
-                          <MapPin className="w-3 h-3" />
-                          <span className="font-medium">Besökare från:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {stat.visitor_locations.map((loc, idx) => (
-                            <span key={idx} className="bg-muted px-2 py-0.5 rounded">
-                              {loc.city}, {loc.region} ({loc.count})
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-primary">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-medium flex-1">{stat.property_title}</h4>
+                    <div className="text-2xl font-bold text-primary ml-2">
                       {stat.total_views}
                     </div>
                   </div>
+                  <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Eye className="w-4 h-4" />
+                      {stat.total_views} visningar
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {formatTime(stat.avg_time_spent)} snitt
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Image className="w-4 h-4" />
+                      {stat.avg_images_per_session} bilder/besök
+                    </span>
+                  </div>
+                  {stat.visitor_locations.length > 0 && (
+                    <div className="mt-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 mb-1">
+                        <MapPin className="w-3 h-3" />
+                        <span className="font-medium">Besökare från:</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {stat.visitor_locations.map((loc, idx) => (
+                          <span key={idx} className="bg-muted px-2 py-0.5 rounded">
+                            {loc.city}, {loc.region} ({loc.count})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
