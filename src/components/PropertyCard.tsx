@@ -378,10 +378,6 @@ const PropertyCard = ({
               </div>
             </div>
 
-            {/* Description - hidden on mobile (reserve height for consistency) */}
-            <p className="hidden md:block text-xs text-muted-foreground mt-1 line-clamp-1 min-h-4">
-              {truncatedListDescription || "\u00A0"}
-            </p>
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex items-end justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
