@@ -1030,36 +1030,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </div>
         </div>
 
-        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
-        {showFinalPrices && propertiesWithFallback.length > 0 && (
-          <section className="mb-6">
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-4">
-              Senaste sålda objekt
-            </h3>
-            <RecentSoldCarousel
-              properties={propertiesWithFallback.slice(0, 5).map(p => ({
-                id: p.id,
-                title: p.title,
-                price: p.price,
-                priceValue: p.priceValue,
-                location: p.location,
-                address: p.address,
-                bedrooms: p.bedrooms,
-                bathrooms: p.bathrooms,
-                area: p.area,
-                fee: p.fee,
-                image: p.image,
-                hoverImage: p.hoverImage,
-                type: p.type,
-                vendorLogo: p.vendorLogo,
-                hasVR: p.hasVR,
-                soldDate: p.soldDate,
-                sold_price: p.sold_price,
-                additional_images: (p as any).additional_images,
-              }))}
-            />
-          </section>
-        )}
+        {/* Recent sold carousel removed - sold properties now shown in same grid as available properties */}
         <div className={viewMode === "grid"
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
           : "flex flex-col gap-3 mb-4 md:mb-6"
