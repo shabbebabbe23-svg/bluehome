@@ -111,7 +111,8 @@ const PropertyCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
-  const allImages = [image, ...(additionalImages || [])].filter(Boolean) as string[];
+  // Limit to first 5 images for the slider
+  const allImages = [image, ...(additionalImages || [])].filter(Boolean).slice(0, 5) as string[];
   const touchStartX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
