@@ -379,7 +379,7 @@ const PropertyCard = ({
             </div>
 
             {/* Description - hidden on mobile (reserve height for consistency) */}
-            <p className="hidden md:block text-xs text-muted-foreground mt-1 line-clamp-1 min-h-4">
+            <p className="hidden md:block text-xs text-muted-foreground mt-1 truncate leading-normal">
               {truncatedListDescription || "\u00A0"}
             </p>
 
