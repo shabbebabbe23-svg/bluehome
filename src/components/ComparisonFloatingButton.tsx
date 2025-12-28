@@ -18,7 +18,7 @@ export function ComparisonFloatingButton() {
       {/* Clear all button */}
       <button
         onClick={clearComparison}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-muted hover:bg-destructive text-muted-foreground hover:text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10"
+        className="absolute -top-2 -right-2 w-6 h-6 bg-destructive hover:bg-destructive/80 text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10"
         aria-label="Rensa jämförelse"
       >
         <X className="w-3.5 h-3.5" />
