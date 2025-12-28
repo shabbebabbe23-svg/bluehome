@@ -241,7 +241,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[120px] md:h-[130px] w-full lg:w-[90%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[99%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -254,7 +254,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[160px] md:w-[200px] lg:w-[200px] xl:w-[240px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
+          <div className="relative w-full sm:w-[176px] md:w-[220px] lg:w-[220px] xl:w-[264px] h-[154px] sm:h-full flex-shrink-0 overflow-hidden">
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
