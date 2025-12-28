@@ -451,7 +451,7 @@ const PropertyCard = ({
         {/* Layered images for smooth scrolling/swiping */}
         <div 
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-video relative overflow-hidden"
+          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
