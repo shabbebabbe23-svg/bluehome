@@ -109,9 +109,11 @@ const PropertyCard = ({
 
   // Image gallery state for scrolling through images
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
   const allImages = [image, ...(additionalImages || [])].filter(Boolean) as string[];
   const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
@@ -126,34 +128,54 @@ const PropertyCard = ({
     return () => clearInterval(interval);
   }, [autoSlideImages, images.length]);
 
-  // Handle touch events for swiping
+  // Handle touch events for swiping with visual feedback
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    setIsSwiping(true);
   }, []);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  }, []);
+    if (!touchStartX.current || !containerRef.current) return;
+    
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - touchStartX.current;
+    const containerWidth = containerRef.current.offsetWidth;
+    
+    // Limit the swipe offset and add resistance at edges
+    let offset = diff;
+    if ((currentImageIndex === 0 && diff > 0) || 
+        (currentImageIndex === allImages.length - 1 && diff < 0)) {
+      offset = diff * 0.3; // Add resistance at edges
+    }
+    
+    setSwipeOffset((offset / containerWidth) * 100);
+  }, [currentImageIndex, allImages.length]);
 
   const handleTouchEnd = useCallback(() => {
-    if (!touchStartX.current || !touchEndX.current) return;
+    if (!containerRef.current) {
+      setSwipeOffset(0);
+      setIsSwiping(false);
+      touchStartX.current = null;
+      return;
+    }
     
-    const diff = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (Math.abs(diff) > minSwipeDistance) {
-      if (diff > 0 && currentImageIndex < allImages.length - 1) {
+    const containerWidth = containerRef.current.offsetWidth;
+    const swipeThreshold = 20; // Percentage threshold to trigger slide
+    
+    if (Math.abs(swipeOffset) > swipeThreshold) {
+      if (swipeOffset < 0 && currentImageIndex < allImages.length - 1) {
         // Swipe left - next image
         setCurrentImageIndex(prev => prev + 1);
-      } else if (diff < 0 && currentImageIndex > 0) {
+      } else if (swipeOffset > 0 && currentImageIndex > 0) {
         // Swipe right - previous image
         setCurrentImageIndex(prev => prev - 1);
       }
     }
-
+    
+    setSwipeOffset(0);
+    setIsSwiping(false);
     touchStartX.current = null;
-    touchEndX.current = null;
-  }, [currentImageIndex, allImages.length]);
+  }, [swipeOffset, currentImageIndex, allImages.length]);
 
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -427,7 +449,8 @@ const PropertyCard = ({
       <div className="relative overflow-hidden">
         {/* Layered images for smooth scrolling/swiping */}
         <div 
-          className="w-full aspect-[4/3] sm:aspect-video relative touch-pan-y"
+          ref={containerRef}
+          className="w-full aspect-[4/3] sm:aspect-video relative overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -444,38 +467,26 @@ const PropertyCard = ({
               />
             ))
           ) : allImages.length > 1 ? (
-            // Scrollable gallery mode
+            // Scrollable gallery mode with swipe
             <>
-              {allImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`${title} - bild ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${
-                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
-              ))}
-              
-              {/* Navigation arrows - always visible on mobile */}
-              {currentImageIndex > 0 && (
-                <button
-                  onClick={goToPrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  aria-label="Föregående bild"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              )}
-              {currentImageIndex < allImages.length - 1 && (
-                <button
-                  onClick={goToNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  aria-label="Nästa bild"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
+              <div 
+                className="flex h-full"
+                style={{ 
+                  transform: `translateX(calc(-${currentImageIndex * 100}% + ${swipeOffset}%))`,
+                  transition: isSwiping ? 'none' : 'transform 0.3s ease-out'
+                }}
+              >
+                {allImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`${title} - bild ${index + 1}`}
+                    className="w-full h-full object-cover flex-shrink-0"
+                    style={{ minWidth: '100%' }}
+                    draggable={false}
+                  />
+                ))}
+              </div>
               
               {/* Image counter/dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
