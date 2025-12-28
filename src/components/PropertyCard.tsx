@@ -457,11 +457,11 @@ const PropertyCard = ({
                 />
               ))}
               
-              {/* Navigation arrows */}
+              {/* Navigation arrows - always visible on mobile */}
               {currentImageIndex > 0 && (
                 <button
                   onClick={goToPrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   aria-label="Föregående bild"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -470,7 +470,7 @@ const PropertyCard = ({
               {currentImageIndex < allImages.length - 1 && (
                 <button
                   onClick={goToNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   aria-label="Nästa bild"
                 >
                   <ChevronRight className="w-5 h-5" />
