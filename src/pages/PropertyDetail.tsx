@@ -545,7 +545,7 @@ const PropertyDetail = () => {
       </div>
     </header>
 
-    <div className="w-full max-w-[85vw] mx-auto px-3 sm:px-4 py-4 md:py-8">
+    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8">
       <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_3.7fr_1.35fr] gap-4 md:gap-8">
         {/* Left Ad */}
         <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">

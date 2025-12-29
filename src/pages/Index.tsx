@@ -20,6 +20,7 @@ import kitchenAd from "@/assets/kitchen-ad.jpg";
 
 const Index = () => {
   const [showFinalPrices, setShowFinalPrices] = useState(false);
+  const [soldWithinMonths, setSoldWithinMonths] = useState<number | null>(null);
   const [propertyType, setPropertyType] = useState("");
   const [searchAddress, setSearchAddress] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000000]);
@@ -140,6 +141,8 @@ const Index = () => {
             onBalconyFilterChange={setBalconyFilter}
             onBiddingFilterChange={setBiddingFilter}
             onFeeRangeChange={setFeeRange}
+            soldWithinMonths={soldWithinMonths}
+            onSoldWithinMonthsChange={setSoldWithinMonths}
           />
           <div ref={resultsRef}>
             {/* Recent uploads section - only show when NOT viewing final prices */}
@@ -187,6 +190,7 @@ const Index = () => {
                 balconyFilter={balconyFilter}
                 biddingFilter={biddingFilter}
                 feeRange={feeRange}
+                soldWithinMonths={soldWithinMonths}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />

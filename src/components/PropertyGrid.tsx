@@ -55,6 +55,7 @@ interface PropertyGridProps {
   balconyFilter?: boolean;
   biddingFilter?: boolean;
   feeRange?: [number, number];
+  soldWithinMonths?: number | null;
 }
 
 export interface Property {
@@ -584,7 +585,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000] }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -602,7 +603,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [soldWithinMonths, setSoldWithinMonths] = useState<number | null>(null);
+  // Removed local soldWithinMonths state, now using prop
 
   // Save showAll state to sessionStorage whenever it changes
   useEffect(() => {
@@ -1008,103 +1009,79 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
             </h2>
-            {/* Sort and View Toggle */}
-            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
-              {!showFinalPrices && bulkSelectMode && (
-                <div className="hidden sm:flex gap-2">
-                  <Button
-                    onClick={toggleSelectAll}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
-                  </Button>
-                  <Button
-                    onClick={handleBulkDelete}
-                    disabled={selectedProperties.length === 0 || isDeleting}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setBulkSelectMode(false);
-                      setSelectedProperties([]);
-                    }}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    Avbryt
-                  </Button>
-                </div>
-              )}
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[140px] sm:w-[170px] h-8 text-xs bg-hero-gradient text-white border-transparent">
-                  <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
-                  <SelectValue placeholder="Sortera efter" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border z-50">
-                  <SelectItem value="default">Sortera efter</SelectItem>
-                  <SelectItem value="newest">Senaste tillagda</SelectItem>
-                  <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
-                  <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
-                  <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
-                  <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
-                  <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
-                  <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
-                  <SelectItem value="address-az">Adress: A-Ö</SelectItem>
-                  <SelectItem value="address-za">Adress: Ö-A</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="outline"
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
-              >
-                {viewMode === "grid" ? (
-                  <>
-                    <List className="w-4 h-4" />
-                    <span className="hidden sm:inline">Listvy</span>
-                  </>
-                ) : (
-                  <>
-                    <Grid3x3 className="w-4 h-4" />
-                    <span className="hidden sm:inline">Rutnätsvy</span>
-                  </>
+            {/* Listvy-knapp överst */}
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <div className="flex justify-center sm:justify-end w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                  className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
+                >
+                  {viewMode === "grid" ? (
+                    <>
+                      <List className="w-4 h-4" />
+                      <span className="hidden sm:inline">Listvy</span>
+                    </>
+                  ) : (
+                    <>
+                      <Grid3x3 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Rutnätsvy</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
+                {!showFinalPrices && bulkSelectMode && (
+                  <div className="hidden sm:flex gap-2">
+                    <Button
+                      onClick={toggleSelectAll}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
+                    </Button>
+                    <Button
+                      onClick={handleBulkDelete}
+                      disabled={selectedProperties.length === 0 || isDeleting}
+                      variant="destructive"
+                      size="sm"
+                    >
+                      {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setBulkSelectMode(false);
+                        setSelectedProperties([]);
+                      }}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
                 )}
-              </Button>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[140px] sm:w-[170px] h-8 text-xs bg-hero-gradient text-white border-transparent">
+                    <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
+                    <SelectValue placeholder="Sortera efter" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border z-50">
+                    <SelectItem value="default">Sortera efter</SelectItem>
+                    <SelectItem value="newest">Senaste tillagda</SelectItem>
+                    <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
+                    <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
+                    <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
+                    <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
+                    <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
+                    <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
+                    <SelectItem value="address-az">Adress: A-Ö</SelectItem>
+                    <SelectItem value="address-za">Adress: Ö-A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Sold within time period filter - only shown when showFinalPrices is ON */}
-        {showFinalPrices && (
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-6 animate-slide-up">
-            <span className="text-sm font-medium text-muted-foreground mr-2">Såld inom:</span>
-            {[
-              { label: "1 mån", value: 1 },
-              { label: "3 mån", value: 3 },
-              { label: "6 mån", value: 6 },
-              { label: "12 mån", value: 12 },
-              { label: "Alla", value: null },
-            ].map((period) => (
-              <Button
-                key={period.label}
-                variant={soldWithinMonths === period.value ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSoldWithinMonths(period.value)}
-                className={`rounded-full px-4 h-8 text-xs transition-all ${soldWithinMonths === period.value
-                    ? "bg-hero-gradient text-white border-transparent shadow-md"
-                    : "hover:bg-muted"
-                  }`}
-              >
-                {period.label}
-              </Button>
-            ))}
-          </div>
-        )}
 
         {/* Recent sold carousel removed - sold properties now shown in same grid as available properties */}
         <div className={viewMode === "grid"
