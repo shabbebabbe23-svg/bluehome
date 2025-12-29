@@ -25,9 +25,11 @@ interface HeroProps {
   onBalconyFilterChange?: (value: boolean) => void;
   onBiddingFilterChange?: (value: boolean) => void;
   onFeeRangeChange?: (value: [number, number]) => void;
+  soldWithinMonths?: number | null;
+  onSoldWithinMonthsChange?: (value: number | null) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -72,6 +74,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
+    onSoldWithinMonthsChange?.(null);
   };
 
   // Call callbacks when filter values change
@@ -577,7 +580,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([clampedValue, priceRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-20 sm:w-24 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -590,7 +593,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
                             }}
                             placeholder="Max"
-                            className="w-20 sm:w-24 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -669,7 +672,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([clampedValue, roomRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-14 sm:w-16 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -682,7 +685,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
                             }}
                             placeholder="Max"
-                            className="w-14 sm:w-16 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -703,7 +706,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                     {/* Elevator & Balcony Filters */}
                     <div className="space-y-3 md:space-y-4">
                       <h3 className="text-lg sm:text-xl font-bold text-foreground">Objekt med</h3>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-3 justify-center">
                         <Button
                           variant="outline"
                           onClick={() => {
@@ -736,6 +739,35 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         </Button>
                       </div>
                     </div>
+
+                    {/* Sold within time period - only shown when showFinalPrices is ON */}
+                    {showFinalPrices && (
+                      <div className="space-y-3">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Såld inom</h3>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {[
+                            { label: "1 mån", value: 1 },
+                            { label: "3 mån", value: 3 },
+                            { label: "6 mån", value: 6 },
+                            { label: "12 mån", value: 12 },
+                            { label: "Alla", value: null },
+                          ].map((period) => (
+                            <Button
+                              key={period.label}
+                              variant={soldWithinMonths === period.value ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => onSoldWithinMonthsChange?.(period.value)}
+                              className={`rounded-full px-4 h-9 text-sm sm:text-base font-semibold transition-all ${soldWithinMonths === period.value
+                                ? "bg-hero-gradient text-white border-transparent shadow-md"
+                                : "hover:bg-muted border-2"
+                                }`}
+                            >
+                              {period.label}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Fee Filter */}
                     <div className="space-y-2">

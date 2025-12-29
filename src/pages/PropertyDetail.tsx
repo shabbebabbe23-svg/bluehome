@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale, Twitter as XLogo } from "lucide-react";
+import bathroomAd from "@/assets/bathroom-ad.jpg";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,134 +35,71 @@ import storgatan4 from "@/assets/storgatan-4.jpg";
 import storgatan5 from "@/assets/storgatan-5.jpg";
 import DetailAdBanner from "@/components/DetailAdBanner";
 import AdBanner from "@/components/AdBanner";
-import bathroomAd from "@/assets/bathroom-ad.jpg";
-import PropertyDetailMap from "@/components/PropertyDetailMap";
 import PropertyCostBreakdown from "@/components/PropertyCostBreakdown";
-import ContactForm from "@/components/ContactForm";
-import ImageGallery from "@/components/ImageGallery";
+import PropertyDetailMap from "@/components/PropertyDetailMap";
+import { ExpandableDescription } from "@/components/ExpandableDescription";
 
-// X (Twitter) Logo Component
-const XLogo = ({
-  className
-}: {
-  className?: string;
-}) => <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>;
-
-// Expandable Description Component
-const ExpandableDescription = ({ description }: { description?: string }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  if (!description) {
-    return (
-      <div>
-        <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-        <p className="text-base text-muted-foreground leading-relaxed">
-          Ingen beskrivning tillgänglig
-        </p>
-      </div>
-    );
-  }
-
-  // Check if description is long enough to need truncation (roughly 3-4 lines)
-  const shouldTruncate = description.length > 250;
-
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-3">Beskrivning</h2>
-      <div className="relative">
-        <p 
-          className={`text-base text-muted-foreground leading-relaxed transition-all duration-300 ${
-            !isExpanded && shouldTruncate ? 'line-clamp-4' : ''
-          }`}
-        >
-          {description}
-        </p>
-        {shouldTruncate && (
-          <Button
-            variant="link"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-0 h-auto mt-2 text-primary font-semibold hover:underline"
-          >
-            {isExpanded ? 'Visa mindre' : 'Visa hela beskrivningen'}
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-};
 const PropertyDetail = () => {
-  const {
-    id
-  } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { user, profileName, avatarUrl } = useAuth();
+  const { user } = useAuth();
   const { toggleFavorite, isFavorite: checkIsFavorite } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [dbProperty, setDbProperty] = useState<any>(null);
-  const [agentProfile, setAgentProfile] = useState<any>(null);
+
   const [loading, setLoading] = useState(true);
+  const [dbProperty, setDbProperty] = useState<any>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const [hasActiveBidding, setHasActiveBidding] = useState(false);
+  const [agentProfile, setAgentProfile] = useState<any>(null);
   const [isPWA, setIsPWA] = useState(false);
 
-  // Detect if running as PWA
+  const avatarUrl = user?.user_metadata?.avatar_url;
+  const profileName = user?.user_metadata?.full_name;
+
+  const viewerCount = usePropertyPresence(id ? String(id) : "");
+  usePropertyViewTracking(id ? String(id) : "");
+
+  const hasActiveBidding = dbProperty?.has_active_bidding ?? false;
+
   useEffect(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone
-      || document.referrer.includes('android-app://');
-    setIsPWA(isStandalone);
+    setIsPWA(window.matchMedia('(display-mode: standalone)').matches);
   }, []);
-
-  // Track property view
-  usePropertyViewTracking(id || "");
-
-  // Real-time viewer presence
-  const { viewerCount } = usePropertyPresence(id);
 
   useEffect(() => {
     const fetchProperty = async () => {
-      if (!id) return;
       try {
-        // Try to fetch from database first - explicitly exclude seller_email for security
-        const {
-          data,
-          error
-        } = await supabase.from('properties').select(`
-          id, user_id, title, address, location, type, price, bedrooms, bathrooms, area,
-          fee, viewing_date, listed_date, is_sold, is_deleted, has_vr, created_at, updated_at,
-          sold_date, sold_price, new_price, is_manual_price_change, is_coming_soon,
-          operating_cost, construction_year, is_new_production, vr_image_indices,
-          has_elevator, has_balcony, documents, description, image_url, hover_image_url,
-          vendor_logo_url, additional_images, floorplan_url, floorplan_images, housing_association,
-          show_viewer_count
-        `).eq('id', id).maybeSingle();
+        if (!id) return;
+        setLoading(true);
+
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
         if (data) {
           setDbProperty(data);
 
-          // Fetch agent profile
-          const {
-            data: profile
-          } = await supabase.from('profiles').select('*').eq('id', data.user_id).maybeSingle();
-          if (profile) {
-            setAgentProfile(profile);
+          if (data.user_id) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user_id)
+              .single();
+            if (profile) setAgentProfile(profile);
           }
 
-          // Check if property has active bidding and get count
-          const {
-            data: bids,
-            count
-          } = await supabase.from('property_bids').select('id', {
-            count: 'exact'
-          }).eq('property_id', id);
-          setHasActiveBidding(bids && bids.length > 0);
-          if (count && count > 0) {
-            setDbProperty((prev: any) => ({
-              ...prev,
+          const { count } = await supabase
+            .from('bids')
+            .select('*', { count: 'exact', head: true })
+            .eq('property_id', id);
+
+          if (count !== null) {
+            setDbProperty(prev => ({
               bidCount: count
             }));
           }
@@ -608,14 +546,14 @@ const PropertyDetail = () => {
     </header>
 
     <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_3.7fr_1.35fr] gap-4 md:gap-8">
         {/* Left Ad */}
         <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">
           <AdBanner className="order-1" />
         </div>
 
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-4 md:space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Image Gallery */}
           <Card className="overflow-hidden">
             <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
@@ -639,11 +577,10 @@ const PropertyDetail = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${
-                    id && isInComparison(String(id)) 
-                      ? 'bg-primary hover:bg-primary/90' 
-                      : 'bg-white/90 hover:bg-white'
-                  }`}
+                  className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${id && isInComparison(String(id))
+                    ? 'bg-primary hover:bg-primary/90'
+                    : 'bg-white/90 hover:bg-white'
+                    }`}
                   onClick={() => {
                     if (!id) return;
                     const comparing = isInComparison(String(id));
@@ -712,15 +649,17 @@ const PropertyDetail = () => {
                 <Share2 className="w-4 h-4" />
                 <span>Dela bostad</span>
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/virtuell-visning/${id}`)}
-                className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
-              >
-                <Move3D className="w-4 h-4" />
-                <span>360° Visning</span>
-              </Button>
+              {(dbProperty?.has_vr || property.has_vr) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/virtuell-visning/${id}`)}
+                  className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
+                >
+                  <Move3D className="w-4 h-4" />
+                  <span>360° Visning</span>
+                </Button>
+              )}
             </div>
           </div>
 
@@ -838,6 +777,24 @@ const PropertyDetail = () => {
                     <span className="text-muted-foreground">Slutpris</span>
                     <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
                   </div>}
+                  {/* Visningsdatum och tid */}
+                  {dbProperty?.viewing_date && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Visning</span>
+                      <span className="font-semibold">
+                        {(() => {
+                          const date = new Date(dbProperty.viewing_date);
+                          return date.toLocaleString('sv-SE', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                        })()}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Bostadstyp</span>
                     <span className="font-semibold">{property.type || 'Villa'}</span>
@@ -986,97 +943,113 @@ const PropertyDetail = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-2">
           {/* Contact Card */}
-          <Card className="sticky top-24">
+          <Card className="sticky top-6 md:top-24 z-30">
             <CardContent className="p-6">
               {/* Days on market badge - right side */}
               {dbProperty?.listed_date && (() => {
                 const daysOnMarket = Math.floor((new Date().getTime() - new Date(dbProperty.listed_date).getTime()) / (1000 * 60 * 60 * 24));
                 return (
-                  <div className="mb-4 p-3 bg-muted/30 rounded-lg">
-                    <p className="text-sm text-center font-semibold text-muted-foreground">
+                  <div className="mb-0.5 p-1.5 bg-muted/30 rounded-lg">
+                    <p className="text-xs text-center font-semibold text-muted-foreground">
                       {daysOnMarket === 0 ? "Ny idag på BaraHem" : `${daysOnMarket} ${daysOnMarket === 1 ? "dag" : "dagar"} på BaraHem`}
                     </p>
                   </div>
                 );
               })()}
 
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Visningar</h4>
+                <div className="space-y-2 mb-3">
+                  <button onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
+                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
+                      <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
+                    </div>
+                    <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                  </button>
+                  <button onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
+                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
+                      <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
+                    </div>
+                    <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                  </button>
+                </div>
+              </div>
+
+              <Separator className="mb-2" />
+
               {agentProfile ?
                 // Show real agent profile
                 <>
-                  <div className="flex flex-col items-center gap-4 mb-6">
+                  <div className="flex flex-col items-center gap-3 mb-3">
                     <Link to={`/agent/${property.user_id}`} className="z-20 hover:scale-105 transition-transform">
-                      <Avatar className="w-64 h-64 border-4 border-border cursor-pointer">
+                      <Avatar className="w-46 h-46 border-4 border-border cursor-pointer">
                         <AvatarImage src={agentProfile.avatar_url || undefined} className="object-contain p-2" />
-                        <AvatarFallback className="bg-primary text-white text-2xl">
-                          <User className="w-32 h-32" />
+                        <AvatarFallback className="bg-primary text-white text-3xl">
+                          <User className="w-23 h-23" />
                         </AvatarFallback>
                       </Avatar>
                     </Link>
                     <div className="text-center">
-                      <p className="text-sm text-muted-foreground mb-1">Kontakta mäklaren</p>
                       <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
                         <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                       </Link>
-                      {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
-                        <Building2 className="w-3 h-3" />
+                      {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
+                        <Building2 className="w-4 h-4" />
                         {agentProfile.agency}
                       </p>}
                     </div>
                   </div>
 
                   {/* Agent Info */}
-                  <div className="space-y-3 mb-6 bg-muted/30 rounded-lg p-4">
-                    {agentProfile.phone && <div className="flex items-center gap-2 text-sm">
+                  <div className="space-y-2 mb-3 bg-muted/30 rounded-lg p-4">
+                    {agentProfile.phone && <div className="flex items-center gap-3 text-sm">
                       <Phone className="w-4 h-4 text-muted-foreground" />
                       <span>{agentProfile.phone}</span>
                     </div>}
-                    {agentProfile.email && <div className="flex items-center gap-2 text-sm">
+                    {agentProfile.email && <div className="flex items-center gap-3 text-sm">
                       <Mail className="w-4 h-4 text-muted-foreground" />
                       <span className="truncate">{agentProfile.email}</span>
                     </div>}
-                    {agentProfile.office && <div className="flex items-center gap-2 text-sm">
+                    {agentProfile.office && <div className="flex items-center gap-3 text-sm">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       <span>{agentProfile.office}</span>
                     </div>}
-                    {agentProfile.area && <div className="flex items-center gap-2 text-sm">
-                      <Home className="w-4 h-4 text-muted-foreground" />
-                      <span>{agentProfile.area}</span>
-                    </div>}
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {agentProfile.phone && <Button
-                      className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
-                      size="lg"
+                      className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base"
                       onClick={() => window.open(`tel:${agentProfile.phone}`, '_self')}
                     >
-                      <Phone className="w-4 h-4 mr-2" />
+                      <Phone className="w-5 h-5 mr-2" />
                       Ring mig
                     </Button>}
                     <Button
-                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
-                      size="lg"
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base"
                       onClick={() => {
                         const subject = `Intresserad av: ${property.address}`;
                         const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag är intresserad av fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
                         window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                       }}
                     >
-                      <Mail className="w-4 h-4 mr-2" />
+                      <Mail className="w-5 h-5 mr-2" />
                       Skicka meddelande
                     </Button>
                     <Button
-                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
-                      size="lg"
+                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base"
                       onClick={() => {
                         const subject = `Boka visning: ${property.address}`;
                         const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
                         window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                       }}
                     >
-                      <Calendar className="w-4 h-4 mr-2" />
+                      <Calendar className="w-5 h-5 mr-2" />
                       Boka visning
                     </Button>
                   </div>
@@ -1126,31 +1099,7 @@ const PropertyDetail = () => {
                   </div>
                 </>}
 
-              <Separator className="my-6" />
 
-              <div>
-                <h4 className="font-semibold mb-3">Visningar</h4>
-                <div className="space-y-2">
-                  <button onClick={() => handleDownloadViewing('Ons 15 okt', '16:00 - 17:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
-                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                    <div className="flex-1 text-left">
-                      <p className="font-medium group-hover:text-primary transition-colors">Ons 15 okt</p>
-                      <p className="text-sm text-muted-foreground">16:00 - 17:00</p>
-                      <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
-                    </div>
-                    <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                  </button>
-                  <button onClick={() => handleDownloadViewing('Fre 17 okt', '13:00 - 14:00')} className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
-                    <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                    <div className="flex-1 text-left">
-                      <p className="font-medium group-hover:text-primary transition-colors">Fre 17 okt</p>
-                      <p className="text-sm text-muted-foreground">13:00 - 14:00</p>
-                      <p className="text-sm text-muted-foreground mt-1">Mäklare: {agentProfile?.full_name || property.vendor}</p>
-                    </div>
-                    <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                  </button>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

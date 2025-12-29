@@ -137,18 +137,18 @@ const PropertyCard = ({
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchStartX.current || !containerRef.current) return;
-    
+
     const currentX = e.touches[0].clientX;
     const diff = currentX - touchStartX.current;
     const containerWidth = containerRef.current.offsetWidth;
-    
+
     // Limit the swipe offset and add resistance at edges
     let offset = diff;
-    if ((currentImageIndex === 0 && diff > 0) || 
-        (currentImageIndex === allImages.length - 1 && diff < 0)) {
+    if ((currentImageIndex === 0 && diff > 0) ||
+      (currentImageIndex === allImages.length - 1 && diff < 0)) {
       offset = diff * 0.3; // Add resistance at edges
     }
-    
+
     setSwipeOffset((offset / containerWidth) * 100);
   }, [currentImageIndex, allImages.length]);
 
@@ -159,10 +159,10 @@ const PropertyCard = ({
       touchStartX.current = null;
       return;
     }
-    
+
     const containerWidth = containerRef.current.offsetWidth;
     const swipeThreshold = 20; // Percentage threshold to trigger slide
-    
+
     if (Math.abs(swipeOffset) > swipeThreshold) {
       if (swipeOffset < 0 && currentImageIndex < allImages.length - 1) {
         // Swipe left - next image
@@ -172,7 +172,7 @@ const PropertyCard = ({
         setCurrentImageIndex(prev => prev - 1);
       }
     }
-    
+
     setSwipeOffset(0);
     setIsSwiping(false);
     touchStartX.current = null;
@@ -241,7 +241,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[99%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[100%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -414,7 +414,7 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.07] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.05] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
@@ -449,9 +449,9 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth scrolling/swiping */}
-        <div 
+        <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden"
+          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden touch-pan-y"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -470,9 +470,9 @@ const PropertyCard = ({
           ) : allImages.length > 1 ? (
             // Scrollable gallery mode with swipe
             <>
-              <div 
+              <div
                 className="flex h-full"
-                style={{ 
+                style={{
                   transform: `translateX(calc(-${currentImageIndex * 100}% + ${swipeOffset}%))`,
                   transition: isSwiping ? 'none' : 'transform 0.3s ease-out'
                 }}
@@ -488,7 +488,36 @@ const PropertyCard = ({
                   />
                 ))}
               </div>
-              
+
+              {/* Navigation arrows re-attached */}
+              {currentImageIndex > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const prevIndex = Math.max(0, currentImageIndex - 1);
+                    setCurrentImageIndex(prevIndex);
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                  aria-label="Föregående bild"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+              {currentImageIndex < allImages.length - 1 && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const nextIndex = Math.min(allImages.length - 1, currentImageIndex + 1);
+                    setCurrentImageIndex(nextIndex);
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                  aria-label="Nästa bild"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
               {/* Image counter/dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {allImages.slice(0, 5).map((_, index) => (
@@ -499,9 +528,8 @@ const PropertyCard = ({
                       e.stopPropagation();
                       setCurrentImageIndex(index);
                     }}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                      index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
-                    }`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
+                      }`}
                     aria-label={`Visa bild ${index + 1}`}
                   />
                 ))}

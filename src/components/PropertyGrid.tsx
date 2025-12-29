@@ -55,6 +55,7 @@ interface PropertyGridProps {
   balconyFilter?: boolean;
   biddingFilter?: boolean;
   feeRange?: [number, number];
+  soldWithinMonths?: number | null;
 }
 
 export interface Property {
@@ -77,6 +78,7 @@ export interface Property {
   isSold?: boolean;
   soldDate?: Date | string;
   hasVR?: boolean;
+  has_vr?: boolean;
   description?: string;
   sold_price?: number;
   new_price?: number;
@@ -583,7 +585,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000] }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -601,6 +603,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Removed local soldWithinMonths state, now using prop
 
   // Save showAll state to sessionStorage whenever it changes
   useEffect(() => {
@@ -875,7 +878,24 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
 
   const filteredProperties = filterByType(propertiesWithFallback);
-  const sortedProperties = sortProperties(filteredProperties);
+
+  // Filter by sold date if a time period is selected
+  const filterBySoldDate = (properties: Property[]) => {
+    if (!soldWithinMonths || !showFinalPrices) return properties;
+
+    const now = new Date();
+    const cutoffDate = new Date();
+    cutoffDate.setMonth(now.getMonth() - soldWithinMonths);
+
+    return properties.filter(property => {
+      if (!property.soldDate) return false;
+      const soldDate = new Date(property.soldDate);
+      return soldDate >= cutoffDate;
+    });
+  };
+
+  const dateFilteredProperties = filterBySoldDate(filteredProperties);
+  const sortedProperties = sortProperties(dateFilteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: string | number) => {
@@ -952,6 +972,36 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   return (
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
+        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
+        {showFinalPrices && propertiesWithFallback.length > 0 && (
+          <section className="mb-6">
+            <h3 className="text-xl sm:text-2xl font-semibold text-foreground text-center mt-6 mb-6">
+              Senaste sålda objekt
+            </h3>
+            <RecentSoldCarousel
+              properties={propertiesWithFallback.slice(0, 5).map(p => ({
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                priceValue: p.priceValue,
+                location: p.location,
+                address: p.address,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+                area: p.area,
+                fee: p.fee,
+                image: p.image,
+                hoverImage: p.hoverImage,
+                type: p.type,
+                vendorLogo: p.vendorLogo,
+                hasVR: p.hasVR,
+                soldDate: p.soldDate,
+                sold_price: p.sold_price,
+                additional_images: (p as any).additional_images,
+              }))}
+            />
+          </section>
+        )}
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
           <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full lg:w-[90%] mx-auto" : ""}`}>
@@ -959,73 +1009,76 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
             </h2>
-            {/* Sort and View Toggle */}
-            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
-              {!showFinalPrices && bulkSelectMode && (
-                <div className="hidden sm:flex gap-2">
-                  <Button
-                    onClick={toggleSelectAll}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
-                  </Button>
-                  <Button
-                    onClick={handleBulkDelete}
-                    disabled={selectedProperties.length === 0 || isDeleting}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setBulkSelectMode(false);
-                      setSelectedProperties([]);
-                    }}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    Avbryt
-                  </Button>
-                </div>
-              )}
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[140px] sm:w-[170px] h-8 text-xs bg-hero-gradient text-white border-transparent">
-                  <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
-                  <SelectValue placeholder="Sortera efter" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border z-50">
-                  <SelectItem value="default">Sortera efter</SelectItem>
-                  <SelectItem value="newest">Senaste tillagda</SelectItem>
-                  <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
-                  <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
-                  <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
-                  <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
-                  <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
-                  <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
-                  <SelectItem value="address-az">Adress: A-Ö</SelectItem>
-                  <SelectItem value="address-za">Adress: Ö-A</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="outline"
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
-              >
-                {viewMode === "grid" ? (
-                  <>
-                    <List className="w-4 h-4" />
-                    <span className="hidden sm:inline">Listvy</span>
-                  </>
-                ) : (
-                  <>
-                    <Grid3x3 className="w-4 h-4" />
-                    <span className="hidden sm:inline">Rutnätsvy</span>
-                  </>
+            {/* Listvy-knapp överst */}
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <div className="flex justify-center sm:justify-end w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                  className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
+                >
+                  {viewMode === "grid" ? (
+                    <>
+                      <List className="w-4 h-4" />
+                      <span className="hidden sm:inline">Listvy</span>
+                    </>
+                  ) : (
+                    <>
+                      <Grid3x3 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Rutnätsvy</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
+                {!showFinalPrices && bulkSelectMode && (
+                  <div className="hidden sm:flex gap-2">
+                    <Button
+                      onClick={toggleSelectAll}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {selectedProperties.length === displayedProperties.length ? 'Avmarkera alla' : 'Välj alla'}
+                    </Button>
+                    <Button
+                      onClick={handleBulkDelete}
+                      disabled={selectedProperties.length === 0 || isDeleting}
+                      variant="destructive"
+                      size="sm"
+                    >
+                      {isDeleting ? 'Tar bort...' : `Ta bort (${selectedProperties.length})`}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setBulkSelectMode(false);
+                        setSelectedProperties([]);
+                      }}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
                 )}
-              </Button>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[140px] sm:w-[170px] h-8 text-xs bg-hero-gradient text-white border-transparent">
+                    <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
+                    <SelectValue placeholder="Sortera efter" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border z-50">
+                    <SelectItem value="default">Sortera efter</SelectItem>
+                    <SelectItem value="newest">Senaste tillagda</SelectItem>
+                    <SelectItem value="price-high">Pris: Högt till lågt</SelectItem>
+                    <SelectItem value="price-low">Pris: Lågt till högt</SelectItem>
+                    <SelectItem value="area-small">Kvm: Minst till störst</SelectItem>
+                    <SelectItem value="area-large">Kvm: Störst till minst</SelectItem>
+                    <SelectItem value="fee-low">Avgift: Lägst till högst</SelectItem>
+                    <SelectItem value="viewing-earliest">Visning: Tidigast först</SelectItem>
+                    <SelectItem value="address-az">Adress: A-Ö</SelectItem>
+                    <SelectItem value="address-za">Adress: Ö-A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -1048,6 +1101,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               >
                 <PropertyCard
                   {...property}
+                  hasVR={property.has_vr || property.hasVR}
                   title={property.address}
                   description={property.description}
                   isFavorite={favorites.includes(property.id)}

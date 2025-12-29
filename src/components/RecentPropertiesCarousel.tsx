@@ -42,13 +42,16 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
 
   // Get all images for a property
   const getPropertyImages = useCallback((property: PropertyData) => {
+    // Always show all uploaded images: image, hoverImage, additional_images
     const images: string[] = [];
     if (property.image) images.push(property.image);
     if (property.hoverImage) images.push(property.hoverImage);
-    if (property.additional_images) {
+    if (property.additional_images && Array.isArray(property.additional_images)) {
       images.push(...property.additional_images);
     }
-    return images.length > 0 ? images : ['/placeholder.svg'];
+    // Remove duplicates (if any)
+    const uniqueImages = Array.from(new Set(images));
+    return uniqueImages.length > 0 ? uniqueImages : ['/placeholder.svg'];
   }, []);
 
   // Auto-slide images and switch properties
