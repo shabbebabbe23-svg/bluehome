@@ -136,6 +136,7 @@ const PropertyCard = ({
   }, []);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
     if (!touchStartX.current || !containerRef.current) return;
 
     const currentX = e.touches[0].clientX;
@@ -451,7 +452,8 @@ const PropertyCard = ({
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden touch-pan-y"
+          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden"
+          style={{ touchAction: 'pan-y' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
