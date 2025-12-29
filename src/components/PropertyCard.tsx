@@ -137,7 +137,7 @@ const PropertyCard = ({
 
   const handleTouchEnd = useCallback(() => {
     if (!touchStartX.current || !touchEndX.current) return;
-    
+
     const diff = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
@@ -218,7 +218,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.01] h-auto sm:h-[120px] md:h-[130px] w-full lg:w-[90%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[126px] md:h-[138px] w-full lg:w-[100%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -231,7 +231,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[160px] md:w-[200px] lg:w-[200px] xl:w-[240px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
+          <div className="relative w-full sm:w-[168px] md:w-[210px] lg:w-[210px] xl:w-[252px] h-[140px] sm:h-full flex-shrink-0 overflow-hidden">
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
@@ -391,7 +391,7 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.02] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.05] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
@@ -426,7 +426,7 @@ const PropertyCard = ({
 
       <div className="relative overflow-hidden">
         {/* Layered images for smooth scrolling/swiping */}
-        <div 
+        <div
           className="w-full aspect-[4/3] sm:aspect-video relative touch-pan-y"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -451,17 +451,16 @@ const PropertyCard = ({
                   key={index}
                   src={img}
                   alt={`${title} - bild ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${
-                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
                 />
               ))}
-              
+
               {/* Navigation arrows */}
               {currentImageIndex > 0 && (
                 <button
                   onClick={goToPrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   aria-label="Föregående bild"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -470,13 +469,13 @@ const PropertyCard = ({
               {currentImageIndex < allImages.length - 1 && (
                 <button
                   onClick={goToNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   aria-label="Nästa bild"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               )}
-              
+
               {/* Image counter/dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {allImages.slice(0, 5).map((_, index) => (
@@ -487,9 +486,8 @@ const PropertyCard = ({
                       e.stopPropagation();
                       setCurrentImageIndex(index);
                     }}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                      index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
-                    }`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
+                      }`}
                     aria-label={`Visa bild ${index + 1}`}
                   />
                 ))}

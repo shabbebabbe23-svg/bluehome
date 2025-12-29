@@ -35,7 +35,7 @@ interface RecentSoldCarouselProps {
 const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
   const [currentPropertyIndex, setCurrentPropertyIndex] = useState(0);
   const [imageCounters, setImageCounters] = useState<number[]>(properties.map(() => 0));
-  
+
   const IMAGES_BEFORE_SWITCH = 5;
   const IMAGE_INTERVAL = 3000; // 3 seconds per image
 
@@ -59,11 +59,11 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
         const newCounters = [...prev];
         const currentCounter = newCounters[currentPropertyIndex];
         const totalImagesViewed = currentCounter + 1;
-        
+
         // Check if we've viewed enough images to switch property
         if (totalImagesViewed >= IMAGES_BEFORE_SWITCH) {
           // Switch to next property
-          setCurrentPropertyIndex(prevIndex => 
+          setCurrentPropertyIndex(prevIndex =>
             (prevIndex + 1) % properties.length
           );
           // Reset counter for current property
@@ -72,7 +72,7 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
           // Just increment counter (which cycles through images)
           newCounters[currentPropertyIndex] = totalImagesViewed;
         }
-        
+
         return newCounters;
       });
     }, IMAGE_INTERVAL);
@@ -81,7 +81,7 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
   }, [properties, currentPropertyIndex, getPropertyImages]);
 
   const goToPrevious = () => {
-    setCurrentPropertyIndex(prev => 
+    setCurrentPropertyIndex(prev =>
       prev === 0 ? properties.length - 1 : prev - 1
     );
     setImageCounters(prev => {
@@ -92,7 +92,7 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
   };
 
   const goToNext = () => {
-    setCurrentPropertyIndex(prev => 
+    setCurrentPropertyIndex(prev =>
       (prev + 1) % properties.length
     );
     setImageCounters(prev => {
@@ -107,35 +107,35 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
   const currentProperty = properties[currentPropertyIndex];
   const currentImages = getPropertyImages(currentProperty);
   const currentImageIndex = imageCounters[currentPropertyIndex] % currentImages.length;
-  
+
   // Format sold date
-  const soldDateFormatted = currentProperty.soldDate 
+  const soldDateFormatted = currentProperty.soldDate
     ? format(new Date(currentProperty.soldDate), "d MMM yyyy", { locale: sv })
     : null;
 
   // Calculate price for display (use sold_price if available, otherwise priceValue)
-  const displayPrice = currentProperty.sold_price 
+  const displayPrice = currentProperty.sold_price
     ? `${currentProperty.sold_price.toLocaleString('sv-SE')} kr`
     : currentProperty.price;
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col items-center w-full px-4 sm:px-0">
+      <div className="flex items-center gap-1 sm:gap-2 w-full max-w-[500px] sm:max-w-none sm:w-auto">
         {/* Left arrow */}
         {properties.length > 1 && (
           <Button
             variant="ghost"
             size="icon"
             onClick={goToPrevious}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         )}
 
         {/* Single centered property card */}
-        <Card 
-          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-[360px] sm:w-[400px]"
+        <Card
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full sm:w-[400px] md:w-[450px]"
         >
           <Link
             to={`/fastighet/${currentProperty.id}`}
@@ -151,21 +151,20 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
               alt={currentProperty.title}
               className="w-full h-full object-cover transition-transform duration-500"
             />
-            
+
             {/* SOLD overlay */}
             <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-            
+
             {/* Image indicators */}
             {currentImages.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {currentImages.slice(0, Math.min(currentImages.length, 5)).map((_, idx) => (
                   <div
                     key={idx}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      idx === currentImageIndex % Math.min(currentImages.length, 5)
-                        ? "bg-white scale-110"
-                        : "bg-white/50"
-                    }`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentImageIndex % Math.min(currentImages.length, 5)
+                      ? "bg-white scale-110"
+                      : "bg-white/50"
+                      }`}
                   />
                 ))}
                 {currentImages.length > 5 && (
@@ -187,9 +186,9 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
             {/* Vendor logo */}
             {currentProperty.vendorLogo && (
               <div className="absolute bottom-2 right-2 z-10">
-                <img 
-                  src={currentProperty.vendorLogo} 
-                  alt="Mäklarbyrå" 
+                <img
+                  src={currentProperty.vendorLogo}
+                  alt="Mäklarbyrå"
                   className="h-6 w-auto bg-white/90 rounded px-1.5 py-0.5"
                 />
               </div>
@@ -243,9 +242,9 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
             variant="ghost"
             size="icon"
             onClick={goToNext}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8"
+            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         )}
       </div>
@@ -264,11 +263,10 @@ const RecentSoldCarousel = ({ properties }: RecentSoldCarouselProps) => {
                   return newCounters;
                 });
               }}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
-                idx === currentPropertyIndex
-                  ? "bg-red-600 scale-110"
-                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              }`}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${idx === currentPropertyIndex
+                ? "bg-red-600 scale-110"
+                : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                }`}
             />
           ))}
         </div>

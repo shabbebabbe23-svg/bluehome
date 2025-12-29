@@ -77,6 +77,7 @@ export interface Property {
   isSold?: boolean;
   soldDate?: Date | string;
   hasVR?: boolean;
+  has_vr?: boolean;
   description?: string;
   sold_price?: number;
   new_price?: number;
@@ -601,6 +602,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [soldWithinMonths, setSoldWithinMonths] = useState<number | null>(null);
 
   // Save showAll state to sessionStorage whenever it changes
   useEffect(() => {
@@ -875,7 +877,24 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
 
   const filteredProperties = filterByType(propertiesWithFallback);
-  const sortedProperties = sortProperties(filteredProperties);
+
+  // Filter by sold date if a time period is selected
+  const filterBySoldDate = (properties: Property[]) => {
+    if (!soldWithinMonths || !showFinalPrices) return properties;
+
+    const now = new Date();
+    const cutoffDate = new Date();
+    cutoffDate.setMonth(now.getMonth() - soldWithinMonths);
+
+    return properties.filter(property => {
+      if (!property.soldDate) return false;
+      const soldDate = new Date(property.soldDate);
+      return soldDate >= cutoffDate;
+    });
+  };
+
+  const dateFilteredProperties = filterBySoldDate(filteredProperties);
+  const sortedProperties = sortProperties(dateFilteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: string | number) => {
@@ -952,6 +971,36 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   return (
     <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
       <div className="w-full">
+        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
+        {showFinalPrices && propertiesWithFallback.length > 0 && (
+          <section className="mb-6">
+            <h3 className="text-xl sm:text-2xl font-semibold text-foreground text-center mt-6 mb-6">
+              Senaste sålda objekt
+            </h3>
+            <RecentSoldCarousel
+              properties={propertiesWithFallback.slice(0, 5).map(p => ({
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                priceValue: p.priceValue,
+                location: p.location,
+                address: p.address,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+                area: p.area,
+                fee: p.fee,
+                image: p.image,
+                hoverImage: p.hoverImage,
+                type: p.type,
+                vendorLogo: p.vendorLogo,
+                hasVR: p.hasVR,
+                soldDate: p.soldDate,
+                sold_price: p.sold_price,
+                additional_images: (p as any).additional_images,
+              }))}
+            />
+          </section>
+        )}
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
           <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full lg:w-[90%] mx-auto" : ""}`}>
@@ -1030,38 +1079,9 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </div>
         </div>
 
-        {/* Recent sold carousel - only shown when showFinalPrices is ON */}
-        {showFinalPrices && propertiesWithFallback.length > 0 && (
-          <section className="mb-6">
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-4">
-              Senaste sålda objekt
-            </h3>
-            <RecentSoldCarousel
-              properties={propertiesWithFallback.slice(0, 5).map(p => ({
-                id: p.id,
-                title: p.title,
-                price: p.price,
-                priceValue: p.priceValue,
-                location: p.location,
-                address: p.address,
-                bedrooms: p.bedrooms,
-                bathrooms: p.bathrooms,
-                area: p.area,
-                fee: p.fee,
-                image: p.image,
-                hoverImage: p.hoverImage,
-                type: p.type,
-                vendorLogo: p.vendorLogo,
-                hasVR: p.hasVR,
-                soldDate: p.soldDate,
-                sold_price: p.sold_price,
-                additional_images: (p as any).additional_images,
-              }))}
-            />
-          </section>
-        )}
+
         <div className={viewMode === "grid"
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 mb-4 md:mb-6"
+          ? "grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 md:mb-6"
           : "flex flex-col gap-3 mb-4 md:mb-6"
         }>
           {displayedProperties.map((property, index) => {
@@ -1077,6 +1097,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               >
                 <PropertyCard
                   {...property}
+                  hasVR={property.has_vr || property.hasVR}
                   title={property.address}
                   description={property.description}
                   isFavorite={favorites.includes(property.id)}
