@@ -1079,6 +1079,33 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </div>
         </div>
 
+        {/* Sold within time period filter - only shown when showFinalPrices is ON */}
+        {showFinalPrices && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6 animate-slide-up">
+            <span className="text-sm font-medium text-muted-foreground mr-2">Såld inom:</span>
+            {[
+              { label: "1 mån", value: 1 },
+              { label: "3 mån", value: 3 },
+              { label: "6 mån", value: 6 },
+              { label: "12 mån", value: 12 },
+              { label: "Alla", value: null },
+            ].map((period) => (
+              <Button
+                key={period.label}
+                variant={soldWithinMonths === period.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSoldWithinMonths(period.value)}
+                className={`rounded-full px-4 h-8 text-xs transition-all ${soldWithinMonths === period.value
+                    ? "bg-hero-gradient text-white border-transparent shadow-md"
+                    : "hover:bg-muted"
+                  }`}
+              >
+                {period.label}
+              </Button>
+            ))}
+          </div>
+        )}
+
         {/* Recent sold carousel removed - sold properties now shown in same grid as available properties */}
         <div className={viewMode === "grid"
           ? "grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 md:mb-6"
