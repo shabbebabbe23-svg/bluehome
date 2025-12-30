@@ -58,7 +58,7 @@ const PropertyDetail = () => {
   const avatarUrl = user?.user_metadata?.avatar_url;
   const profileName = user?.user_metadata?.full_name;
 
-  const viewerCount = usePropertyPresence(id ? String(id) : "");
+  const { viewerCount } = usePropertyPresence(id ? String(id) : "");
   usePropertyViewTracking(id ? String(id) : "");
 
   const hasActiveBidding = dbProperty?.has_active_bidding ?? false;
@@ -94,14 +94,12 @@ const PropertyDetail = () => {
           }
 
           const { count } = await supabase
-            .from('bids')
+            .from('property_bids')
             .select('*', { count: 'exact', head: true })
             .eq('property_id', id);
 
           if (count !== null) {
-            setDbProperty(prev => ({
-              bidCount: count
-            }));
+            setDbProperty(prev => prev ? { ...prev, bidCount: count } : prev);
           }
         }
       } catch (error) {
