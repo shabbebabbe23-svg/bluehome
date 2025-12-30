@@ -119,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
         .eq("property_id", property.id);
 
       const views_count = views?.length || 0;
-      const average_time_spent = views_count > 0
+      const average_time_spent = views_count > 0 && views
         ? Math.round(views.reduce((sum, v) => sum + (v.time_spent_seconds || 0), 0) / views_count)
         : 0;
 
