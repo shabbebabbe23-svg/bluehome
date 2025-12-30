@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import ImageCropper from "./ImageCropper";
+  const [showCropper, setShowCropper] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -117,34 +120,36 @@ export const ProfileForm = () => {
     }
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || !event.target.files[0] || !user) return;
-
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0]) return;
     const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setRawImage(e.target?.result as string);
+      setShowCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+    setUploading(true);
+    const fileExt = "jpg";
     const fileName = `${user.id}-${Math.random()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
-
-    setUploading(true);
-
     try {
       const { error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(filePath, file);
-
+        .upload(filePath, croppedBlob, { contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
-
       const { data: { publicUrl } } = supabase.storage
         .from("property-images")
         .getPublicUrl(filePath);
-
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl })
         .eq("id", user.id);
-
       if (updateError) throw updateError;
-
       setAvatarUrl(publicUrl);
       toast.success("Profilbild uppladdad!");
     } catch (error) {
@@ -152,6 +157,8 @@ export const ProfileForm = () => {
       toast.error("Kunde inte ladda upp profilbild");
     } finally {
       setUploading(false);
+      setShowCropper(false);
+      setRawImage(null);
     }
   };
 
@@ -274,6 +281,13 @@ export const ProfileForm = () => {
             />
           </Label>
         </div>
+        {showCropper && rawImage && (
+          <ImageCropper
+            image={rawImage}
+            onCropComplete={handleCropComplete}
+            onCancel={() => { setShowCropper(false); setRawImage(null); }}
+          />
+        )}
       </div>
 
       <CardContent>
