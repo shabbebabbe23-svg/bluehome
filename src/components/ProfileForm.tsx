@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import ImageCropper from "./ImageCropper";
-  const [showCropper, setShowCropper] = useState(false);
-  const [rawImage, setRawImage] = useState<string | null>(null);
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -49,6 +47,8 @@ export const ProfileForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hasInstagram, setHasInstagram] = useState(false);
   const [hasTiktok, setHasTiktok] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
 
   const getPasswordStrength = (password: string): { score: number; label: string; color: string } => {
     if (!password) return { score: 0, label: "", color: "" };
