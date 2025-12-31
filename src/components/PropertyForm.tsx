@@ -29,6 +29,7 @@ const propertySchema = z.object({
   operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
+  viewing_date_2: z.string().optional(),
   housing_association: z.string().max(200, "Bostadsförening får max vara 200 tecken").optional(),
   seller_email: z.string().email("Ogiltig e-postadress").max(255, "E-post får max vara 255 tecken").optional(),
 });
@@ -405,6 +406,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         floorplan_url: floorplanUrls[0] || null,
         floorplan_images: floorplanUrls,
         viewing_date: data.viewing_date || null,
+        viewing_date_2: data.viewing_date_2 || null,
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
         seller_email: data.seller_email || null,
@@ -607,9 +609,9 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Visningsdatum */}
+        {/* Visningsdatum 1 */}
         <div>
-          <Label htmlFor="viewing_date">Visningsdatum (valfritt)</Label>
+          <Label htmlFor="viewing_date">Visningsdatum 1 (valfritt)</Label>
           <Input
             id="viewing_date"
             type="datetime-local"
@@ -617,6 +619,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           />
           {errors.viewing_date && (
             <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
+          )}
+        </div>
+
+        {/* Visningsdatum 2 */}
+        <div>
+          <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
+          <Input
+            id="viewing_date_2"
+            type="datetime-local"
+            {...register("viewing_date_2")}
+          />
+          {errors.viewing_date_2 && (
+            <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
           )}
         </div>
 

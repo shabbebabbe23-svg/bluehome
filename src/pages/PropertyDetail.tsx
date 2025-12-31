@@ -962,12 +962,35 @@ const PropertyDetail = () => {
                 );
               })()}
 
-              {dbProperty?.viewing_date && (
+              {(dbProperty?.viewing_date || dbProperty?.viewing_date_2) && (
                 <div>
                   <h4 className="font-semibold text-sm mb-2">Visningar</h4>
                   <div className="space-y-2 mb-3">
-                    {(() => {
+                    {dbProperty?.viewing_date && (() => {
                       const viewingDate = new Date(dbProperty.viewing_date);
+                      const dayName = viewingDate.toLocaleDateString('sv-SE', { weekday: 'short' });
+                      const dayMonth = viewingDate.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+                      const time = viewingDate.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+                      const endTime = new Date(viewingDate.getTime() + 60 * 60 * 1000).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+                      const formattedDate = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayMonth}`;
+                      const formattedTime = `${time} - ${endTime}`;
+                      
+                      return (
+                        <button 
+                          onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
+                          className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                        >
+                          <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                          <div className="flex-1 text-left">
+                            <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
+                            <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                          </div>
+                          <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                        </button>
+                      );
+                    })()}
+                    {dbProperty?.viewing_date_2 && (() => {
+                      const viewingDate = new Date(dbProperty.viewing_date_2);
                       const dayName = viewingDate.toLocaleDateString('sv-SE', { weekday: 'short' });
                       const dayMonth = viewingDate.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
                       const time = viewingDate.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
