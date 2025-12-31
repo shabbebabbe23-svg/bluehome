@@ -358,7 +358,7 @@ const PropertyCard = ({
             {/* Top row: Title and Price */}
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {title}
                 </h3>
               </div>
@@ -368,7 +368,7 @@ const PropertyCard = ({
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
+                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
                     {newPrice}
                   </span>
                 ) : (
@@ -380,13 +380,13 @@ const PropertyCard = ({
             </div>
 
             {/* Description - hidden on mobile */}
-            <p className="hidden md:block text-xs text-muted-foreground mt-1 line-clamp-1 min-h-4">
+            <p className="hidden md:block text-base sm:text-lg text-muted-foreground mt-1 line-clamp-1 min-h-4">
               {truncatedListDescription || "\u00A0"}
             </p>
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex items-end justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
-              <div className="flex flex-1 items-center gap-1.5 sm:gap-3 text-xs sm:text-sm text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+              <div className="flex flex-1 items-center gap-1.5 sm:gap-3 text-lg sm:text-xl text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
                 <div className="flex items-center gap-0.5 flex-shrink-0">
                   <Bed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="whitespace-nowrap">{bedrooms}</span>
@@ -400,7 +400,7 @@ const PropertyCard = ({
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
+              <p className="text-sm sm:text-base text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                   : daysOnMarketText
@@ -830,13 +830,13 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1"
+              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-sm sm:text-base py-1"
             >
               {buttonText || "Visa detaljer"}
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-[11px] sm:text-sm py-1">
+              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-sm sm:text-base py-1">
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>

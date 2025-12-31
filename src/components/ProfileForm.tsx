@@ -268,7 +268,7 @@ export const ProfileForm = () => {
             </AvatarFallback>
           </Avatar>
           <Label htmlFor="avatar-upload" className="cursor-pointer absolute bottom-0 right-0">
-            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full transition-colors flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary">
               <Upload className="w-8 h-8" />
             </div>
             <Input
@@ -444,7 +444,7 @@ export const ProfileForm = () => {
             </div>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full" size="lg">
+          <Button type="submit" disabled={loading} className="w-full" size="lg" variant="default">
             {loading ? "Sparar..." : "Spara profil"}
           </Button>
         </form>

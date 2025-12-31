@@ -61,7 +61,9 @@ const PropertyDetail = () => {
   const { viewerCount } = usePropertyPresence(id ? String(id) : "");
   usePropertyViewTracking(id ? String(id) : "");
 
+
   const hasActiveBidding = dbProperty?.has_active_bidding ?? false;
+  const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
   useEffect(() => {
     setIsPWA(window.matchMedia('(display-mode: standalone)').matches);
@@ -109,7 +111,10 @@ const PropertyDetail = () => {
       }
     };
     fetchProperty();
-  }, [id]);
+  }, [id, lastPropertyChange]);
+
+  // Call this after updating a property (t.ex. efter ändrat visningsdatum)
+  const triggerPropertyRefetch = () => setLastPropertyChange(Date.now());
 
   // Map database image paths to imported images
   const getImageUrl = (url: string | null) => {

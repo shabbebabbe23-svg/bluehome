@@ -34,6 +34,7 @@ const Index = () => {
   const [biddingFilter, setBiddingFilter] = useState(false);
   const [feeRange, setFeeRange] = useState<[number, number]>([0, 15000]);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
   const scrollToResults = () => {
     setTimeout(() => {
@@ -41,71 +42,67 @@ const Index = () => {
     }, 100);
   };
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        // First get properties
-        const { data: propertiesData, error: propertiesError } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('is_deleted', false)
-          .order('created_at', { ascending: false });
+  const fetchProperties = async () => {
+    try {
+      const { data: propertiesData, error: propertiesError } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: false });
 
-        if (propertiesError) throw propertiesError;
+      if (propertiesError) throw propertiesError;
 
-        if (propertiesData) {
-          // Get unique user IDs
-          const userIds = [...new Set(propertiesData.map(p => p.user_id))];
-
-          // Fetch profiles for these users
-          const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, full_name, avatar_url, phone, email, agency')
-            .in('id', userIds);
-
-          // Create a map of user_id to profile
-          const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
-
-          const formattedProperties: Property[] = propertiesData.map((prop: any) => {
-            const profile = profilesMap.get(prop.user_id);
-            return {
-              id: prop.id,
-              title: prop.title,
-              price: `${prop.price.toLocaleString('sv-SE')} kr`,
-              priceValue: prop.price,
-              location: prop.location,
-              address: prop.address,
-              bedrooms: prop.bedrooms,
-              bathrooms: prop.bathrooms,
-              area: prop.area,
-              fee: prop.fee || 0,
-              viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
-              image: prop.image_url || property1,
-              hoverImage: prop.hover_image_url || prop.image_url || property2,
-              type: prop.type,
-              isNew: false,
-              vendorLogo: prop.vendor_logo_url || logo1,
-              isSold: prop.is_sold || false,
-              soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
-              hasVR: prop.has_vr || false,
-              agent_name: profile?.full_name,
-              agent_avatar: profile?.avatar_url,
-              agent_phone: profile?.phone,
-              agent_email: profile?.email,
-              agent_agency: profile?.agency,
-              agent_id: profile?.id,
-              additional_images: prop.additional_images || [],
-            };
-          });
-          setAllProperties(formattedProperties);
-        }
-      } catch (error) {
-        console.error('Error fetching properties:', error);
+      if (propertiesData) {
+        const userIds = [...new Set(propertiesData.map(p => p.user_id))];
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, phone, email, agency')
+          .in('id', userIds);
+        const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+        const formattedProperties: Property[] = propertiesData.map((prop: any) => {
+          const profile = profilesMap.get(prop.user_id);
+          return {
+            id: prop.id,
+            title: prop.title,
+            price: `${prop.price.toLocaleString('sv-SE')} kr`,
+            priceValue: prop.price,
+            location: prop.location,
+            address: prop.address,
+            bedrooms: prop.bedrooms,
+            bathrooms: prop.bathrooms,
+            area: prop.area,
+            fee: prop.fee || 0,
+            viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+            image: prop.image_url || property1,
+            hoverImage: prop.hover_image_url || prop.image_url || property2,
+            type: prop.type,
+            isNew: false,
+            vendorLogo: prop.vendor_logo_url || logo1,
+            isSold: prop.is_sold || false,
+            soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
+            hasVR: prop.has_vr || false,
+            agent_name: profile?.full_name,
+            agent_avatar: profile?.avatar_url,
+            agent_phone: profile?.phone,
+            agent_email: profile?.email,
+            agent_agency: profile?.agency,
+            agent_id: profile?.id,
+            additional_images: prop.additional_images || [],
+          };
+        });
+        setAllProperties(formattedProperties);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchProperties();
-  }, []);
+  }, [lastPropertyChange]);
+
+  // Call this after updating a property (e.g. after changing viewing date)
+  const triggerPropertyRefetch = () => setLastPropertyChange(Date.now());
 
   // Get the 5 most recent properties
   const recentProperties = allProperties
