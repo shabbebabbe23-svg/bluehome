@@ -358,9 +358,20 @@ const PropertyCard = ({
             {/* Top row: Title and Price */}
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{color: '#111'}}>
                   {title}
                 </h3>
+                <div className="flex items-center text-muted-foreground mb-0.5">
+                  <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm truncate">{address}</span>
+                </div>
+                <div className="text-xs sm:text-sm text-primary font-medium">
+                  {description
+                    ? description.length > 50
+                      ? description.slice(0, 50) + '…'
+                      : description
+                    : 'Lägenhet med en charmig touch'}
+                </div>
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
@@ -400,7 +411,7 @@ const PropertyCard = ({
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
+              <p className="text-lg sm:text-xl font-semibold text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                   : daysOnMarketText
@@ -694,12 +705,20 @@ const PropertyCard = ({
         <div className="flex items-start justify-between gap-2">
           {/* Left side - Address */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors truncate">
-              {address || title}
+            <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
+              {title}
             </h3>
-            <div className="flex items-center text-muted-foreground">
+            <div className="flex items-center text-muted-foreground mb-0.5">
               <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
-              <span className="text-[11px] sm:text-sm truncate">{title}</span>
+              <span className="text-xs sm:text-sm truncate">{address}</span>
+            </div>
+            {/* Dynamic subtitle text */}
+            <div className="text-xs sm:text-sm text-primary font-medium">
+              {description
+                ? description.length > 50
+                  ? description.slice(0, 50) + '…'
+                  : description
+                : 'Lägenhet med en charmig touch'}
             </div>
           </div>
 
@@ -841,7 +860,7 @@ const PropertyCard = ({
               </Button>
             </Link>
           )}
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground text-right mt-0.5 truncate">
+          <p className="text-xs sm:text-base font-semibold text-muted-foreground text-right mt-0.5 truncate">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
               : daysOnMarketText

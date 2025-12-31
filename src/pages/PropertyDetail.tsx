@@ -559,8 +559,8 @@ const PropertyDetail = () => {
         <div className="space-y-4 md:space-y-6">
           {/* Image Gallery */}
           <Card className="overflow-hidden">
-            <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group">
-              <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setIsImageModalOpen(true)} />
+            <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group" style={{width: '100%'}}>
+              <img src={images[currentImageIndex]} alt={property.title} className="w-[105%] h-full object-cover cursor-pointer hover:opacity-90 transition-opacity mx-auto" onClick={() => setIsImageModalOpen(true)} />
 
               {/* Navigation Buttons */}
               <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
