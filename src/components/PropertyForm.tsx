@@ -29,6 +29,7 @@ const propertySchema = z.object({
   operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
+  viewing_date_2: z.string().optional(),
   housing_association: z.string().max(200, "Bostadsförening får max vara 200 tecken").optional(),
   seller_email: z.string().email("Ogiltig e-postadress").max(255, "E-post får max vara 255 tecken").optional(),
 });
@@ -405,6 +406,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         floorplan_url: floorplanUrls[0] || null,
         floorplan_images: floorplanUrls,
         viewing_date: data.viewing_date || null,
+        viewing_date_2: data.viewing_date_2 || null,
         is_new_production: isNewProduction,
         housing_association: data.housing_association || null,
         seller_email: data.seller_email || null,
@@ -455,6 +457,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             id="title"
             {...register("title")}
             placeholder="T.ex. Rymlig trea i centrala stan"
+            className="w-full"
           />
           {errors.title && (
             <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
@@ -468,6 +471,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             id="address"
             {...register("address")}
             placeholder="Storgatan 1"
+            className="w-full"
           />
           {errors.address && (
             <p className="text-sm text-destructive mt-1">{errors.address.message}</p>
@@ -481,6 +485,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             id="location"
             {...register("location")}
             placeholder="Stockholm"
+            className="w-full"
           />
           {errors.location && (
             <p className="text-sm text-destructive mt-1">{errors.location.message}</p>
@@ -516,6 +521,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             type="number"
             {...register("price")}
             placeholder="2 500 000"
+            className="w-full"
           />
           {errors.price && (
             <p className="text-sm text-destructive mt-1">{errors.price.message}</p>
@@ -540,6 +546,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             type="number"
             {...register("bedrooms")}
             placeholder="3"
+            className="w-full"
           />
           {errors.bedrooms && (
             <p className="text-sm text-destructive mt-1">{errors.bedrooms.message}</p>
@@ -554,6 +561,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             type="number"
             {...register("bathrooms")}
             placeholder="1"
+            className="w-full"
           />
           {errors.bathrooms && (
             <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
@@ -568,6 +576,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             type="number"
             {...register("area")}
             placeholder="85"
+            className="w-full"
           />
           {errors.area && (
             <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
@@ -582,6 +591,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             type="number"
             {...register("construction_year")}
             placeholder="2010"
+            className="w-full"
           />
           {errors.construction_year && (
             <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
@@ -589,65 +599,90 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
 
         {/* Avgift */}
-        <div>
-          <Label htmlFor="fee">Månadsavgift (kr)</Label>
-          <Input
-            id="fee"
-            type="number"
-            {...register("fee")}
-            placeholder="3 500"
-          />
-          {errors.fee && (
-            <p className="text-sm text-destructive mt-1">{errors.fee.message}</p>
-          )}
-          {watchFee && watchFee > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {formatNumber(watchFee)} kr/mån
-            </p>
-          )}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          {/* Månadsavgift (kr) */}
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="fee">Månadsavgift (kr)</Label>
+            <Input
+              id="fee"
+              type="number"
+              {...register("fee")}
+              placeholder="3 500"
+              className="w-full"
+            />
+            {errors.fee && (
+              <p className="text-sm text-destructive mt-1">{errors.fee.message}</p>
+            )}
+            {watchFee && watchFee > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {formatNumber(watchFee)} kr/mån
+              </p>
+            )}
+          </div>
+          {/* Driftkostnad (kr/mån) */}
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="operating_cost">Driftkostnad (kr/mån)</Label>
+            <Input
+              id="operating_cost"
+              type="number"
+              {...register("operating_cost")}
+              placeholder="2 500"
+              className="w-full"
+            />
+            {errors.operating_cost && (
+              <p className="text-sm text-destructive mt-1">{errors.operating_cost.message}</p>
+            )}
+            {watchOperatingCost && watchOperatingCost > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {formatNumber(watchOperatingCost)} kr/mån
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Visningsdatum */}
-        <div>
-          <Label htmlFor="viewing_date">Visningsdatum (valfritt)</Label>
-          <Input
-            id="viewing_date"
-            type="datetime-local"
-            {...register("viewing_date")}
-          />
-          {errors.viewing_date && (
-            <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
-          )}
+
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          {/* Visningsdatum 1 (valfritt) */}
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="viewing_date">Visningsdatum 1 (valfritt)</Label>
+            <Input
+              id="viewing_date"
+              type="datetime-local"
+              {...register("viewing_date")}
+              className="w-full"
+            />
+            {errors.viewing_date && (
+              <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
+            )}
+          </div>
+          {/* Bostadsförening (valfritt) */}
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="housing_association">Bostadsförening (valfritt)</Label>
+            <Input
+              id="housing_association"
+              type="text"
+              {...register("housing_association")}
+              placeholder="HSB Brf..."
+            />
+          </div>
         </div>
 
-        {/* Driftkostnad */}
-        <div>
-          <Label htmlFor="operating_cost">Driftkostnad (kr/mån)</Label>
-          <Input
-            id="operating_cost"
-            type="number"
-            {...register("operating_cost")}
-            placeholder="2 500"
-          />
-          {errors.operating_cost && (
-            <p className="text-sm text-destructive mt-1">{errors.operating_cost.message}</p>
-          )}
-          {watchOperatingCost && watchOperatingCost > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {formatNumber(watchOperatingCost)} kr/mån
-            </p>
-          )}
-        </div>
 
         {/* Bostadsförening */}
+
+        {/* Visningsdatum 2 (valfritt) - moved here */}
         <div>
-          <Label htmlFor="housing_association">Bostadsförening (valfritt)</Label>
+          <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
           <Input
-            id="housing_association"
-            type="text"
-            {...register("housing_association")}
-            placeholder="HSB Brf..."
+            id="viewing_date_2"
+            type="datetime-local"
+            {...register("viewing_date_2")}
+            className="w-full"
           />
+          {errors.viewing_date_2 && (
+            <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
+          )}
         </div>
 
         {/* Säljarens e-post */}

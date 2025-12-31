@@ -342,6 +342,7 @@ export type Database = {
           user_id: string
           vendor_logo_url: string | null
           viewing_date: string | null
+          viewing_date_2: string | null
           vr_image_indices: number[] | null
         }
         Insert: {
@@ -384,6 +385,7 @@ export type Database = {
           user_id: string
           vendor_logo_url?: string | null
           viewing_date?: string | null
+          viewing_date_2?: string | null
           vr_image_indices?: number[] | null
         }
         Update: {
@@ -426,6 +428,7 @@ export type Database = {
           user_id?: string
           vendor_logo_url?: string | null
           viewing_date?: string | null
+          viewing_date_2?: string | null
           vr_image_indices?: number[] | null
         }
         Relationships: []

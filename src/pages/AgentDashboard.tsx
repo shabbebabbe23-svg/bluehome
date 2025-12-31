@@ -488,6 +488,7 @@ const AgentDashboard = () => {
 
       const newPriceValue = formData.get("new_price") as string;
       const viewingDateValue = formData.get("viewing_date") as string;
+      const viewingDate2Value = formData.get("viewing_date_2") as string;
       const constructionYearValue = formData.get("construction_year") as string;
       const operatingCostValue = formData.get("operating_cost") as string;
       const housingAssociationValue = formData.get("housing_association") as string;
@@ -509,6 +510,7 @@ const AgentDashboard = () => {
         description: formData.get("description") as string,
         fee: Number(formData.get("fee")),
         viewing_date: viewingDateValue || null,
+        viewing_date_2: viewingDate2Value || null,
         image_url: mainImageUrl,
         hover_image_url: hoverImageUrl,
         floorplan_images: floorplanImagesUrls,
@@ -834,14 +836,55 @@ const AgentDashboard = () => {
                   <Input id="edit-new-price" name="new_price" type="number" defaultValue={editingProperty.new_price || ''} placeholder="Ange nytt pris om priset har ändrats" />
                 </div>
 
-                <div>
-                  <Label htmlFor="edit-bathrooms">Badrum</Label>
-                  <Input id="edit-bathrooms" name="bathrooms" type="number" defaultValue={editingProperty.bathrooms} required />
+
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  {/* Badrum */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-bathrooms">Badrum</Label>
+                    <Input id="edit-bathrooms" name="bathrooms" type="number" defaultValue={editingProperty.bathrooms} required />
+                  </div>
+                  {/* Byggår */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-construction-year">Byggår</Label>
+                    <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                  </div>
                 </div>
 
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  {/* Månadsavgift (kr) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-fee">Månadsavgift (kr)</Label>
+                    <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
+                  </div>
+                  {/* Driftkostnad (kr/mån) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-operating-cost">Driftkostnad (kr/mån)</Label>
+                    <Input id="edit-operating-cost" name="operating_cost" type="number" defaultValue={editingProperty.operating_cost || 0} placeholder="2 500" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  {/* Visningsdatum 1 (valfritt) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-viewing-date">Visningsdatum 1 (valfritt)</Label>
+                    <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
+                  </div>
+                  {/* Bostadsförening (valfritt) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-housing-association">Bostadsförening (valfritt)</Label>
+                    <Input id="edit-housing-association" name="housing_association" type="text" defaultValue={editingProperty.housing_association || ''} placeholder="HSB Brf..." />
+                  </div>
+                </div>
+
+                {/* Visningsdatum 2 (valfritt) */}
                 <div>
-                  <Label htmlFor="edit-fee">Månadsavgift (kr)</Label>
-                  <Input id="edit-fee" name="fee" type="number" defaultValue={editingProperty.fee} required />
+                  <Label htmlFor="edit-viewing-date-2">Visningsdatum 2 (valfritt)</Label>
+                  <Input
+                    id="edit-viewing-date-2"
+                    name="viewing_date_2"
+                    type="datetime-local"
+                    defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
+                  />
                 </div>
 
                 <div>
@@ -849,25 +892,6 @@ const AgentDashboard = () => {
                   <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
                 </div>
 
-                <div>
-                  <Label htmlFor="edit-construction-year">Byggår</Label>
-                  <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
-                </div>
-
-                <div>
-                  <Label htmlFor="edit-viewing-date">Visningsdatum</Label>
-                  <Input id="edit-viewing-date" name="viewing_date" type="datetime-local" defaultValue={editingProperty.viewing_date ? new Date(editingProperty.viewing_date).toISOString().slice(0, 16) : ""} />
-                </div>
-
-                <div>
-                  <Label htmlFor="edit-operating-cost">Driftkostnad (kr/mån)</Label>
-                  <Input id="edit-operating-cost" name="operating_cost" type="number" defaultValue={editingProperty.operating_cost || 0} placeholder="2 500" />
-                </div>
-
-                <div>
-                  <Label htmlFor="edit-housing-association">Bostadsförening (valfritt)</Label>
-                  <Input id="edit-housing-association" name="housing_association" type="text" defaultValue={editingProperty.housing_association || ''} placeholder="HSB Brf..." />
-                </div>
 
                 <div className="md:col-span-2">
                   <Card className="p-4">

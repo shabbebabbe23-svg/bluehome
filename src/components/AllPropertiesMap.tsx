@@ -198,15 +198,47 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           <p style="font-size: 0.75rem; margin-bottom: 0.75rem;">
             ${property.bedrooms} rum • ${property.bathrooms} badrum • ${property.area} m²
           </p>
-          <a href="/fastighet/${property.id}" style="display: inline-block; width: 100%; text-align: center; padding: 0.5rem; background-color: hsl(var(--primary)); color: white; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">
+          <a href="/fastighet/${property.id}" style="display: inline-block; width: 100%; text-align: center; padding: 0.5rem; background-color: hsl(var(--primary)); color: white; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem; margin-bottom: 0.5rem;">
             Visa detaljer
           </a>
+          <button type="button" class="route-to-btn" data-address="${property.address}, ${property.location}, Sverige" style="display: block; width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer;">Vägbeskrivning till</button>
         </div>
       `;
       
+
       marker.bindPopup(popupContent, {
         maxWidth: 300,
         className: 'property-popup'
+      });
+
+      // Event delegation for "Vägbeskrivning till" button
+      marker.on('popupopen', () => {
+        // Fyll automatiskt i 'Från adress' om det är tomt
+        const fromInput = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
+        if (fromInput && !fromInput.value) {
+          fromInput.value = `${property.address}, ${property.location}, Sverige`;
+          fromInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        const popupNode = document.querySelector('.property-popup .route-to-btn[data-address="' + property.address.replace(/"/g, '\"') + ', ' + property.location.replace(/"/g, '\"') + ', Sverige"]');
+        if (popupNode) {
+          popupNode.addEventListener('click', () => {
+            // Fyll i "Till adress" och scrolla till ruttsökning
+            const input = document.querySelector('input[placeholder="Till adress..."]') as HTMLInputElement;
+            if (input) {
+              input.value = `${property.address}, ${property.location}, Sverige`;
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            // Starta ruttsökning automatiskt om "Från adress" är ifyllt
+            const fromInput2 = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
+            if (fromInput2 && fromInput2.value) {
+              const btn = document.querySelector('button:enabled[class*="bg-primary"]');
+              if (btn) (btn as HTMLButtonElement).click();
+            }
+            // Scrolla till ruttsökningsformuläret
+            const routeBox = document.querySelector('.bg-muted.rounded-lg');
+            if (routeBox) routeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+        }
       });
 
       markersRef.current.push(marker);

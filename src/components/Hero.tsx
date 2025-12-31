@@ -580,7 +580,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([clampedValue, priceRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs font-semibold border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -593,7 +593,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setPriceRange([priceRange[0], Math.min(clampedValue, 20000000)]);
                             }}
                             placeholder="Max"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -605,9 +605,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setPriceRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">0 kr</span>
-                        <span className="text-primary font-medium">20+ milj</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">0 kr</span>
+                        <span className="text-primary font-semibold">20+ milj</span>
                       </div>
                     </div>
 
@@ -626,7 +626,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([clampedValue, areaRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -639,7 +639,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setAreaRange([areaRange[0], Math.min(clampedValue, 200)]);
                             }}
                             placeholder="Max"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -651,9 +651,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setAreaRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">0 m²</span>
-                        <span className="text-primary font-medium">200+ m²</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">0 m²</span>
+                        <span className="text-primary font-semibold">200+ m²</span>
                       </div>
                     </div>
 
@@ -672,7 +672,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([clampedValue, roomRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -685,7 +685,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setRoomRange([roomRange[0], Math.min(clampedValue, 7)]);
                             }}
                             placeholder="Max"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -697,9 +697,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setRoomRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">0 rum</span>
-                        <span className="text-primary font-medium">7+ rum</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">0 rum</span>
+                        <span className="text-primary font-semibold">7+ rum</span>
                       </div>
                     </div>
 
@@ -784,7 +784,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setFeeRange([clampedValue, feeRange[1]]);
                             }}
                             placeholder="Min"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                           <span className="text-muted-foreground text-xs">-</span>
                           <Input
@@ -797,7 +797,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               setFeeRange([feeRange[0], Math.min(clampedValue, 15000)]);
                             }}
                             placeholder="Max"
-                            className="w-16 sm:w-20 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
                           />
                         </div>
                       </div>
@@ -809,9 +809,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         onValueChange={setFeeRange}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">0 kr</span>
-                        <span className="text-primary font-medium">15k+/mån</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">0 kr</span>
+                        <span className="text-primary font-semibold">15k+/mån</span>
                       </div>
                     </div>
 

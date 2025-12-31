@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ImageCropper from "./ImageCropper";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -46,6 +47,8 @@ export const ProfileForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hasInstagram, setHasInstagram] = useState(false);
   const [hasTiktok, setHasTiktok] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [rawImage, setRawImage] = useState<string | null>(null);
 
   const getPasswordStrength = (password: string): { score: number; label: string; color: string } => {
     if (!password) return { score: 0, label: "", color: "" };
@@ -117,34 +120,36 @@ export const ProfileForm = () => {
     }
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || !event.target.files[0] || !user) return;
-
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0]) return;
     const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setRawImage(e.target?.result as string);
+      setShowCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+    setUploading(true);
+    const fileExt = "jpg";
     const fileName = `${user.id}-${Math.random()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
-
-    setUploading(true);
-
     try {
       const { error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(filePath, file);
-
+        .upload(filePath, croppedBlob, { contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
-
       const { data: { publicUrl } } = supabase.storage
         .from("property-images")
         .getPublicUrl(filePath);
-
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl })
         .eq("id", user.id);
-
       if (updateError) throw updateError;
-
       setAvatarUrl(publicUrl);
       toast.success("Profilbild uppladdad!");
     } catch (error) {
@@ -152,6 +157,8 @@ export const ProfileForm = () => {
       toast.error("Kunde inte ladda upp profilbild");
     } finally {
       setUploading(false);
+      setShowCropper(false);
+      setRawImage(null);
     }
   };
 
@@ -261,7 +268,7 @@ export const ProfileForm = () => {
             </AvatarFallback>
           </Avatar>
           <Label htmlFor="avatar-upload" className="cursor-pointer absolute bottom-0 right-0">
-            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full transition-colors flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary">
               <Upload className="w-8 h-8" />
             </div>
             <Input
@@ -274,6 +281,13 @@ export const ProfileForm = () => {
             />
           </Label>
         </div>
+        {showCropper && rawImage && (
+          <ImageCropper
+            image={rawImage}
+            onCropComplete={handleCropComplete}
+            onCancel={() => { setShowCropper(false); setRawImage(null); }}
+          />
+        )}
       </div>
 
       <CardContent>
@@ -430,7 +444,7 @@ export const ProfileForm = () => {
             </div>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full" size="lg">
+          <Button type="submit" disabled={loading} className="w-full" size="lg" variant="default">
             {loading ? "Sparar..." : "Spara profil"}
           </Button>
         </form>
