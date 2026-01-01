@@ -336,6 +336,7 @@ export type Database = {
           show_viewer_count: boolean | null
           sold_date: string | null
           sold_price: number | null
+          statistics_email_frequency: string | null
           title: string
           type: string
           updated_at: string | null
@@ -379,6 +380,7 @@ export type Database = {
           show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
+          statistics_email_frequency?: string | null
           title: string
           type: string
           updated_at?: string | null
@@ -422,6 +424,7 @@ export type Database = {
           show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
+          statistics_email_frequency?: string | null
           title?: string
           type?: string
           updated_at?: string | null

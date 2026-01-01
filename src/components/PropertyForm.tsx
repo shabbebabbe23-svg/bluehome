@@ -32,6 +32,7 @@ const propertySchema = z.object({
   viewing_date_2: z.string().optional(),
   housing_association: z.string().max(200, "Bostadsförening får max vara 200 tecken").optional(),
   seller_email: z.string().email("Ogiltig e-postadress").max(255, "E-post får max vara 255 tecken").optional(),
+  statistics_email_frequency: z.enum(['weekly', 'monthly', 'manual']).optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertySchema>;
@@ -56,6 +57,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [showViewerCount, setShowViewerCount] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [statisticsEmailFrequency, setStatisticsEmailFrequency] = useState<'weekly' | 'monthly' | 'manual'>('manual');
 
   const {
     register,
@@ -417,6 +419,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_balcony: hasBalcony,
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
+        statistics_email_frequency: statisticsEmailFrequency,
       });
 
       if (error) throw error;
@@ -437,6 +440,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setDocuments([]);
       setDocumentNames([]);
       setShowViewerCount(false);
+      setStatisticsEmailFrequency('manual');
       onSuccess?.();
     } catch (error: any) {
       console.error("Error creating property:", error);
@@ -697,8 +701,26 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           {errors.seller_email && (
             <p className="text-sm text-destructive mt-1">{errors.seller_email.message}</p>
           )}
+        </div>
+
+        {/* Statistik e-post frekvens */}
+        <div>
+          <Label htmlFor="statistics_email_frequency">Statistik-utskick</Label>
+          <Select
+            value={statisticsEmailFrequency}
+            onValueChange={(value: 'weekly' | 'monthly' | 'manual') => setStatisticsEmailFrequency(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Välj frekvens" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Manuellt</SelectItem>
+              <SelectItem value="weekly">Varje vecka</SelectItem>
+              <SelectItem value="monthly">Varje månad</SelectItem>
+            </SelectContent>
+          </Select>
           <p className="text-sm text-muted-foreground mt-1">
-            Säljaren får statistik om annonsen skickad till denna e-post
+            Hur ofta statistik skickas till säljaren
           </p>
         </div>
 
