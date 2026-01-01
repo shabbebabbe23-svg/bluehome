@@ -11,6 +11,18 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// Detect device type
+const getDeviceType = (): string => {
+  const ua = navigator.userAgent;
+  if (/tablet|ipad|playbook|silk/i.test(ua)) {
+    return 'tablet';
+  }
+  if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) {
+    return 'mobile';
+  }
+  return 'desktop';
+};
+
 export const usePropertyViewTracking = (propertyId: string) => {
   const startTimeRef = useRef<number>(Date.now());
   const viewIdRef = useRef<string | null>(null);
@@ -45,6 +57,7 @@ export const usePropertyViewTracking = (propertyId: string) => {
     const logView = async () => {
       try {
         const location = await getVisitorLocation();
+        const deviceType = getDeviceType();
         
         const { data, error } = await supabase
           .from("property_views")
@@ -56,6 +69,7 @@ export const usePropertyViewTracking = (propertyId: string) => {
             visitor_city: location.city,
             visitor_region: location.region,
             visitor_country: location.country,
+            device_type: deviceType,
           })
           .select()
           .single();

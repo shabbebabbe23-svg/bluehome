@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -14,12 +14,35 @@ interface ImageGalleryProps {
 const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const imageViewStartRef = useRef<number>(Date.now());
+  const currentViewIdRef = useRef<string | null>(null);
   
   const allImages = [mainImage, ...images];
+
+  // Update time spent on current image before switching
+  const updateImageTimeSpent = async () => {
+    if (!currentViewIdRef.current) return;
+    
+    const timeSpent = Date.now() - imageViewStartRef.current;
+    try {
+      await supabase
+        .from('image_views')
+        .update({ time_spent_ms: timeSpent })
+        .eq('id', currentViewIdRef.current);
+    } catch (error) {
+      console.error('Error updating image time:', error);
+    }
+  };
 
   // Track image views
   const trackImageView = async (imageIndex: number) => {
     if (!propertyId) return;
+    
+    // First update time spent on previous image
+    await updateImageTimeSpent();
+    
+    // Reset timer for new image
+    imageViewStartRef.current = Date.now();
     
     try {
       const sessionId = sessionStorage.getItem('session_id') || 
@@ -29,12 +52,15 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
         sessionStorage.setItem('session_id', sessionId);
       }
 
-      await supabase.from('image_views').insert({
+      const { data } = await supabase.from('image_views').insert({
         property_id: propertyId,
         session_id: sessionId,
         image_index: imageIndex,
         image_url: allImages[imageIndex],
-      });
+        time_spent_ms: 0,
+      }).select().single();
+      
+      currentViewIdRef.current = data?.id || null;
     } catch (error) {
       console.error('Error tracking image view:', error);
     }
@@ -44,6 +70,12 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
     setCurrentIndex(index);
     setIsOpen(true);
     trackImageView(index);
+  };
+
+  const closeGallery = async () => {
+    await updateImageTimeSpent();
+    currentViewIdRef.current = null;
+    setIsOpen(false);
   };
 
   const nextImage = () => {
@@ -99,13 +131,13 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
       )}
 
       {/* Lightbox Dialog */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={(open) => { if (!open) closeGallery(); else setIsOpen(true); }}>
         <DialogContent className="max-w-6xl p-0 bg-black/95">
           <Button
             variant="ghost"
             size="icon"
             className="absolute top-4 right-4 z-50 text-white hover:bg-white/20"
-            onClick={() => setIsOpen(false)}
+            onClick={closeGallery}
           >
             <X className="w-6 h-6" />
           </Button>
