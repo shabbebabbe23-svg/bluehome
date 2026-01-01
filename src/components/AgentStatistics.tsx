@@ -49,7 +49,8 @@ export const AgentStatistics = () => {
         const { data: properties, error: propertiesError } = await supabase
           .from("properties")
           .select("id, title, address, seller_email, image_url")
-          .eq("user_id", user.id);
+          .eq("user_id", user.id)
+          .eq("is_deleted", false);
 
         if (propertiesError) throw propertiesError;
 
