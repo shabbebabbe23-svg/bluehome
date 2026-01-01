@@ -17,6 +17,7 @@ interface ImageStat {
 interface PropertyStats {
   property_id: string;
   property_title: string;
+  property_image: string | null;
   total_views: number;
   avg_time_spent: number;
   image_views: number;
@@ -47,7 +48,7 @@ export const AgentStatistics = () => {
         // Fetch all properties for the agent
         const { data: properties, error: propertiesError } = await supabase
           .from("properties")
-          .select("id, title, address, seller_email")
+          .select("id, title, address, seller_email, image_url")
           .eq("user_id", user.id);
 
         if (propertiesError) throw propertiesError;
@@ -100,6 +101,7 @@ export const AgentStatistics = () => {
           propertyStatsMap.set(prop.id, {
             property_id: prop.id,
             property_title: prop.address || prop.title,
+            property_image: prop.image_url || null,
             total_views: 0,
             avg_time_spent: 0,
             image_views: 0,
@@ -398,32 +400,14 @@ export const AgentStatistics = () => {
                     </div>
                   </div>
 
-                  {/* Top Image */}
-                  {stat.top_images.length > 0 && (
-                    <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                      <h5 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
-                        <Image className="w-3 h-3" />
-                        Populäraste bilden
-                      </h5>
-                      <div className="flex items-center gap-3">
-                        {stat.top_images[0].image_url ? (
-                          <img 
-                            src={stat.top_images[0].image_url} 
-                            alt={`Bild ${stat.top_images[0].image_index + 1}`}
-                            className="w-16 h-12 object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs">
-                            #{stat.top_images[0].image_index + 1}
-                          </div>
-                        )}
-                        <div className="text-sm">
-                          <span className="font-medium">{stat.top_images[0].views} visningar</span>
-                          <span className="text-muted-foreground ml-2">
-                            ({formatTimeMs(stat.top_images[0].avg_time_ms)} snitt)
-                          </span>
-                        </div>
-                      </div>
+                  {/* Property Image */}
+                  {stat.property_image && (
+                    <div className="mb-4">
+                      <img 
+                        src={stat.property_image} 
+                        alt={stat.property_title}
+                        className="w-24 h-16 object-cover rounded"
+                      />
                     </div>
                   )}
 
