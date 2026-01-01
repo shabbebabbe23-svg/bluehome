@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { BarChart3, Eye, Clock, TrendingUp, Image, MapPin } from "lucide-react";
+import { BarChart3, Eye, Clock, TrendingUp, Image, MapPin, Mail, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface PropertyStats {
@@ -13,6 +15,7 @@ interface PropertyStats {
   image_views: number;
   avg_images_per_session: number;
   visitor_locations: { city: string; region: string; count: number }[];
+  seller_email: string | null;
 }
 
 export const AgentStatistics = () => {
@@ -21,6 +24,7 @@ export const AgentStatistics = () => {
   const [stats, setStats] = useState<PropertyStats[]>([]);
   const [totalViews, setTotalViews] = useState(0);
   const [totalAvgTime, setTotalAvgTime] = useState(0);
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -32,7 +36,7 @@ export const AgentStatistics = () => {
         // Fetch all properties for the agent
         const { data: properties, error: propertiesError } = await supabase
           .from("properties")
-          .select("id, title, address")
+          .select("id, title, address, seller_email")
           .eq("user_id", user.id);
 
         if (propertiesError) throw propertiesError;
@@ -74,6 +78,7 @@ export const AgentStatistics = () => {
             image_views: 0,
             avg_images_per_session: 0,
             visitor_locations: [],
+            seller_email: prop.seller_email || null,
           });
         });
 
@@ -166,6 +171,29 @@ export const AgentStatistics = () => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  };
+
+  const sendStatisticsEmail = async (propertyId: string, sellerEmail: string | null) => {
+    if (!sellerEmail) {
+      toast.error("Ingen säljar-email registrerad för detta objekt");
+      return;
+    }
+
+    setSendingEmail(propertyId);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-property-statistics", {
+        body: { property_id: propertyId }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Statistik skickad till ${sellerEmail}`);
+    } catch (error) {
+      console.error("Error sending statistics email:", error);
+      toast.error("Kunde inte skicka statistik-mail");
+    } finally {
+      setSendingEmail(null);
+    }
   };
 
   if (loading) {
@@ -278,6 +306,27 @@ export const AgentStatistics = () => {
                       </div>
                     </div>
                   )}
+                  <div className="mt-3 pt-3 border-t">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => sendStatisticsEmail(stat.property_id, stat.seller_email)}
+                      disabled={sendingEmail === stat.property_id || !stat.seller_email}
+                      className="w-full"
+                    >
+                      {sendingEmail === stat.property_id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Skickar...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="w-4 h-4 mr-2" />
+                          {stat.seller_email ? `Skicka statistik till ${stat.seller_email}` : "Ingen säljar-email"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

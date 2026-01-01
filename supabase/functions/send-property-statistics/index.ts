@@ -199,6 +199,156 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Check if this is a single property statistics request (agent sending to seller)
+    if (body.property_id && !body.is_sold) {
+      console.log(`Sending statistics email for property ${body.property_id}`);
+      
+      const { data: property, error: propError } = await supabase
+        .from("properties")
+        .select("id, title, address, seller_email")
+        .eq("id", body.property_id)
+        .single();
+
+      if (propError || !property) {
+        console.error("Property not found:", propError);
+        return new Response(
+          JSON.stringify({ error: "Property not found" }),
+          { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      if (!property.seller_email) {
+        console.log("No seller email for property, skipping notification");
+        return new Response(
+          JSON.stringify({ success: false, message: "No seller email configured" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Get view statistics
+      const { data: views } = await supabase
+        .from("property_views")
+        .select("time_spent_seconds, view_started_at")
+        .eq("property_id", property.id);
+
+      const views_count = views?.length || 0;
+      const average_time_spent = views_count > 0 && views
+        ? Math.round(views.reduce((sum, v) => sum + (v.time_spent_seconds || 0), 0) / views_count)
+        : 0;
+
+      // Calculate views in last 24 hours
+      const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const recent_views = views?.filter(v => v.view_started_at > last24Hours).length || 0;
+
+      // Get favorites
+      const { data: favorites } = await supabase
+        .from("favorites")
+        .select("created_at")
+        .eq("property_id", property.id);
+
+      const favorites_count = favorites?.length || 0;
+      const recent_favorites = favorites?.filter(f => f.created_at > last24Hours).length || 0;
+
+      // Send statistics email
+      await resend.emails.send({
+        from: "BaraHem Statistik <onboarding@resend.dev>",
+        to: [property.seller_email],
+        subject: `📊 Statistik för ${property.title}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">BaraHem</h1>
+              <p style="color: white; margin-top: 10px; opacity: 0.9;">📊 Statistik för ditt objekt</p>
+            </div>
+            
+            <div style="padding: 30px; background: #f9f9f9;">
+              <h2 style="color: #333; margin-top: 0;">${property.title}</h2>
+              <p style="color: #666; margin-bottom: 30px;">${property.address}</p>
+              
+              <!-- Views section -->
+              <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📈 Antal visningar</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
+                  </div>
+                  <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${recent_views}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Time spent section -->
+              <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">⏱️ Hur länge besökare tittar på annonsen</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
+                  </div>
+                  <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Favorites section -->
+              <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">❤️ Antal som sparat som favorit</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
+                  </div>
+                  <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${recent_favorites}</div>
+                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 20px; border-radius: 8px; text-align: center;">
+                <p style="color: white; margin: 0 0 15px 0; font-size: 16px;">
+                  ${views_count > 0 
+                    ? "Din bostad får bra uppmärksamhet! Fortsätt så." 
+                    : "Förbättra dina bilder och beskrivning för att få fler visningar."}
+                </p>
+                <a href="https://barahem.se/fastighet/${property.id}" 
+                   style="background: white; 
+                          color: hsl(200 98% 35%); 
+                          padding: 12px 30px; 
+                          text-decoration: none; 
+                          border-radius: 5px; 
+                          display: inline-block;
+                          font-weight: bold;">
+                  Se din annons
+                </a>
+              </div>
+            </div>
+            
+            <div style="background: #333; padding: 20px; text-align: center;">
+              <p style="color: #999; font-size: 12px; margin: 0;">
+                © ${new Date().getFullYear()} BaraHem. Alla rättigheter förbehållna.
+              </p>
+              <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+                Du får detta mail eftersom din mäklare har skickat statistikrapporten till dig.
+              </p>
+            </div>
+          </div>
+        `,
+      });
+
+      console.log(`Statistics email sent to ${property.seller_email}`);
+      
+      return new Response(
+        JSON.stringify({ success: true, type: "statistics_email", email: property.seller_email }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Otherwise, this is a monthly scheduled statistics email
     console.log("Sending monthly statistics emails to all properties");
 
