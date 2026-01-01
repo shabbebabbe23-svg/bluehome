@@ -348,68 +348,68 @@ export const AgentStatistics = () => {
               <p className="text-sm">Klick kommer att visas här när personer besöker dina objekt</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {stats.map((stat) => (
                 <div
                   key={stat.property_id}
                   className="flex flex-col p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <h4 className="font-medium text-lg flex-1">{stat.property_title}</h4>
-                    <div className="text-2xl font-bold text-primary ml-2">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-medium text-base flex-1">{stat.property_title}</h4>
+                    <div className="text-xl font-bold text-primary ml-2">
                       {stat.total_views}
                     </div>
                   </div>
                   
+                  {/* Property Image */}
+                  {stat.property_image && (
+                    <div className="mb-3">
+                      <img 
+                        src={stat.property_image} 
+                        alt={stat.property_title}
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    </div>
+                  )}
+                  
                   {/* Main Stats Row */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Eye className="w-4 h-4 text-muted-foreground" />
+                  <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-muted-foreground" />
                       <span>{stat.total_views} visningar</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-muted-foreground" />
                       <span>{formatTime(stat.avg_time_spent)} snitt</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Share2 className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex items-center gap-1">
+                      <Share2 className="w-3 h-3 text-muted-foreground" />
                       <span>{stat.shares_count} delningar</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-muted-foreground" />
                       <span>{stat.viewing_registrations_count} anmälda</span>
                     </div>
                   </div>
 
                   {/* Device Stats */}
-                  <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                    <h5 className="text-xs font-medium text-muted-foreground mb-2">Enheter</h5>
-                    <div className="flex gap-4 text-sm">
+                  <div className="mb-3 p-2 bg-muted/50 rounded-lg">
+                    <h5 className="text-xs font-medium text-muted-foreground mb-1">Enheter</h5>
+                    <div className="flex gap-3 text-xs">
                       <div className="flex items-center gap-1">
-                        <Monitor className="w-4 h-4" />
-                        <span>Desktop: {stat.device_stats.desktop}</span>
+                        <Monitor className="w-3 h-3" />
+                        <span>{stat.device_stats.desktop}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Smartphone className="w-4 h-4" />
-                        <span>Mobil: {stat.device_stats.mobile}</span>
+                        <Smartphone className="w-3 h-3" />
+                        <span>{stat.device_stats.mobile}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Tablet className="w-4 h-4" />
-                        <span>Surfplatta: {stat.device_stats.tablet}</span>
+                        <Tablet className="w-3 h-3" />
+                        <span>{stat.device_stats.tablet}</span>
                       </div>
                     </div>
                   </div>
-
-                  {/* Property Image */}
-                  {stat.property_image && (
-                    <div className="mb-4">
-                      <img 
-                        src={stat.property_image} 
-                        alt={stat.property_title}
-                        className="w-24 h-16 object-cover rounded"
-                      />
-                    </div>
-                  )}
 
                   {/* Locations */}
                   {stat.visitor_locations.length > 0 && (
