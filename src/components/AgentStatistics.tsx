@@ -398,32 +398,31 @@ export const AgentStatistics = () => {
                     </div>
                   </div>
 
-                  {/* Top Images */}
+                  {/* Top Image */}
                   {stat.top_images.length > 0 && (
                     <div className="mb-4 p-3 bg-muted/50 rounded-lg">
                       <h5 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
                         <Image className="w-3 h-3" />
-                        Populäraste bilderna
+                        Populäraste bilden
                       </h5>
-                      <div className="grid grid-cols-5 gap-2">
-                        {stat.top_images.map((img, idx) => (
-                          <div key={idx} className="text-center">
-                            {img.image_url ? (
-                              <img 
-                                src={img.image_url} 
-                                alt={`Bild ${img.image_index + 1}`}
-                                className="w-full h-12 object-cover rounded mb-1"
-                              />
-                            ) : (
-                              <div className="w-full h-12 bg-muted rounded mb-1 flex items-center justify-center text-xs">
-                                #{img.image_index + 1}
-                              </div>
-                            )}
-                            <div className="text-xs text-muted-foreground">
-                              {img.views} ({formatTimeMs(img.avg_time_ms)})
-                            </div>
+                      <div className="flex items-center gap-3">
+                        {stat.top_images[0].image_url ? (
+                          <img 
+                            src={stat.top_images[0].image_url} 
+                            alt={`Bild ${stat.top_images[0].image_index + 1}`}
+                            className="w-16 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs">
+                            #{stat.top_images[0].image_index + 1}
                           </div>
-                        ))}
+                        )}
+                        <div className="text-sm">
+                          <span className="font-medium">{stat.top_images[0].views} visningar</span>
+                          <span className="text-muted-foreground ml-2">
+                            ({formatTimeMs(stat.top_images[0].avg_time_ms)} snitt)
+                          </span>
+                        </div>
                       </div>
                     </div>
                   )}
