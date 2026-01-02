@@ -1087,7 +1087,7 @@ const PropertyDetail = () => {
                         {agentProfile.agency}
                       </p>}
                       {(agencyLogo || dbProperty?.vendor_logo_url) && (
-                        <img src={agencyLogo || dbProperty.vendor_logo_url} alt="Byrålogo" className="h-[30px] w-auto max-w-[100px] object-contain mt-2 mx-auto" />
+                        <img src={agencyLogo || dbProperty.vendor_logo_url} alt="Byrålogo" className="h-9 w-auto max-w-[120px] object-contain mt-2 mx-auto" />
                       )}
                     </div>
                   </div>
