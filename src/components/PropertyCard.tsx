@@ -711,10 +711,6 @@ const PropertyCard = ({
             <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
               {title}
             </h3>
-            <div className="flex items-center text-muted-foreground mb-0.5">
-              <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
-              <span className="text-xs sm:text-sm truncate">{address}</span>
-            </div>
             {/* Dynamic subtitle text */}
             <div className="text-xs sm:text-sm text-primary font-medium">
               {description
@@ -741,7 +737,7 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
