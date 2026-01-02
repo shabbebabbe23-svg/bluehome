@@ -251,7 +251,7 @@ export const ProfileForm = () => {
 
   return (
     <Card className="relative">
-      <CardHeader>
+      <CardHeader className="pr-32 md:pr-80">
         <CardTitle>Min profil</CardTitle>
         <CardDescription>
           Uppdatera dina profiluppgifter som visas för kunder på fastighetsannonser
