@@ -849,10 +849,10 @@ const AgentDashboard = () => {
                     <Label htmlFor="edit-bathrooms">Badrum</Label>
                     <Input id="edit-bathrooms" name="bathrooms" type="number" defaultValue={editingProperty.bathrooms} required />
                   </div>
-                  {/* Byggår */}
+                  {/* Boarea (kvm) */}
                   <div className="w-full md:w-1/2">
-                    <Label htmlFor="edit-construction-year">Byggår</Label>
-                    <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                    <Label htmlFor="edit-area">Boarea (kvm)</Label>
+                    <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
                   </div>
                 </div>
 
@@ -882,15 +882,22 @@ const AgentDashboard = () => {
                   </div>
                 </div>
 
-                {/* Visningsdatum 2 (valfritt) */}
-                <div>
-                  <Label htmlFor="edit-viewing-date-2">Visningsdatum 2 (valfritt)</Label>
-                  <Input
-                    id="edit-viewing-date-2"
-                    name="viewing_date_2"
-                    type="datetime-local"
-                    defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
-                  />
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  {/* Visningsdatum 2 (valfritt) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-viewing-date-2">Visningsdatum 2 (valfritt)</Label>
+                    <Input
+                      id="edit-viewing-date-2"
+                      name="viewing_date_2"
+                      type="datetime-local"
+                      defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
+                    />
+                  </div>
+                  {/* Byggår */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-construction-year">Byggår</Label>
+                    <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                  </div>
                 </div>
 
                 {/* Våning och Våning av - endast för lägenheter */}
@@ -906,11 +913,6 @@ const AgentDashboard = () => {
                     </div>
                   </div>
                 )}
-
-                <div>
-                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
-                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
-                </div>
 
 
                 <div className="md:col-span-2">
