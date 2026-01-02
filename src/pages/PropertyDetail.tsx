@@ -815,24 +815,6 @@ const PropertyDetail = () => {
                     <span className="text-muted-foreground">Slutpris</span>
                     <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
                   </div>}
-                  {/* Visningsdatum och tid */}
-                  {dbProperty?.viewing_date && (
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Visning</span>
-                      <span className="font-semibold">
-                        {(() => {
-                          const date = new Date(dbProperty.viewing_date);
-                          return date.toLocaleString('sv-SE', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          });
-                        })()}
-                      </span>
-                    </div>
-                  )}
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Bostadstyp</span>
                     <span className="font-semibold">{property.type || 'Villa'}</span>
