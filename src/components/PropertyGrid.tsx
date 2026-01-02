@@ -650,8 +650,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         if (error) throw error;
 
         if (data && data.length > 0) {
-          // Fetch profiles with agency info for properties without vendor_logo_url
-          const userIds = [...new Set(data.filter(p => !p.vendor_logo_url).map(p => p.user_id))];
+          // Fetch profiles with agency info for ALL properties to use agency logo
+          const userIds = [...new Set(data.map(p => p.user_id))];
           let agencyLogosMap: Record<string, string> = {};
           
           if (userIds.length > 0) {
@@ -701,7 +701,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             hoverImage: prop.hover_image_url || prop.image_url || property2,
             type: prop.type,
             isNew: false,
-            vendorLogo: prop.vendor_logo_url || agencyLogosMap[prop.user_id] || logo1,
+            vendorLogo: agencyLogosMap[prop.user_id] || prop.vendor_logo_url || logo1,
             isSold: prop.is_sold || false,
             soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
