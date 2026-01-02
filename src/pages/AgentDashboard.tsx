@@ -597,30 +597,30 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="flex flex-wrap w-full gap-1 p-1 h-auto bg-hero-gradient">
-                <TabsTrigger value="add" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Plus className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Lägg till ny bostad</span>
+              <TabsList className="flex flex-wrap w-full gap-0.5 p-0.5 h-auto bg-hero-gradient">
+                <TabsTrigger value="add" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Ny bostad</span>
                   <span className="sm:hidden truncate">Ny</span>
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Home className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Befintliga bostäder</span>
+                <TabsTrigger value="existing" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Home className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Aktiva</span>
                   <span className="sm:hidden truncate">Aktiva</span>
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Archive className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Borttagna bostäder</span>
+                <TabsTrigger value="removed" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Archive className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Borttagna</span>
                   <span className="sm:hidden truncate">Borttagna</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <BarChart3 className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Din statistik</span>
+                <TabsTrigger value="statistics" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <BarChart3 className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Statistik</span>
                   <span className="sm:hidden truncate">Statistik</span>
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <UserCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Min profil</span>
+                <TabsTrigger value="profile" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <UserCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Profil</span>
                   <span className="sm:hidden truncate">Profil</span>
                 </TabsTrigger>
               </TabsList>
