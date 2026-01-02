@@ -36,7 +36,6 @@ const Index = () => {
   const [daysOnSiteFilter, setDaysOnSiteFilter] = useState<number | null>(null);
   const [floorRange, setFloorRange] = useState<[number, number]>([0, 10]);
   const [constructionYearRange, setConstructionYearRange] = useState<[number, number]>([1900, 2026]);
-  const [upcomingViewingFilter, setUpcomingViewingFilter] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
@@ -148,7 +147,6 @@ const Index = () => {
             onDaysOnSiteFilterChange={setDaysOnSiteFilter}
             onFloorRangeChange={setFloorRange}
             onConstructionYearRangeChange={setConstructionYearRange}
-            onUpcomingViewingFilterChange={setUpcomingViewingFilter}
           />
           <div ref={resultsRef}>
             {/* Recent uploads section - only show when NOT viewing final prices */}
@@ -200,7 +198,6 @@ const Index = () => {
                 daysOnSiteFilter={daysOnSiteFilter}
                 floorRange={floorRange}
                 constructionYearRange={constructionYearRange}
-                upcomingViewingFilter={upcomingViewingFilter}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />

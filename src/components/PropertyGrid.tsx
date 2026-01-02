@@ -59,7 +59,6 @@ interface PropertyGridProps {
   daysOnSiteFilter?: number | null;
   floorRange?: [number, number];
   constructionYearRange?: [number, number];
-  upcomingViewingFilter?: boolean;
 }
 
 export interface Property {
@@ -594,7 +593,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange, upcomingViewingFilter = false }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -860,17 +859,6 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         const year = property.construction_year;
         if (year === undefined || year === null) return false;
         return year >= minYear && year <= maxYear;
-      });
-    }
-
-    // Filter by upcoming viewing
-    if (upcomingViewingFilter) {
-      const now = new Date();
-      filtered = filtered.filter(property => {
-        const viewingDate = property.viewingDate;
-        const viewingDate2 = property.viewingDate2;
-        const hasUpcoming = (viewingDate && viewingDate > now) || (viewingDate2 && viewingDate2 > now);
-        return hasUpcoming;
       });
     }
 
