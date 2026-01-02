@@ -1071,6 +1071,9 @@ const PropertyDetail = () => {
                         <Building2 className="w-4 h-4" />
                         {agentProfile.agency}
                       </p>}
+                      {dbProperty?.vendor_logo_url && (
+                        <img src={dbProperty.vendor_logo_url} alt="Mäklarlogo" className="h-[30px] w-auto max-w-[100px] object-contain mt-2 mx-auto" />
+                      )}
                     </div>
                   </div>
 

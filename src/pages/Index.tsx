@@ -59,11 +59,32 @@ const Index = () => {
         const userIds = [...new Set(propertiesData.map(p => p.user_id))];
         const { data: profilesData } = await supabase
           .from('profiles')
-          .select('id, full_name, avatar_url, phone, email, agency')
+          .select('id, full_name, avatar_url, phone, email, agency, agency_id')
           .in('id', userIds);
         const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+        
+        // Fetch agency logos for properties without vendor_logo_url
+        const agencyIds = [...new Set(profilesData?.filter(p => p.agency_id).map(p => p.agency_id) || [])] as string[];
+        let agencyLogosMap: Record<string, string> = {};
+        
+        if (agencyIds.length > 0) {
+          const { data: agenciesData } = await supabase
+            .from('agencies')
+            .select('id, logo_url')
+            .in('id', agencyIds);
+          
+          if (agenciesData) {
+            agenciesData.forEach(agency => {
+              if (agency.logo_url) {
+                agencyLogosMap[agency.id] = agency.logo_url;
+              }
+            });
+          }
+        }
+        
         const formattedProperties: Property[] = propertiesData.map((prop: any) => {
           const profile = profilesMap.get(prop.user_id);
+          const agencyLogo = profile?.agency_id ? agencyLogosMap[profile.agency_id] : undefined;
           return {
             id: prop.id,
             title: prop.title,
@@ -80,7 +101,7 @@ const Index = () => {
             hoverImage: prop.hover_image_url || prop.image_url || property2,
             type: prop.type,
             isNew: false,
-            vendorLogo: prop.vendor_logo_url || logo1,
+            vendorLogo: prop.vendor_logo_url || agencyLogo || logo1,
             isSold: prop.is_sold || false,
             soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
@@ -115,7 +136,7 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[2250px] mx-auto">
+      <div className="flex flex-col lg:flex-row items-start lg:justify-between gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[2250px] mx-auto lg:items-start">
         <AdBanner
           imageSrc={soffaBanner}
           alt={"Soffa annons"}

@@ -650,6 +650,40 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         if (error) throw error;
 
         if (data && data.length > 0) {
+          // Fetch profiles with agency info for properties without vendor_logo_url
+          const userIds = [...new Set(data.filter(p => !p.vendor_logo_url).map(p => p.user_id))];
+          let agencyLogosMap: Record<string, string> = {};
+          
+          if (userIds.length > 0) {
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, agency_id')
+              .in('id', userIds);
+            
+            if (profilesData) {
+              const agencyIds = [...new Set(profilesData.filter(p => p.agency_id).map(p => p.agency_id))] as string[];
+              if (agencyIds.length > 0) {
+                const { data: agenciesData } = await supabase
+                  .from('agencies')
+                  .select('id, logo_url')
+                  .in('id', agencyIds);
+                
+                if (agenciesData) {
+                  // Create a map from user_id to agency logo_url
+                  const agencyLogoMap = new Map(agenciesData.map(a => [a.id, a.logo_url]));
+                  profilesData.forEach(profile => {
+                    if (profile.agency_id) {
+                      const logoUrl = agencyLogoMap.get(profile.agency_id);
+                      if (logoUrl) {
+                        agencyLogosMap[profile.id] = logoUrl;
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          }
+
           const formattedProperties: Property[] = data.map((prop) => ({
             id: prop.id,
             title: prop.title,
@@ -667,7 +701,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             hoverImage: prop.hover_image_url || prop.image_url || property2,
             type: prop.type,
             isNew: false,
-            vendorLogo: prop.vendor_logo_url || logo1,
+            vendorLogo: prop.vendor_logo_url || agencyLogosMap[prop.user_id] || logo1,
             isSold: prop.is_sold || false,
             soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
             hasVR: prop.has_vr || false,
@@ -1017,7 +1051,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4">
+    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4 -mt-2 lg:-mt-4">
       <div className="w-full">
         {/* Recent sold carousel - only shown when showFinalPrices is ON */}
         {showFinalPrices && propertiesWithFallback.length > 0 && (
@@ -1051,7 +1085,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
         )}
         {/* Header */}
         <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full lg:w-[90%] mx-auto" : ""}`}>
+          <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full mx-auto" : ""}`}>
             <div className="hidden sm:block" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
@@ -1150,6 +1184,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   {...property}
                   hasVR={property.has_vr || property.hasVR}
                   title={property.address}
+                  tagline={property.title}
                   description={property.description}
                   isFavorite={favorites.includes(property.id)}
                   onFavoriteToggle={handleFavoriteToggle}

@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Building2, Users, User, Upload, BarChart3, TrendingUp, Home as HomeIcon, Award, Copy, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import LogoCropper from "@/components/LogoCropper";
 
 interface UserProfile {
   id: string;
@@ -72,6 +73,8 @@ const AgencyAdminDashboard = () => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoCropperImage, setLogoCropperImage] = useState<string | null>(null);
+  const [logoCropperFile, setLogoCropperFile] = useState<File | null>(null);
   const [loadingAgency, setLoadingAgency] = useState(true);
   const [statistics, setStatistics] = useState({
     totalAgents: 0,
@@ -532,20 +535,37 @@ const AgencyAdminDashboard = () => {
       return;
     }
 
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${agencyId}-logo-${Date.now()}.${fileExt}`;
+    // Show cropper instead of uploading directly
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLogoCropperImage(reader.result as string);
+      setLogoCropperFile(file);
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset input so same file can be selected again
+    event.target.value = '';
+  };
+
+  const handleLogoCropComplete = async (croppedBlob: Blob) => {
+    if (!agencyId) return;
+    
+    const fileName = `${agencyId}-logo-${Date.now()}.png`;
     const filePath = `agencies/${fileName}`;
 
     setUploadingLogo(true);
-    console.log("Starting logo upload:", { fileName, filePath, fileSize: file.size });
+    setLogoCropperImage(null);
+    setLogoCropperFile(null);
+    console.log("Starting cropped logo upload:", { fileName, filePath });
 
     try {
-      // Upload file
+      // Upload cropped file
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(filePath, file, {
+        .upload(filePath, croppedBlob, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: 'image/png'
         });
 
       if (uploadError) {
@@ -586,8 +606,21 @@ const AgencyAdminDashboard = () => {
     }
   };
 
+  const handleLogoCropCancel = () => {
+    setLogoCropperImage(null);
+    setLogoCropperFile(null);
+  };
+
   return (
     <div className="min-h-screen">
+      {/* Logo Cropper Modal */}
+      {logoCropperImage && (
+        <LogoCropper
+          image={logoCropperImage}
+          onCropComplete={handleLogoCropComplete}
+          onCancel={handleLogoCropCancel}
+        />
+      )}
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/20" style={{ background: 'var(--main-gradient)' }}>
         <div className="max-w-7xl mx-auto px-4">
