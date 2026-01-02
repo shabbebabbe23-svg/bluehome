@@ -592,49 +592,37 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Badrum */}
-        <div>
-          <Label htmlFor="bathrooms">Antal badrum *</Label>
-          <Input
-            id="bathrooms"
-            type="number"
-            {...register("bathrooms")}
-            placeholder="1"
-            className="w-full"
-          />
-          {errors.bathrooms && (
-            <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
-          )}
-        </div>
+        {/* Nytt pris placeholder - för att matcha redigera-layouten */}
+        <div className="hidden md:block" />
 
-        {/* Area */}
-        <div>
-          <Label htmlFor="area">Boarea (kvm) *</Label>
-          <Input
-            id="area"
-            type="number"
-            {...register("area")}
-            placeholder="85"
-            className="w-full"
-          />
-          {errors.area && (
-            <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
-          )}
-        </div>
-
-        {/* Byggår */}
-        <div>
-          <Label htmlFor="construction_year">Byggår</Label>
-          <Input
-            id="construction_year"
-            type="number"
-            {...register("construction_year")}
-            placeholder="2010"
-            className="w-full"
-          />
-          {errors.construction_year && (
-            <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
-          )}
+        {/* Badrum + Boarea */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="bathrooms">Antal badrum *</Label>
+            <Input
+              id="bathrooms"
+              type="number"
+              {...register("bathrooms")}
+              placeholder="1"
+              className="w-full"
+            />
+            {errors.bathrooms && (
+              <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
+            )}
+          </div>
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="area">Boarea (kvm) *</Label>
+            <Input
+              id="area"
+              type="number"
+              {...register("area")}
+              placeholder="85"
+              className="w-full"
+            />
+            {errors.area && (
+              <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Avgift */}
@@ -710,18 +698,33 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
         {/* Bostadsförening */}
 
-        {/* Visningsdatum 2 (valfritt) - moved here */}
-        <div>
-          <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
-          <Input
-            id="viewing_date_2"
-            type="datetime-local"
-            {...register("viewing_date_2")}
-            className="w-full"
-          />
-          {errors.viewing_date_2 && (
-            <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
-          )}
+        {/* Visningsdatum 2 + Byggår */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
+            <Input
+              id="viewing_date_2"
+              type="datetime-local"
+              {...register("viewing_date_2")}
+              className="w-full"
+            />
+            {errors.viewing_date_2 && (
+              <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
+            )}
+          </div>
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="construction_year">Byggår</Label>
+            <Input
+              id="construction_year"
+              type="number"
+              {...register("construction_year")}
+              placeholder="2010"
+              className="w-full"
+            />
+            {errors.construction_year && (
+              <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Säljarens e-post */}
