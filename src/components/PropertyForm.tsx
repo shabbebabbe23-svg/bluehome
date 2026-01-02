@@ -463,7 +463,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Titel */}
         <div className="md:col-span-2">
-          <Label htmlFor="title">Titel * (max 50 tecken)</Label>
+          <Label htmlFor="title">Titel * <span className="text-muted-foreground font-normal">(max 50 tecken)</span></Label>
           <Input
             id="title"
             {...register("title")}
