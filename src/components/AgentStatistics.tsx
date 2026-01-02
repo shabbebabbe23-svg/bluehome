@@ -349,7 +349,7 @@ export const AgentStatistics = () => {
               <p className="text-sm">Klick kommer att visas här när personer besöker dina objekt</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {stats.map((stat) => (
                 <div
                   key={stat.property_id}
@@ -446,7 +446,7 @@ export const AgentStatistics = () => {
                       ) : (
                         <>
                           <Mail className="w-4 h-4 mr-2" />
-                          {stat.seller_email ? `Skicka statistik till ${stat.seller_email}` : "Ingen säljar-email"}
+                          {stat.seller_email ? "Skicka statistik till säljaren" : "Ingen säljar-email"}
                         </>
                       )}
                     </Button>

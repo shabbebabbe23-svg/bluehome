@@ -251,7 +251,7 @@ export const ProfileForm = () => {
 
   return (
     <Card className="relative">
-      <CardHeader>
+      <CardHeader className="pr-32 md:pr-80">
         <CardTitle>Min profil</CardTitle>
         <CardDescription>
           Uppdatera dina profiluppgifter som visas för kunder på fastighetsannonser
@@ -259,17 +259,17 @@ export const ProfileForm = () => {
       </CardHeader>
       
       {/* Avatar in top-right corner */}
-      <div className="absolute top-6 right-6 flex flex-col items-center gap-2">
+      <div className="absolute top-6 right-2 md:right-6 flex flex-col items-center gap-2">
         <div className="relative">
-          <Avatar className="w-64 h-64">
+          <Avatar className="w-24 h-24 md:w-64 md:h-64">
             <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
             <AvatarFallback className="bg-muted">
-              <User className="w-32 h-32 text-muted-foreground" />
+              <User className="w-12 h-12 md:w-32 md:h-32 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
           <Label htmlFor="avatar-upload" className="cursor-pointer absolute bottom-0 right-0">
-            <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full transition-colors flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary">
-              <Upload className="w-8 h-8" />
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-primary text-primary-foreground rounded-full transition-colors flex items-center justify-center shadow-lg hover:bg-primary/90 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary">
+              <Upload className="w-5 h-5 md:w-8 md:h-8" />
             </div>
             <Input
               id="avatar-upload"
