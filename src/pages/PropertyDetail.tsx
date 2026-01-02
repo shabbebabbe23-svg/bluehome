@@ -1082,10 +1082,6 @@ const PropertyDetail = () => {
                       <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
                         <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                       </Link>
-                      {agentProfile.agency && <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
-                        <Building2 className="w-4 h-4" />
-                        {agentProfile.agency}
-                      </p>}
                       {(agencyLogo || dbProperty?.vendor_logo_url) && (
                         <img src={agencyLogo || dbProperty.vendor_logo_url} alt="Byrålogo" className="h-9 w-auto max-w-[120px] object-contain mt-2 mx-auto" />
                       )}
