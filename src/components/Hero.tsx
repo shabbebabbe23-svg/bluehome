@@ -31,10 +31,9 @@ interface HeroProps {
   onDaysOnSiteFilterChange?: (value: number | null) => void;
   onFloorRangeChange?: (value: [number, number]) => void;
   onConstructionYearRangeChange?: (value: [number, number]) => void;
-  onUpcomingViewingFilterChange?: (value: boolean) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange, onUpcomingViewingFilterChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -56,7 +55,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasBidding, setHasBidding] = useState(false);
   const [floorRange, setFloorRange] = useState([0, 10]);
   const [constructionYearRange, setConstructionYearRange] = useState([1900, 2026]);
-  const [hasUpcomingViewing, setHasUpcomingViewing] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -74,7 +72,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasBidding(false);
     setFloorRange([0, 10]);
     setConstructionYearRange([1900, 2026]);
-    setHasUpcomingViewing(false);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -88,7 +85,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onSoldWithinMonthsChange?.(null);
     onFloorRangeChange?.([0, 10]);
     onConstructionYearRangeChange?.([1900, 2026]);
-    onUpcomingViewingFilterChange?.(false);
   };
 
   // Call callbacks when filter values change
@@ -124,7 +120,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     floorRange[0] !== 0 || floorRange[1] !== 10 ||
     constructionYearRange[0] !== 1900 || constructionYearRange[1] !== 2026 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony || hasBidding || hasUpcomingViewing;
+    hasElevator || hasBalcony || hasBidding;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -989,23 +985,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground font-semibold">1900</span>
                         <span className="text-primary font-semibold">2026</span>
-                      </div>
-                    </div>
-
-                    {/* Upcoming Viewing Filter */}
-                    <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-sm sm:text-base font-bold text-foreground">Kommande visning</h3>
-                      <div className="flex flex-wrap gap-3 justify-center">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setHasUpcomingViewing(!hasUpcomingViewing);
-                            onUpcomingViewingFilterChange?.(!hasUpcomingViewing);
-                          }}
-                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasUpcomingViewing ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
-                        >
-                          Endast med visning
-                        </Button>
                       </div>
                     </div>
 
