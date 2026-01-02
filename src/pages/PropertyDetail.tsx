@@ -760,41 +760,43 @@ const PropertyDetail = () => {
               <Separator className="my-6" />
 
               {/* Quick Facts */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex items-center gap-2">
-                  <Bed className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Sovrum</p>
-                    <p className="font-semibold">{property.bedrooms}</p>
+              <div className={`grid gap-3 sm:gap-4 mb-4 sm:mb-6 ${dbProperty?.floor ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'}`}>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Bed className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Sovrum</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.bedrooms}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Bath className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Badrum</p>
-                    <p className="font-semibold">{property.bathrooms}</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Bath className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Badrum</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.bathrooms}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Square className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Boarea</p>
-                    <p className="font-semibold">{property.area} m²</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Boarea</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.area} m²</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Home className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Byggår</p>
-                    <p className="font-semibold">{property.construction_year || property.buildYear || 'Ej angivet'}</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Byggår</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.construction_year || property.buildYear || 'Ej angivet'}</p>
                   </div>
                 </div>
                 {dbProperty?.floor && (
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-muted-foreground text-xl">Våning</p>
-                      <p className="font-semibold">{dbProperty.floor}</p>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Våning</p>
+                      <p className="font-semibold text-sm sm:text-base">
+                        {dbProperty.floor}{dbProperty.total_floors ? `/${dbProperty.total_floors}` : ''}
+                      </p>
                     </div>
                   </div>
                 )}
