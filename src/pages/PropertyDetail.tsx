@@ -697,7 +697,7 @@ const PropertyDetail = () => {
             <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm font-medium text-foreground">
-                {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
+                Antal live: {viewerCount}
               </span>
             </div>
           )}
@@ -760,35 +760,46 @@ const PropertyDetail = () => {
               <Separator className="my-6" />
 
               {/* Quick Facts */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex items-center gap-2">
-                  <Bed className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Sovrum</p>
-                    <p className="font-semibold">{property.bedrooms}</p>
+              <div className={`grid gap-3 sm:gap-4 mb-4 sm:mb-6 ${dbProperty?.floor ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'}`}>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Bed className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Sovrum</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.bedrooms}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Bath className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Badrum</p>
-                    <p className="font-semibold">{property.bathrooms}</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Bath className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Badrum</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.bathrooms}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Square className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Boarea</p>
-                    <p className="font-semibold">{property.area} m²</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Square className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Boarea</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.area} m²</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Home className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-muted-foreground text-xl">Byggår</p>
-                    <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-muted-foreground text-sm sm:text-base">Byggår</p>
+                    <p className="font-semibold text-sm sm:text-base">{property.construction_year || property.buildYear || 'Ej angivet'}</p>
                   </div>
                 </div>
+                {dbProperty?.floor && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Våning</p>
+                      <p className="font-semibold text-sm sm:text-base">
+                        {dbProperty.floor}{dbProperty.total_floors ? `/${dbProperty.total_floors}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Separator className="my-6" />
@@ -806,24 +817,6 @@ const PropertyDetail = () => {
                     <span className="text-muted-foreground">Slutpris</span>
                     <span className="font-semibold bg-clip-text text-transparent bg-hero-gradient">{`${property.sold_price.toLocaleString('sv-SE')} kr`}</span>
                   </div>}
-                  {/* Visningsdatum och tid */}
-                  {dbProperty?.viewing_date && (
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-muted-foreground">Visning</span>
-                      <span className="font-semibold">
-                        {(() => {
-                          const date = new Date(dbProperty.viewing_date);
-                          return date.toLocaleString('sv-SE', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          });
-                        })()}
-                      </span>
-                    </div>
-                  )}
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Bostadstyp</span>
                     <span className="font-semibold">{property.type || 'Villa'}</span>
@@ -1002,17 +995,17 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <div key="viewing-1" className="flex items-center gap-2">
+                        <div key="viewing-1" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <button 
                             onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                            className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
-                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                            <div className="flex-1 text-left">
-                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left min-w-0">
+                              <p className="text-xs sm:text-sm font-medium group-hover:text-primary transition-colors truncate">{formattedDate}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground truncate">{formattedTime}</p>
                             </div>
-                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
                           <ViewingRegistrationForm 
                             propertyId={id!}
@@ -1032,17 +1025,17 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <div key="viewing-2" className="flex items-center gap-2">
+                        <div key="viewing-2" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <button 
                             onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                            className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
-                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                            <div className="flex-1 text-left">
-                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left min-w-0">
+                              <p className="text-xs sm:text-sm font-medium group-hover:text-primary transition-colors truncate">{formattedDate}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground truncate">{formattedTime}</p>
                             </div>
-                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
                           <ViewingRegistrationForm 
                             propertyId={id!}

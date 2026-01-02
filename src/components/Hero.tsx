@@ -27,9 +27,13 @@ interface HeroProps {
   onFeeRangeChange?: (value: [number, number]) => void;
   soldWithinMonths?: number | null;
   onSoldWithinMonthsChange?: (value: number | null) => void;
+  daysOnSiteFilter?: number | null;
+  onDaysOnSiteFilterChange?: (value: number | null) => void;
+  onFloorRangeChange?: (value: [number, number]) => void;
+  onConstructionYearRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -49,6 +53,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
   const [hasBidding, setHasBidding] = useState(false);
+  const [floorRange, setFloorRange] = useState([0, 10]);
+  const [constructionYearRange, setConstructionYearRange] = useState([1900, 2026]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -64,6 +70,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasElevator(false);
     setHasBalcony(false);
     setHasBidding(false);
+    setFloorRange([0, 10]);
+    setConstructionYearRange([1900, 2026]);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -75,6 +83,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
     onSoldWithinMonthsChange?.(null);
+    onFloorRangeChange?.([0, 10]);
+    onConstructionYearRangeChange?.([1900, 2026]);
   };
 
   // Call callbacks when filter values change
@@ -94,11 +104,21 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onFeeRangeChange?.(feeRange as [number, number]);
   }, [feeRange, onFeeRangeChange]);
 
+  useEffect(() => {
+    onFloorRangeChange?.(floorRange as [number, number]);
+  }, [floorRange, onFloorRangeChange]);
+
+  useEffect(() => {
+    onConstructionYearRangeChange?.(constructionYearRange as [number, number]);
+  }, [constructionYearRange, onConstructionYearRangeChange]);
+
   const hasActiveFilters = searchLocation !== "" ||
     priceRange[0] !== 0 || priceRange[1] !== 20000000 ||
     areaRange[0] !== 0 || areaRange[1] !== 200 ||
     roomRange[0] !== 0 || roomRange[1] !== 7 ||
     feeRange[0] !== 0 || feeRange[1] !== 15000 ||
+    floorRange[0] !== 0 || floorRange[1] !== 10 ||
+    constructionYearRange[0] !== 1900 || constructionYearRange[1] !== 2026 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
     hasElevator || hasBalcony || hasBidding;
 
@@ -705,7 +725,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                     {/* Elevator & Balcony Filters */}
                     <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Objekt med</h3>
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Objekt med</h3>
                       <div className="flex flex-wrap gap-3 justify-center">
                         <Button
                           variant="outline"
@@ -713,7 +733,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasElevator(!hasElevator);
                             onElevatorFilterChange?.(!hasElevator);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasElevator ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasElevator ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Hiss
                         </Button>
@@ -723,7 +743,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasBalcony(!hasBalcony);
                             onBalconyFilterChange?.(!hasBalcony);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBalcony ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasBalcony ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Balkong
                         </Button>
@@ -733,7 +753,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasBidding(!hasBidding);
                             onBiddingFilterChange?.(!hasBidding);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Pågående budgivning
                         </Button>
@@ -815,9 +835,35 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       </div>
                     </div>
 
+                    {/* Days on Site Filter */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Antal dagar på Barahem</h3>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          { label: "1 dag", value: 1 },
+                          { label: "1 vecka", value: 7 },
+                          { label: "1 månad", value: 30 },
+                          { label: "Alla", value: null },
+                        ].map((period) => (
+                          <Button
+                            key={period.label}
+                            variant={daysOnSiteFilter === period.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => onDaysOnSiteFilterChange?.(period.value)}
+                            className={`rounded-full px-4 h-9 text-sm sm:text-base font-semibold transition-all ${daysOnSiteFilter === period.value
+                              ? "bg-hero-gradient text-white border-transparent shadow-md"
+                              : "hover:bg-muted border-2"
+                              }`}
+                          >
+                            {period.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* New Construction Filter */}
                     <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyproduktion</h3>
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Nyproduktion</h3>
                       <ToggleGroup
                         type="single"
                         value={newConstructionFilter}
@@ -831,23 +877,115 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       >
                         <ToggleGroupItem
                           value="include"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Inkluderar
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="only"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Endast
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="exclude"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Exkluderar
                         </ToggleGroupItem>
                       </ToggleGroup>
+                    </div>
+
+                    {/* Floor Filter */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Våning</h3>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={floorRange[0] === 0 ? '' : floorRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+                              const clampedValue = Math.min(value, floorRange[1]);
+                              setFloorRange([clampedValue, floorRange[1]]);
+                            }}
+                            placeholder="Min"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-muted-foreground text-xs">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={floorRange[1] >= 10 ? '' : floorRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 10;
+                              const clampedValue = Math.max(value, floorRange[0]);
+                              setFloorRange([floorRange[0], Math.min(clampedValue, 10)]);
+                            }}
+                            placeholder="Max"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                          />
+                        </div>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={10}
+                        step={1}
+                        value={floorRange}
+                        onValueChange={setFloorRange}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">BV</span>
+                        <span className="text-primary font-semibold">10+</span>
+                      </div>
+                    </div>
+
+                    {/* Construction Year Filter */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">Byggår</h3>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={constructionYearRange[0] === 1900 ? '' : constructionYearRange[0].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 1900;
+                              const clampedValue = Math.min(Math.max(value, 1900), constructionYearRange[1]);
+                              setConstructionYearRange([clampedValue, constructionYearRange[1]]);
+                            }}
+                            placeholder="Från"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                          />
+                          <span className="text-muted-foreground text-xs">-</span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={constructionYearRange[1] >= 2026 ? '' : constructionYearRange[1].toString()}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 2026;
+                              const clampedValue = Math.max(value, constructionYearRange[0]);
+                              setConstructionYearRange([constructionYearRange[0], Math.min(clampedValue, 2026)]);
+                            }}
+                            placeholder="Till"
+                            className="w-28 sm:w-32 h-7 text-xs border border-primary/30 focus:border-primary text-center"
+                          />
+                        </div>
+                      </div>
+                      <Slider
+                        min={1900}
+                        max={2026}
+                        step={1}
+                        value={constructionYearRange}
+                        onValueChange={setConstructionYearRange}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground font-semibold">1900</span>
+                        <span className="text-primary font-semibold">2026</span>
+                      </div>
                     </div>
 
                     {/* Keywords Filter */}

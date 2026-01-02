@@ -72,6 +72,8 @@ const AgentDashboard = () => {
   const [bidderLabel, setBidderLabel] = useState("");
   const [isNewProduction, setIsNewProduction] = useState(false);
   const [showViewerCount, setShowViewerCount] = useState(false);
+  const [hasElevator, setHasElevator] = useState(false);
+  const [hasBalcony, setHasBalcony] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -183,6 +185,8 @@ const AgentDashboard = () => {
     setEditingProperty(property);
     setIsNewProduction(property.is_new_production || false);
     setShowViewerCount(property.show_viewer_count || false);
+    setHasElevator(property.has_elevator || false);
+    setHasBalcony(property.has_balcony || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -492,6 +496,8 @@ const AgentDashboard = () => {
       const constructionYearValue = formData.get("construction_year") as string;
       const operatingCostValue = formData.get("operating_cost") as string;
       const housingAssociationValue = formData.get("housing_association") as string;
+      const floorValue = formData.get("floor") as string;
+      const totalFloorsValue = formData.get("total_floors") as string;
       
       const { error } = await supabase.from("properties").update({
         title: formData.get("title") as string,
@@ -517,6 +523,10 @@ const AgentDashboard = () => {
         additional_images: additionalImagesUrls,
         is_new_production: isNewProduction,
         show_viewer_count: showViewerCount,
+        has_elevator: hasElevator,
+        has_balcony: hasBalcony,
+        floor: floorValue ? Number(floorValue) : null,
+        total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
       }).eq("id", editingProperty.id);
       
       if (error) throw error;
@@ -593,30 +603,30 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="flex flex-wrap w-full gap-1 p-1 h-auto bg-hero-gradient">
-                <TabsTrigger value="add" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Plus className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Lägg till ny bostad</span>
+              <TabsList className="flex flex-wrap w-full gap-0.5 p-0.5 h-auto bg-hero-gradient">
+                <TabsTrigger value="add" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Ny bostad</span>
                   <span className="sm:hidden truncate">Ny</span>
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Home className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Befintliga bostäder</span>
+                <TabsTrigger value="existing" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Home className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Aktiva</span>
                   <span className="sm:hidden truncate">Aktiva</span>
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <Archive className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Borttagna bostäder</span>
+                <TabsTrigger value="removed" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <Archive className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Borttagna</span>
                   <span className="sm:hidden truncate">Borttagna</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <BarChart3 className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Din statistik</span>
+                <TabsTrigger value="statistics" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <BarChart3 className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Statistik</span>
                   <span className="sm:hidden truncate">Statistik</span>
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="flex-1 min-w-[60px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm">
-                  <UserCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Min profil</span>
+                <TabsTrigger value="profile" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
+                  <UserCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Profil</span>
                   <span className="sm:hidden truncate">Profil</span>
                 </TabsTrigger>
               </TabsList>
@@ -652,6 +662,8 @@ const AgentDashboard = () => {
                           soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined} 
                           vendorLogo={property.vendor_logo_url || undefined} 
                           viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined} 
+                          floor={property.floor || undefined}
+                          totalFloors={property.total_floors || undefined}
                           hideControls={true}
                           buttonText="Redigera fastighet"
                           onButtonClick={() => handleEditProperty(property)}
@@ -843,10 +855,10 @@ const AgentDashboard = () => {
                     <Label htmlFor="edit-bathrooms">Badrum</Label>
                     <Input id="edit-bathrooms" name="bathrooms" type="number" defaultValue={editingProperty.bathrooms} required />
                   </div>
-                  {/* Byggår */}
+                  {/* Boarea (kvm) */}
                   <div className="w-full md:w-1/2">
-                    <Label htmlFor="edit-construction-year">Byggår</Label>
-                    <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                    <Label htmlFor="edit-area">Boarea (kvm)</Label>
+                    <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
                   </div>
                 </div>
 
@@ -876,61 +888,91 @@ const AgentDashboard = () => {
                   </div>
                 </div>
 
-                {/* Visningsdatum 2 (valfritt) */}
-                <div>
-                  <Label htmlFor="edit-viewing-date-2">Visningsdatum 2 (valfritt)</Label>
-                  <Input
-                    id="edit-viewing-date-2"
-                    name="viewing_date_2"
-                    type="datetime-local"
-                    defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
-                  />
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  {/* Visningsdatum 2 (valfritt) */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-viewing-date-2">Visningsdatum 2 (valfritt)</Label>
+                    <Input
+                      id="edit-viewing-date-2"
+                      name="viewing_date_2"
+                      type="datetime-local"
+                      defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
+                    />
+                  </div>
+                  {/* Byggår */}
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-construction-year">Byggår</Label>
+                    <Input id="edit-construction-year" name="construction_year" type="number" defaultValue={editingProperty.construction_year || ''} placeholder="2021" />
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="edit-area">Boarea (kvm)</Label>
-                  <Input id="edit-area" name="area" type="number" defaultValue={editingProperty.area} required />
-                </div>
-
-
-                <div className="md:col-span-2">
-                  <Card className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        id="edit-is-new-production"
-                        checked={isNewProduction}
-                        onChange={(e) => setIsNewProduction(e.target.checked)}
-                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-                      />
-                      <Label htmlFor="edit-is-new-production" className="cursor-pointer font-semibold text-base">
-                        Nyproduktion
-                      </Label>
+                {/* Våning och Våning av - endast för lägenheter */}
+                {editingProperty.type === "Lägenhet" && (
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                    <div className="w-full md:w-1/2">
+                      <Label htmlFor="edit-floor">Våning</Label>
+                      <Input id="edit-floor" name="floor" type="number" defaultValue={editingProperty.floor || ''} placeholder="3" />
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 ml-8">
-                      Markera om detta är en nyproducerad fastighet
-                    </p>
+                    <div className="w-full md:w-1/2">
+                      <Label htmlFor="edit-total-floors">Våning av</Label>
+                      <Input id="edit-total-floors" name="total_floors" type="number" defaultValue={editingProperty.total_floors || ''} placeholder="5" />
+                    </div>
+                  </div>
+                )}
+
+
+                {/* Snabbval-knappar: Nyproduktion, Hiss, Balkong, Antal live */}
+                <div className="md:col-span-2 flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-is-new-production"
+                      checked={isNewProduction}
+                      onChange={(e) => setIsNewProduction(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-is-new-production" className="cursor-pointer font-medium text-sm">
+                      Nyproduktion
+                    </Label>
                   </Card>
-                </div>
 
-                {/* Show Viewer Count toggle */}
-                <div className="md:col-span-2">
-                  <Card className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        id="edit-show-viewer-count"
-                        checked={showViewerCount}
-                        onChange={(e) => setShowViewerCount(e.target.checked)}
-                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-                      />
-                      <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-semibold text-base">
-                        Visa "X personer tittar just nu"
-                      </Label>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2 ml-8">
-                      Visar besökare hur många andra som tittar på objektet i realtid
-                    </p>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-has-elevator"
+                      checked={hasElevator}
+                      onChange={(e) => setHasElevator(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-has-elevator" className="cursor-pointer font-medium text-sm">
+                      Hiss
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-has-balcony"
+                      checked={hasBalcony}
+                      onChange={(e) => setHasBalcony(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-has-balcony" className="cursor-pointer font-medium text-sm">
+                      Balkong
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+                    <input
+                      type="checkbox"
+                      id="edit-show-viewer-count"
+                      checked={showViewerCount}
+                      onChange={(e) => setShowViewerCount(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-medium text-sm">
+                      Antal live
+                    </Label>
                   </Card>
                 </div>
 

@@ -54,6 +54,8 @@ interface PropertyCardProps {
   hasBalcony?: boolean;
   constructionYear?: number;
   operatingCost?: number;
+  floor?: number;
+  totalFloors?: number;
 }
 
 const PropertyCard = ({
@@ -101,6 +103,8 @@ const PropertyCard = ({
   hasBalcony,
   constructionYear,
   operatingCost,
+  floor,
+  totalFloors,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
@@ -361,8 +365,7 @@ const PropertyCard = ({
                 <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{color: '#111'}}>
                   {title}
                 </h3>
-                <div className="flex items-center text-muted-foreground mb-0.5">
-                  <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+                <div className="text-muted-foreground mb-0.5">
                   <span className="text-xs sm:text-sm truncate">{address}</span>
                 </div>
                 <div className="text-xs sm:text-sm text-primary font-medium">
@@ -708,10 +711,6 @@ const PropertyCard = ({
             <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
               {title}
             </h3>
-            <div className="flex items-center text-muted-foreground mb-0.5">
-              <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
-              <span className="text-xs sm:text-sm truncate">{address}</span>
-            </div>
             {/* Dynamic subtitle text */}
             <div className="text-xs sm:text-sm text-primary font-medium">
               {description
@@ -738,7 +737,7 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
@@ -772,7 +771,7 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-0.5">
             <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
             <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bedrooms}</span>
@@ -790,6 +789,16 @@ const PropertyCard = ({
             <span className="text-[10px] sm:text-xs font-semibold text-foreground">{area}</span>
             <span className="text-[9px] sm:text-[10px] text-muted-foreground">m²</span>
           </div>
+
+          {floor && (
+            <div className="flex items-center gap-0.5">
+              <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground">
+                {floor}{totalFloors ? `/${totalFloors}` : ''}
+              </span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground">vån</span>
+            </div>
+          )}
         </div>
 
         {agent_name && (

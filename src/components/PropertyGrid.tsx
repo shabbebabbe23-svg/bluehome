@@ -56,6 +56,9 @@ interface PropertyGridProps {
   biddingFilter?: boolean;
   feeRange?: [number, number];
   soldWithinMonths?: number | null;
+  daysOnSiteFilter?: number | null;
+  floorRange?: [number, number];
+  constructionYearRange?: [number, number];
 }
 
 export interface Property {
@@ -70,6 +73,7 @@ export interface Property {
   area: number;
   fee: number;
   viewingDate: Date;
+  viewingDate2?: Date;
   image: string;
   hoverImage: string;
   type: string;
@@ -93,7 +97,11 @@ export interface Property {
   agent_agency?: string;
   agent_id?: string;
   createdAt?: Date;
+  listedDate?: Date;
   additional_images?: string[];
+  floor?: number;
+  total_floors?: number;
+  construction_year?: number;
 }
 
 export const allProperties: Property[] = [
@@ -585,7 +593,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -654,6 +662,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             area: prop.area,
             fee: prop.fee || 0,
             viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+            viewingDate2: prop.viewing_date_2 ? new Date(prop.viewing_date_2) : undefined,
             image: prop.image_url || property1,
             hoverImage: prop.hover_image_url || prop.image_url || property2,
             type: prop.type,
@@ -669,8 +678,11 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
-
+            floor: prop.floor || undefined,
+            total_floors: prop.total_floors || undefined,
+            construction_year: prop.construction_year || undefined,
             createdAt: new Date(prop.created_at),
+            listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
           setDbProperties(formattedProperties);
@@ -830,6 +842,25 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
       });
     }
 
+    // Filter by floor
+    if (floorRange && (floorRange[0] > 0 || floorRange[1] < 10)) {
+      const [minFloor, maxFloor] = floorRange;
+      filtered = filtered.filter(property => {
+        const floor = property.floor;
+        if (floor === undefined || floor === null) return false;
+        return floor >= minFloor && (maxFloor >= 10 || floor <= maxFloor);
+      });
+    }
+
+    // Filter by construction year
+    if (constructionYearRange && (constructionYearRange[0] > 1900 || constructionYearRange[1] < 2026)) {
+      const [minYear, maxYear] = constructionYearRange;
+      filtered = filtered.filter(property => {
+        const year = property.construction_year;
+        if (year === undefined || year === null) return false;
+        return year >= minYear && year <= maxYear;
+      });
+    }
 
     return filtered;
   };
@@ -894,8 +925,24 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     });
   };
 
+  // Filter by days on site (listed date)
+  const filterByDaysOnSite = (properties: Property[]) => {
+    if (!daysOnSiteFilter) return properties;
+
+    const now = new Date();
+    const cutoffDate = new Date();
+    cutoffDate.setDate(now.getDate() - daysOnSiteFilter);
+
+    return properties.filter(property => {
+      const listedDate = property.listedDate || property.createdAt;
+      if (!listedDate) return true;
+      return new Date(listedDate) >= cutoffDate;
+    });
+  };
+
   const dateFilteredProperties = filterBySoldDate(filteredProperties);
-  const sortedProperties = sortProperties(dateFilteredProperties);
+  const daysFilteredProperties = filterByDaysOnSite(dateFilteredProperties);
+  const sortedProperties = sortProperties(daysFilteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: string | number) => {
@@ -1114,6 +1161,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   bulkSelectMode={bulkSelectMode && isDbProperty}
                   isSelected={selectedProperties.includes(String(property.id))}
                   onSelect={handlePropertySelect}
+                  floor={property.floor}
+                  totalFloors={property.total_floors}
                 />
               </div>
             );

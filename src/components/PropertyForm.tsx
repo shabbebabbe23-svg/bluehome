@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const propertySchema = z.object({
-  title: z.string().min(5, "Titel måste vara minst 5 tecken").max(200, "Titel får max vara 200 tecken"),
+  title: z.string().min(5, "Titel måste vara minst 5 tecken").max(50, "Titel får max vara 50 tecken"),
   address: z.string().min(5, "Adress måste vara minst 5 tecken").max(200, "Adress får max vara 200 tecken"),
   location: z.string().min(2, "Ort måste anges").max(100, "Ort får max vara 100 tecken"),
   type: z.string().min(1, "Välj bostadstyp"),
@@ -58,6 +58,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [showViewerCount, setShowViewerCount] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [statisticsEmailFrequency, setStatisticsEmailFrequency] = useState<'weekly' | 'monthly' | 'manual'>('manual');
+  const [floor, setFloor] = useState<string>("");
+  const [totalFloors, setTotalFloors] = useState<string>("");
 
   const {
     register,
@@ -73,6 +75,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const watchPrice = watch("price");
   const watchArea = watch("area");
   const watchFee = watch("fee");
+  const watchType = watch("type");
   const watchOperatingCost = watch("operating_cost");
   const pricePerSqm = watchPrice && watchArea ? Math.round(watchPrice / watchArea) : null;
   
@@ -420,6 +423,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
         statistics_email_frequency: statisticsEmailFrequency,
+        floor: floor ? parseInt(floor) : null,
+        total_floors: totalFloors ? parseInt(totalFloors) : null,
       });
 
       if (error) throw error;
@@ -441,6 +446,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setDocumentNames([]);
       setShowViewerCount(false);
       setStatisticsEmailFrequency('manual');
+      setFloor("");
+      setTotalFloors("");
       onSuccess?.();
     } catch (error: any) {
       console.error("Error creating property:", error);
@@ -456,16 +463,24 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Titel */}
         <div className="md:col-span-2">
-          <Label htmlFor="title">Titel *</Label>
+          <Label htmlFor="title">Titel * <span className="text-muted-foreground font-normal">(max 50 tecken)</span></Label>
           <Input
             id="title"
             {...register("title")}
             placeholder="T.ex. Rymlig trea i centrala stan"
             className="w-full"
+            maxLength={50}
           />
-          {errors.title && (
-            <p className="text-sm text-destructive mt-1">{errors.title.message}</p>
-          )}
+          <div className="flex justify-between items-center mt-1">
+            {errors.title ? (
+              <p className="text-sm text-destructive">{errors.title.message}</p>
+            ) : (
+              <span />
+            )}
+            <span className="text-xs text-muted-foreground">
+              {watch("title")?.length || 0}/50
+            </span>
+          </div>
         </div>
 
         {/* Adress */}
@@ -517,6 +532,34 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
+        {/* Våning - endast för lägenheter */}
+        {watchType === "Lägenhet" && (
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Label htmlFor="floor">Våning</Label>
+              <Input
+                id="floor"
+                type="number"
+                value={floor}
+                onChange={(e) => setFloor(e.target.value)}
+                placeholder="3"
+                className="w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="totalFloors">Våning av</Label>
+              <Input
+                id="totalFloors"
+                type="number"
+                value={totalFloors}
+                onChange={(e) => setTotalFloors(e.target.value)}
+                placeholder="5"
+                className="w-full"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Pris */}
         <div>
           <Label htmlFor="price">Pris (kr) *</Label>
@@ -557,49 +600,37 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Badrum */}
-        <div>
-          <Label htmlFor="bathrooms">Antal badrum *</Label>
-          <Input
-            id="bathrooms"
-            type="number"
-            {...register("bathrooms")}
-            placeholder="1"
-            className="w-full"
-          />
-          {errors.bathrooms && (
-            <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
-          )}
-        </div>
+        {/* Nytt pris placeholder - för att matcha redigera-layouten */}
+        <div className="hidden md:block" />
 
-        {/* Area */}
-        <div>
-          <Label htmlFor="area">Boarea (kvm) *</Label>
-          <Input
-            id="area"
-            type="number"
-            {...register("area")}
-            placeholder="85"
-            className="w-full"
-          />
-          {errors.area && (
-            <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
-          )}
-        </div>
-
-        {/* Byggår */}
-        <div>
-          <Label htmlFor="construction_year">Byggår</Label>
-          <Input
-            id="construction_year"
-            type="number"
-            {...register("construction_year")}
-            placeholder="2010"
-            className="w-full"
-          />
-          {errors.construction_year && (
-            <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
-          )}
+        {/* Badrum + Boarea */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="bathrooms">Antal badrum *</Label>
+            <Input
+              id="bathrooms"
+              type="number"
+              {...register("bathrooms")}
+              placeholder="1"
+              className="w-full"
+            />
+            {errors.bathrooms && (
+              <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
+            )}
+          </div>
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="area">Boarea (kvm) *</Label>
+            <Input
+              id="area"
+              type="number"
+              {...register("area")}
+              placeholder="85"
+              className="w-full"
+            />
+            {errors.area && (
+              <p className="text-sm text-destructive mt-1">{errors.area.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Avgift */}
@@ -675,18 +706,33 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
         {/* Bostadsförening */}
 
-        {/* Visningsdatum 2 (valfritt) - moved here */}
-        <div>
-          <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
-          <Input
-            id="viewing_date_2"
-            type="datetime-local"
-            {...register("viewing_date_2")}
-            className="w-full"
-          />
-          {errors.viewing_date_2 && (
-            <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
-          )}
+        {/* Visningsdatum 2 + Byggår */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
+            <Input
+              id="viewing_date_2"
+              type="datetime-local"
+              {...register("viewing_date_2")}
+              className="w-full"
+            />
+            {errors.viewing_date_2 && (
+              <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
+            )}
+          </div>
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="construction_year">Byggår</Label>
+            <Input
+              id="construction_year"
+              type="number"
+              {...register("construction_year")}
+              placeholder="2010"
+              className="w-full"
+            />
+            {errors.construction_year && (
+              <p className="text-sm text-destructive mt-1">{errors.construction_year.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Säljarens e-post */}
@@ -738,86 +784,58 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Nyproduktion */}
-        <div className="md:col-span-2">
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="is_new_production"
-                checked={isNewProduction}
-                onChange={(e) => setIsNewProduction(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="is_new_production" className="cursor-pointer font-semibold text-base">
-                Nyproduktion
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Markera om detta är en nyproducerad fastighet
-            </p>
+        {/* Snabbval-knappar: Nyproduktion, Hiss, Balkong, Antal live */}
+        <div className="md:col-span-2 flex flex-wrap gap-2">
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="is_new_production"
+              checked={isNewProduction}
+              onChange={(e) => setIsNewProduction(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="is_new_production" className="cursor-pointer font-medium text-sm">
+              Nyproduktion
+            </Label>
           </Card>
-        </div>
 
-        {/* Hiss och Balkong */}
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="has_elevator"
-                checked={hasElevator}
-                onChange={(e) => setHasElevator(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="has_elevator" className="cursor-pointer font-semibold text-base">
-                Hiss
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Byggnaden har hiss
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="has_elevator"
+              checked={hasElevator}
+              onChange={(e) => setHasElevator(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="has_elevator" className="cursor-pointer font-medium text-sm">
+              Hiss
+            </Label>
           </Card>
-        </div>
 
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="has_balcony"
-                checked={hasBalcony}
-                onChange={(e) => setHasBalcony(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="has_balcony" className="cursor-pointer font-semibold text-base">
-                Balkong
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Bostaden har balkong
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="has_balcony"
+              checked={hasBalcony}
+              onChange={(e) => setHasBalcony(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
+              Balkong
+            </Label>
           </Card>
-        </div>
 
-        {/* Visa antal som tittar just nu */}
-        <div className="md:col-span-2">
-          <Card className="p-4 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="show_viewer_count"
-                checked={showViewerCount}
-                onChange={(e) => setShowViewerCount(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="show_viewer_count" className="cursor-pointer font-semibold text-base">
-                Visa "X personer tittar just nu"
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Visar besökare hur många som tittar på objektet i realtid. Detta kan skapa intresse och känsla av efterfrågan.
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+            <input
+              type="checkbox"
+              id="show_viewer_count"
+              checked={showViewerCount}
+              onChange={(e) => setShowViewerCount(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="show_viewer_count" className="cursor-pointer font-medium text-sm">
+              Antal live
+            </Label>
           </Card>
         </div>
 

@@ -316,6 +316,7 @@ export type Database = {
           description: string | null
           documents: Json | null
           fee: number | null
+          floor: number | null
           floorplan_images: string[] | null
           floorplan_url: string | null
           has_balcony: boolean | null
@@ -341,6 +342,7 @@ export type Database = {
           sold_price: number | null
           statistics_email_frequency: string | null
           title: string
+          total_floors: number | null
           type: string
           updated_at: string | null
           user_id: string
@@ -360,6 +362,7 @@ export type Database = {
           description?: string | null
           documents?: Json | null
           fee?: number | null
+          floor?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_balcony?: boolean | null
@@ -385,6 +388,7 @@ export type Database = {
           sold_price?: number | null
           statistics_email_frequency?: string | null
           title: string
+          total_floors?: number | null
           type: string
           updated_at?: string | null
           user_id: string
@@ -404,6 +408,7 @@ export type Database = {
           description?: string | null
           documents?: Json | null
           fee?: number | null
+          floor?: number | null
           floorplan_images?: string[] | null
           floorplan_url?: string | null
           has_balcony?: boolean | null
@@ -429,6 +434,7 @@ export type Database = {
           sold_price?: number | null
           statistics_email_frequency?: string | null
           title?: string
+          total_floors?: number | null
           type?: string
           updated_at?: string | null
           user_id?: string
