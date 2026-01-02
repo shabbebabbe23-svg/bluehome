@@ -697,7 +697,7 @@ const PropertyDetail = () => {
             <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm font-medium text-foreground">
-                {viewerCount} {viewerCount === 1 ? 'person tittar' : 'personer tittar'} på detta objekt just nu
+                Antal live: {viewerCount}
               </span>
             </div>
           )}
