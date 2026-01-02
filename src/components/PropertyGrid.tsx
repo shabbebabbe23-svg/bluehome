@@ -56,6 +56,7 @@ interface PropertyGridProps {
   biddingFilter?: boolean;
   feeRange?: [number, number];
   soldWithinMonths?: number | null;
+  daysOnSiteFilter?: number | null;
 }
 
 export interface Property {
@@ -93,6 +94,7 @@ export interface Property {
   agent_agency?: string;
   agent_id?: string;
   createdAt?: Date;
+  listedDate?: Date;
   additional_images?: string[];
   floor?: number;
   total_floors?: number;
@@ -587,7 +589,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter }: PropertyGridProps) => {
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -673,6 +675,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             has_balcony: prop.has_balcony || false,
 
             createdAt: new Date(prop.created_at),
+            listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
             additional_images: prop.additional_images || [],
           }));
           setDbProperties(formattedProperties);
@@ -896,8 +899,24 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     });
   };
 
+  // Filter by days on site (listed date)
+  const filterByDaysOnSite = (properties: Property[]) => {
+    if (!daysOnSiteFilter) return properties;
+
+    const now = new Date();
+    const cutoffDate = new Date();
+    cutoffDate.setDate(now.getDate() - daysOnSiteFilter);
+
+    return properties.filter(property => {
+      const listedDate = property.listedDate || property.createdAt;
+      if (!listedDate) return true;
+      return new Date(listedDate) >= cutoffDate;
+    });
+  };
+
   const dateFilteredProperties = filterBySoldDate(filteredProperties);
-  const sortedProperties = sortProperties(dateFilteredProperties);
+  const daysFilteredProperties = filterByDaysOnSite(dateFilteredProperties);
+  const sortedProperties = sortProperties(daysFilteredProperties);
   const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
 
   const handleFavoriteToggle = (id: string | number) => {
