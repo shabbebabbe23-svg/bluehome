@@ -54,6 +54,7 @@ const PropertyDetail = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [agentProfile, setAgentProfile] = useState<any>(null);
+  const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
   const [isPWA, setIsPWA] = useState(false);
 
   const avatarUrl = user?.user_metadata?.avatar_url;
@@ -93,7 +94,21 @@ const PropertyDetail = () => {
               .select('*')
               .eq('id', data.user_id)
               .single();
-            if (profile) setAgentProfile(profile);
+            if (profile) {
+              setAgentProfile(profile);
+              
+              // Fetch agency logo if agent has agency_id
+              if (profile.agency_id) {
+                const { data: agency } = await supabase
+                  .from('agencies')
+                  .select('logo_url')
+                  .eq('id', profile.agency_id)
+                  .single();
+                if (agency?.logo_url) {
+                  setAgencyLogo(agency.logo_url);
+                }
+              }
+            }
           }
 
           const { count } = await supabase
@@ -1071,8 +1086,8 @@ const PropertyDetail = () => {
                         <Building2 className="w-4 h-4" />
                         {agentProfile.agency}
                       </p>}
-                      {dbProperty?.vendor_logo_url && (
-                        <img src={dbProperty.vendor_logo_url} alt="Mäklarlogo" className="h-[30px] w-auto max-w-[100px] object-contain mt-2 mx-auto" />
+                      {(agencyLogo || dbProperty?.vendor_logo_url) && (
+                        <img src={agencyLogo || dbProperty.vendor_logo_url} alt="Byrålogo" className="h-[30px] w-auto max-w-[100px] object-contain mt-2 mx-auto" />
                       )}
                     </div>
                   </div>
