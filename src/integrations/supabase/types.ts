@@ -342,6 +342,7 @@ export type Database = {
           sold_price: number | null
           statistics_email_frequency: string | null
           title: string
+          total_floors: number | null
           type: string
           updated_at: string | null
           user_id: string
@@ -387,6 +388,7 @@ export type Database = {
           sold_price?: number | null
           statistics_email_frequency?: string | null
           title: string
+          total_floors?: number | null
           type: string
           updated_at?: string | null
           user_id: string
@@ -432,6 +434,7 @@ export type Database = {
           sold_price?: number | null
           statistics_email_frequency?: string | null
           title?: string
+          total_floors?: number | null
           type?: string
           updated_at?: string | null
           user_id?: string

@@ -94,6 +94,8 @@ export interface Property {
   agent_id?: string;
   createdAt?: Date;
   additional_images?: string[];
+  floor?: number;
+  total_floors?: number;
 }
 
 export const allProperties: Property[] = [
@@ -1114,6 +1116,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   bulkSelectMode={bulkSelectMode && isDbProperty}
                   isSelected={selectedProperties.includes(String(property.id))}
                   onSelect={handlePropertySelect}
+                  floor={property.floor}
+                  totalFloors={property.total_floors}
                 />
               </div>
             );
