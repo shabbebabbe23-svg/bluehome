@@ -59,6 +59,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [statisticsEmailFrequency, setStatisticsEmailFrequency] = useState<'weekly' | 'monthly' | 'manual'>('manual');
   const [floor, setFloor] = useState<string>("");
+  const [totalFloors, setTotalFloors] = useState<string>("");
 
   const {
     register,
@@ -423,6 +424,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         show_viewer_count: showViewerCount,
         statistics_email_frequency: statisticsEmailFrequency,
         floor: floor ? parseInt(floor) : null,
+        total_floors: totalFloors ? parseInt(totalFloors) : null,
       });
 
       if (error) throw error;
@@ -445,6 +447,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setShowViewerCount(false);
       setStatisticsEmailFrequency('manual');
       setFloor("");
+      setTotalFloors("");
       onSuccess?.();
     } catch (error: any) {
       console.error("Error creating property:", error);
@@ -523,16 +526,29 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
         {/* Våning - endast för lägenheter */}
         {watchType === "Lägenhet" && (
-          <div>
-            <Label htmlFor="floor">Våning</Label>
-            <Input
-              id="floor"
-              type="number"
-              value={floor}
-              onChange={(e) => setFloor(e.target.value)}
-              placeholder="T.ex. 3"
-              className="w-full"
-            />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Label htmlFor="floor">Våning</Label>
+              <Input
+                id="floor"
+                type="number"
+                value={floor}
+                onChange={(e) => setFloor(e.target.value)}
+                placeholder="3"
+                className="w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="totalFloors">Våning av</Label>
+              <Input
+                id="totalFloors"
+                type="number"
+                value={totalFloors}
+                onChange={(e) => setTotalFloors(e.target.value)}
+                placeholder="5"
+                className="w-full"
+              />
+            </div>
           </div>
         )}
 

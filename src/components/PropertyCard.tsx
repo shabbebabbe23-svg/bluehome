@@ -54,6 +54,8 @@ interface PropertyCardProps {
   hasBalcony?: boolean;
   constructionYear?: number;
   operatingCost?: number;
+  floor?: number;
+  totalFloors?: number;
 }
 
 const PropertyCard = ({
@@ -101,6 +103,8 @@ const PropertyCard = ({
   hasBalcony,
   constructionYear,
   operatingCost,
+  floor,
+  totalFloors,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
@@ -772,7 +776,7 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-0.5">
             <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
             <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bedrooms}</span>
@@ -790,6 +794,16 @@ const PropertyCard = ({
             <span className="text-[10px] sm:text-xs font-semibold text-foreground">{area}</span>
             <span className="text-[9px] sm:text-[10px] text-muted-foreground">m²</span>
           </div>
+
+          {floor && (
+            <div className="flex items-center gap-0.5">
+              <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[10px] sm:text-xs font-semibold text-foreground">
+                {floor}{totalFloors ? `/${totalFloors}` : ''}
+              </span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground">vån</span>
+            </div>
+          )}
         </div>
 
         {agent_name && (

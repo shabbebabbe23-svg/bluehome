@@ -492,6 +492,8 @@ const AgentDashboard = () => {
       const constructionYearValue = formData.get("construction_year") as string;
       const operatingCostValue = formData.get("operating_cost") as string;
       const housingAssociationValue = formData.get("housing_association") as string;
+      const floorValue = formData.get("floor") as string;
+      const totalFloorsValue = formData.get("total_floors") as string;
       
       const { error } = await supabase.from("properties").update({
         title: formData.get("title") as string,
@@ -517,6 +519,8 @@ const AgentDashboard = () => {
         additional_images: additionalImagesUrls,
         is_new_production: isNewProduction,
         show_viewer_count: showViewerCount,
+        floor: floorValue ? Number(floorValue) : null,
+        total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
       }).eq("id", editingProperty.id);
       
       if (error) throw error;
@@ -652,6 +656,8 @@ const AgentDashboard = () => {
                           soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined} 
                           vendorLogo={property.vendor_logo_url || undefined} 
                           viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined} 
+                          floor={property.floor || undefined}
+                          totalFloors={property.total_floors || undefined}
                           hideControls={true}
                           buttonText="Redigera fastighet"
                           onButtonClick={() => handleEditProperty(property)}
@@ -886,6 +892,20 @@ const AgentDashboard = () => {
                     defaultValue={editingProperty.viewing_date_2 ? new Date(editingProperty.viewing_date_2).toISOString().slice(0, 16) : ""}
                   />
                 </div>
+
+                {/* Våning och Våning av - endast för lägenheter */}
+                {editingProperty.type === "Lägenhet" && (
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                    <div className="w-full md:w-1/2">
+                      <Label htmlFor="edit-floor">Våning</Label>
+                      <Input id="edit-floor" name="floor" type="number" defaultValue={editingProperty.floor || ''} placeholder="3" />
+                    </div>
+                    <div className="w-full md:w-1/2">
+                      <Label htmlFor="edit-total-floors">Våning av</Label>
+                      <Input id="edit-total-floors" name="total_floors" type="number" defaultValue={editingProperty.total_floors || ''} placeholder="5" />
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="edit-area">Boarea (kvm)</Label>
