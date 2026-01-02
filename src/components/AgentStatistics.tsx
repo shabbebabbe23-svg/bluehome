@@ -446,7 +446,7 @@ export const AgentStatistics = () => {
                       ) : (
                         <>
                           <Mail className="w-4 h-4 mr-2" />
-                          {stat.seller_email ? `Skicka statistik till ${stat.seller_email}` : "Ingen säljar-email"}
+                          {stat.seller_email ? "Skicka statistik till säljaren" : "Ingen säljar-email"}
                         </>
                       )}
                     </Button>
