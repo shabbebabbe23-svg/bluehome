@@ -365,8 +365,7 @@ const PropertyCard = ({
                 <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{color: '#111'}}>
                   {title}
                 </h3>
-                <div className="flex items-center text-muted-foreground mb-0.5">
-                  <MapPin className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
+                <div className="text-muted-foreground mb-0.5">
                   <span className="text-xs sm:text-sm truncate">{address}</span>
                 </div>
                 <div className="text-xs sm:text-sm text-primary font-medium">
