@@ -27,9 +27,11 @@ interface HeroProps {
   onFeeRangeChange?: (value: [number, number]) => void;
   soldWithinMonths?: number | null;
   onSoldWithinMonthsChange?: (value: number | null) => void;
+  daysOnSiteFilter?: number | null;
+  onDaysOnSiteFilterChange?: (value: number | null) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -812,6 +814,32 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground font-semibold">0 kr</span>
                         <span className="text-primary font-semibold">15k+/mån</span>
+                      </div>
+                    </div>
+
+                    {/* Days on Site Filter */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Antal dagar på Barahem</h3>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          { label: "1 dag", value: 1 },
+                          { label: "1 vecka", value: 7 },
+                          { label: "1 månad", value: 30 },
+                          { label: "Alla", value: null },
+                        ].map((period) => (
+                          <Button
+                            key={period.label}
+                            variant={daysOnSiteFilter === period.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => onDaysOnSiteFilterChange?.(period.value)}
+                            className={`rounded-full px-4 h-9 text-sm sm:text-base font-semibold transition-all ${daysOnSiteFilter === period.value
+                              ? "bg-hero-gradient text-white border-transparent shadow-md"
+                              : "hover:bg-muted border-2"
+                              }`}
+                          >
+                            {period.label}
+                          </Button>
+                        ))}
                       </div>
                     </div>
 
