@@ -58,6 +58,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [showViewerCount, setShowViewerCount] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [statisticsEmailFrequency, setStatisticsEmailFrequency] = useState<'weekly' | 'monthly' | 'manual'>('manual');
+  const [floor, setFloor] = useState<string>("");
 
   const {
     register,
@@ -73,6 +74,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const watchPrice = watch("price");
   const watchArea = watch("area");
   const watchFee = watch("fee");
+  const watchType = watch("type");
   const watchOperatingCost = watch("operating_cost");
   const pricePerSqm = watchPrice && watchArea ? Math.round(watchPrice / watchArea) : null;
   
@@ -420,6 +422,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
         statistics_email_frequency: statisticsEmailFrequency,
+        floor: floor ? parseInt(floor) : null,
       });
 
       if (error) throw error;
@@ -441,6 +444,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setDocumentNames([]);
       setShowViewerCount(false);
       setStatisticsEmailFrequency('manual');
+      setFloor("");
       onSuccess?.();
     } catch (error: any) {
       console.error("Error creating property:", error);
@@ -516,6 +520,21 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             <p className="text-sm text-destructive mt-1">{errors.type.message}</p>
           )}
         </div>
+
+        {/* Våning - endast för lägenheter */}
+        {watchType === "Lägenhet" && (
+          <div>
+            <Label htmlFor="floor">Våning</Label>
+            <Input
+              id="floor"
+              type="number"
+              value={floor}
+              onChange={(e) => setFloor(e.target.value)}
+              placeholder="T.ex. 3"
+              className="w-full"
+            />
+          </div>
+        )}
 
         {/* Pris */}
         <div>

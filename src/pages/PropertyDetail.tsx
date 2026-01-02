@@ -786,9 +786,18 @@ const PropertyDetail = () => {
                   <Home className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-muted-foreground text-xl">Byggår</p>
-                    <p className="font-semibold">{property.buildYear || 'Ej angivet'}</p>
+                    <p className="font-semibold">{property.construction_year || property.buildYear || 'Ej angivet'}</p>
                   </div>
                 </div>
+                {dbProperty?.floor && (
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-muted-foreground text-xl">Våning</p>
+                      <p className="font-semibold">{dbProperty.floor}</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Separator className="my-6" />
