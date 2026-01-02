@@ -707,7 +707,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                     {/* Elevator & Balcony Filters */}
                     <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Objekt med</h3>
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Objekt med</h3>
                       <div className="flex flex-wrap gap-3 justify-center">
                         <Button
                           variant="outline"
@@ -715,7 +715,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasElevator(!hasElevator);
                             onElevatorFilterChange?.(!hasElevator);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasElevator ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasElevator ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Hiss
                         </Button>
@@ -725,7 +725,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasBalcony(!hasBalcony);
                             onBalconyFilterChange?.(!hasBalcony);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBalcony ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasBalcony ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Balkong
                         </Button>
@@ -735,7 +735,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             setHasBidding(!hasBidding);
                             onBiddingFilterChange?.(!hasBidding);
                           }}
-                          className={`h-10 sm:h-12 text-sm sm:text-base font-semibold border-2 ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Pågående budgivning
                         </Button>
@@ -845,7 +845,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
                     {/* New Construction Filter */}
                     <div className="space-y-3 md:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">Nyproduktion</h3>
+                      <h3 className="text-sm sm:text-base font-bold text-foreground">Nyproduktion</h3>
                       <ToggleGroup
                         type="single"
                         value={newConstructionFilter}
@@ -859,19 +859,19 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       >
                         <ToggleGroupItem
                           value="include"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Inkluderar
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="only"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Endast
                         </ToggleGroupItem>
                         <ToggleGroupItem
                           value="exclude"
-                          className="h-7 px-2 text-[10px] sm:text-xs font-medium data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-sm"
+                          className="h-9 px-4 text-sm sm:text-base font-semibold data-[state=on]:bg-hero-gradient data-[state=on]:text-white rounded-full"
                         >
                           Exkluderar
                         </ToggleGroupItem>
