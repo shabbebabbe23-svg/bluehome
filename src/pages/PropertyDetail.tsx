@@ -993,17 +993,17 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <div key="viewing-1" className="flex items-center gap-2">
+                        <div key="viewing-1" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <button 
                             onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                            className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
-                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                            <div className="flex-1 text-left">
-                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left min-w-0">
+                              <p className="text-xs sm:text-sm font-medium group-hover:text-primary transition-colors truncate">{formattedDate}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground truncate">{formattedTime}</p>
                             </div>
-                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
                           <ViewingRegistrationForm 
                             propertyId={id!}
@@ -1023,17 +1023,17 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <div key="viewing-2" className="flex items-center gap-2">
+                        <div key="viewing-2" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <button 
                             onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                            className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
-                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                            <div className="flex-1 text-left">
-                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left min-w-0">
+                              <p className="text-xs sm:text-sm font-medium group-hover:text-primary transition-colors truncate">{formattedDate}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground truncate">{formattedTime}</p>
                             </div>
-                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
                           <ViewingRegistrationForm 
                             propertyId={id!}
