@@ -72,6 +72,8 @@ const AgentDashboard = () => {
   const [bidderLabel, setBidderLabel] = useState("");
   const [isNewProduction, setIsNewProduction] = useState(false);
   const [showViewerCount, setShowViewerCount] = useState(false);
+  const [hasElevator, setHasElevator] = useState(false);
+  const [hasBalcony, setHasBalcony] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -183,6 +185,8 @@ const AgentDashboard = () => {
     setEditingProperty(property);
     setIsNewProduction(property.is_new_production || false);
     setShowViewerCount(property.show_viewer_count || false);
+    setHasElevator(property.has_elevator || false);
+    setHasBalcony(property.has_balcony || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -519,6 +523,8 @@ const AgentDashboard = () => {
         additional_images: additionalImagesUrls,
         is_new_production: isNewProduction,
         show_viewer_count: showViewerCount,
+        has_elevator: hasElevator,
+        has_balcony: hasBalcony,
         floor: floorValue ? Number(floorValue) : null,
         total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
       }).eq("id", editingProperty.id);
@@ -915,44 +921,58 @@ const AgentDashboard = () => {
                 )}
 
 
-                <div className="md:col-span-2">
-                  <Card className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        id="edit-is-new-production"
-                        checked={isNewProduction}
-                        onChange={(e) => setIsNewProduction(e.target.checked)}
-                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-                      />
-                      <Label htmlFor="edit-is-new-production" className="cursor-pointer font-semibold text-base">
-                        Nyproduktion
-                      </Label>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2 ml-8">
-                      Markera om detta är en nyproducerad fastighet
-                    </p>
+                {/* Snabbval-knappar: Nyproduktion, Hiss, Balkong, Antal live */}
+                <div className="md:col-span-2 flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-is-new-production"
+                      checked={isNewProduction}
+                      onChange={(e) => setIsNewProduction(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-is-new-production" className="cursor-pointer font-medium text-sm">
+                      Nyproduktion
+                    </Label>
                   </Card>
-                </div>
 
-                {/* Show Viewer Count toggle */}
-                <div className="md:col-span-2">
-                  <Card className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        id="edit-show-viewer-count"
-                        checked={showViewerCount}
-                        onChange={(e) => setShowViewerCount(e.target.checked)}
-                        className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-                      />
-                      <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-semibold text-base">
-                        Visa "X personer tittar just nu"
-                      </Label>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2 ml-8">
-                      Visar besökare hur många andra som tittar på objektet i realtid
-                    </p>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-has-elevator"
+                      checked={hasElevator}
+                      onChange={(e) => setHasElevator(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-has-elevator" className="cursor-pointer font-medium text-sm">
+                      Hiss
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-has-balcony"
+                      checked={hasBalcony}
+                      onChange={(e) => setHasBalcony(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-has-balcony" className="cursor-pointer font-medium text-sm">
+                      Balkong
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+                    <input
+                      type="checkbox"
+                      id="edit-show-viewer-count"
+                      checked={showViewerCount}
+                      onChange={(e) => setShowViewerCount(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+                    />
+                    <Label htmlFor="edit-show-viewer-count" className="cursor-pointer font-medium text-sm">
+                      Antal live
+                    </Label>
                   </Card>
                 </div>
 

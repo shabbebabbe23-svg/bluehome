@@ -776,86 +776,58 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           )}
         </div>
 
-        {/* Nyproduktion */}
-        <div className="md:col-span-2">
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="is_new_production"
-                checked={isNewProduction}
-                onChange={(e) => setIsNewProduction(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="is_new_production" className="cursor-pointer font-semibold text-base">
-                Nyproduktion
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Markera om detta är en nyproducerad fastighet
-            </p>
+        {/* Snabbval-knappar: Nyproduktion, Hiss, Balkong, Antal live */}
+        <div className="md:col-span-2 flex flex-wrap gap-2">
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="is_new_production"
+              checked={isNewProduction}
+              onChange={(e) => setIsNewProduction(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="is_new_production" className="cursor-pointer font-medium text-sm">
+              Nyproduktion
+            </Label>
           </Card>
-        </div>
 
-        {/* Hiss och Balkong */}
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="has_elevator"
-                checked={hasElevator}
-                onChange={(e) => setHasElevator(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="has_elevator" className="cursor-pointer font-semibold text-base">
-                Hiss
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Byggnaden har hiss
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="has_elevator"
+              checked={hasElevator}
+              onChange={(e) => setHasElevator(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="has_elevator" className="cursor-pointer font-medium text-sm">
+              Hiss
+            </Label>
           </Card>
-        </div>
 
-        <div>
-          <Card className="p-4">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="has_balcony"
-                checked={hasBalcony}
-                onChange={(e) => setHasBalcony(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="has_balcony" className="cursor-pointer font-semibold text-base">
-                Balkong
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Bostaden har balkong
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="has_balcony"
+              checked={hasBalcony}
+              onChange={(e) => setHasBalcony(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
+              Balkong
+            </Label>
           </Card>
-        </div>
 
-        {/* Visa antal som tittar just nu */}
-        <div className="md:col-span-2">
-          <Card className="p-4 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="show_viewer_count"
-                checked={showViewerCount}
-                onChange={(e) => setShowViewerCount(e.target.checked)}
-                className="w-5 h-5 rounded border-input cursor-pointer accent-primary"
-              />
-              <Label htmlFor="show_viewer_count" className="cursor-pointer font-semibold text-base">
-                Visa "X personer tittar just nu"
-              </Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2 ml-8">
-              Visar besökare hur många som tittar på objektet i realtid. Detta kan skapa intresse och känsla av efterfrågan.
-            </p>
+          <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+            <input
+              type="checkbox"
+              id="show_viewer_count"
+              checked={showViewerCount}
+              onChange={(e) => setShowViewerCount(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+            />
+            <Label htmlFor="show_viewer_count" className="cursor-pointer font-medium text-sm">
+              Antal live
+            </Label>
           </Card>
         </div>
 
