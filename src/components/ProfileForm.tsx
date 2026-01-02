@@ -259,7 +259,7 @@ export const ProfileForm = () => {
       </CardHeader>
       
       {/* Avatar in top-right corner */}
-      <div className="absolute top-6 right-6 flex flex-col items-center gap-2">
+      <div className="absolute top-6 right-2 md:right-6 flex flex-col items-center gap-2">
         <div className="relative">
           <Avatar className="w-24 h-24 md:w-64 md:h-64">
             <AvatarImage src={avatarUrl || undefined} className="object-contain p-2" />
