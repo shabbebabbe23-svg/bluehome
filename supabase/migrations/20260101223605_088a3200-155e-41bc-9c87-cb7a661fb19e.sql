@@ -1,10 +1,10 @@
 -- Add device_type to property_views
 ALTER TABLE public.property_views 
-ADD COLUMN device_type text DEFAULT 'unknown';
+ADD COLUMN IF NOT EXISTS device_type text DEFAULT 'unknown';
 
 -- Add time_spent_ms to image_views for tracking time per image
 ALTER TABLE public.image_views 
-ADD COLUMN time_spent_ms integer DEFAULT 0;
+ADD COLUMN IF NOT EXISTS time_spent_ms integer DEFAULT 0;
 
 -- Create property_shares table
 CREATE TABLE public.property_shares (
