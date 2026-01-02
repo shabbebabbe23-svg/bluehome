@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useComparison } from "@/contexts/ComparisonContext";
+import { ViewingRegistrationForm } from "@/components/ViewingRegistrationForm";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -421,20 +422,42 @@ const PropertyDetail = () => {
     downloadICS(`Visning: ${property.title}`, `Visning av ${property.type.toLowerCase()} på ${property.address}, ${property.location}`, `${property.address}, ${property.location}`, startDate, endDate, `visning-${property.title.toLowerCase().replace(/\s+/g, '-')}.ics`);
     toast.success('Kalenderaktivitet sparad!');
   };
+  // Track share
+  const trackShare = async (method: string) => {
+    if (!id) return;
+    try {
+      const sessionId = sessionStorage.getItem('session_id') || 
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      if (!sessionStorage.getItem('session_id')) {
+        sessionStorage.setItem('session_id', sessionId);
+      }
+      await supabase.from('property_shares').insert({
+        property_id: id,
+        session_id: sessionId,
+        share_method: method,
+      });
+    } catch (error) {
+      console.error('Error tracking share:', error);
+    }
+  };
+
   const handleCopyUrl = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     setCopiedUrl(true);
     toast.success('URL kopierad!');
+    trackShare('copy_link');
     setTimeout(() => setCopiedUrl(false), 2000);
   };
   const handleShareFacebook = () => {
     const url = window.location.href;
+    trackShare('facebook');
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
   };
   const handleShareX = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}`;
+    trackShare('x');
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
   };
   const handleShareInstagram = () => {
@@ -442,17 +465,20 @@ const PropertyDetail = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}\n${url}`;
     navigator.clipboard.writeText(text);
+    trackShare('instagram');
     toast.success('Text kopierad! Klistra in i Instagram.');
   };
   const handleShareWhatsApp = () => {
     const url = window.location.href;
     const text = `${property.title} - ${property.price}`;
+    trackShare('whatsapp');
     window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
   };
   const handleShareEmail = () => {
     const url = window.location.href;
     const subject = `Se denna bostad: ${property.title}`;
     const body = `Hej!\n\nJag hittade denna intressanta bostad:\n\n${property.title}\n${property.price}\n${property.location}\n\n${url}`;
+    trackShare('email');
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
   return <div className="min-h-screen bg-background">
@@ -976,17 +1002,24 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <button 
-                          onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                          className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
-                        >
-                          <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                          <div className="flex-1 text-left">
-                            <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                            <p className="text-sm text-muted-foreground">{formattedTime}</p>
-                          </div>
-                          <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                        </button>
+                        <div key="viewing-1" className="flex items-center gap-2">
+                          <button 
+                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
+                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                          >
+                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left">
+                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
+                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            </div>
+                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                          </button>
+                          <ViewingRegistrationForm 
+                            propertyId={id!}
+                            viewingDate={dbProperty.viewing_date}
+                            viewingDateFormatted={`${formattedDate} ${formattedTime}`}
+                          />
+                        </div>
                       );
                     })()}
                     {dbProperty?.viewing_date_2 && (() => {
@@ -999,17 +1032,24 @@ const PropertyDetail = () => {
                       const formattedTime = `${time} - ${endTime}`;
                       
                       return (
-                        <button 
-                          onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
-                          className="w-full flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
-                        >
-                          <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
-                          <div className="flex-1 text-left">
-                            <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
-                            <p className="text-sm text-muted-foreground">{formattedTime}</p>
-                          </div>
-                          <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
-                        </button>
+                        <div key="viewing-2" className="flex items-center gap-2">
+                          <button 
+                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
+                            className="flex-1 flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer"
+                          >
+                            <Calendar className="w-5 h-5 text-muted-foreground mt-0.5 group-hover:text-primary transition-colors" />
+                            <div className="flex-1 text-left">
+                              <p className="text-sm font-medium group-hover:text-primary transition-colors">{formattedDate}</p>
+                              <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                            </div>
+                            <Download className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-0.5" />
+                          </button>
+                          <ViewingRegistrationForm 
+                            propertyId={id!}
+                            viewingDate={dbProperty.viewing_date_2}
+                            viewingDateFormatted={`${formattedDate} ${formattedTime}`}
+                          />
+                        </div>
                       );
                     })()}
                   </div>

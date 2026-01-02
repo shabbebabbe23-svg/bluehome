@@ -182,6 +182,7 @@ export type Database = {
           image_url: string | null
           property_id: string
           session_id: string
+          time_spent_ms: number | null
           viewed_at: string | null
         }
         Insert: {
@@ -191,6 +192,7 @@ export type Database = {
           image_url?: string | null
           property_id: string
           session_id: string
+          time_spent_ms?: number | null
           viewed_at?: string | null
         }
         Update: {
@@ -200,6 +202,7 @@ export type Database = {
           image_url?: string | null
           property_id?: string
           session_id?: string
+          time_spent_ms?: number | null
           viewed_at?: string | null
         }
         Relationships: [
@@ -336,6 +339,7 @@ export type Database = {
           show_viewer_count: boolean | null
           sold_date: string | null
           sold_price: number | null
+          statistics_email_frequency: string | null
           title: string
           type: string
           updated_at: string | null
@@ -379,6 +383,7 @@ export type Database = {
           show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
+          statistics_email_frequency?: string | null
           title: string
           type: string
           updated_at?: string | null
@@ -422,6 +427,7 @@ export type Database = {
           show_viewer_count?: boolean | null
           sold_date?: string | null
           sold_price?: number | null
+          statistics_email_frequency?: string | null
           title?: string
           type?: string
           updated_at?: string | null
@@ -477,9 +483,42 @@ export type Database = {
           },
         ]
       }
+      property_shares: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          session_id: string
+          share_method: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          session_id: string
+          share_method: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          session_id?: string
+          share_method?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_shares_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_views: {
         Row: {
           created_at: string
+          device_type: string | null
           id: string
           property_id: string
           session_id: string
@@ -491,6 +530,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          device_type?: string | null
           id?: string
           property_id: string
           session_id: string
@@ -502,6 +542,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          device_type?: string | null
           id?: string
           property_id?: string
           session_id?: string
@@ -568,6 +609,47 @@ export type Database = {
           user_type?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
+      }
+      viewing_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          property_id: string
+          viewing_date: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          property_id: string
+          viewing_date: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          property_id?: string
+          viewing_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "viewing_registrations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
