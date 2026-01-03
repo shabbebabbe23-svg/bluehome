@@ -54,6 +54,7 @@ const PropertyDetail = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [agentProfile, setAgentProfile] = useState<any>(null);
+  const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
   const [isPWA, setIsPWA] = useState(false);
   const [isBidHistoryOpen, setIsBidHistoryOpen] = useState(false);
   const [bidHistory, setBidHistory] = useState<any[]>([]);
