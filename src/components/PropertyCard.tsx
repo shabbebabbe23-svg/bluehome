@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -364,7 +364,7 @@ const PropertyCard = ({
             {/* Top row: Title and Price */}
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{color: '#111'}}>
+                <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{ color: '#111' }}>
                   {title}
                 </h3>
                 <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
@@ -384,6 +384,12 @@ const PropertyCard = ({
                   <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
                     {price}
                   </span>
+                )}
+                {hasActiveBidding && !isSold && (
+                  <div className="flex items-center gap-1 text-[#FF6B2C] font-bold text-xs sm:text-sm mt-1">
+                    <Gavel className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span>Pågående budgivning</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -578,13 +584,9 @@ const PropertyCard = ({
           )}
         </div>
         {/* Agency logo area (bottom right for all properties) */}
-        {!hideControls && (
-          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-12 sm:w-20 h-8 sm:h-12 rounded flex items-center justify-center text-xs text-muted-foreground overflow-hidden z-10">
-            {vendorLogo ? (
-              <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-0.5 sm:p-1" />
-            ) : (
-              <span className="text-[8px] sm:text-xs">Mäklarlogo</span>
-            )}
+        {!hideControls && vendorLogo && (
+            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
+            <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain drop-shadow-md" />
           </div>
         )}
 
@@ -608,8 +610,9 @@ const PropertyCard = ({
             </Badge>
           )}
           {hasActiveBidding && !isSold && (
-            <Badge className="bg-orange-500 text-white">
-              Pågående budgivning
+            <Badge className="bg-orange-500 text-white border-none flex items-center gap-1.5 px-3 py-1.5 shadow-lg animate-pulse">
+              <Gavel className="w-4 h-4" />
+              <span className="font-semibold">Budgivning pågår</span>
             </Badge>
           )}
           <Badge variant="secondary" className="bg-white/90 text-foreground">
@@ -745,10 +748,10 @@ const PropertyCard = ({
               </>
             )}
             {hasActiveBidding && !isSold && (
-              <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 flex items-center gap-0.5 mt-0.5">
-                <FileSignature className="w-3 h-3" />
-                Bud
-              </Badge>
+              <div className="flex items-center gap-1 text-[#FF6B2C] font-bold text-[11px] mt-0.5">
+                <Gavel className="w-3.5 h-3.5" />
+                <span>Pågående budgivning</span>
+              </div>
             )}
           </div>
         </div>

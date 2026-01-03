@@ -40,6 +40,22 @@ const AgentProfile = () => {
     enabled: !!agentId,
   });
 
+  // Fetch agency logo
+  const { data: agencyData } = useQuery({
+    queryKey: ["agency-logo", agentProfile?.agency_id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("agencies")
+        .select("logo_url, name")
+        .eq("id", agentProfile?.agency_id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!agentProfile?.agency_id,
+  });
+
   // Fetch agent's properties
   const { data: properties, isLoading: isLoadingProperties } = useQuery({
     queryKey: ["agent-properties", agentId],
@@ -117,7 +133,8 @@ const AgentProfile = () => {
                       {agentProfile.full_name || "Mäklare"}
                     </h1>
                     
-                    {agentProfile.agency && (
+                    {/* Show agency text only if no logo exists */}
+                    {agentProfile.agency && !agencyData?.logo_url && (
                       <div className="flex items-center gap-2 text-base sm:text-lg text-muted-foreground justify-center sm:justify-start">
                         <Building2 className="w-5 h-5 flex-shrink-0" />
                         <span className="break-words">{agentProfile.agency}</span>
@@ -133,18 +150,11 @@ const AgentProfile = () => {
                   )}
 
                   {/* Contact Info */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-x-6 sm:gap-y-2 max-w-md">
                     {agentProfile.area && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
                         <MapPin className="w-4 h-4 flex-shrink-0" />
                         <span className="truncate">{agentProfile.area}</span>
-                      </div>
-                    )}
-                    
-                    {agentProfile.office && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
-                        <Building2 className="w-4 h-4 flex-shrink-0" />
-                        <span className="truncate">Kontor: {agentProfile.office}</span>
                       </div>
                     )}
                     
@@ -171,7 +181,25 @@ const AgentProfile = () => {
                         </a>
                       </div>
                     )}
+                    
+                    {agentProfile.office && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
+                        <Building2 className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">Kontor: {agentProfile.office}</span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Agency Logo */}
+                  {agencyData?.logo_url && (
+                    <div className="flex justify-center sm:justify-start mt-2">
+                      <img 
+                        src={agencyData.logo_url} 
+                        alt={agencyData.name || 'Byrålogo'} 
+                        className="h-[46px] w-auto max-w-[161px] object-contain" 
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -265,7 +293,7 @@ const AgentProfile = () => {
                   isSold={property.is_sold || false}
                   soldDate={property.sold_date || undefined}
                   soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
-                  vendorLogo={property.vendor_logo_url || undefined}
+                  vendorLogo={property.vendor_logo_url || agencyData?.logo_url || undefined}
                   viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
                 />
               ))}

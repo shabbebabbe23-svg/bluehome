@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, Calendar, Share2, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale, Twitter as XLogo } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Calendar, Share2, Gavel, Home, ChevronLeft, ChevronRight, Download, User, Phone, Mail, Building2, Facebook, Instagram, MessageCircle, Copy, Check, Move3D, Scale, Twitter as XLogo } from "lucide-react";
 import bathroomAd from "@/assets/bathroom-ad.jpg";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +56,9 @@ const PropertyDetail = () => {
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
   const [isPWA, setIsPWA] = useState(false);
+  const [isBidHistoryOpen, setIsBidHistoryOpen] = useState(false);
+  const [bidHistory, setBidHistory] = useState<any[]>([]);
+  const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
 
   const avatarUrl = user?.user_metadata?.avatar_url;
   const profileName = user?.user_metadata?.full_name;
@@ -64,7 +67,7 @@ const PropertyDetail = () => {
   usePropertyViewTracking(id ? String(id) : "");
 
 
-  const hasActiveBidding = dbProperty?.has_active_bidding ?? false;
+  const hasActiveBidding = (dbProperty?.bidCount ?? 0) > 0;
   const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
   useEffect(() => {
@@ -97,7 +100,7 @@ const PropertyDetail = () => {
             if (profile) {
               setAgentProfile(profile);
               
-              // Fetch agency logo if agent has agency_id
+              // Hämta byråns logga
               if (profile.agency_id) {
                 const { data: agency } = await supabase
                   .from('agencies')
@@ -111,13 +114,17 @@ const PropertyDetail = () => {
             }
           }
 
-          const { count } = await supabase
+          const { count, data: bidsData } = await supabase
             .from('property_bids')
-            .select('*', { count: 'exact', head: true })
-            .eq('property_id', id);
+            .select('*', { count: 'exact' })
+            .eq('property_id', id)
+            .order('bid_amount', { ascending: false });
 
           if (count !== null) {
             setDbProperty(prev => prev ? { ...prev, bidCount: count } : prev);
+          }
+          if (bidsData) {
+            setBidHistory(bidsData);
           }
         }
       } catch (error) {
@@ -441,7 +448,7 @@ const PropertyDetail = () => {
   const trackShare = async (method: string) => {
     if (!id) return;
     try {
-      const sessionId = sessionStorage.getItem('session_id') || 
+      const sessionId = sessionStorage.getItem('session_id') ||
         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       if (!sessionStorage.getItem('session_id')) {
         sessionStorage.setItem('session_id', sessionId);
@@ -589,8 +596,90 @@ const PropertyDetail = () => {
       </div>
     </header>
 
-    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_3.7fr_1.35fr] gap-4 md:gap-8">
+    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8 space-y-6 md:space-y-8">
+      {/* Intermediate Contained Gallery */}
+      <div className="max-w-[1200px] mx-auto w-full">
+        <Card className="overflow-hidden">
+          <div className="relative h-[250px] sm:h-[400px] md:h-[500px] lg:h-[550px] group" style={{ width: '100%' }}>
+            <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity mx-auto" onClick={() => setIsImageModalOpen(true)} />
+
+            {/* Navigation Buttons */}
+            <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </Button>
+            <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handleNextImage}>
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </Button>
+
+            {/* Image Counter */}
+            <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+
+            {/* Compare Button - inside image */}
+            {!(property.is_sold || property.isSold) && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${id && isInComparison(String(id))
+                  ? 'bg-primary hover:bg-primary/90'
+                  : 'bg-white/90 hover:bg-white'
+                  }`}
+                onClick={() => {
+                  if (!id) return;
+                  const comparing = isInComparison(String(id));
+                  if (!comparing && !canAddMore) {
+                    toast.error('Du kan endast jämföra 2 fastigheter');
+                    return;
+                  }
+                  toggleComparison({
+                    id: String(id),
+                    title: property.title,
+                    price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
+                    location: property.location,
+                    address: property.address,
+                    bedrooms: property.bedrooms,
+                    bathrooms: property.bathrooms,
+                    area: property.area,
+                    fee: property.fee,
+                    image: images[0],
+                    additionalImages: property.additional_images,
+                    type: property.type,
+                    soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
+                    newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
+                    isSold: property.is_sold || property.isSold,
+                    hasElevator: property.has_elevator,
+                    hasBalcony: property.has_balcony,
+                    constructionYear: property.construction_year || property.buildYear,
+                    operatingCost: property.operating_cost,
+                  });
+                }}
+                aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
+              >
+                {id && isInComparison(String(id)) ? (
+                  <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                ) : (
+                  <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+                )}
+              </Button>
+            )}
+          </div>
+
+          {/* Thumbnail Gallery */}
+          <div className="p-2 sm:p-4 bg-muted/30 mx-0">
+            <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
+              {images.map((image, index) => <button key={index} onClick={() => {
+                setCurrentImageIndex(index);
+                trackImageView(index);
+              }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
+                <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
+              </button>)}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_4fr_1.4fr] gap-4 md:gap-8">
         {/* Left Ad */}
         <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">
           <AdBanner className="order-1" />
@@ -598,85 +687,6 @@ const PropertyDetail = () => {
 
         {/* Main Content */}
         <div className="space-y-4 md:space-y-6">
-          {/* Image Gallery */}
-          <Card className="overflow-hidden">
-            <div className="relative h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] group" style={{width: '100%'}}>
-              <img src={images[currentImageIndex]} alt={property.title} className="w-[105%] h-full object-cover cursor-pointer hover:opacity-90 transition-opacity mx-auto" onClick={() => setIsImageModalOpen(true)} />
-
-              {/* Navigation Buttons */}
-              <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-              <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handleNextImage}>
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-
-              {/* Image Counter */}
-              <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
-                {currentImageIndex + 1} / {images.length}
-              </div>
-
-              {/* Compare Button - inside image */}
-              {!(property.is_sold || property.isSold) && (
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className={`absolute top-2 sm:top-4 left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 ${id && isInComparison(String(id))
-                    ? 'bg-primary hover:bg-primary/90'
-                    : 'bg-white/90 hover:bg-white'
-                    }`}
-                  onClick={() => {
-                    if (!id) return;
-                    const comparing = isInComparison(String(id));
-                    if (!comparing && !canAddMore) {
-                      toast.error('Du kan endast jämföra 2 fastigheter');
-                      return;
-                    }
-                    toggleComparison({
-                      id: String(id),
-                      title: property.title,
-                      price: typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price,
-                      location: property.location,
-                      address: property.address,
-                      bedrooms: property.bedrooms,
-                      bathrooms: property.bathrooms,
-                      area: property.area,
-                      fee: property.fee,
-                      image: images[0],
-                      additionalImages: property.additional_images,
-                      type: property.type,
-                      soldPrice: property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined,
-                      newPrice: property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined,
-                      isSold: property.is_sold || property.isSold,
-                      hasElevator: property.has_elevator,
-                      hasBalcony: property.has_balcony,
-                      constructionYear: property.construction_year || property.buildYear,
-                      operatingCost: property.operating_cost,
-                    });
-                  }}
-                  aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
-                >
-                  {id && isInComparison(String(id)) ? (
-                    <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  ) : (
-                    <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-                  )}
-                </Button>
-              )}
-            </div>
-
-            {/* Thumbnail Gallery */}
-            <div className="p-2 sm:p-4 bg-muted/30 mx-0">
-              <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
-                {images.map((image, index) => <button key={index} onClick={() => {
-                  setCurrentImageIndex(index);
-                  trackImageView(index);
-                }} className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? "border-primary scale-105" : "border-transparent hover:border-primary/50"}`}>
-                  <img src={image} alt={`${property.title} - bild ${index + 1}`} className="w-full h-full object-cover" />
-                </button>)}
-              </div>
-            </div>
-          </Card>
 
           {/* Property Title and Share Section */}
           <div className="flex flex-col gap-4">
@@ -727,12 +737,21 @@ const PropertyDetail = () => {
                   {dbProperty?.is_new_production && <Badge className="bg-blue-600 text-white text-sm px-4 py-1.5 font-semibold">Nyproduktion</Badge>}
                   {property.is_deleted && <Badge className="bg-red-600 text-white text-sm px-4 py-1.5 font-semibold">Borttagen</Badge>}
                   {(property.is_sold || property.isSold) && <Badge className="bg-destructive text-white text-sm px-4 py-1.5">Såld</Badge>}
-                  {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && <>
-                    <Badge className="bg-orange-500 text-white text-sm px-4 py-1.5">Pågående budgivning</Badge>
-                    {dbProperty?.bidCount && <Badge variant="outline" className="text-sm px-4 py-1.5">
-                      {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'budgivare' : 'budgivare'}
-                    </Badge>}
-                  </>}
+                  {hasActiveBidding && !(property.is_sold || property.isSold) && !property.is_deleted && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsBidHistoryOpen(true)}
+                      className="flex items-center gap-2 bg-orange-50 border border-orange-200 px-4 py-2 rounded-lg hover:bg-orange-100 transition-colors"
+                    >
+                      <Gavel className="w-5 h-5 text-orange-600" />
+                      <span className="text-orange-700 font-bold">Pågående budgivning</span>
+                      {dbProperty?.bidCount && (
+                        <Badge variant="outline" className="ml-2 bg-white border-orange-200 text-orange-700">
+                          {dbProperty.bidCount} {dbProperty.bidCount === 1 ? 'bud' : 'bud'}
+                        </Badge>
+                      )}
+                    </Button>
+                  )}
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <h1 className="text-2xl sm:text-3xl font-bold">{property.address}</h1>
@@ -840,7 +859,7 @@ const PropertyDetail = () => {
                     <span className="text-muted-foreground">Prisutveckling</span>
                     <span className="font-semibold text-[#FF6B2C]">
                       +{(property.new_price - property.price).toLocaleString('sv-SE')} kr
-                      ({Math.round((property.new_price - property.price) / property.price * 100)}%)
+                      ({((property.new_price - property.price) / property.price * 100).toFixed(1)}%)
                     </span>
                   </div>}
                   <div className="flex justify-between py-2 border-b border-border">
@@ -1008,11 +1027,11 @@ const PropertyDetail = () => {
                       const endTime = new Date(viewingDate.getTime() + 60 * 60 * 1000).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
                       const formattedDate = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayMonth}`;
                       const formattedTime = `${time} - ${endTime}`;
-                      
+
                       return (
                         <div key="viewing-1" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          <button 
-                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
+                          <button
+                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)}
                             className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
                             <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
@@ -1022,7 +1041,7 @@ const PropertyDetail = () => {
                             </div>
                             <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
-                          <ViewingRegistrationForm 
+                          <ViewingRegistrationForm
                             propertyId={id!}
                             viewingDate={dbProperty.viewing_date}
                             viewingDateFormatted={`${formattedDate} ${formattedTime}`}
@@ -1038,11 +1057,11 @@ const PropertyDetail = () => {
                       const endTime = new Date(viewingDate.getTime() + 60 * 60 * 1000).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
                       const formattedDate = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayMonth}`;
                       const formattedTime = `${time} - ${endTime}`;
-                      
+
                       return (
                         <div key="viewing-2" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          <button 
-                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)} 
+                          <button
+                            onClick={() => handleDownloadViewing(formattedDate, formattedTime)}
                             className="flex-1 flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group cursor-pointer min-w-0"
                           >
                             <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
@@ -1052,7 +1071,7 @@ const PropertyDetail = () => {
                             </div>
                             <Download className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                           </button>
-                          <ViewingRegistrationForm 
+                          <ViewingRegistrationForm
                             propertyId={id!}
                             viewingDate={dbProperty.viewing_date_2}
                             viewingDateFormatted={`${formattedDate} ${formattedTime}`}
@@ -1082,8 +1101,17 @@ const PropertyDetail = () => {
                       <Link to={`/agent/${property.user_id}`} className="hover:text-primary transition-colors">
                         <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                       </Link>
-                      {(agencyLogo || dbProperty?.vendor_logo_url) && (
-                        <img src={agencyLogo || dbProperty.vendor_logo_url} alt="Byrålogo" className="h-[42px] w-auto max-w-[140px] object-contain mt-2 mx-auto" />
+                      {(agencyLogo || dbProperty?.vendor_logo_url) ? (
+                        <img 
+                          src={agencyLogo || dbProperty?.vendor_logo_url} 
+                          alt="Byrålogo" 
+                          className="h-[46px] w-auto max-w-[161px] object-contain mt-2 mx-auto" 
+                        />
+                      ) : agentProfile.agency && (
+                        <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
+                          <Building2 className="w-4 h-4" />
+                          {agentProfile.agency}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -1284,6 +1312,69 @@ const PropertyDetail = () => {
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
             {currentImageIndex + 1} / {images.length}
           </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Bid History Dialog */}
+    <Dialog open={isBidHistoryOpen} onOpenChange={setIsBidHistoryOpen}>
+      <DialogContent className="sm:max-w-lg">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-orange-100 rounded-full">
+              <Gavel className="w-6 h-6 text-orange-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Budhistorik</h3>
+              <p className="text-sm text-muted-foreground">{bidHistory.length} registrerade bud</p>
+            </div>
+          </div>
+
+          <Separator />
+
+          {bidHistory.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Gavel className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>Inga bud registrerade ännu</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {bidHistory.map((bid, index) => (
+                <div 
+                  key={bid.id} 
+                  className={`flex items-center justify-between p-4 rounded-lg border ${index === 0 ? 'bg-orange-50 border-orange-200' : 'bg-muted/30 border-border'}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${index === 0 ? 'bg-orange-500 text-white' : 'bg-muted text-muted-foreground'}`}>
+                      {index + 1}
+                    </div>
+                    <div>
+                      <div className={`font-semibold text-lg ${index === 0 ? 'text-orange-700' : ''}`}>
+                        {bid.bid_amount.toLocaleString('sv-SE')} kr
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(bid.created_at).toLocaleDateString('sv-SE', { 
+                          day: 'numeric', 
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  {index === 0 && (
+                    <Badge className="bg-orange-500 text-white">Högsta bud</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Separator />
+
+          <p className="text-xs text-muted-foreground text-center">
+            Budhistoriken uppdateras i realtid. Kontakta mäklaren för att lägga ett bud.
+          </p>
         </div>
       </DialogContent>
     </Dialog>

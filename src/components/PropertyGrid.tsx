@@ -102,6 +102,7 @@ export interface Property {
   floor?: number;
   total_floors?: number;
   construction_year?: number;
+  hasActiveBidding?: boolean;
 }
 
 export const allProperties: Property[] = [
@@ -129,6 +130,7 @@ export const allProperties: Property[] = [
     agent_agency: "Täbys Estate",
     agent_phone: "070-123 45 67",
     agent_id: "agent-1",
+    hasActiveBidding: true,
   },
   {
     id: 2,
@@ -202,6 +204,7 @@ export const allProperties: Property[] = [
     agent_agency: "Täbys Estate",
     agent_phone: "070-123 45 67",
     agent_id: "agent-1",
+    hasActiveBidding: true,
   },
   {
     id: 5,
@@ -653,13 +656,13 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           // Fetch profiles with agency info for ALL properties to use agency logo
           const userIds = [...new Set(data.map(p => p.user_id))];
           let agencyLogosMap: Record<string, string> = {};
-          
+
           if (userIds.length > 0) {
             const { data: profilesData } = await supabase
               .from('profiles')
               .select('id, agency_id')
               .in('id', userIds);
-            
+
             if (profilesData) {
               const agencyIds = [...new Set(profilesData.filter(p => p.agency_id).map(p => p.agency_id))] as string[];
               if (agencyIds.length > 0) {
@@ -667,7 +670,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   .from('agencies')
                   .select('id, logo_url')
                   .in('id', agencyIds);
-                
+
                 if (agenciesData) {
                   // Create a map from user_id to agency logo_url
                   const agencyLogoMap = new Map(agenciesData.map(a => [a.id, a.logo_url]));
@@ -723,16 +726,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
 
           // Fetch bidding status for all properties
           const propertyIds = data.map(p => p.id);
-          const { data: bidsData } = await supabase
+          const { data: bidsData, error: bidsError } = await supabase
             .from('property_bids')
             .select('property_id')
             .in('property_id', propertyIds);
+
+          console.log('Bids query result:', { bidsData, bidsError, propertyIds });
 
           if (bidsData) {
             const bidsMap: Record<string, boolean> = {};
             propertyIds.forEach(id => {
               bidsMap[id] = bidsData.some(bid => bid.property_id === id);
             });
+            console.log('PropertyBids map:', bidsMap);
             setPropertyBids(bidsMap);
           }
         } else {
@@ -1192,7 +1198,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                   newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                   viewMode={viewMode}
-                  hasActiveBidding={propertyBids[property.id as string] || false}
+                  hasActiveBidding={property.hasActiveBidding || propertyBids[property.id as string] || false}
                   bulkSelectMode={bulkSelectMode && isDbProperty}
                   isSelected={selectedProperties.includes(String(property.id))}
                   onSelect={handlePropertySelect}

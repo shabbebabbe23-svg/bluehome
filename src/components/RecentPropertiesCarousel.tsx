@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Heart, MapPin, Bed, Bath, Square, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Gavel, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,7 @@ interface PropertyData {
   agent_avatar?: string;
   agent_agency?: string;
   additional_images?: string[];
+  hasActiveBidding?: boolean;
 }
 
 interface RecentPropertiesCarouselProps {
@@ -189,6 +190,12 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
               {currentProperty.hasVR && (
                 <Badge className="bg-purple-600 text-white text-[10px] px-1.5 py-0.5">
                   360°
+                </Badge>
+              )}
+              {currentProperty.hasActiveBidding && (
+                <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 flex items-center gap-1 border-none shadow-sm">
+                  <Gavel className="w-2.5 h-2.5" />
+                  Budgivning
                 </Badge>
               )}
             </div>
