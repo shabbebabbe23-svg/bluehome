@@ -62,17 +62,17 @@ const Index = () => {
           .select('id, full_name, avatar_url, phone, email, agency, agency_id')
           .in('id', userIds);
         const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
-        
+
         // Fetch agency logos for properties without vendor_logo_url
         const agencyIds = [...new Set(profilesData?.filter(p => p.agency_id).map(p => p.agency_id) || [])] as string[];
         let agencyLogosMap: Record<string, string> = {};
-        
+
         if (agencyIds.length > 0) {
           const { data: agenciesData } = await supabase
             .from('agencies')
             .select('id, logo_url')
             .in('id', agencyIds);
-          
+
           if (agenciesData) {
             agenciesData.forEach(agency => {
               if (agency.logo_url) {
@@ -81,7 +81,21 @@ const Index = () => {
             });
           }
         }
-        
+
+        // Fetch bidding status for all properties
+        const propertyIds = propertiesData.map(p => p.id);
+        const { data: bidsData } = await supabase
+          .from('property_bids')
+          .select('property_id')
+          .in('property_id', propertyIds);
+
+        const bidsMap: Record<string, boolean> = {};
+        if (bidsData) {
+          propertyIds.forEach(id => {
+            bidsMap[id] = bidsData.some(bid => bid.property_id === id);
+          });
+        }
+
         const formattedProperties: Property[] = propertiesData.map((prop: any) => {
           const profile = profilesMap.get(prop.user_id);
           const agencyLogo = profile?.agency_id ? agencyLogosMap[profile.agency_id] : undefined;
@@ -112,6 +126,7 @@ const Index = () => {
             agent_agency: profile?.agency,
             agent_id: profile?.id,
             additional_images: prop.additional_images || [],
+            hasActiveBidding: bidsMap[prop.id] || false,
           };
         });
         setAllProperties(formattedProperties);
@@ -197,6 +212,7 @@ const Index = () => {
                     agent_avatar: p.agent_avatar,
                     agent_agency: p.agent_agency,
                     additional_images: (p as any).additional_images,
+                    hasActiveBidding: (p as any).hasActiveBidding,
                   }))}
                 />
                 <Separator className="mt-8 opacity-30" />
