@@ -216,8 +216,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
               </span>
             </div>
 
-            <div className="flex items-center text-muted-foreground text-sm mb-3">
-              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+            <div className="text-primary text-sm font-medium mb-3">
               <span className="line-clamp-1">{currentProperty.title}</span>
             </div>
 

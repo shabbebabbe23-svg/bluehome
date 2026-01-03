@@ -56,6 +56,7 @@ interface PropertyCardProps {
   operatingCost?: number;
   floor?: number;
   totalFloors?: number;
+  tagline?: string;
 }
 
 const PropertyCard = ({
@@ -105,6 +106,7 @@ const PropertyCard = ({
   operatingCost,
   floor,
   totalFloors,
+  tagline,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
@@ -259,7 +261,7 @@ const PropertyCard = ({
 
         <div className="flex flex-col sm:flex-row w-full sm:h-full">
           {/* Image section */}
-          <div className="relative w-full sm:w-[176px] md:w-[220px] lg:w-[220px] xl:w-[264px] h-[154px] sm:h-full flex-shrink-0 overflow-hidden">
+          <div className="relative w-full sm:w-[242px] md:w-[315px] lg:w-[363px] xl:w-[411px] h-[154px] sm:h-full flex-shrink-0 overflow-hidden">
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
@@ -365,15 +367,8 @@ const PropertyCard = ({
                 <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{color: '#111'}}>
                   {title}
                 </h3>
-                <div className="text-muted-foreground mb-0.5">
-                  <span className="text-xs sm:text-sm truncate">{address}</span>
-                </div>
-                <div className="text-xs sm:text-sm text-primary font-medium">
-                  {description
-                    ? description.length > 50
-                      ? description.slice(0, 50) + '…'
-                      : description
-                    : 'Lägenhet med en charmig touch'}
+                <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+                  {tagline || 'Lägenhet med en charmig touch'}
                 </div>
               </div>
               <div className="text-right flex-shrink-0">
@@ -584,7 +579,7 @@ const PropertyCard = ({
         </div>
         {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && (
-          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-12 sm:w-20 h-8 sm:h-12 bg-white/90 rounded flex items-center justify-center text-xs text-muted-foreground shadow overflow-hidden z-10">
+          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-12 sm:w-20 h-8 sm:h-12 rounded flex items-center justify-center text-xs text-muted-foreground overflow-hidden z-10">
             {vendorLogo ? (
               <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain p-0.5 sm:p-1" />
             ) : (
@@ -712,12 +707,8 @@ const PropertyCard = ({
               {title}
             </h3>
             {/* Dynamic subtitle text */}
-            <div className="text-xs sm:text-sm text-primary font-medium">
-              {description
-                ? description.length > 50
-                  ? description.slice(0, 50) + '…'
-                  : description
-                : 'Lägenhet med en charmig touch'}
+            <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+              {tagline || 'Lägenhet med en charmig touch'}
             </div>
           </div>
 
