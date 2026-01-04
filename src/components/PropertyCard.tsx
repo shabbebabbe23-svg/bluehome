@@ -844,7 +844,13 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="mt-auto pt-1">
+        <div className="mt-auto pt-2">
+          <p className="text-xs sm:text-base font-semibold text-muted-foreground text-right mb-2 truncate">
+            {isSold && soldDate
+              ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
+              : daysOnMarketText
+            }
+          </p>
           {onButtonClick ? (
             <Button
               onClick={(e) => {
@@ -863,12 +869,6 @@ const PropertyCard = ({
               </Button>
             </Link>
           )}
-          <p className="text-xs sm:text-base font-semibold text-muted-foreground text-right mt-0.5 truncate">
-            {isSold && soldDate
-              ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
-              : daysOnMarketText
-            }
-          </p>
         </div>
       </CardContent>
     </Card>
