@@ -82,19 +82,15 @@ const Index = () => {
           }
         }
 
-        // Fetch bidding status for all properties
+        // Fetch bidding status for all properties using the public function
         const propertyIds = propertiesData.map(p => p.id);
-        const { data: bidsData } = await supabase
-          .from('property_bids')
-          .select('property_id')
-          .in('property_id', propertyIds);
-
         const bidsMap: Record<string, boolean> = {};
-        if (bidsData) {
-          propertyIds.forEach(id => {
-            bidsMap[id] = bidsData.some(bid => bid.property_id === id);
-          });
-        }
+        await Promise.all(
+          propertyIds.map(async (id) => {
+            const { data } = await supabase.rpc('property_has_bids', { p_property_id: id });
+            bidsMap[id] = data === true;
+          })
+        );
 
         const formattedProperties: Property[] = propertiesData.map((prop: any) => {
           const profile = profilesMap.get(prop.user_id);
