@@ -29,7 +29,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
         );
         const data = await response.json();
-        
+
         if (data && data[0]) {
           const lat = parseFloat(data[0].lat);
           const lng = parseFloat(data[0].lon);
@@ -62,7 +62,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
 
             // Add marker
             const marker = L.marker([lat, lng], { icon: createColoredIcon() }).addTo(mapInstanceRef.current);
-            
+
             // Add popup
             marker.bindPopup(`
               <div style="font-family: system-ui; padding: 8px;">
@@ -125,7 +125,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           lineOptions: {
             styles: [{ color: '#0069D9', weight: 4 }]
           },
-          createMarker: function(i: number, wp: any) {
+          createMarker: function (i: number, wp: any) {
             const svgIcon = `
               <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="16" cy="16" r="14" fill="${i === 0 ? '#22c55e' : '#ef4444'}" stroke="white" stroke-width="2"/>
@@ -144,16 +144,16 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
         }).addTo(mapInstanceRef.current);
 
         // Zoom map to fit the entire route
-        routingControlRef.current.on('routesfound', function(e: any) {
+        routingControlRef.current.on('routesfound', function (e: any) {
           const routes = e.routes;
           const bounds = L.latLngBounds([fromLatLng, toLatLng]);
-          
+
           if (routes[0] && routes[0].coordinates) {
             routes[0].coordinates.forEach((coord: any) => {
               bounds.extend(L.latLng(coord.lat, coord.lng));
             });
           }
-          
+
           mapInstanceRef.current?.fitBounds(bounds, { padding: [50, 50] });
         });
       }
@@ -166,12 +166,12 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
     <Card>
       <CardContent className="p-6">
         <h2 className="text-xl font-bold mb-4">Karta</h2>
-        <div 
-          ref={mapRef} 
+        <div
+          ref={mapRef}
           className="w-full h-[400px] rounded-lg mb-4"
           style={{ zIndex: 0 }}
         />
-        
+
         {/* Route Search */}
         <div className="space-y-3">
           <h3 className="text-lg font-semibold">Beräkna vägbeskrivning</h3>
@@ -187,7 +187,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
               onChange={(e) => setToAddress(e.target.value)}
             />
           </div>
-          <Button 
+          <Button
             onClick={handleRouteSearch}
             className="w-full hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] transition-all duration-300"
             disabled={!fromAddress || !toAddress}
