@@ -724,23 +724,17 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           }));
           setDbProperties(formattedProperties);
 
-          // Fetch bidding status for all properties
+          // Fetch bidding status for all properties using public function
           const propertyIds = data.map(p => p.id);
-          const { data: bidsData, error: bidsError } = await supabase
-            .from('property_bids')
-            .select('property_id')
-            .in('property_id', propertyIds);
-
-          console.log('Bids query result:', { bidsData, bidsError, propertyIds });
-
-          if (bidsData) {
-            const bidsMap: Record<string, boolean> = {};
-            propertyIds.forEach(id => {
-              bidsMap[id] = bidsData.some(bid => bid.property_id === id);
-            });
-            console.log('PropertyBids map:', bidsMap);
-            setPropertyBids(bidsMap);
-          }
+          const bidsMap: Record<string, boolean> = {};
+          await Promise.all(
+            propertyIds.map(async (propId) => {
+              const { data: hasBids } = await supabase.rpc('property_has_bids', { p_property_id: propId });
+              bidsMap[propId] = hasBids === true;
+            })
+          );
+          console.log('PropertyBids map:', bidsMap);
+          setPropertyBids(bidsMap);
         } else {
           // Om inga fastigheter finns i databasen, visa dummy-fastigheter
           setDbProperties(allProperties);

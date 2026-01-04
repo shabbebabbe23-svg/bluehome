@@ -113,17 +113,24 @@ const PropertyDetail = () => {
             }
           }
 
-          const { count, data: bidsData } = await supabase
-            .from('property_bids')
-            .select('*', { count: 'exact' })
-            .eq('property_id', id)
-            .order('bid_amount', { ascending: false });
-
-          if (count !== null) {
-            setDbProperty(prev => prev ? { ...prev, bidCount: count } : prev);
+          // Use public function to check if property has bids (works for everyone)
+          const { data: hasBids } = await supabase.rpc('property_has_bids', { p_property_id: id });
+          if (hasBids) {
+            setDbProperty(prev => prev ? { ...prev, bidCount: 1 } : prev);
           }
-          if (bidsData) {
-            setBidHistory(bidsData);
+
+          // Only fetch detailed bid data if user is the owner
+          if (user?.id === data.user_id) {
+            const { data: bidsData } = await supabase
+              .from('property_bids')
+              .select('*')
+              .eq('property_id', id)
+              .order('bid_amount', { ascending: false });
+            
+            if (bidsData) {
+              setDbProperty(prev => prev ? { ...prev, bidCount: bidsData.length } : prev);
+              setBidHistory(bidsData);
+            }
           }
         }
       } catch (error) {
