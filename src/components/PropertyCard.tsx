@@ -598,7 +598,7 @@ const PropertyCard = ({
         )}
 
         {/* Overlay with badges */}
-        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
+        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-wrap gap-1 sm:gap-2 z-15 max-w-[calc(100%-5rem)] sm:max-w-[calc(100%-7rem)]">
           {isSold && (
             <Badge className="bg-destructive text-white">
               Såld
