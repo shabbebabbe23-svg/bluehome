@@ -113,17 +113,24 @@ const PropertyDetail = () => {
             }
           }
 
-          const { count, data: bidsData } = await supabase
-            .from('property_bids')
-            .select('*', { count: 'exact' })
-            .eq('property_id', id)
-            .order('bid_amount', { ascending: false });
-
-          if (count !== null) {
-            setDbProperty(prev => prev ? { ...prev, bidCount: count } : prev);
+          // Use public function to check if property has bids (works for everyone)
+          const { data: hasBids } = await supabase.rpc('property_has_bids', { p_property_id: id });
+          if (hasBids) {
+            setDbProperty(prev => prev ? { ...prev, bidCount: 1 } : prev);
           }
-          if (bidsData) {
-            setBidHistory(bidsData);
+
+          // Only fetch detailed bid data if user is the owner
+          if (user?.id === data.user_id) {
+            const { data: bidsData } = await supabase
+              .from('property_bids')
+              .select('*')
+              .eq('property_id', id)
+              .order('bid_amount', { ascending: false });
+            
+            if (bidsData) {
+              setDbProperty(prev => prev ? { ...prev, bidCount: bidsData.length } : prev);
+              setBidHistory(bidsData);
+            }
           }
         }
       } catch (error) {
@@ -596,6 +603,11 @@ const PropertyDetail = () => {
     </header>
 
     <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 py-4 md:py-8 space-y-6 md:space-y-8">
+      {/* Mobile Ad Banner - only visible on mobile, above the gallery */}
+      <div className="lg:hidden flex justify-center px-2 sm:px-4">
+        <AdBanner className="w-full" />
+      </div>
+
       {/* Intermediate Contained Gallery */}
       <div className="max-w-[1200px] mx-auto w-full">
         <Card className="overflow-hidden">
@@ -679,8 +691,8 @@ const PropertyDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_4fr_1.4fr] gap-4 md:gap-8">
-        {/* Left Ad */}
-        <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">
+        {/* Left Ad - only visible on desktop */}
+        <div className="hidden lg:flex justify-center items-start px-2 sm:px-4 lg:px-0">
           <AdBanner className="order-1" />
         </div>
 

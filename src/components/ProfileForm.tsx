@@ -75,6 +75,7 @@ export const ProfileForm = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   });
@@ -367,16 +368,19 @@ export const ProfileForm = () => {
               <Textarea
                 id="bio"
                 {...register("bio")}
-                placeholder="Ett stort engagemang, hög service och kvalité kännetecknar Elisabets arbetssätt som fastighetsmäklare på Wrede. Hon är idag främst verksam på Lidingö där hon bor med sin familj men har även en stark anknytning till Östermalm. Elisabet har en bakgrund som utbildad Civilekonom från Handelshögskolan i Stockholm samt ledande befattningar inom kundservice och marknadsföring, senast på iZettle."
+                placeholder="Skriv en kort presentation om dig själv..."
                 rows={6}
                 className="resize-none"
+                maxLength={1000}
               />
-              {errors.bio && (
-                <p className="text-sm text-destructive">{errors.bio.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Din presentation visas på din publika mäklarprofil. Max 1000 tecken.
-              </p>
+              <div className="flex justify-between items-center">
+                {errors.bio && (
+                  <p className="text-sm text-destructive">{errors.bio.message}</p>
+                )}
+                <p className={`text-xs ml-auto ${(watch("bio")?.length || 0) > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  {watch("bio")?.length || 0}/1000 tecken
+                </p>
+              </div>
             </div>
           </div>
 
