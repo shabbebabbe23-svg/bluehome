@@ -156,9 +156,9 @@ const Index = () => {
           bullets={["✓ Fri hemleverans", "✓ 0% delbetalning", "✓ Många tyger och färger"]}
           buttonText={"Se erbjudanden"}
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
-          className="lg:order-1 order-3 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
+          className="lg:order-1 order-1 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
         />
-        <main className="order-1 lg:order-2 flex-1 w-full">
+        <main className="order-2 lg:order-2 flex-1 w-full">
           <Hero
             onFinalPricesChange={setShowFinalPrices}
             onPropertyTypeChange={setPropertyType}
