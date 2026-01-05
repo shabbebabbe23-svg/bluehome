@@ -98,7 +98,7 @@ const PropertyDetail = () => {
               .single();
             if (profile) {
               setAgentProfile(profile);
-              
+
               // Hämta byråns logga
               if (profile.agency_id) {
                 const { data: agency } = await supabase
@@ -781,7 +781,7 @@ const PropertyDetail = () => {
                       <p className="text-2xl sm:text-3xl font-bold text-[#FF6B2C] whitespace-nowrap">
                         {dbProperty ? `${property.new_price.toLocaleString('sv-SE')} kr` : property.price}
                       </p>
-                    </> : <p className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">
+                    </> : <p className={`text-2xl sm:text-3xl font-bold whitespace-nowrap ${hasActiveBidding ? 'text-[#FF6B2C]' : 'text-primary'}`}>
                       {dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}
                     </p>}
                   </div>
@@ -1113,10 +1113,10 @@ const PropertyDetail = () => {
                         <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                       </Link>
                       {(agencyLogo || dbProperty?.vendor_logo_url) ? (
-                        <img 
-                          src={agencyLogo || dbProperty?.vendor_logo_url} 
-                          alt="Byrålogo" 
-                          className="h-[46px] w-auto max-w-[161px] object-contain mt-2 mx-auto" 
+                        <img
+                          src={agencyLogo || dbProperty?.vendor_logo_url}
+                          alt="Byrålogo"
+                          className="h-[46px] w-auto max-w-[161px] object-contain mt-2 mx-auto"
                         />
                       ) : agentProfile.agency && (
                         <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
@@ -1351,8 +1351,8 @@ const PropertyDetail = () => {
           ) : (
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
               {bidHistory.map((bid, index) => (
-                <div 
-                  key={bid.id} 
+                <div
+                  key={bid.id}
                   className={`flex items-center justify-between p-4 rounded-lg border ${index === 0 ? 'bg-orange-50 border-orange-200' : 'bg-muted/30 border-border'}`}
                 >
                   <div className="flex items-center gap-3">
@@ -1364,8 +1364,8 @@ const PropertyDetail = () => {
                         {bid.bid_amount.toLocaleString('sv-SE')} kr
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {new Date(bid.created_at).toLocaleDateString('sv-SE', { 
-                          day: 'numeric', 
+                        {new Date(bid.created_at).toLocaleDateString('sv-SE', {
+                          day: 'numeric',
                           month: 'short',
                           hour: '2-digit',
                           minute: '2-digit'
