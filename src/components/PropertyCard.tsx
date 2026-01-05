@@ -381,7 +381,7 @@ const PropertyCard = ({
                     {newPrice}
                   </span>
                 ) : (
-                  <span className="text-base sm:text-lg font-bold text-primary whitespace-nowrap">
+                  <span className={`text-base sm:text-lg font-bold whitespace-nowrap ${hasActiveBidding ? 'text-[#FF6B2C]' : 'text-primary'}`}>
                     {price}
                   </span>
                 )}
@@ -585,7 +585,7 @@ const PropertyCard = ({
         </div>
         {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && vendorLogo && (
-            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
+          <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
             <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain drop-shadow-md" />
           </div>
         )}
@@ -737,7 +737,7 @@ const PropertyCard = ({
               </>
             ) : (
               <>
-                <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                <span className={`text-lg sm:text-xl font-bold whitespace-nowrap ${hasActiveBidding ? 'text-[#FF6B2C]' : 'text-primary'}`}>
                   {price}
                 </span>
                 {fee && fee > 0 && (

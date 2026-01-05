@@ -40,11 +40,14 @@ const CreateAgencyManual = () => {
     }
   };
 
-  const handleCropComplete = (croppedBlob: Blob) => {
+  const handleCropComplete = async (croppedBlob: Blob) => {
     const url = URL.createObjectURL(croppedBlob);
     setLogoFile(url);
     setShowCropper(false);
     setTempLogoImage(null);
+
+    // Ladda upp direkt
+    await uploadLogo(croppedBlob);
   };
 
   const handleCropCancel = () => {
@@ -52,27 +55,25 @@ const CreateAgencyManual = () => {
     setTempLogoImage(null);
   };
 
-  const uploadLogo = async (agencyId: string): Promise<string | null> => {
-    if (!logoFile) return null;
-    
+  const uploadLogo = async (fileBlob: Blob): Promise<string | null> => {
     try {
-      const response = await fetch(logoFile);
-      const blob = await response.blob();
-      const fileName = `agencies/${agencyId}-logo-${Date.now()}.png`;
-      
+      const fileName = `agencies/temp-logo-${crypto.randomUUID()}.png`;
+
       const { error: uploadError } = await supabase.storage
         .from("property-images")
-        .upload(fileName, blob, { contentType: "image/png" });
-      
+        .upload(fileName, fileBlob, { contentType: "image/png" });
+
       if (uploadError) throw uploadError;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from("property-images")
         .getPublicUrl(fileName);
-      
+
+      setLogoUrl(publicUrl);
       return publicUrl;
     } catch (error) {
       console.error("Logo upload error:", error);
+      toast({ title: "Fel vid uppladdning", description: "Kunde inte ladda upp logotypen.", variant: "destructive" });
       return null;
     }
   };
@@ -93,33 +94,28 @@ const CreateAgencyManual = () => {
         .eq("email", form.admin_email)
         .eq("role", "agency_admin")
         .maybeSingle();
-      
+
       if (existingInvitation) {
-        toast({ 
-          title: "Mäklarchef finns redan", 
-          description: "Denna email är redan registrerad som mäklarchef för en byrå.", 
-          variant: "destructive" 
+        toast({
+          title: "Mäklarchef finns redan",
+          description: "Denna email är redan registrerad som mäklarchef för en byrå.",
+          variant: "destructive"
         });
         setLoading(false);
         return;
       }
 
+      // Använd logoUrl från state om den finns
       const { data: agency, error: agencyError } = await supabase
         .from("agencies")
-        .insert({ name: form.name, email_domain: form.email_domain })
+        .insert({
+          name: form.name,
+          email_domain: form.email_domain,
+          logo_url: logoUrl
+        })
         .select()
         .single();
       if (agencyError) throw agencyError;
-
-      // Ladda upp logotyp om en valts
-      const uploadedLogoUrl = await uploadLogo(agency.id);
-      if (uploadedLogoUrl) {
-        await supabase
-          .from("agencies")
-          .update({ logo_url: uploadedLogoUrl })
-          .eq("id", agency.id);
-        setLogoUrl(uploadedLogoUrl);
-      }
 
       const token = crypto.randomUUID();
       const expiresAt = new Date();

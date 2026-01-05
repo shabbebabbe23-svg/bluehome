@@ -61,7 +61,19 @@ const AgencyAdminDashboard = () => {
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [agencyInfo, setAgencyInfo] = useState<AgencyInfo | null>(null);
+  const [agencyInfo, setAgencyInfo] = useState<AgencyInfo>({
+    name: "",
+    email_domain: "",
+    email: "",
+    address: "",
+    phone: "",
+    org_number: "",
+    website: "",
+    description: "",
+    logo_url: "",
+    area: "",
+    owner: ""
+  });
   const [profileData, setProfileData] = useState({
     full_name: "",
     phone: "",
@@ -86,14 +98,21 @@ const AgencyAdminDashboard = () => {
 
   useEffect(() => {
     const fetchAgencyId = async () => {
+      console.log("Fetching agency info...", { userType, userId: user?.id });
       if (userType === "agency_admin" && user) {
         setLoadingAgency(true);
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .single();
-        
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+        } else {
+          console.log("Fetched profile:", profile);
+        }
+
         if (profile) {
           setUserName(profile.full_name || "");
           setProfileData({
@@ -105,28 +124,29 @@ const AgencyAdminDashboard = () => {
             avatar_url: profile.avatar_url || ""
           });
         }
-        
+
         if (profile?.agency_id) {
+          console.log("Found agency ID:", profile.agency_id);
           setAgencyId(profile.agency_id);
-          
+
           // Fetch full agency info
           const { data: agency } = await supabase
             .from("agencies")
             .select("*")
             .eq("id", profile.agency_id)
             .single();
-          
+
           if (agency) {
             setAgencyName(agency.name);
             setAgencyInfo(agency);
           }
-          
+
           // Fetch users - separate queries to avoid RLS conflicts with nested selects
           const { data: usersData } = await supabase
             .from("profiles")
             .select("id, full_name, email")
             .eq("agency_id", profile.agency_id);
-          
+
           if (usersData && usersData.length > 0) {
             // Fetch property counts and roles for each user separately
             const usersWithDetails = await Promise.all(
@@ -137,16 +157,16 @@ const AgencyAdminDashboard = () => {
                   .select("*", { count: "exact", head: true })
                   .eq("user_id", userProfile.id)
                   .eq("is_deleted", false);
-                
+
                 // Fetch user role separately to avoid RLS conflicts
                 const { data: roleData } = await supabase
                   .from("user_roles")
                   .select("user_type")
                   .eq("user_id", userProfile.id)
                   .single();
-                
-                return { 
-                  ...userProfile, 
+
+                return {
+                  ...userProfile,
                   propertyCount: count || 0,
                   user_roles: roleData ? [{ user_type: roleData.user_type }] : []
                 };
@@ -156,7 +176,7 @@ const AgencyAdminDashboard = () => {
           } else {
             setUsers([]);
           }
-            
+
           supabase
             .from("agency_invitations")
             .select("id, email, role, token, created_at, expires_at, used_at")
@@ -164,7 +184,7 @@ const AgencyAdminDashboard = () => {
             .is("used_at", null)
             .gt("expires_at", new Date().toISOString())
             .then(({ data }) => setPendingInvites(data ?? []));
-          
+
           // Fetch statistics
           fetchStatistics(profile.agency_id, usersData || []);
         }
@@ -180,7 +200,7 @@ const AgencyAdminDashboard = () => {
   const fetchStatistics = async (agencyId: string, agencyUsers: any[]) => {
     // Get user IDs for all agents in the agency
     const userIds = agencyUsers.map(u => u.id);
-    
+
     // Count active properties
     const { count: activeCount } = await supabase
       .from("properties")
@@ -188,14 +208,14 @@ const AgencyAdminDashboard = () => {
       .in("user_id", userIds)
       .eq("is_deleted", false)
       .eq("is_sold", false);
-    
+
     // Count sold properties
     const { count: soldCount } = await supabase
       .from("properties")
       .select("*", { count: "exact", head: true })
       .in("user_id", userIds)
       .eq("is_sold", true);
-    
+
     // Get sold properties with prices
     const { data: soldProperties } = await supabase
       .from("properties")
@@ -203,22 +223,22 @@ const AgencyAdminDashboard = () => {
       .in("user_id", userIds)
       .eq("is_sold", true)
       .not("sold_price", "is", null);
-    
+
     // Calculate total sales value
     const totalSales = soldProperties?.reduce((sum, prop) => sum + (prop.sold_price || 0), 0) || 0;
-    
+
     // Find top agent by sales count
     const salesByAgent: Record<string, number> = {};
     soldProperties?.forEach(prop => {
       salesByAgent[prop.user_id] = (salesByAgent[prop.user_id] || 0) + 1;
     });
-    
-    const topAgentId = Object.keys(salesByAgent).reduce((a, b) => 
+
+    const topAgentId = Object.keys(salesByAgent).reduce((a, b) =>
       salesByAgent[a] > salesByAgent[b] ? a : b, ""
     );
-    
+
     const topAgent = agencyUsers.find(u => u.id === topAgentId);
-    
+
     setStatistics({
       totalAgents: agencyUsers.length,
       activeProperties: activeCount || 0,
@@ -274,7 +294,7 @@ const AgencyAdminDashboard = () => {
 
       // Skapa inbjudningslänk
       const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${token}`;
-      
+
       // Skicka email med inbjudningslänken
       try {
         const { error: emailError } = await supabase.functions.invoke('send-agency-invitation', {
@@ -318,7 +338,7 @@ const AgencyAdminDashboard = () => {
         .eq("agency_id", agencyId)
         .is("used_at", null)
         .gt("expires_at", new Date().toISOString());
-        
+
       setPendingInvites(data ?? []);
     } catch (error: any) {
       console.error("Error creating invitation:", error);
@@ -348,7 +368,7 @@ const AgencyAdminDashboard = () => {
         .eq("agency_id", agencyId)
         .is("used_at", null)
         .gt("expires_at", new Date().toISOString());
-        
+
       setPendingInvites(data ?? []);
     } catch (error) {
       console.error("Error deleting invitation:", error);
@@ -380,12 +400,63 @@ const AgencyAdminDashboard = () => {
 
   const updateAgencyInfo = async (updatedInfo?: AgencyInfo) => {
     const info = updatedInfo || agencyInfo;
-    if (!agencyId || !info) return;
+
+    if (!info) {
+      console.error("Missing agency info");
+      toast.error("Ingen information att spara.");
+      return;
+    }
+
+    if (!info.name?.trim()) {
+      toast.error("Kontorsnamn är obligatoriskt.");
+      return;
+    }
+
     setLoading(true);
+
+    // Om ingen byrå finns, skapa en ny via databasfunktion
+    if (!agencyId) {
+      console.log("No agency exists, creating new agency for user:", user?.id);
+      
+      const { data: newAgencyId, error: createError } = await supabase
+        .rpc('create_agency_for_user', {
+          p_name: info.name,
+          p_email_domain: info.email_domain || null,
+          p_email: info.email || null,
+          p_address: info.address || null,
+          p_phone: info.phone || null,
+          p_org_number: info.org_number || null,
+          p_website: info.website || null,
+          p_description: info.description || null,
+          p_logo_url: info.logo_url || null,
+          p_area: info.area || null,
+          p_owner: info.owner || null,
+        });
+
+      if (createError) {
+        console.error("Agency creation error:", createError);
+        setLoading(false);
+        toast.error("Kunde inte skapa byrå: " + createError.message);
+        return;
+      }
+
+      console.log("Created new agency with ID:", newAgencyId);
+
+      setLoading(false);
+      setAgencyId(newAgencyId);
+      setAgencyName(info.name);
+      setAgencyInfo(info);
+      toast.success("Byrå skapad!");
+      return;
+    }
+
+    // Uppdatera befintlig byrå
+    console.log("Updating agency info for ID:", agencyId, "Payload:", info);
     const { error } = await supabase
       .from("agencies")
       .update({
         name: info.name,
+        email_domain: info.email_domain,
         email: info.email,
         address: info.address,
         phone: info.phone,
@@ -397,24 +468,27 @@ const AgencyAdminDashboard = () => {
         owner: info.owner,
       })
       .eq("id", agencyId);
-    
+
     setLoading(false);
     if (error) {
-      toast.error("Kunde inte uppdatera byråinformation");
+      console.error("Agency update error:", error);
+      toast.error("Kunde inte uppdatera byråinformation: " + error.message);
     } else {
       toast.success("Byråinformation uppdaterad");
       setAgencyName(info.name);
+      // Säkerställ att agencyInfo behåller sina värden
+      setAgencyInfo(info);
     }
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    
+
     if (!file) {
       toast.error("Ingen fil vald");
       return;
     }
-    
+
     if (!user) {
       toast.error("Du måste vara inloggad");
       return;
@@ -475,7 +549,7 @@ const AgencyAdminDashboard = () => {
 
       // Update local state immediately
       setProfileData(prev => ({ ...prev, avatar_url: publicUrl }));
-      
+
       toast.success("Profilbild uppladdad! Bilden syns nu.");
       console.log("Avatar upload complete");
     } catch (error: any) {
@@ -512,12 +586,12 @@ const AgencyAdminDashboard = () => {
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    
+
     if (!file) {
       toast.error("Ingen fil vald");
       return;
     }
-    
+
     if (!agencyId) {
       toast.error("Ingen byrå hittades");
       return;
@@ -542,14 +616,14 @@ const AgencyAdminDashboard = () => {
       setLogoCropperFile(file);
     };
     reader.readAsDataURL(file);
-    
+
     // Reset input so same file can be selected again
     event.target.value = '';
   };
 
   const handleLogoCropComplete = async (croppedBlob: Blob) => {
     if (!agencyId) return;
-    
+
     const fileName = `${agencyId}-logo-${Date.now()}.png`;
     const filePath = `agencies/${fileName}`;
 
@@ -595,7 +669,7 @@ const AgencyAdminDashboard = () => {
 
       // Update local state immediately
       setAgencyInfo(prev => prev ? { ...prev, logo_url: publicUrl } : null);
-      
+
       toast.success("Logotyp uppladdad! Logotypen syns nu.");
       console.log("Logo upload complete");
     } catch (error: any) {
@@ -695,25 +769,25 @@ const AgencyAdminDashboard = () => {
             Hantera byrå
           </h1>
         </div>
-        
+
         <Tabs defaultValue="byrå" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger 
-              value="byrå" 
+            <TabsTrigger
+              value="byrå"
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
             >
               <Building2 className="w-4 h-4" />
               Byråinformation
             </TabsTrigger>
-            <TabsTrigger 
-              value="mäklare" 
+            <TabsTrigger
+              value="mäklare"
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
             >
               <Users className="w-4 h-4" />
               Mäklare
             </TabsTrigger>
-            <TabsTrigger 
-              value="statistik" 
+            <TabsTrigger
+              value="statistik"
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
             >
               <BarChart3 className="w-4 h-4" />
@@ -727,244 +801,295 @@ const AgencyAdminDashboard = () => {
               <div className="space-y-8">
                 <div className="flex items-center gap-3 mb-6">
                   <Building2 className="w-8 h-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Byråinformation</h2>
+                  <h2 className="text-2xl font-bold">
+                    {agencyId ? "Byråinformation" : "Skapa din byrå"}
+                  </h2>
                 </div>
+                {!agencyId && (
+                  <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                    <p className="text-blue-800 dark:text-blue-200">
+                      Du har ingen byrå kopplad till ditt konto ännu. Fyll i informationen nedan och klicka på "Skapa byrå" för att komma igång.
+                    </p>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <Label htmlFor="office_name">Kontorsnamn</Label>
-                    <Input
-                      id="office_name"
-                      value={agencyInfo?.name || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), name: e.target.value })}
-                      placeholder="Kontorsnamn"
-                    />
-                    <Label htmlFor="agency-email-domain">E-postdomän</Label>
-                    <Input
-                      id="agency-email-domain"
-                      value={agencyInfo?.email_domain || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), email_domain: e.target.value })}
-                      placeholder="E-postdomän"
-                    />
-                    <Label htmlFor="agency-email">E-post till kontoret</Label>
-                    <Input
-                      id="agency-email"
-                      type="email"
-                      value={agencyInfo?.email || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), email: e.target.value })}
-                      placeholder="kontor@foretag.se"
-                    />
-                    <Label htmlFor="address">Adress</Label>
-                    <Input
-                      id="address"
-                      value={agencyInfo?.address || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), address: e.target.value })}
-                      placeholder="Gatuadress, Postnummer, Ort"
-                    />
-                    <Label htmlFor="area">Område</Label>
-                    <Input
-                      id="area"
-                      value={agencyInfo?.area || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), area: e.target.value })}
-                      placeholder="T.ex. Stockholm, Göteborg, Malmö"
-                    />
-                    <Label htmlFor="owner">Ägare</Label>
-                    <Input
-                      id="owner"
-                      value={agencyInfo?.owner || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), owner: e.target.value })}
-                      placeholder="Namn på företagsägare"
-                    />
+                    <div className="space-y-1.5">
+                      <Label htmlFor="office_name" className="text-xs md:text-sm font-medium">Kontorsnamn</Label>
+                      <Input
+                        id="office_name"
+                        value={agencyInfo?.name || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), name: e.target.value
+                        })}
+                        placeholder="Kontorsnamn"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="agency-email-domain" className="text-xs md:text-sm font-medium">E-postdomän</Label>
+                      <Input
+                        id="agency-email-domain"
+                        value={agencyInfo?.email_domain || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), email_domain: e.target.value
+                        })}
+                        placeholder="E-postdomän"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="agency-email" className="text-xs md:text-sm font-medium">E-post till kontoret</Label>
+                      <Input
+                        id="agency-email"
+                        type="email"
+                        value={agencyInfo?.email || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), email: e.target.value
+                        })}
+                        placeholder="kontor@foretag.se"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="address" className="text-xs md:text-sm font-medium">Adress</Label>
+                      <Input
+                        id="address"
+                        value={agencyInfo?.address || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), address: e.target.value
+                        })}
+                        placeholder="Gatuadress, Postnummer, Ort"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="area" className="text-xs md:text-sm font-medium">Område</Label>
+                      <Input
+                        id="area"
+                        value={agencyInfo?.area || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), area: e.target.value
+                        })}
+                        placeholder="T.ex. Stockholm, Göteborg, Malmö"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="owner" className="text-xs md:text-sm font-medium">Ägare</Label>
+                      <Input
+                        id="owner"
+                        value={agencyInfo?.owner || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), owner: e.target.value
+                        })}
+                        placeholder="Namn på företagsägare"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-4">
-                    <Label htmlFor="phone">Telefon</Label>
-                    <Input
-                      id="phone"
-                      value={agencyInfo?.phone || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), phone: e.target.value })}
-                      placeholder="+46 XX XXX XX XX"
-                    />
-                    <Label htmlFor="org_number">Org.nr</Label>
-                    <Input
-                      id="org_number"
-                      value={agencyInfo?.org_number || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), org_number: e.target.value })}
-                      placeholder="XXXXXX-XXXX"
-                    />
-                    <Label htmlFor="website">Länk till egen sida</Label>
-                    <Input
-                      id="website"
-                      value={agencyInfo?.website || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), website: e.target.value })}
-                      placeholder="https://www.exempel.se"
-                    />
-                    <Label htmlFor="description">Beskrivning</Label>
-                    <Textarea
-                      id="description"
-                      value={agencyInfo?.description || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), description: e.target.value })}
-                      placeholder="Beskrivning av byrån"
-                    />
-                    <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
-                    <div className="space-y-3">
-                      {agencyInfo?.logo_url && (
-                        <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
-                          <img 
-                            src={agencyInfo.logo_url} 
-                            alt="Byrå logotyp" 
-                            key={agencyInfo.logo_url}
-                            className="h-40 w-auto object-contain mx-auto"
-                            onError={(e) => {
-                              console.error("Failed to load logo:", agencyInfo.logo_url);
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="logo-upload" className="cursor-pointer">
-                          <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
-                            <Upload className="w-5 h-5" />
-                            <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
-                          </div>
-                          <Input
-                            id="logo-upload"
-                            type="file"
-                            accept="image/jpeg,image/jpg,image/png,image/webp"
-                            className="hidden"
-                            onChange={handleLogoUpload}
-                            disabled={uploadingLogo}
-                          />
-                        </Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-xs md:text-sm font-medium">Telefon</Label>
+                      <Input
+                        id="phone"
+                        value={agencyInfo?.phone || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), phone: e.target.value
+                        })}
+                        placeholder="+46 XX XXX XX XX"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="org_number" className="text-xs md:text-sm font-medium">Org.nr</Label>
+                      <Input
+                        id="org_number"
+                        value={agencyInfo?.org_number || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), org_number: e.target.value
+                        })}
+                        placeholder="XXXXXX-XXXX"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="website" className="text-xs md:text-sm font-medium">Länk till egen sida</Label>
+                      <Input
+                        id="website"
+                        value={agencyInfo?.website || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), website: e.target.value
+                        })}
+                        placeholder="https://www.exempel.se"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="description" className="text-xs md:text-sm font-medium">Beskrivning</Label>
+                      <Textarea
+                        id="description"
+                        value={agencyInfo?.description || ""}
+                        onChange={e => setAgencyInfo({
+                          ...(agencyInfo ?? {
+                            name: "",
+                            email_domain: "",
+                            email: "",
+                            address: "",
+                            phone: "",
+                            org_number: "",
+                            website: "",
+                            description: "",
+                            logo_url: "",
+                            area: "",
+                            owner: ""
+                          }), description: e.target.value
+                        })}
+                        placeholder="Beskrivning av byrån"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs md:text-sm font-medium mb-2 block">Uppladdning av logga</Label>
+                      <div className="space-y-3">
                         {agencyInfo?.logo_url && (
-                          <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
+                          <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
+                            <img
+                              src={agencyInfo.logo_url}
+                              alt="Byrå logotyp"
+                              key={agencyInfo.logo_url}
+                              className="h-40 w-auto object-contain mx-auto"
+                              onError={(e) => {
+                                console.error("Failed to load logo:", agencyInfo.logo_url);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
                         )}
+                        <div className="space-y-2">
+                          <Label htmlFor="logo-upload" className="cursor-pointer">
+                            <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
+                              <Upload className="w-5 h-5" />
+                              <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
+                            </div>
+                            <Input
+                              id="logo-upload"
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              onChange={handleLogoUpload}
+                              disabled={uploadingLogo}
+                            />
+                          </Label>
+                          {agencyInfo?.logo_url && (
+                            <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-8">
                   <Button onClick={() => updateAgencyInfo()} disabled={loading}>
-                    {loading ? "Sparar..." : "Spara"}
+                    {loading ? (agencyId ? "Sparar..." : "Skapar...") : (agencyId ? "Spara" : "Skapa byrå")}
                   </Button>
                 </div>
               </div>
@@ -1018,9 +1143,9 @@ const AgencyAdminDashboard = () => {
                           placeholder="mäklare@exempel.se"
                         />
                       </div>
-                      <Button 
-                        onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name || loadingAgency || !agencyId} 
+                      <Button
+                        onClick={createAgent}
+                        disabled={loading || !newAgent.email || !newAgent.full_name || loadingAgency || !agencyId}
                         className="w-full"
                       >
                         {loading ? "Skapar inbjudan..." : "Skapa inbjudan"}
@@ -1096,7 +1221,7 @@ const AgencyAdminDashboard = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {users.map(user => (
                   <div key={user.id} className="border rounded-lg p-4 bg-background">
@@ -1105,8 +1230,8 @@ const AgencyAdminDashboard = () => {
                         <h3 className="font-semibold text-lg">{user.full_name}</h3>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => removeUser(user.id)}
                         className="text-destructive hover:text-destructive"
@@ -1143,7 +1268,7 @@ const AgencyAdminDashboard = () => {
           {/* Statistik Tab */}
           <TabsContent value="statistik">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              
+
               {/* Antal Mäklare */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
