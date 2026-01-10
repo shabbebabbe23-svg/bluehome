@@ -312,7 +312,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden border-t border-white/20 backdrop-blur-md overflow-hidden transform-gpu transition-all duration-300 ease-out ${isMenuOpen
+          className={`absolute top-[56px] sm:top-[64px] left-0 right-0 z-50 shadow-xl md:hidden border-t border-white/20 backdrop-blur-md overflow-hidden transform-gpu transition-all duration-300 ease-out ${isMenuOpen
             ? "max-h-[80vh] opacity-100 translate-y-0 py-4"
             : "max-h-0 opacity-0 -translate-y-2 py-0 pointer-events-none"
             }`}
