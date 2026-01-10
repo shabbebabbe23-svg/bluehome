@@ -97,7 +97,7 @@ const SuperAdminDashboard = () => {
 
   const checkSuperAdminAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       navigate("/login");
       return;
@@ -219,7 +219,7 @@ const SuperAdminDashboard = () => {
   ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       await supabase.from("activity_logs").insert({
         action_type: actionType,
         actor_id: user?.id || null,
@@ -287,7 +287,7 @@ const SuperAdminDashboard = () => {
               admin_id: adminProfile.id,
             };
           }
-          
+
           return agency;
         })
       );
@@ -305,7 +305,7 @@ const SuperAdminDashboard = () => {
             .from("properties")
             .select("id", { count: "exact" })
             .eq("is_deleted", false)
-            .in("user_id", 
+            .in("user_id",
               await supabase
                 .from("profiles")
                 .select("id")
@@ -636,18 +636,18 @@ const SuperAdminDashboard = () => {
               .select("user_type")
               .eq("user_id", user.id)
               .single();
-            
+
             // Hämta antal fastigheter
             const { count } = await supabase
               .from("properties")
               .select("*", { count: "exact", head: true })
               .eq("user_id", user.id)
               .eq("is_deleted", false);
-            
-            return { 
-              ...user, 
+
+            return {
+              ...user,
               user_roles: roleData ? [{ user_type: roleData.user_type }] : [],
-              propertyCount: count || 0 
+              propertyCount: count || 0
             };
           })
         );
@@ -724,7 +724,7 @@ const SuperAdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <Header />
-      
+
       <div className="container mx-auto px-4 pt-24 pb-8">
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
@@ -826,7 +826,7 @@ const SuperAdminDashboard = () => {
                 <AlertDialogTitle>⚠️ PERMANENT RADERING</AlertDialogTitle>
                 <AlertDialogDescription>
                   Är du säker på att du vill <strong className="text-red-600">PERMANENT RADERA</strong> byrån <strong>{deletingAgency?.name}</strong>?
-                  
+
                   {deletingAgency && agencyStats[deletingAgency.id] && (
                     <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border-2 border-red-500 rounded-md space-y-3">
                       <p className="text-red-800 dark:text-red-200 font-bold text-sm">
@@ -906,7 +906,7 @@ const SuperAdminDashboard = () => {
                   Alla mäklare och administratörer som tillhör denna byrå
                 </DialogDescription>
               </DialogHeader>
-              
+
               {loadingUsers ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -928,9 +928,9 @@ const SuperAdminDashboard = () => {
                           <p className="text-sm text-muted-foreground">{user.email}</p>
                           <div className="flex gap-3 mt-2 text-sm">
                             <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium capitalize">
-                              {user.user_roles?.[0]?.user_type === "agency_admin" ? "Byrå-admin" : 
-                               user.user_roles?.[0]?.user_type === "maklare" ? "Mäklare" : 
-                               user.user_roles?.[0]?.user_type || "Användare"}
+                              {user.user_roles?.[0]?.user_type === "agency_admin" ? "Byrå-admin" :
+                                user.user_roles?.[0]?.user_type === "maklare" ? "Mäklare" :
+                                  user.user_roles?.[0]?.user_type || "Användare"}
                             </span>
                             <span className="flex items-center gap-1 text-muted-foreground">
                               <Home className="w-4 h-4" />
@@ -1031,11 +1031,10 @@ const SuperAdminDashboard = () => {
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-semibold text-base sm:text-lg">{agency.name}</h3>
                             <span
-                              className={`px-2 py-1 text-xs rounded-full ${
-                                agency.is_active
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
+                              className={`px-2 py-1 text-xs rounded-full ${agency.is_active
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
+                                }`}
                             >
                               {agency.is_active ? "Aktiv" : "Inaktiv"}
                             </span>
