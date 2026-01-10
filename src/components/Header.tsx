@@ -272,7 +272,7 @@ const Header = () => {
             className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <span className="relative top-[1px] block h-[48px] w-[48px] sm:h-[52px] sm:w-[52px]">
+            <span className="relative block h-6 w-6">
               {/* Menu Icon with gradient */}
               <svg
                 viewBox="0 0 24 24"

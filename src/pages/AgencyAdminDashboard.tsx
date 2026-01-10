@@ -417,7 +417,7 @@ const AgencyAdminDashboard = () => {
     // Om ingen byrå finns, skapa en ny via databasfunktion
     if (!agencyId) {
       console.log("No agency exists, creating new agency for user:", user?.id);
-      
+
       const { data: newAgencyId, error: createError } = await supabase
         .rpc('create_agency_for_user', {
           p_name: info.name,
