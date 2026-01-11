@@ -414,24 +414,29 @@ const AgencyAdminDashboard = () => {
 
     setLoading(true);
 
-    // Om ingen byrå finns, skapa en ny via databasfunktion
+    // Om ingen byrå finns, skapa en ny direkt i agencies-tabellen
     if (!agencyId) {
       console.log("No agency exists, creating new agency for user:", user?.id);
 
-      const { data: newAgencyId, error: createError } = await supabase
-        .rpc('create_agency_for_user', {
-          p_name: info.name,
-          p_email_domain: info.email_domain || null,
-          p_email: info.email || null,
-          p_address: info.address || null,
-          p_phone: info.phone || null,
-          p_org_number: info.org_number || null,
-          p_website: info.website || null,
-          p_description: info.description || null,
-          p_logo_url: info.logo_url || null,
-          p_area: info.area || null,
-          p_owner: info.owner || null,
-        });
+      const { data: newAgency, error: createError } = await supabase
+        .from('agencies')
+        .insert({
+          name: info.name,
+          email_domain: info.email_domain || null,
+          email: info.email || null,
+          address: info.address || null,
+          phone: info.phone || null,
+          org_number: info.org_number || null,
+          website: info.website || null,
+          description: info.description || null,
+          logo_url: info.logo_url || null,
+          area: info.area || null,
+          owner: info.owner || null,
+          admin_id: user?.id,
+          is_active: true,
+        })
+        .select('id')
+        .single();
 
       if (createError) {
         console.error("Agency creation error:", createError);
@@ -440,10 +445,18 @@ const AgencyAdminDashboard = () => {
         return;
       }
 
-      console.log("Created new agency with ID:", newAgencyId);
+      // Uppdatera användarens profil med agency_id
+      if (newAgency?.id && user?.id) {
+        await supabase
+          .from('profiles')
+          .update({ agency_id: newAgency.id })
+          .eq('id', user.id);
+      }
+
+      console.log("Created new agency with ID:", newAgency?.id);
 
       setLoading(false);
-      setAgencyId(newAgencyId);
+      setAgencyId(newAgency?.id || null);
       setAgencyName(info.name);
       setAgencyInfo(info);
       toast.success("Byrå skapad!");
