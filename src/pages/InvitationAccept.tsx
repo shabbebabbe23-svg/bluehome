@@ -112,6 +112,35 @@ const InvitationAccept = () => {
         throw error;
       }
 
+      const userId = signUpData.user?.id;
+      
+      if (userId) {
+        // Skapa user_role för användaren
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .insert({
+            user_id: userId,
+            user_type: invitation.role as "maklare" | "agency_admin",
+          });
+
+        if (roleError) {
+          console.error("Error creating user role:", roleError);
+        }
+
+        // Uppdatera profilen med agency_id
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ 
+            agency_id: invitation.agency_id,
+            email: invitation.email,
+          })
+          .eq("id", userId);
+
+        if (profileError) {
+          console.error("Error updating profile:", profileError);
+        }
+      }
+
       const { error: updateError } = await supabase
         .from("agency_invitations")
         .update({ used_at: new Date().toISOString() })
