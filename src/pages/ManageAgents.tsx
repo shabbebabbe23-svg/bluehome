@@ -157,18 +157,50 @@ const ManageAgents = () => {
   const handleInvite = async () => {
     if (!form.email) return toast({ title: "Fyll i e-post", description: "E-post krävs för inbjudan.", variant: "destructive" });
     setLoading(true);
-    // Skapa token och skicka inbjudan (mockad, implementera e-post vid behov)
+    
+    // Hämta användarens agency_id från profilen
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("agency_id")
+      .eq("id", user?.id)
+      .single();
+    
+    if (profileError || !profile?.agency_id) {
+      toast({ 
+        title: "Fel", 
+        description: "Du måste tillhöra en byrå för att bjuda in mäklare.", 
+        variant: "destructive" 
+      });
+      setLoading(false);
+      return;
+    }
+    
     const token = crypto.randomUUID();
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 2);
-    await supabase.from("agency_invitations").insert({
+    
+    const { error: insertError } = await supabase.from("agency_invitations").insert({
       email: form.email,
       role: "maklare",
       token,
       expires_at: expiresAt.toISOString(),
-      created_by: null,
+      created_by: user?.id,
+      agency_id: profile.agency_id,
     });
+    
+    if (insertError) {
+      console.error("Invitation insert error:", insertError);
+      toast({ 
+        title: "Fel", 
+        description: `Kunde inte skapa inbjudan: ${insertError.message}`, 
+        variant: "destructive" 
+      });
+      setLoading(false);
+      return;
+    }
+    
     toast({ title: "Inbjudan skickad!", description: `Länk: /acceptera-inbjudan?token=${token}` });
+    setForm({ name: "", email: "" });
     setLoading(false);
   };
 
