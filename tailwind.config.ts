@@ -1,6 +1,26 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  safelist: [
+    'max-h-[80vh]',
+    'opacity-100',
+    'translate-y-0',
+    'py-4',
+    'max-h-0',
+    'opacity-0',
+    '-translate-y-2',
+    'py-0',
+    'pointer-events-none',
+    // Extra för säkerhets skull
+    'border-t',
+    'border-white/20',
+    'backdrop-blur-md',
+    'overflow-hidden',
+    'transform-gpu',
+    'transition-all',
+    'duration-300',
+    'ease-out'
+  ],
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",

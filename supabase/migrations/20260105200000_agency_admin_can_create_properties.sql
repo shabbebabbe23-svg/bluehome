@@ -1,4 +1,4 @@
--- Allow agency_admin to create properties and upload images
+ -- Allow agency_admin to create properties and upload images
 
 -- Drop existing policies and recreate with agency_admin support
 DROP POLICY IF EXISTS "Agents can insert properties" ON public.properties;

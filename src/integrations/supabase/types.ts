@@ -740,7 +740,7 @@ export type Tables<
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer 5820a0a7-f512-4186-9a10-16793d2ca224R
     }
     ? R
     : never

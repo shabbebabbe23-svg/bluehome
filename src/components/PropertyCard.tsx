@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { toast } from "sonner";
+import LazyImage from "@/components/LazyImage";
 
 interface PropertyCardProps {
   id: string | number;
@@ -265,19 +266,19 @@ const PropertyCard = ({
             {/* Hover image cross-fade (same as grid view) */}
             {hoverImage ? (
               <>
-                <img
+                <LazyImage
                   src={image}
                   alt={title}
                   className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
                 />
-                <img
+                <LazyImage
                   src={hoverImage}
                   alt={`${title} - alternativ bild`}
                   className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
                 />
               </>
             ) : (
-              <img
+              <LazyImage
                 src={image}
                 alt={title}
                 className="w-full h-full object-cover"
@@ -476,7 +477,7 @@ const PropertyCard = ({
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
             images.map((img, index) => (
-              <img
+              <LazyImage
                 key={index}
                 src={img}
                 alt={`${title} - bild ${index + 1}`}
@@ -495,13 +496,12 @@ const PropertyCard = ({
                 }}
               >
                 {allImages.map((img, index) => (
-                  <img
+                  <LazyImage
                     key={index}
                     src={img}
                     alt={`${title} - bild ${index + 1}`}
                     className="w-full h-full object-cover flex-shrink-0"
                     style={{ minWidth: '100%' }}
-                    draggable={false}
                   />
                 ))}
               </div>
@@ -558,12 +558,12 @@ const PropertyCard = ({
           ) : (
             // Single image (original hover effect)
             <>
-              <img
+              <LazyImage
                 src={image}
                 alt={title}
                 className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-110"
               />
-              <img
+              <LazyImage
                 src={hoverImage ?? image}
                 alt={`${title} - alternativ bild`}
                 className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"

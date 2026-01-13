@@ -1051,7 +1051,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   }
 
   return (
-    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4 -mt-2 lg:-mt-4">
+    <section className="pt-0 pb-2 md:pb-3 px-3 sm:px-4 mt-4">
       <div className="w-full">
         {/* Recent sold carousel - only shown when showFinalPrices is ON */}
         {showFinalPrices && propertiesWithFallback.length > 0 && (

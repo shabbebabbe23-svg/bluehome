@@ -269,7 +269,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center"
+            className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-red-500 flex items-center justify-center bg-red-500"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <span className="relative block h-6 w-6">
@@ -322,6 +322,11 @@ const Header = () => {
           aria-hidden={!isMenuOpen}
         >
           <nav className="flex flex-col gap-3">
+            {/* DEBUG: Show userType */}
+            <div className="bg-yellow-500 text-black px-4 py-2 mx-4 rounded font-bold text-center">
+              DEBUG: userType = "{userType}" | user = {user ? "exists" : "null"}
+            </div>
+            
             {/* User Role Indicator with Avatar for Mobile */}
             {user && (
               <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>

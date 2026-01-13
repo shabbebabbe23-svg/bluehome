@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import LazyImage from "@/components/LazyImage";
 
 interface ImageGalleryProps {
   images: string[];
@@ -16,13 +17,13 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
   const [currentIndex, setCurrentIndex] = useState(0);
   const imageViewStartRef = useRef<number>(Date.now());
   const currentViewIdRef = useRef<string | null>(null);
-  
+
   const allImages = [mainImage, ...images];
 
   // Update time spent on current image before switching
   const updateImageTimeSpent = async () => {
     if (!currentViewIdRef.current) return;
-    
+
     const timeSpent = Date.now() - imageViewStartRef.current;
     try {
       await supabase
@@ -37,17 +38,17 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
   // Track image views
   const trackImageView = async (imageIndex: number) => {
     if (!propertyId) return;
-    
+
     // First update time spent on previous image
     await updateImageTimeSpent();
-    
+
     // Reset timer for new image
     imageViewStartRef.current = Date.now();
-    
+
     try {
-      const sessionId = sessionStorage.getItem('session_id') || 
+      const sessionId = sessionStorage.getItem('session_id') ||
         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       if (!sessionStorage.getItem('session_id')) {
         sessionStorage.setItem('session_id', sessionId);
       }
@@ -59,7 +60,7 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
         image_url: allImages[imageIndex],
         time_spent_ms: 0,
       }).select().single();
-      
+
       currentViewIdRef.current = data?.id || null;
     } catch (error) {
       console.error('Error tracking image view:', error);
@@ -113,7 +114,7 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
               className="relative h-20 sm:h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => openGallery(idx + 1)}
             >
-              <img src={img} alt={`${title} ${idx + 2}`} className="w-full h-full object-cover" />
+              <LazyImage src={img} alt={`${title} ${idx + 2}`} className="w-full h-full object-cover" />
             </div>
           ))}
           {images.length > 3 && (
@@ -121,7 +122,7 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
               className="relative h-20 sm:h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => openGallery(4)}
             >
-              <img src={images[3]} alt={`${title} 5`} className="w-full h-full object-cover" />
+              <LazyImage src={images[3]} alt={`${title} 5`} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">+{images.length - 3}</span>
               </div>

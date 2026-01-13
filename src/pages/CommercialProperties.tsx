@@ -1,117 +1,23 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Building, MapPin, Square, Search, Filter, Grid3x3, List } from "lucide-react";
+import { Building, MapPin, Square, Search, Filter, Grid3x3, List, ArrowUpDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { filterMunicipalities } from "@/data/swedishMunicipalities";
 import commercialHero from "@/assets/commercial-hero.jpg";
-import commercial1 from "@/assets/commercial-1.jpg";
-import commercial2 from "@/assets/commercial-2.jpg";
-import commercial3 from "@/assets/commercial-3.jpg";
-import commercial4 from "@/assets/commercial-4.jpg";
-import commercial5 from "@/assets/commercial-5.jpg";
-import commercial6 from "@/assets/commercial-6.jpg";
-const commercialProperties = [{
-  id: "c1",
-  title: "Modern kontorslokal i city",
-  location: "Stockholm, Vasastan",
-  area: "450 m²",
-  price: "45 000 kr/mån",
-  image: commercial1,
-  type: "Kontor"
-}, {
-  id: "c2",
-  title: "Butikslokal på Drottninggatan",
-  location: "Stockholm, Centrum",
-  area: "120 m²",
-  price: "35 000 kr/mån",
-  image: commercial2,
-  type: "Butik"
-}, {
-  id: "c3",
-  title: "Lagerhall med lastbrygga",
-  location: "Göteborg, Hisingen",
-  area: "800 m²",
-  price: "55 000 kr/mån",
-  image: commercial3,
-  type: "Lager"
-}, {
-  id: "c4",
-  title: "Restauranglokal vid Stureplan",
-  location: "Stockholm, Östermalm",
-  area: "200 m²",
-  price: "65 000 kr/mån",
-  image: commercial4,
-  type: "Restaurang"
-}, {
-  id: "c5",
-  title: "Kontorshotell med flexibla ytor",
-  location: "Malmö, Västra Hamnen",
-  area: "300 m²",
-  price: "28 000 kr/mån",
-  image: commercial5,
-  type: "Kontor"
-}, {
-  id: "c6",
-  title: "Industrilokal med verkstadsutrustning",
-  location: "Uppsala, Fyrislund",
-  area: "600 m²",
-  price: "42 000 kr/mån",
-  image: commercial6,
-  type: "Industri"
-}, {
-  id: "c7",
-  title: "Showroom i centrala läget",
-  location: "Stockholm, Kungsholmen",
-  area: "250 m²",
-  price: "38 000 kr/mån",
-  image: commercial1,
-  type: "Butik"
-}, {
-  id: "c8",
-  title: "Kontorslandskap med havsutsikt",
-  location: "Göteborg, Lindholmen",
-  area: "650 m²",
-  price: "52 000 kr/mån",
-  image: commercial2,
-  type: "Kontor"
-}, {
-  id: "c9",
-  title: "Lagerlokal nära motorväg",
-  location: "Stockholm, Sollentuna",
-  area: "1200 m²",
-  price: "68 000 kr/mån",
-  image: commercial3,
-  type: "Lager"
-}, {
-  id: "c10",
-  title: "Café och restaurang",
-  location: "Malmö, Möllevången",
-  area: "150 m²",
-  price: "32 000 kr/mån",
-  image: commercial4,
-  type: "Restaurang"
-}, {
-  id: "c11",
-  title: "Produktionslokal med overhead crane",
-  location: "Linköping, Tornby",
-  area: "950 m²",
-  price: "58 000 kr/mån",
-  image: commercial5,
-  type: "Industri"
-}, {
-  id: "c12",
-  title: "Prestigefyllt kontor i skyskrapa",
-  location: "Stockholm, City",
-  area: "380 m²",
-  price: "72 000 kr/mån",
-  image: commercial6,
-  type: "Kontor"
-}];
+import { commercialProperties } from "@/data/commercialProperties";
 const CommercialProperties = () => {
   const [selectedType, setSelectedType] = useState<string>("Alla");
   const [searchLocation, setSearchLocation] = useState("");
@@ -121,10 +27,49 @@ const CommercialProperties = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string }>>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<string>("default");
   const searchRef = useRef<HTMLDivElement>(null);
 
   const propertyTypes = ["Alla", "Kontor", "Kontorshotell", "Butik", "Lager", "Restaurang", "Industri"];
-  const filteredProperties = selectedType === "Alla" ? commercialProperties : commercialProperties.filter(p => p.type === selectedType);
+
+  const getFilteredProperties = () => {
+    let filtered = selectedType === "Alla" ? commercialProperties : commercialProperties.filter(p => p.type === selectedType);
+
+    // Apply sorting
+    if (sortBy !== "default") {
+      filtered = [...filtered].sort((a, b) => {
+        const getPrice = (p: typeof a) => {
+          // Extract number from string like "45 000 kr/mån"
+          return parseInt(p.price.replace(/\D/g, '')) || 0;
+        };
+        const getArea = (p: typeof a) => {
+          // Extract number from string like "450 m²"
+          return parseInt(p.area.replace(/\D/g, '')) || 0;
+        };
+
+        switch (sortBy) {
+          case "price-high":
+            return getPrice(b) - getPrice(a);
+          case "price-low":
+            return getPrice(a) - getPrice(b);
+          case "area-large":
+            return getArea(b) - getArea(a);
+          case "area-small":
+            return getArea(a) - getArea(b);
+          case "address-az":
+            return a.location.localeCompare(b.location);
+          case "address-za":
+            return b.location.localeCompare(a.location);
+          default:
+            return 0;
+        }
+      });
+    }
+
+    return filtered;
+  };
+
+  const filteredProperties = getFilteredProperties();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -305,26 +250,50 @@ const CommercialProperties = () => {
         <div className="px-3 sm:px-4 lg:px-8">
           {/* Property grid */}
           <div className="w-full">
-            {/* View Mode Toggle */}
-            <div className="flex justify-end mb-4">
-              <Button
-                variant="outline"
-                size="default"
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="hidden sm:flex sm:w-auto gap-2"
-              >
-                {viewMode === "grid" ? (
-                  <>
-                    <List className="w-4 h-4" />
-                    Listvy
-                  </>
-                ) : (
-                  <>
-                    <Grid3x3 className="w-4 h-4" />
-                    Rutnätsvy
-                  </>
-                )}
-              </Button>
+            {/* Header with Title and Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-start gap-4 mb-8">
+              <div className="hidden md:block" /> {/* Spacer for centering */}
+
+              <h2 className="text-3xl font-bold text-white text-center md:pt-4">
+                Våra senaste objekt
+              </h2>
+
+              <div className="flex flex-col gap-2 items-center md:items-end w-full">
+                <Button
+                  variant="outline"
+                  size="default"
+                  onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+                  className="hidden sm:flex sm:w-auto gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white"
+                >
+                  {viewMode === "grid" ? (
+                    <>
+                      <List className="w-4 h-4" />
+                      Listvy
+                    </>
+                  ) : (
+                    <>
+                      <Grid3x3 className="w-4 h-4" />
+                      Rutnätsvy
+                    </>
+                  )}
+                </Button>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[140px] sm:w-[180px] h-10 bg-hero-gradient text-white border-transparent">
+                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Sortera efter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">Sortera efter</SelectItem>
+                    <SelectItem value="price-high">Hyra: Högst till lägst</SelectItem>
+                    <SelectItem value="price-low">Hyra: Lägst till högst</SelectItem>
+                    <SelectItem value="area-large">Yta: Störst till minst</SelectItem>
+                    <SelectItem value="area-small">Yta: Minst till störst</SelectItem>
+                    <SelectItem value="address-az">Område: A-Ö</SelectItem>
+                    <SelectItem value="address-za">Område: Ö-A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className={viewMode === "grid"
@@ -332,55 +301,57 @@ const CommercialProperties = () => {
               : "flex flex-col gap-2 mb-12"
             }>
               {filteredProperties.map(property => (
-                <Card key={property.id} className={`overflow-hidden hover:shadow-2xl transition-all duration-300 bg-slate-800/95 border-slate-700 scale-85 ${viewMode === "grid"
-                  ? "flex flex-col h-full hover:scale-90"
-                  : "flex flex-row h-auto"
-                  }`}>
-                  <div className={`relative bg-slate-700 ${viewMode === "grid" ? "w-full h-64" : "w-64 h-full"
+                <Link to={`/fastighet/${property.id}`} key={property.id} className="block h-full">
+                  <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-300 bg-slate-800/95 border-slate-700 scale-85 ${viewMode === "grid"
+                    ? "flex flex-col h-full hover:scale-90"
+                    : "flex flex-row h-auto"
                     }`}>
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
-                      VR Funktion
+                    <div className={`relative bg-slate-700 ${viewMode === "grid" ? "w-full h-64" : "w-64 h-full"
+                      }`}>
+                      <img
+                        src={property.image}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-slate-900 font-semibold text-xs">
+                        VR Funktion
+                      </div>
+                      <div className="absolute top-4 right-4 bg-black px-3 py-1 rounded-full text-white font-semibold text-sm">
+                        {property.type}
+                      </div>
                     </div>
-                    <div className="absolute top-4 right-4 bg-black px-3 py-1 rounded-full text-white font-semibold text-sm">
-                      {property.type}
-                    </div>
-                  </div>
-                  <CardContent className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-semibold text-xl text-white mb-3">
-                        {property.title}
-                      </h3>
-                      <div className="space-y-3 text-slate-300">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                          <div>
-                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plats</p>
-                            <p className="text-white text-sm font-medium">{property.location}</p>
+                    <CardContent className="p-6 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-semibold text-xl text-white mb-3">
+                          {property.title}
+                        </h3>
+                        <div className="space-y-3 text-slate-300">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                            <div>
+                              <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plats</p>
+                              <p className="text-white text-sm font-medium">{property.location}</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Square className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                          <div>
-                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Yta</p>
-                            <p className="text-white text-sm font-medium">{property.area}</p>
+                          <div className="flex items-start gap-2">
+                            <Square className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                            <div>
+                              <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Yta</p>
+                              <p className="text-white text-sm font-medium">{property.area}</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Building className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                          <div>
-                            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Månadshyra</p>
-                            <p className="text-2xl font-bold text-white">{property.price}</p>
+                          <div className="flex items-start gap-2">
+                            <Building className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                            <div>
+                              <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Månadshyra</p>
+                              <p className="text-2xl font-bold text-white">{property.price}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>

@@ -39,6 +39,8 @@ import AdBanner from "@/components/AdBanner";
 import PropertyCostBreakdown from "@/components/PropertyCostBreakdown";
 import PropertyDetailMap from "@/components/PropertyDetailMap";
 import { ExpandableDescription } from "@/components/ExpandableDescription";
+import { commercialProperties } from "@/data/commercialProperties";
+import commercialHero from "@/assets/commercial-hero.jpg";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -126,7 +128,7 @@ const PropertyDetail = () => {
               .select('*')
               .eq('property_id', id)
               .order('bid_amount', { ascending: false });
-            
+
             if (bidsData) {
               setDbProperty(prev => prev ? { ...prev, bidCount: bidsData.length } : prev);
               setBidHistory(bidsData);
@@ -364,7 +366,11 @@ const PropertyDetail = () => {
   // Use database property if available, otherwise fallback to hardcoded
   let property = dbProperty;
   if (!property) {
-    property = properties.find(p => p.id === Number(id));
+    if (id?.startsWith('c')) {
+      property = commercialProperties.find(p => p.id === id);
+    } else {
+      property = properties.find(p => p.id === Number(id));
+    }
   }
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">
@@ -509,7 +515,17 @@ const PropertyDetail = () => {
     trackShare('email');
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
-  return <div className="min-h-screen bg-background">
+  const isCommercial = id?.startsWith('c');
+
+  return <div className={`min-h-screen ${isCommercial ? 'relative' : 'bg-background'}`}>
+    {isCommercial && (
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
+        style={{ backgroundImage: `url(${commercialHero})` }}
+      >
+        <div className="absolute inset-0 bg-black/80" />
+      </div>
+    )}
     {/* Header */}
     <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
       background: 'var(--main-gradient)'
@@ -701,7 +717,7 @@ const PropertyDetail = () => {
 
           {/* Property Title and Share Section */}
           <div className="flex flex-col gap-4">
-            <h1 className="text-3xl sm:text-4xl font-bold text-center">
+            <h1 className={`text-3xl sm:text-4xl font-bold text-center ${isCommercial ? 'text-white' : ''}`}>
               {property.title}
             </h1>
             <div className="flex items-center justify-center gap-3">
@@ -806,34 +822,42 @@ const PropertyDetail = () => {
 
               {/* Quick Facts */}
               <div className={`grid gap-3 sm:gap-4 mb-4 sm:mb-6 ${dbProperty?.floor ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'}`}>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Bed className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-muted-foreground text-sm sm:text-base">Sovrum</p>
-                    <p className="font-semibold text-sm sm:text-base">{property.bedrooms}</p>
+                {property.bedrooms !== undefined && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Bed className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Sovrum</p>
+                      <p className="font-semibold text-sm sm:text-base">{property.bedrooms}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Bath className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-muted-foreground text-sm sm:text-base">Badrum</p>
-                    <p className="font-semibold text-sm sm:text-base">{property.bathrooms}</p>
+                )}
+                {property.bathrooms !== undefined && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Bath className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Badrum</p>
+                      <p className="font-semibold text-sm sm:text-base">{property.bathrooms}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Square className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-muted-foreground text-sm sm:text-base">Boarea</p>
-                    <p className="font-semibold text-sm sm:text-base">{property.area} m²</p>
+                )}
+                {property.area !== undefined && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Square className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Boarea</p>
+                      <p className="font-semibold text-sm sm:text-base">{property.area} m²</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Home className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-muted-foreground text-sm sm:text-base">Byggår</p>
-                    <p className="font-semibold text-sm sm:text-base">{property.construction_year || property.buildYear || 'Ej angivet'}</p>
+                )}
+                {(property.construction_year || property.buildYear) && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Home className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground text-sm sm:text-base">Byggår</p>
+                      <p className="font-semibold text-sm sm:text-base">{property.construction_year || property.buildYear}</p>
+                    </div>
                   </div>
-                </div>
+                )}
                 {dbProperty?.floor && (
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
@@ -879,16 +903,20 @@ const PropertyDetail = () => {
                   </div>
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Utgångspris</span>
-                    <span className="font-semibold">{dbProperty ? `${property.price.toLocaleString('sv-SE')} kr` : '8 600 000 kr'}</span>
+                    <span className="font-semibold">{dbProperty && typeof property.price === 'number' ? `${property.price.toLocaleString('sv-SE')} kr` : property.price}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-muted-foreground">Antal rum</span>
-                    <span className="font-semibold">{property.bedrooms} rum</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-muted-foreground">Pris/m²</span>
-                    <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
-                  </div>
+                  {property.bedrooms !== undefined && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Antal rum</span>
+                      <span className="font-semibold">{property.bedrooms} rum</span>
+                    </div>
+                  )}
+                  {typeof property.price === 'number' && typeof property.area === 'number' && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">Pris/m²</span>
+                      <span className="font-semibold">{Math.round(property.price / property.area).toLocaleString('sv-SE')} kr/m²</span>
+                    </div>
+                  )}
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Boarea</span>
                     <span className="font-semibold">{property.area} m²</span>

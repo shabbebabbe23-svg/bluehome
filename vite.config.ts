@@ -62,6 +62,37 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Vendor chunks for better caching
+          if (id.includes('node_modules')) {
+            // React core
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            // Radix UI components
+            if (id.includes('@radix-ui')) {
+              return 'vendor-ui';
+            }
+            // Maps libraries
+            if (id.includes('leaflet') || id.includes('@react-google-maps')) {
+              return 'vendor-maps';
+            }
+            // Data fetching
+            if (id.includes('@tanstack/react-query') || id.includes('@supabase/supabase-js')) {
+              return 'vendor-query';
+            }
+            // Other vendors
+            return 'vendor-other';
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    sourcemap: false, // Disable sourcemaps in production for smaller builds
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
