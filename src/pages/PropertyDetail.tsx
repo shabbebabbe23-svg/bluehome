@@ -58,7 +58,6 @@ const PropertyDetail = () => {
   const [isPWA, setIsPWA] = useState(false);
   const [isBidHistoryOpen, setIsBidHistoryOpen] = useState(false);
   const [bidHistory, setBidHistory] = useState<any[]>([]);
-  const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
 
   const avatarUrl = user?.user_metadata?.avatar_url;
   const profileName = user?.user_metadata?.full_name;
