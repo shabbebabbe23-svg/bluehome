@@ -880,7 +880,7 @@ const PropertyDetail = () => {
 
               {/* Detailed Information */}
               <div>
-                <h2 className="text-xl font-bold mb-4">Fakta om bostaden</h2>
+                <h2 className="text-2xl font-bold mb-4 text-center">Fakta om bostaden</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                   {(property.is_sold || property.isSold) && property.sold_price && <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-muted-foreground">Slutpris</span>
