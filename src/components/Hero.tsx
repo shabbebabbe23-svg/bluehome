@@ -291,8 +291,10 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       {/* Content */}
       <div className="relative z-10 w-full max-w-none px-2 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight">
-            Hitta ditt
+          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight break-words max-w-full sm:max-w-2xl mx-auto px-2 pt-8 sm:pt-12 md:pt-20">
+            <span className="block">
+              Hitta ditt
+            </span>
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
             </span>
