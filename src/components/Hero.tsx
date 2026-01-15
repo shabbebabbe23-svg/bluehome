@@ -279,7 +279,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   };
 
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-6 sm:pt-20 sm:pb-8 md:pt-0 md:pb-0">
+    <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-24 sm:pt-32 md:pt-36 pb-6 sm:pb-8 md:pb-0">
       {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
