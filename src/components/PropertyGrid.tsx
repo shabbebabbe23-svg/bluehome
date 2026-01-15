@@ -1107,12 +1107,12 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   {viewMode === "grid" ? (
                     <>
                       <List className="w-4 h-4" />
-                      <span className="hidden sm:inline">Listvy</span>
+                      <span className="inline">Listvy</span>
                     </>
                   ) : (
                     <>
                       <Grid3x3 className="w-4 h-4" />
-                      <span className="hidden sm:inline">Rutnätsvy</span>
+                      <span className="inline">Rutnätsvy</span>
                     </>
                   )}
                 </Button>
