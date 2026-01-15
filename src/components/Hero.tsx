@@ -282,8 +282,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-24 sm:pt-32 md:pt-36 pb-6 sm:pb-8 md:pb-0">
       {/* Background Image with Overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="absolute bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})`, left: '-10%', top: 0, bottom: 0, width: '120%', height: '100%', position: 'absolute' }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-black/20" />
       </div>
@@ -291,7 +291,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       {/* Content */}
       <div className="relative z-10 w-full max-w-none px-2 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight mt-8">
+          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight -mt-14">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
