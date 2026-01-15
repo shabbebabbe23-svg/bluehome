@@ -1097,7 +1097,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
               {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
             </h2>
             {/* Listvy-knapp överst */}
-            <div className="flex flex-col gap-2 w-full sm:w-auto">
+            <div className="flex flex-col gap-2 w-full sm:w-auto mt-8">
               <div className="flex justify-center sm:justify-end w-full sm:w-auto">
                 <Button
                   variant="outline"
