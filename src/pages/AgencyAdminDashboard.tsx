@@ -14,6 +14,9 @@ import { LogOut, Building2, Users, User, Upload, BarChart3, TrendingUp, Home as 
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import LogoCropper from "@/components/LogoCropper";
+import PropertyCard from "@/components/PropertyCard";
+import { ProfileForm } from "@/components/ProfileForm";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfile {
   id: string;
@@ -84,6 +87,9 @@ const AgencyAdminDashboard = () => {
     topAgent: { name: "", salesCount: 0 }
   });
 
+  const [agencyProperties, setAgencyProperties] = useState<any[]>([]);
+  const [loadingProperties, setLoadingProperties] = useState(false);
+
   useEffect(() => {
     const fetchAgencyId = async () => {
       if (userType === "agency_admin" && user) {
@@ -93,7 +99,7 @@ const AgencyAdminDashboard = () => {
           .select("*")
           .eq("id", user.id)
           .single();
-        
+
         if (profile) {
           setUserName(profile.full_name || "");
           setProfileData({
@@ -105,28 +111,28 @@ const AgencyAdminDashboard = () => {
             avatar_url: profile.avatar_url || ""
           });
         }
-        
+
         if (profile?.agency_id) {
           setAgencyId(profile.agency_id);
-          
+
           // Fetch full agency info
           const { data: agency } = await supabase
             .from("agencies")
             .select("*")
             .eq("id", profile.agency_id)
             .single();
-          
+
           if (agency) {
             setAgencyName(agency.name);
             setAgencyInfo(agency);
           }
-          
+
           // Fetch users - separate queries to avoid RLS conflicts with nested selects
           const { data: usersData } = await supabase
             .from("profiles")
             .select("id, full_name, email")
             .eq("agency_id", profile.agency_id);
-          
+
           if (usersData && usersData.length > 0) {
             // Fetch property counts and roles for each user separately
             const usersWithDetails = await Promise.all(
@@ -137,16 +143,16 @@ const AgencyAdminDashboard = () => {
                   .select("*", { count: "exact", head: true })
                   .eq("user_id", userProfile.id)
                   .eq("is_deleted", false);
-                
+
                 // Fetch user role separately to avoid RLS conflicts
                 const { data: roleData } = await supabase
                   .from("user_roles")
                   .select("user_type")
                   .eq("user_id", userProfile.id)
                   .single();
-                
-                return { 
-                  ...userProfile, 
+
+                return {
+                  ...userProfile,
                   propertyCount: count || 0,
                   user_roles: roleData ? [{ user_type: roleData.user_type }] : []
                 };
@@ -156,7 +162,7 @@ const AgencyAdminDashboard = () => {
           } else {
             setUsers([]);
           }
-            
+
           supabase
             .from("agency_invitations")
             .select("id, email, role, token, created_at, expires_at, used_at")
@@ -164,7 +170,7 @@ const AgencyAdminDashboard = () => {
             .is("used_at", null)
             .gt("expires_at", new Date().toISOString())
             .then(({ data }) => setPendingInvites(data ?? []));
-          
+
           // Fetch statistics
           fetchStatistics(profile.agency_id, usersData || []);
         }
@@ -180,7 +186,7 @@ const AgencyAdminDashboard = () => {
   const fetchStatistics = async (agencyId: string, agencyUsers: any[]) => {
     // Get user IDs for all agents in the agency
     const userIds = agencyUsers.map(u => u.id);
-    
+
     // Count active properties
     const { count: activeCount } = await supabase
       .from("properties")
@@ -188,14 +194,14 @@ const AgencyAdminDashboard = () => {
       .in("user_id", userIds)
       .eq("is_deleted", false)
       .eq("is_sold", false);
-    
+
     // Count sold properties
     const { count: soldCount } = await supabase
       .from("properties")
       .select("*", { count: "exact", head: true })
       .in("user_id", userIds)
       .eq("is_sold", true);
-    
+
     // Get sold properties with prices
     const { data: soldProperties } = await supabase
       .from("properties")
@@ -203,22 +209,22 @@ const AgencyAdminDashboard = () => {
       .in("user_id", userIds)
       .eq("is_sold", true)
       .not("sold_price", "is", null);
-    
+
     // Calculate total sales value
     const totalSales = soldProperties?.reduce((sum, prop) => sum + (prop.sold_price || 0), 0) || 0;
-    
+
     // Find top agent by sales count
     const salesByAgent: Record<string, number> = {};
     soldProperties?.forEach(prop => {
       salesByAgent[prop.user_id] = (salesByAgent[prop.user_id] || 0) + 1;
     });
-    
-    const topAgentId = Object.keys(salesByAgent).reduce((a, b) => 
+
+    const topAgentId = Object.keys(salesByAgent).reduce((a, b) =>
       salesByAgent[a] > salesByAgent[b] ? a : b, ""
     );
-    
+
     const topAgent = agencyUsers.find(u => u.id === topAgentId);
-    
+
     setStatistics({
       totalAgents: agencyUsers.length,
       activeProperties: activeCount || 0,
@@ -274,7 +280,7 @@ const AgencyAdminDashboard = () => {
 
       // Skapa inbjudningslänk
       const invitationUrl = `${window.location.origin}/acceptera-inbjudan?token=${token}`;
-      
+
       // Skicka email med inbjudningslänken
       try {
         const { error: emailError } = await supabase.functions.invoke('send-agency-invitation', {
@@ -318,7 +324,7 @@ const AgencyAdminDashboard = () => {
         .eq("agency_id", agencyId)
         .is("used_at", null)
         .gt("expires_at", new Date().toISOString());
-        
+
       setPendingInvites(data ?? []);
     } catch (error: any) {
       console.error("Error creating invitation:", error);
@@ -348,7 +354,7 @@ const AgencyAdminDashboard = () => {
         .eq("agency_id", agencyId)
         .is("used_at", null)
         .gt("expires_at", new Date().toISOString());
-        
+
       setPendingInvites(data ?? []);
     } catch (error) {
       console.error("Error deleting invitation:", error);
@@ -378,6 +384,41 @@ const AgencyAdminDashboard = () => {
     setUsers(users.filter(u => u.id !== userId));
   };
 
+  useEffect(() => {
+    if (agencyId) {
+      fetchAgencyProperties();
+    }
+  }, [agencyId]);
+
+  const fetchAgencyProperties = async () => {
+    if (!agencyId) return;
+    setLoadingProperties(true);
+
+    // First get all user IDs for this agency to fetch their properties
+    const { data: usersData } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("agency_id", agencyId);
+
+    if (usersData && usersData.length > 0) {
+      const userIds = usersData.map(u => u.id);
+
+      const { data: properties, error } = await supabase
+        .from("properties")
+        .select("*")
+        .in("user_id", userIds)
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
+
+      if (!error && properties) {
+        setAgencyProperties(properties);
+      }
+    } else {
+      setAgencyProperties([]);
+    }
+    setLoadingProperties(false);
+  };
+
   const updateAgencyInfo = async (updatedInfo?: AgencyInfo) => {
     const info = updatedInfo || agencyInfo;
     if (!agencyId || !info) return;
@@ -397,7 +438,7 @@ const AgencyAdminDashboard = () => {
         owner: info.owner,
       })
       .eq("id", agencyId);
-    
+
     setLoading(false);
     if (error) {
       toast.error("Kunde inte uppdatera byråinformation");
@@ -409,12 +450,12 @@ const AgencyAdminDashboard = () => {
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    
+
     if (!file) {
       toast.error("Ingen fil vald");
       return;
     }
-    
+
     if (!user) {
       toast.error("Du måste vara inloggad");
       return;
@@ -475,7 +516,7 @@ const AgencyAdminDashboard = () => {
 
       // Update local state immediately
       setProfileData(prev => ({ ...prev, avatar_url: publicUrl }));
-      
+
       toast.success("Profilbild uppladdad! Bilden syns nu.");
       console.log("Avatar upload complete");
     } catch (error: any) {
@@ -512,12 +553,12 @@ const AgencyAdminDashboard = () => {
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    
+
     if (!file) {
       toast.error("Ingen fil vald");
       return;
     }
-    
+
     if (!agencyId) {
       toast.error("Ingen byrå hittades");
       return;
@@ -542,14 +583,14 @@ const AgencyAdminDashboard = () => {
       setLogoCropperFile(file);
     };
     reader.readAsDataURL(file);
-    
+
     // Reset input so same file can be selected again
     event.target.value = '';
   };
 
   const handleLogoCropComplete = async (croppedBlob: Blob) => {
     if (!agencyId) return;
-    
+
     const fileName = `${agencyId}-logo-${Date.now()}.png`;
     const filePath = `agencies/${fileName}`;
 
@@ -593,7 +634,7 @@ const AgencyAdminDashboard = () => {
 
       // Update local state immediately
       setAgencyInfo(prev => prev ? { ...prev, logo_url: publicUrl } : null);
-      
+
       toast.success("Logotyp uppladdad! Logotypen syns nu.");
       console.log("Logo upload complete");
     } catch (error: any) {
@@ -693,535 +734,619 @@ const AgencyAdminDashboard = () => {
             Hantera byrå
           </h1>
         </div>
-        
-        <Tabs defaultValue="byrå" className="w-full">
+
+        <Tabs defaultValue="hantera-byra" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger 
-              value="byrå" 
+            <TabsTrigger
+              value="hantera-fastigheter"
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
+              <HomeIcon className="w-4 h-4" />
+              Hantera fastigheter
+            </TabsTrigger>
+            <TabsTrigger
+              value="hantera-konto"
+              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
+            >
+              <User className="w-4 h-4" />
+              Hantera konto
+            </TabsTrigger>
+            <TabsTrigger
+              value="hantera-byra"
               className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
             >
               <Building2 className="w-4 h-4" />
-              Byråinformation
-            </TabsTrigger>
-            <TabsTrigger 
-              value="mäklare" 
-              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
-            >
-              <Users className="w-4 h-4" />
-              Mäklare
-            </TabsTrigger>
-            <TabsTrigger 
-              value="statistik" 
-              className="flex items-center gap-2 data-[state=active]:bg-hero-gradient data-[state=active]:text-white"
-            >
-              <BarChart3 className="w-4 h-4" />
-              Statistik
+              Hantera byrå
             </TabsTrigger>
           </TabsList>
 
-          {/* Byråinformation Tab */}
-          <TabsContent value="byrå">
-            <div className="bg-card rounded-lg border p-6">
-              <div className="space-y-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <Building2 className="w-8 h-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Byråinformation</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <Label htmlFor="office_name">Kontorsnamn</Label>
-                    <Input
-                      id="office_name"
-                      value={agencyInfo?.name || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), name: e.target.value })}
-                      placeholder="Kontorsnamn"
-                    />
-                    <Label htmlFor="agency-email-domain">E-postdomän</Label>
-                    <Input
-                      id="agency-email-domain"
-                      value={agencyInfo?.email_domain || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), email_domain: e.target.value })}
-                      placeholder="E-postdomän"
-                    />
-                    <Label htmlFor="agency-email">E-post till kontoret</Label>
-                    <Input
-                      id="agency-email"
-                      type="email"
-                      value={agencyInfo?.email || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), email: e.target.value })}
-                      placeholder="kontor@foretag.se"
-                    />
-                    <Label htmlFor="address">Adress</Label>
-                    <Input
-                      id="address"
-                      value={agencyInfo?.address || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), address: e.target.value })}
-                      placeholder="Gatuadress, Postnummer, Ort"
-                    />
-                    <Label htmlFor="area">Område</Label>
-                    <Input
-                      id="area"
-                      value={agencyInfo?.area || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), area: e.target.value })}
-                      placeholder="T.ex. Stockholm, Göteborg, Malmö"
-                    />
-                    <Label htmlFor="owner">Ägare</Label>
-                    <Input
-                      id="owner"
-                      value={agencyInfo?.owner || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), owner: e.target.value })}
-                      placeholder="Namn på företagsägare"
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <Label htmlFor="phone">Telefon</Label>
-                    <Input
-                      id="phone"
-                      value={agencyInfo?.phone || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), phone: e.target.value })}
-                      placeholder="+46 XX XXX XX XX"
-                    />
-                    <Label htmlFor="org_number">Org.nr</Label>
-                    <Input
-                      id="org_number"
-                      value={agencyInfo?.org_number || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), org_number: e.target.value })}
-                      placeholder="XXXXXX-XXXX"
-                    />
-                    <Label htmlFor="website">Länk till egen sida</Label>
-                    <Input
-                      id="website"
-                      value={agencyInfo?.website || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), website: e.target.value })}
-                      placeholder="https://www.exempel.se"
-                    />
-                    <Label htmlFor="description">Beskrivning</Label>
-                    <Textarea
-                      id="description"
-                      value={agencyInfo?.description || ""}
-                      onChange={e => setAgencyInfo({ ...(agencyInfo ?? {
-                        name: "",
-                        email_domain: "",
-                        email: "",
-                        address: "",
-                        phone: "",
-                        org_number: "",
-                        website: "",
-                        description: "",
-                        logo_url: "",
-                        area: "",
-                        owner: ""
-                      }), description: e.target.value })}
-                      placeholder="Beskrivning av byrån"
-                    />
-                    <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
-                    <div className="space-y-3">
-                      {agencyInfo?.logo_url && (
-                        <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
-                          <img 
-                            src={agencyInfo.logo_url} 
-                            alt="Byrå logotyp" 
-                            key={agencyInfo.logo_url}
-                            className="h-40 w-auto object-contain mx-auto"
-                            onError={(e) => {
-                              console.error("Failed to load logo:", agencyInfo.logo_url);
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="logo-upload" className="cursor-pointer">
-                          <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
-                            <Upload className="w-5 h-5" />
-                            <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
-                          </div>
-                          <Input
-                            id="logo-upload"
-                            type="file"
-                            accept="image/jpeg,image/jpg,image/png,image/webp"
-                            className="hidden"
-                            onChange={handleLogoUpload}
-                            disabled={uploadingLogo}
-                          />
-                        </Label>
-                        {agencyInfo?.logo_url && (
-                          <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
-                        )}
+          {/* Hantera Byrå Tab (Nested Tabs) */}
+          <TabsContent value="hantera-byra">
+            <Tabs defaultValue="byra-info" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50">
+                <TabsTrigger value="byra-info">Byråinformation</TabsTrigger>
+                <TabsTrigger value="maklare">Mäklare</TabsTrigger>
+                <TabsTrigger value="statistik">Statistik</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="byra-info">
+                <div className="bg-card rounded-lg border p-6">
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Building2 className="w-8 h-8 text-primary" />
+                      <h2 className="text-2xl font-bold">Byråinformation</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <Label htmlFor="office_name">Kontorsnamn</Label>
+                        <Input
+                          id="office_name"
+                          value={agencyInfo?.name || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), name: e.target.value
+                          })}
+                          placeholder="Kontorsnamn"
+                        />
+                        <Label htmlFor="agency-email-domain">E-postdomän</Label>
+                        <Input
+                          id="agency-email-domain"
+                          value={agencyInfo?.email_domain || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), email_domain: e.target.value
+                          })}
+                          placeholder="E-postdomän"
+                        />
+                        <Label htmlFor="agency-email">E-post till kontoret</Label>
+                        <Input
+                          id="agency-email"
+                          type="email"
+                          value={agencyInfo?.email || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), email: e.target.value
+                          })}
+                          placeholder="kontor@foretag.se"
+                        />
+                        <Label htmlFor="address">Adress</Label>
+                        <Input
+                          id="address"
+                          value={agencyInfo?.address || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), address: e.target.value
+                          })}
+                          placeholder="Gatuadress, Postnummer, Ort"
+                        />
+                        <Label htmlFor="area">Område</Label>
+                        <Input
+                          id="area"
+                          value={agencyInfo?.area || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), area: e.target.value
+                          })}
+                          placeholder="T.ex. Stockholm, Göteborg, Malmö"
+                        />
+                        <Label htmlFor="owner">Ägare</Label>
+                        <Input
+                          id="owner"
+                          value={agencyInfo?.owner || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), owner: e.target.value
+                          })}
+                          placeholder="Namn på företagsägare"
+                        />
                       </div>
+                      <div className="space-y-4">
+                        <Label htmlFor="phone">Telefon</Label>
+                        <Input
+                          id="phone"
+                          value={agencyInfo?.phone || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), phone: e.target.value
+                          })}
+                          placeholder="+46 XX XXX XX XX"
+                        />
+                        <Label htmlFor="org_number">Org.nr</Label>
+                        <Input
+                          id="org_number"
+                          value={agencyInfo?.org_number || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), org_number: e.target.value
+                          })}
+                          placeholder="XXXXXX-XXXX"
+                        />
+                        <Label htmlFor="website">Länk till egen sida</Label>
+                        <Input
+                          id="website"
+                          value={agencyInfo?.website || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), website: e.target.value
+                          })}
+                          placeholder="https://www.exempel.se"
+                        />
+                        <Label htmlFor="description">Beskrivning</Label>
+                        <Textarea
+                          id="description"
+                          value={agencyInfo?.description || ""}
+                          onChange={e => setAgencyInfo({
+                            ...(agencyInfo ?? {
+                              name: "",
+                              email_domain: "",
+                              email: "",
+                              address: "",
+                              phone: "",
+                              org_number: "",
+                              website: "",
+                              description: "",
+                              logo_url: "",
+                              area: "",
+                              owner: ""
+                            }), description: e.target.value
+                          })}
+                          placeholder="Beskrivning av byrån"
+                        />
+                        <Label className="text-sm font-medium mb-2 block">Uppladdning av logga</Label>
+                        <div className="space-y-3">
+                          {agencyInfo?.logo_url && (
+                            <div className="p-4 border-2 rounded-lg bg-muted/20 shadow-md">
+                              <img
+                                src={agencyInfo.logo_url}
+                                alt="Byrå logotyp"
+                                key={agencyInfo.logo_url}
+                                className="h-40 w-auto object-contain mx-auto"
+                                onError={(e) => {
+                                  console.error("Failed to load logo:", agencyInfo.logo_url);
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
+                          <div className="space-y-2">
+                            <Label htmlFor="logo-upload" className="cursor-pointer">
+                              <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
+                                <Upload className="w-5 h-5" />
+                                <span>{uploadingLogo ? "Laddar upp..." : agencyInfo?.logo_url ? "Byt logotyp" : "Välj logotyp"}</span>
+                              </div>
+                              <Input
+                                id="logo-upload"
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                className="hidden"
+                                onChange={handleLogoUpload}
+                                disabled={uploadingLogo}
+                              />
+                            </Label>
+                            {agencyInfo?.logo_url && (
+                              <p className="text-xs text-muted-foreground text-center">✓ Logotyp uppladdad</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-8">
+                      <Button onClick={() => updateAgencyInfo()} disabled={loading}>
+                        {loading ? "Sparar..." : "Spara"}
+                      </Button>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-8">
-                  <Button onClick={() => updateAgencyInfo()} disabled={loading}>
-                    {loading ? "Sparar..." : "Spara"}
-                  </Button>
+              </TabsContent>
+
+              <TabsContent value="maklare">
+                <div className="bg-card rounded-lg border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                      <Users className="w-6 h-6" />
+                      Mäklare
+                    </h2>
+                    <Dialog onOpenChange={(open) => {
+                      if (open) {
+                        setCreatedInvitationLink(null);
+                        setNewAgent({ email: "", full_name: "" });
+                      }
+                    }}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">
+                          <User className="w-4 h-4 mr-2" />
+                          Bjud in mäklare
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-lg">
+                        <h3 className="text-lg font-semibold">
+                          Bjud in ny mäklare
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Fyll i namn och e-post för att bjuda in en mäklare till byrån.
+                        </p>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="agent-name">Namn *</Label>
+                            <Input
+                              id="agent-name"
+                              value={newAgent.full_name}
+                              onChange={(e) => setNewAgent({ ...newAgent, full_name: e.target.value })}
+                              placeholder="För- och efternamn"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="agent-email">E-post *</Label>
+                            <Input
+                              id="agent-email"
+                              type="email"
+                              value={newAgent.email}
+                              onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })}
+                              placeholder="mäklare@exempel.se"
+                            />
+                          </div>
+                          <Button
+                            onClick={createAgent}
+                            disabled={loading || !newAgent.email || !newAgent.full_name || loadingAgency || !agencyId}
+                            className="w-full"
+                          >
+                            {loading ? "Skapar inbjudan..." : "Skapa inbjudan"}
+                          </Button>
+
+                          {createdInvitationLink && (
+                            <div className="mt-4 p-4 bg-muted rounded-lg space-y-2">
+                              <Label className="text-sm font-semibold">Inbjudningslänk skapad!</Label>
+                              <p className="text-xs text-muted-foreground">
+                                Kopiera länken nedan och skicka den till mäklaren:
+                              </p>
+                              <div className="flex gap-2">
+                                <Input
+                                  readOnly
+                                  value={createdInvitationLink}
+                                  className="text-xs bg-background"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => copyToClipboard(createdInvitationLink)}
+                                >
+                                  Kopiera
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {pendingInvites.length > 0 && (
+                            <div className="mt-6 pt-6 border-t">
+                              <Label className="text-sm font-semibold mb-3 block">
+                                Väntande inbjudningar ({pendingInvites.length})
+                              </Label>
+                              <div className="space-y-2">
+                                {pendingInvites.map((invite) => (
+                                  <div key={invite.id} className="p-3 bg-muted rounded-lg">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div>
+                                        <p className="text-sm font-medium">{invite.email}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          Utgår: {new Date(invite.expires_at).toLocaleDateString('sv-SE')}
+                                        </p>
+                                      </div>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => deleteInvitation(invite.id)}
+                                        className="text-destructive"
+                                      >
+                                        Radera
+                                      </Button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        readOnly
+                                        value={`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`}
+                                        className="text-xs bg-background"
+                                      />
+                                      <Button
+                                        size="sm"
+                                        onClick={() => copyToClipboard(`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`)}
+                                      >
+                                        Kopiera
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {users.map(user => (
+                      <div key={user.id} className="border rounded-lg p-4 bg-background">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="font-semibold text-lg">{user.full_name}</h3>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeUser(user.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Ta bort
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Roll:</span>
+                            <span className="font-medium capitalize">
+                              {user.user_roles?.[0]?.user_type ?? "-"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Aktiva objekt:</span>
+                            <span className="font-bold text-primary">
+                              {user.propertyCount || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {users.length === 0 && (
+                    <p className="text-center text-muted-foreground py-8">
+                      Inga mäklare i byrån än
+                    </p>
+                  )}
                 </div>
-              </div>
-            </div>
+              </TabsContent>
+
+              <TabsContent value="statistik">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                  {/* Antal Mäklare */}
+                  <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Antal Mäklare</CardTitle>
+                      <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">
+                        {statistics.totalAgents}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Aktiva mäklare i byrån
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Aktiva Fastigheter */}
+                  <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Aktiva Fastigheter</CardTitle>
+                      <HomeIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-green-700 dark:text-green-300">
+                        {statistics.activeProperties}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Till salu just nu
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Sålda Fastigheter */}
+                  <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Sålda Fastigheter</CardTitle>
+                      <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+                        {statistics.soldProperties}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Totalt antal sålda
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Totalt Försäljningsvärde */}
+                  <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200 dark:border-amber-800 md:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Totalt Försäljningsvärde</CardTitle>
+                      <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-amber-700 dark:text-amber-300">
+                        {statistics.totalSalesValue.toLocaleString('sv-SE')} kr
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Sammanlagt värde av alla försäljningar
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Bästa Mäklare */}
+                  <Card className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900 border-rose-200 dark:border-rose-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Bästa Mäklare</CardTitle>
+                      <Award className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xl font-bold text-rose-700 dark:text-rose-300 truncate">
+                        {statistics.topAgent.name}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {statistics.topAgent.salesCount} försäljningar
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                </div>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          {/* Mäklare Tab */}
-          <TabsContent value="mäklare">
-            <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  <Users className="w-6 h-6" />
-                  Mäklare
-                </h2>
-                <Dialog onOpenChange={(open) => {
-                  if (open) {
-                    setCreatedInvitationLink(null);
-                    setNewAgent({ email: "", full_name: "" });
-                  }
-                }}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">
-                      <User className="w-4 h-4 mr-2" />
-                      Bjud in mäklare
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-lg">
-                    <h3 className="text-lg font-semibold">
-                      Bjud in ny mäklare
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Fyll i namn och e-post för att bjuda in en mäklare till byrån.
-                    </p>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="agent-name">Namn *</Label>
-                        <Input
-                          id="agent-name"
-                          value={newAgent.full_name}
-                          onChange={(e) => setNewAgent({ ...newAgent, full_name: e.target.value })}
-                          placeholder="För- och efternamn"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="agent-email">E-post *</Label>
-                        <Input
-                          id="agent-email"
-                          type="email"
-                          value={newAgent.email}
-                          onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })}
-                          placeholder="mäklare@exempel.se"
-                        />
-                      </div>
-                      <Button 
-                        onClick={createAgent} 
-                        disabled={loading || !newAgent.email || !newAgent.full_name || loadingAgency || !agencyId} 
-                        className="w-full"
-                      >
-                        {loading ? "Skapar inbjudan..." : "Skapa inbjudan"}
-                      </Button>
-
-                      {/* Show created invitation link */}
-                      {createdInvitationLink && (
-                        <div className="mt-4 p-4 bg-muted rounded-lg space-y-2">
-                          <Label className="text-sm font-semibold">Inbjudningslänk skapad!</Label>
-                          <p className="text-xs text-muted-foreground">
-                            Kopiera länken nedan och skicka den till mäklaren:
-                          </p>
-                          <div className="flex gap-2">
-                            <Input
-                              readOnly
-                              value={createdInvitationLink}
-                              className="text-xs bg-background"
-                            />
-                            <Button
-                              size="sm"
-                              onClick={() => copyToClipboard(createdInvitationLink)}
-                            >
-                              Kopiera
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Show pending invitations */}
-                      {pendingInvites.length > 0 && (
-                        <div className="mt-6 pt-6 border-t">
-                          <Label className="text-sm font-semibold mb-3 block">
-                            Väntande inbjudningar ({pendingInvites.length})
-                          </Label>
-                          <div className="space-y-2">
-                            {pendingInvites.map((invite) => (
-                              <div key={invite.id} className="p-3 bg-muted rounded-lg">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div>
-                                    <p className="text-sm font-medium">{invite.email}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      Utgår: {new Date(invite.expires_at).toLocaleDateString('sv-SE')}
-                                    </p>
-                                  </div>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => deleteInvitation(invite.id)}
-                                    className="text-destructive"
-                                  >
-                                    Radera
-                                  </Button>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Input
-                                    readOnly
-                                    value={`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`}
-                                    className="text-xs bg-background"
-                                  />
-                                  <Button
-                                    size="sm"
-                                    onClick={() => copyToClipboard(`${window.location.origin}/acceptera-inbjudan?token=${invite.token}`)}
-                                  >
-                                    Kopiera
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+          {/* Hantera Fastigheter Tab */}
+          <TabsContent value="hantera-fastigheter">
+            <div className="min-h-[500px]">
+              {loadingProperties ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-96" />)}
+                </div>
+              ) : agencyProperties.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {agencyProperties.map(property => (
+                    <div key={property.id} className="relative group">
+                      <PropertyCard
+                        id={property.id}
+                        title={property.address}
+                        location={property.location}
+                        price={`${property.price.toLocaleString('sv-SE')} kr`}
+                        newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
+                        type={property.type}
+                        bedrooms={property.bedrooms}
+                        bathrooms={property.bathrooms}
+                        area={property.area}
+                        image={property.image_url || ""}
+                        hoverImage={property.hover_image_url || undefined}
+                        hasVR={property.has_vr || false}
+                        listedDate={property.listed_date || undefined}
+                        isSold={property.is_sold || false}
+                        soldDate={property.sold_date || undefined}
+                        soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
+                        vendorLogo={property.vendor_logo_url || undefined}
+                        viewingDate={property.viewing_date ? new Date(property.viewing_date) : undefined}
+                        floor={property.floor || undefined}
+                        totalFloors={property.total_floors || undefined}
+                        hideControls={true}
+                        buttonText="Visa på hemsidan"
+                        onButtonClick={() => window.open(`/fastighet/${property.id}`, '_blank')}
+                      />
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {users.map(user => (
-                  <div key={user.id} className="border rounded-lg p-4 bg-background">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-lg">{user.full_name}</h3>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => removeUser(user.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        Ta bort
-                      </Button>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Roll:</span>
-                        <span className="font-medium capitalize">
-                          {user.user_roles?.[0]?.user_type ?? "-"}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Aktiva objekt:</span>
-                        <span className="font-bold text-primary">
-                          {user.propertyCount || 0}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {users.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
-                  Inga mäklare i byrån än
-                </p>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-muted/20 rounded-lg border-2 border-dashed">
+                  <HomeIcon className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Inga fastigheter hittades</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Det verkar som att inga mäklare i din byrå har lagt upp några fastigheter än.
+                  </p>
+                </div>
               )}
             </div>
           </TabsContent>
 
-          {/* Statistik Tab */}
-          <TabsContent value="statistik">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              
-              {/* Antal Mäklare */}
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Antal Mäklare</CardTitle>
-                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-                    {statistics.totalAgents}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Aktiva mäklare i byrån
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Aktiva Fastigheter */}
-              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Aktiva Fastigheter</CardTitle>
-                  <HomeIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-700 dark:text-green-300">
-                    {statistics.activeProperties}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Till salu just nu
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Sålda Fastigheter */}
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sålda Fastigheter</CardTitle>
-                  <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">
-                    {statistics.soldProperties}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Totalt antal sålda
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Totalt Försäljningsvärde */}
-              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200 dark:border-amber-800 md:col-span-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Totalt Försäljningsvärde</CardTitle>
-                  <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-amber-700 dark:text-amber-300">
-                    {statistics.totalSalesValue.toLocaleString('sv-SE')} kr
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Sammanlagt värde av alla försäljningar
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Bästa Mäklare */}
-              <Card className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900 border-rose-200 dark:border-rose-800">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Bästa Mäklare</CardTitle>
-                  <Award className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xl font-bold text-rose-700 dark:text-rose-300 truncate">
-                    {statistics.topAgent.name}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {statistics.topAgent.salesCount} försäljningar
-                  </p>
-                </CardContent>
-              </Card>
-
+          {/* Hantera Konto Tab */}
+          <TabsContent value="hantera-konto">
+            <div className="max-w-4xl mx-auto">
+              <ProfileForm />
             </div>
           </TabsContent>
 
