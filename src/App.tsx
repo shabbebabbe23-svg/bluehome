@@ -19,6 +19,7 @@ import FindAgent from "./pages/FindAgent";
 import AdvertisingPricing from "./pages/AdvertisingPricing";
 import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
+import MailConfirmation from "./pages/MailConfirmation";
 import CreateAgencyManual from "./pages/CreateAgencyManual";
 import ManageAgents from "./pages/ManageAgents";
 import MarketAnalysis from "./pages/MarketAnalysis";
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/marknadsanalys" element={<MarketAnalysis />} />
               <Route path="/virtuell-visning/:id" element={<VirtualTour />} />
               <Route path="/aterstall-losenord" element={<ResetPassword />} />
+              <Route path="/mail_confirmation" element={<MailConfirmation />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
