@@ -582,9 +582,11 @@ const AgencyAdminDashboard = () => {
 
       console.log("Public URL:", publicUrl);
 
-      // Update agency using RPC function to bypass RLS
+      // Directly update the agency's logo_url in the agencies table
       const { error: updateError } = await supabase
-        .rpc('set_my_agency_logo', { p_logo_url: publicUrl });
+        .from("agencies")
+        .update({ logo_url: publicUrl })
+        .eq("id", agencyId);
 
       if (updateError) {
         console.error("Agency update error:", updateError);
