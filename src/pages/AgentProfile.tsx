@@ -6,17 +6,17 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, Mail, MapPin, Phone, User, Home, Instagram } from "lucide-react";
+import { Building2, Mail, MapPin, Phone, User, Home, Instagram, Globe } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // TikTok icon component since lucide-react doesn't have one
 const TikTokIcon = ({ className }: { className?: string }) => (
-  <svg 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
     className={className}
   >
-    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
   </svg>
 );
 
@@ -46,7 +46,7 @@ const AgentProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("agencies")
-        .select("logo_url, name")
+        .select("logo_url, name, website_url")
         .eq("id", agentProfile?.agency_id)
         .single();
 
@@ -107,7 +107,7 @@ const AgentProfile = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-12 sm:py-16">
         {/* Agent Profile Header */}
         <Card className="mb-8">
@@ -124,7 +124,7 @@ const AgentProfile = () => {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                
+
                 {/* Main info */}
                 <div className="flex-1 text-center sm:text-left space-y-4 min-w-0">
                   {/* Name - responsive text size with word break */}
@@ -132,12 +132,37 @@ const AgentProfile = () => {
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words">
                       {agentProfile.full_name || "Mäklare"}
                     </h1>
-                    
+
                     {/* Show agency text only if no logo exists */}
                     {agentProfile.agency && !agencyData?.logo_url && (
                       <div className="flex items-center gap-2 text-base sm:text-lg text-muted-foreground justify-center sm:justify-start">
                         <Building2 className="w-5 h-5 flex-shrink-0" />
-                        <span className="break-words">{agentProfile.agency}</span>
+                        {agencyData?.website_url ? (
+                          <a
+                            href={agencyData.website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="break-words hover:text-primary hover:underline transition-colors"
+                          >
+                            {agentProfile.agency}
+                          </a>
+                        ) : (
+                          <span className="break-words">{agentProfile.agency}</span>
+                        )}
+                      </div>
+                    )}
+                    {/* Show agency sales area if available */}
+                    {agencyData?.area && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start mt-1">
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">Säljområde: {agencyData.area}</span>
+                      </div>
+                    )}
+                    {/* Show agency address if available */}
+                    {agencyData?.address && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start mt-1">
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">Kontor: {agencyData.address}</span>
                       </div>
                     )}
                   </div>
@@ -157,11 +182,11 @@ const AgentProfile = () => {
                         <span className="truncate">{agentProfile.area}</span>
                       </div>
                     )}
-                    
+
                     {agentProfile.email && (
                       <div className="flex items-center gap-2 text-sm justify-center sm:justify-start">
                         <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <a 
+                        <a
                           href={`mailto:${agentProfile.email}`}
                           className="hover:text-primary transition-colors truncate"
                         >
@@ -173,7 +198,7 @@ const AgentProfile = () => {
                     {agentProfile.phone && (
                       <div className="flex items-center gap-2 text-sm justify-center sm:justify-start">
                         <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <a 
+                        <a
                           href={`tel:${agentProfile.phone}`}
                           className="hover:text-primary transition-colors"
                         >
@@ -181,7 +206,7 @@ const AgentProfile = () => {
                         </a>
                       </div>
                     )}
-                    
+
                     {agentProfile.office && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center sm:justify-start">
                         <Building2 className="w-4 h-4 flex-shrink-0" />
@@ -192,11 +217,11 @@ const AgentProfile = () => {
 
                   {/* Agency Logo */}
                   {agencyData?.logo_url && (
-                    <div className="flex justify-center sm:justify-start mt-2">
-                      <img 
-                        src={agencyData.logo_url} 
-                        alt={agencyData.name || 'Byrålogo'} 
-                        className="h-[46px] w-auto max-w-[161px] object-contain" 
+                    <div className="flex flex-col items-center sm:items-start mt-2">
+                      <img
+                        src={agencyData.logo_url}
+                        alt={agencyData.name || 'Byrålogo'}
+                        className="h-[46px] w-auto max-w-[161px] object-contain mb-2"
                       />
                     </div>
                   )}
@@ -206,14 +231,14 @@ const AgentProfile = () => {
               {/* Bottom row: Social Media + Property Count */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 pt-4 border-t border-border">
                 {/* Social Media Section */}
-                {(agentProfile.instagram_url || agentProfile.tiktok_url) && (
+                {(agentProfile.instagram_url || agentProfile.tiktok_url || agencyData?.website_url) && (
                   <div className="text-center sm:text-left space-y-3">
                     <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       Mäklarens sociala medier
                     </h3>
                     <div className="flex gap-2 justify-center sm:justify-start pb-5">
                       {agentProfile.instagram_url && (
-                        <a 
+                        <a
                           href={agentProfile.instagram_url}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -225,9 +250,9 @@ const AgentProfile = () => {
                           </span>
                         </a>
                       )}
-                      
+
                       {agentProfile.tiktok_url && (
-                        <a 
+                        <a
                           href={agentProfile.tiktok_url}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -236,6 +261,21 @@ const AgentProfile = () => {
                           <TikTokIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           <span className="absolute -bottom-4 text-[9px] sm:text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             TikTok
+                          </span>
+                        </a>
+                      )}
+
+                      {/* Agency Website Link */}
+                      {agencyData?.website_url && (
+                        <a
+                          href={agencyData.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300"
+                        >
+                          <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <span className="absolute -bottom-4 text-[9px] sm:text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            Hemsida
                           </span>
                         </a>
                       )}
@@ -265,7 +305,7 @@ const AgentProfile = () => {
           <h2 className="text-2xl font-bold mb-6">
             {properties?.length ? `${agentProfile.full_name || "Mäklarens"} fastigheter` : "Inga aktiva fastigheter"}
           </h2>
-          
+
           {isLoadingProperties ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -306,7 +346,7 @@ const AgentProfile = () => {
           )}
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
