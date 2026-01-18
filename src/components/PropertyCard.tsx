@@ -377,7 +377,7 @@ const PropertyCard = ({
                     {soldPrice}
                   </span>
                 ) : newPrice ? (
-                  <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                  <span className={`text-lg sm:text-xl font-bold whitespace-nowrap ${hasActiveBidding ? 'text-[#FF6B2C]' : 'text-primary'}`}>
                     {newPrice}
                   </span>
                 ) : (
@@ -723,6 +723,15 @@ const PropertyCard = ({
                   {soldPrice}
                 </span>
                 <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                  {price}
+                </span>
+              </>
+            ) : newPrice && hasActiveBidding ? (
+              <>
+                <span className="text-lg sm:text-xl font-bold text-[#FF6B2C] whitespace-nowrap">
+                  {newPrice}
+                </span>
+                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>

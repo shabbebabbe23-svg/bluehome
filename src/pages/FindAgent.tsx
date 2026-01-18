@@ -35,8 +35,8 @@ const FindAgent = () => {
           </svg>
 
           {/* BaraHem Logo - Center */}
-          <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-            <svg className="w-8 h-8 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="flex items-center gap-3 absolute left-1/2 -translate-x-1/2">
+            <svg className="w-14 h-14 md:w-20 md:h-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)' }} />
@@ -46,7 +46,7 @@ const FindAgent = () => {
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#homeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
               <polyline points="9 22 9 12 15 12 15 22" stroke="url(#homeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-2xl md:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+            <span className="text-4xl md:text-5xl font-bold bg-hero-gradient bg-clip-text text-transparent">
               BaraHem
             </span>
           </div>

@@ -131,6 +131,7 @@ export const allProperties: Property[] = [
     agent_phone: "070-123 45 67",
     agent_id: "agent-1",
     hasActiveBidding: true,
+    newPrice: "3 350 000 kr",
   },
   {
     id: 2,

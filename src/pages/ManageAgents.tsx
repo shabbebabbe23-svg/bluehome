@@ -206,9 +206,11 @@ const ManageAgents = () => {
             {/* Rollval borttagen, endast mäklare tillåts */}
             <div className="flex gap-2">
               <Button type="submit" disabled={loading} className="w-full">Lägg till</Button>
-              <Button type="button" variant="outline" onClick={handleInvite} disabled={loading}>
-                <Mail className="w-4 h-4 mr-1" /> Skicka inbjudan
-              </Button>
+              {(userType === 'superadmin' || userType === 'agency_admin') && (
+                <Button type="button" variant="outline" onClick={handleInvite} disabled={loading}>
+                  <Mail className="w-4 h-4 mr-1" /> Skicka inbjudan
+                </Button>
+              )}
             </div>
           </form>
           <div className="mb-4 flex gap-2 items-center">
