@@ -55,6 +55,7 @@ const PropertyDetail = () => {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
+  const [agencyWebsite, setAgencyWebsite] = useState<string | null>(null);
   const [isPWA, setIsPWA] = useState(false);
   const [isBidHistoryOpen, setIsBidHistoryOpen] = useState(false);
   const [bidHistory, setBidHistory] = useState<any[]>([]);
@@ -99,15 +100,18 @@ const PropertyDetail = () => {
             if (profile) {
               setAgentProfile(profile);
               
-              // Hämta byråns logga
+              // Hämta byråns logga och hemsida
               if (profile.agency_id) {
                 const { data: agency } = await supabase
                   .from('agencies')
-                  .select('logo_url')
+                  .select('logo_url, website')
                   .eq('id', profile.agency_id)
                   .single();
                 if (agency?.logo_url) {
                   setAgencyLogo(agency.logo_url);
+                }
+                if (agency?.website) {
+                  setAgencyWebsite(agency.website);
                 }
               }
             }
@@ -1101,11 +1105,24 @@ const PropertyDetail = () => {
                         <p className="text-xl font-semibold">{agentProfile.full_name || 'Mäklare'}</p>
                       </Link>
                       {(agencyLogo || dbProperty?.vendor_logo_url) ? (
-                        <img 
-                          src={agencyLogo || dbProperty?.vendor_logo_url} 
-                          alt="Byrålogo" 
-                          className="h-[46px] w-auto max-w-[161px] object-contain mt-2 mx-auto" 
-                        />
+                        <Button
+                          variant="ghost"
+                          className="p-0 h-auto bg-transparent hover:bg-muted/30 rounded focus:ring-2 focus:ring-primary mt-2 mx-auto flex justify-center"
+                          style={{ boxShadow: 'none' }}
+                          onClick={() => {
+                            if (agencyWebsite) {
+                              window.open(agencyWebsite.startsWith('http') ? agencyWebsite : `https://${agencyWebsite}`, '_blank');
+                            }
+                          }}
+                          disabled={!agencyWebsite}
+                          title={agencyWebsite ? 'Besök byråns hemsida' : 'Ingen hemsida tillgänglig'}
+                        >
+                          <img
+                            src={agencyLogo || dbProperty?.vendor_logo_url}
+                            alt="Byrålogo"
+                            className="h-[46px] w-auto max-w-[161px] object-contain"
+                          />
+                        </Button>
                       ) : agentProfile.agency && (
                         <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
                           <Building2 className="w-4 h-4" />
