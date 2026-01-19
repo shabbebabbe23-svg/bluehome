@@ -131,7 +131,7 @@ export const allProperties: Property[] = [
     agent_phone: "070-123 45 67",
     agent_id: "agent-1",
     hasActiveBidding: true,
-    newPrice: "3 350 000 kr",
+    new_price: 3350000,
   },
   {
     id: 2,
@@ -151,30 +151,6 @@ export const allProperties: Property[] = [
     isNew: false,
     vendorLogo: logo2,
     description: "Charmig villa i klassisk stil med vacker trädgård och generösa gemensamma ytor. Perfekt för familjen som söker lugn och närhet till natur.",
-    agent_name: "Shahab Barani",
-    agent_avatar: "https://qgvloiecyvqbxeplfzwv.supabase.co/storage/v1/object/public/property-images/09940ee3-5c89-49d8-9e1b-337bc6dff9e0/09940ee3-5c89-49d8-9e1b-337bc6dff9e0-0.2970299851187287.jpeg",
-    agent_agency: "Täbys Estate",
-    agent_phone: "070-123 45 67",
-    agent_id: "agent-1",
-  },
-  {
-    id: 3,
-    title: "Modernt radhus",
-    price: "2 900 000 kr",
-    priceValue: 2900000,
-    location: "Vasastan, Stockholm",
-    address: "Odengatan 78",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 110,
-    fee: 2800,
-    viewingDate: new Date("2024-10-14"),
-    image: property3,
-    hoverImage: property4,
-    type: "Radhus",
-    isNew: true,
-    vendorLogo: logo3,
-    description: "Modernt radhus med smart planlösning och egen uteplats. Nära till kommunikationer och stadens alla bekvämligheter.",
     agent_name: "Shahab Barani",
     agent_avatar: "https://qgvloiecyvqbxeplfzwv.supabase.co/storage/v1/object/public/property-images/09940ee3-5c89-49d8-9e1b-337bc6dff9e0/09940ee3-5c89-49d8-9e1b-337bc6dff9e0-0.2970299851187287.jpeg",
     agent_agency: "Täbys Estate",
@@ -352,6 +328,8 @@ export const allProperties: Property[] = [
     agent_agency: "Täbys Estate",
     agent_phone: "070-123 45 67",
     agent_id: "agent-1",
+    hasActiveBidding: true,
+    new_price: 8000000,
   },
   {
     id: "storgatan",
@@ -746,86 +724,61 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           // Om inga fastigheter finns i databasen, visa dummy-fastigheter
           setDbProperties(allProperties);
         }
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        setDbProperties(allProperties);
+      } catch (err) {
+        console.error('Error fetching properties:', err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProperties();
   }, []);
 
-  // Preload hover images to avoid flicker when user hovers
-  useEffect(() => {
-    const allPropertiesWithSold = [...allProperties, ...soldProperties, ...dbProperties];
-    allPropertiesWithSold.forEach((p) => {
-      try {
-        const img = new Image();
-        img.src = p.hoverImage ?? p.image;
-        // Preload vendor logo if present (SVG or image path)
-        if (p.vendorLogo) {
-          const logo = new Image();
-          logo.src = p.vendorLogo;
-        }
-      } catch (e) {
-        // noop - if preload fails we silently ignore
-      }
-    });
-  }, [dbProperties]);
+  const sortProperties = (props: Property[]) => {
+    const sorted = [...props];
 
-  const filterByType = (props: Property[]) => {
-    let filtered = props;
-
-    // Filter by property type
-    if (propertyType) {
-      // Map Hero propertyType values to PropertyGrid type values
-      const typeMap: Record<string, string> = {
-        "house": "Villa",
-        "villa": "Radhus",
-        "apartment": "Lägenhet",
-        "cottage": "Fritidshus",
-        "plot": "Tomt"
-      };
-
-      const targetType = typeMap[propertyType];
-      if (targetType) {
-        filtered = filtered.filter(property => property.type === targetType);
-      }
-    }
-
-    // Filter by address search
-    if (searchAddress && searchAddress.trim()) {
-      const searchLower = searchAddress.toLowerCase().trim();
-
-      // Handle "Inom tullarna" special searches
-      if (searchAddress === "Stockholm - Inom tullarna") {
-        const centralStockholm = [
-          "södermalm", "norrmalm", "östermalm", "vasastan", "kungsholmen",
-          "gamla stan", "djurgården", "gärdet"
-        ];
-        filtered = filtered.filter(property => {
-          const locationLower = property.location.toLowerCase();
-          return centralStockholm.some(district => locationLower.includes(district));
+    switch (sortBy) {
+      case "price-high":
+        return sorted.sort((a, b) => b.priceValue - a.priceValue);
+      case "price-low":
+        return sorted.sort((a, b) => a.priceValue - b.priceValue);
+      case "area-small":
+        return sorted.sort((a, b) => a.area - b.area);
+      case "area-large":
+        return sorted.sort((a, b) => b.area - a.area);
+      case "fee-low":
+        return sorted.sort((a, b) => a.fee - b.fee);
+      case "viewing-earliest":
+        return sorted.sort((a, b) => a.viewingDate.getTime() - b.viewingDate.getTime());
+      case "address-az":
+        return sorted.sort((a, b) => a.address.localeCompare(b.address));
+      case "address-za":
+        return sorted.sort((a, b) => b.address.localeCompare(a.address));
+      case "newest":
+        return sorted.sort((a, b) => {
+          const aTime = a.createdAt?.getTime() || 0;
+          const bTime = b.createdAt?.getTime() || 0;
+          return bTime - aTime;
         });
-      } else if (searchAddress === "Göteborg - Inom tullarna") {
-        const centralGoteborg = [
-          "centrum", "majorna", "linné", "vasastaden", "lorensberg",
-          "haga", "inom vallgraven", "stampen", "heden", "johanneberg", "landala"
-        ];
-        filtered = filtered.filter(property => {
-          const locationLower = property.location.toLowerCase();
-          return centralGoteborg.some(district => locationLower.includes(district));
-        });
-      } else {
-        // Regular search
-        filtered = filtered.filter(property =>
-          property.address.toLowerCase().includes(searchLower) ||
-          property.location.toLowerCase().includes(searchLower)
-        );
-      }
+      default:
+        return sorted;
     }
+  };
+
+  // Filter properties based on showFinalPrices toggle
+  // When showFinalPrices is ON, show only sold properties
+  // When showFinalPrices is OFF, show only active (non-sold) properties
+  const currentProperties = showFinalPrices
+    ? dbProperties.filter(p => p.isSold === true)
+    : dbProperties.filter(p => p.isSold !== true);
+
+  // Fallback to static mock data if no DB properties exist
+  const propertiesWithFallback = currentProperties.length > 0
+    ? currentProperties
+    : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
+
+  // Filtering function (was missing definition)
+  function filterByType(propertiesWithFallback: Property[]) {
+    let filtered = [...propertiesWithFallback];
 
     // Filter by price range
     if (priceRange) {
@@ -904,50 +857,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     }
 
     return filtered;
-  };
-
-  const sortProperties = (props: Property[]) => {
-    const sorted = [...props];
-
-    switch (sortBy) {
-      case "price-high":
-        return sorted.sort((a, b) => b.priceValue - a.priceValue);
-      case "price-low":
-        return sorted.sort((a, b) => a.priceValue - b.priceValue);
-      case "area-small":
-        return sorted.sort((a, b) => a.area - b.area);
-      case "area-large":
-        return sorted.sort((a, b) => b.area - a.area);
-      case "fee-low":
-        return sorted.sort((a, b) => a.fee - b.fee);
-      case "viewing-earliest":
-        return sorted.sort((a, b) => a.viewingDate.getTime() - b.viewingDate.getTime());
-      case "address-az":
-        return sorted.sort((a, b) => a.address.localeCompare(b.address));
-      case "address-za":
-        return sorted.sort((a, b) => b.address.localeCompare(a.address));
-      case "newest":
-        return sorted.sort((a, b) => {
-          const aTime = a.createdAt?.getTime() || 0;
-          const bTime = b.createdAt?.getTime() || 0;
-          return bTime - aTime;
-        });
-      default:
-        return sorted;
-    }
-  };
-
-  // Filter properties based on showFinalPrices toggle
-  // When showFinalPrices is ON, show only sold properties
-  // When showFinalPrices is OFF, show only active (non-sold) properties
-  const currentProperties = showFinalPrices
-    ? dbProperties.filter(p => p.isSold === true)
-    : dbProperties.filter(p => p.isSold !== true);
-
-  // Fallback to static mock data if no DB properties exist
-  const propertiesWithFallback = currentProperties.length > 0
-    ? currentProperties
-    : (showFinalPrices ? soldProperties : allProperties.filter(p => !p.isSold));
+  }
 
   const filteredProperties = filterByType(propertiesWithFallback);
 
@@ -1199,7 +1109,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   soldPrice={property.sold_price ? `${property.sold_price.toLocaleString('sv-SE')} kr` : undefined}
                   newPrice={property.new_price ? `${property.new_price.toLocaleString('sv-SE')} kr` : undefined}
                   viewMode={viewMode}
-                  hasActiveBidding={property.hasActiveBidding || propertyBids[property.id as string] || false}
+                  hasActiveBidding={!!(property.hasActiveBidding || propertyBids[property.id as string])}
                   bulkSelectMode={bulkSelectMode && isDbProperty}
                   isSelected={selectedProperties.includes(String(property.id))}
                   onSelect={handlePropertySelect}

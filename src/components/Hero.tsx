@@ -291,7 +291,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       {/* Content */}
       <div className="relative z-10 w-full max-w-none px-2 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-5 leading-tight -mt-14">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-5 md:mb-7 leading-tight mt-2 sm:mt-0">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
