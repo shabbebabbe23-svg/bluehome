@@ -1115,6 +1115,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   onSelect={handlePropertySelect}
                   floor={property.floor}
                   totalFloors={property.total_floors}
+                  additionalImages={property.additional_images}
                 />
               </div>
             );
