@@ -171,12 +171,12 @@ const PropertyCard = ({
     const swipeThreshold = 20; // Percentage threshold to trigger slide
 
     if (Math.abs(swipeOffset) > swipeThreshold) {
-      if (swipeOffset < 0 && currentImageIndex < allImages.length - 1) {
-        // Swipe left - next image
-        setCurrentImageIndex(prev => prev + 1);
-      } else if (swipeOffset > 0 && currentImageIndex > 0) {
-        // Swipe right - previous image
-        setCurrentImageIndex(prev => prev - 1);
+      if (swipeOffset < 0) {
+        // Swipe left - next image or loop to first
+        setCurrentImageIndex(prev => (prev === allImages.length - 1 ? 0 : prev + 1));
+      } else if (swipeOffset > 0) {
+        // Swipe right - previous image or loop to last
+        setCurrentImageIndex(prev => (prev === 0 ? allImages.length - 1 : prev - 1));
       }
     }
 
@@ -188,13 +188,13 @@ const PropertyCard = ({
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentImageIndex(prev => Math.max(0, prev - 1));
-  }, []);
+    setCurrentImageIndex(prev => prev === 0 ? allImages.length - 1 : prev - 1);
+  }, [allImages.length]);
 
   const goToNextImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentImageIndex(prev => Math.min(allImages.length - 1, prev + 1));
+    setCurrentImageIndex(prev => prev === allImages.length - 1 ? 0 : prev + 1);
   }, [allImages.length]);
   // Normalize viewing date and prepare label/time
   // Parse the date string as local time to avoid timezone issues
@@ -468,19 +468,11 @@ const PropertyCard = ({
       )}
 
       <div className="relative overflow-hidden">
-                {/* Swipe hint for mobile */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 block sm:hidden pointer-events-none select-none">
-                  <div className="flex items-center gap-1 bg-black/60 text-white text-xs rounded-full px-2 py-1 shadow-md animate-fade-in">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-1"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    Svep för att bläddra
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-1"><polyline points="9 6 15 12 9 18"></polyline></svg>
-                  </div>
-                </div>
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden"
-          style={{ touchAction: 'pan-y' }}
+          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none"
+          style={{ touchAction: 'pan-y', WebkitUserSelect: 'none', userSelect: 'none' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -503,7 +495,7 @@ const PropertyCard = ({
                 className="flex h-full"
                 style={{
                   transform: `translateX(calc(-${currentImageIndex * 100}% + ${swipeOffset}%))`,
-                  transition: isSwiping ? 'none' : 'transform 0.3s ease-out'
+                  transition: isSwiping ? 'none' : 'transform 0.45s cubic-bezier(.22,1,.36,1)'
                 }}
               >
                 {allImages.map((img, index) => (
@@ -514,6 +506,7 @@ const PropertyCard = ({
                     className="w-full h-full object-cover flex-shrink-0"
                     style={{ minWidth: '100%' }}
                     draggable={false}
+                    loading="lazy"
                   />
                 ))}
               </div>
@@ -547,24 +540,20 @@ const PropertyCard = ({
                   <ChevronRight className="w-5 h-5" />
                 </button>
               )}
-              {/* Image counter/dots */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                {allImages.slice(0, 5).map((_, index) => (
+              {/* Image counter/dots - clearer, clickable, always show all */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                {allImages.map((_, index) => (
                   <button
                     key={index}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       e.stopPropagation();
                       setCurrentImageIndex(index);
                     }}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex ? 'bg-white w-3' : 'bg-white/50 hover:bg-white/75'
-                      }`}
+                    className={`w-2 h-2 rounded-full border border-white/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary ${index === currentImageIndex ? 'bg-white scale-125 shadow' : 'bg-white/40 hover:bg-white/70'}`}
                     aria-label={`Visa bild ${index + 1}`}
                   />
                 ))}
-                {allImages.length > 5 && (
-                  <span className="text-white text-[10px] ml-1">+{allImages.length - 5}</span>
-                )}
               </div>
             </>
           ) : (
