@@ -770,33 +770,6 @@ const PropertyCard = ({
         )}
 
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm">
-            <div className="flex items-center gap-0.5">
-              <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-              <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-              <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-              <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
-            </div>
-            {floor && (
-              <div className="flex items-center gap-0.5">
-                <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm sm:text-base font-semibold text-foreground">
-                  {floor}{totalFloors ? `/${totalFloors}` : ''}
-                </span>
-                <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
-              </div>
-            )}
-          </div>
-          {/* The date/time row is already present below or above, so no duplicate here */}
         </div>
 
         {agent_name && (
@@ -841,14 +814,40 @@ const PropertyCard = ({
           </div>
         )}
 
-        {!isSold && (
-          <div className="flex items-center justify-end text-foreground mt-1">
-            <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
-            <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
-          </div>
-        )}
 
         <div className="mt-auto pt-1">
+                              <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm mb-1">
+                                <div className="flex items-center gap-0.5">
+                                  <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                                  <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
+                                  <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                                  <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
+                                  <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                                  <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
+                                  <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
+                                </div>
+                                {floor && (
+                                  <div className="flex items-center gap-0.5">
+                                    <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                                    <span className="text-sm sm:text-base font-semibold text-foreground">
+                                      {floor}{totalFloors ? `/${totalFloors}` : ''}
+                                    </span>
+                                    <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
+                                  </div>
+                                )}
+                              </div>
+                    {viewDate && (
+                      <div className="flex items-center justify-end text-foreground mb-1">
+                        <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
+                        <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+                      </div>
+                    )}
           {onButtonClick ? (
             <Button
               onClick={(e) => {
