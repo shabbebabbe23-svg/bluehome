@@ -697,15 +697,7 @@ const PropertyDetail = () => {
               {property.title}
             </h1>
             <div className="flex items-center justify-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsShareDialogOpen(true)}
-                className="bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20 hover:bg-hero-gradient hover:text-white hover:border-transparent hover:scale-105 transition-all duration-300 gap-2 shadow-sm"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>Dela bostad</span>
-              </Button>
+              {/* Dela bostad-knappen flyttad till agentsektionen */}
               {(dbProperty?.has_vr || property.has_vr) && (
                 <Button
                   variant="outline"
@@ -1177,6 +1169,15 @@ const PropertyDetail = () => {
                     >
                       <Calendar className="w-5 h-5 mr-2" />
                       Boka visning
+                    </Button>
+                    <Button
+                      className="w-full border border-primary bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base mt-2"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsShareDialogOpen(true)}
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span>Dela bostad</span>
                     </Button>
                   </div>
                 </> :

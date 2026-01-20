@@ -511,35 +511,29 @@ const PropertyCard = ({
                 ))}
               </div>
 
-              {/* Navigation arrows re-attached */}
-              {currentImageIndex > 0 && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const prevIndex = Math.max(0, currentImageIndex - 1);
-                    setCurrentImageIndex(prevIndex);
-                  }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  aria-label="Föregående bild"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              )}
-              {currentImageIndex < allImages.length - 1 && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const nextIndex = Math.min(allImages.length - 1, currentImageIndex + 1);
-                    setCurrentImageIndex(nextIndex);
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  aria-label="Nästa bild"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
+              {/* Navigation arrows - always visible and loop */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex(currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1);
+                }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                aria-label="Föregående bild"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex(currentImageIndex === allImages.length - 1 ? 0 : currentImageIndex + 1);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                aria-label="Nästa bild"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
               {/* Image counter/dots - clearer, clickable, always show all */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {allImages.map((_, index) => (
@@ -723,7 +717,7 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
-                <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-xs sm:text-sm text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
@@ -732,7 +726,7 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold text-[#FF6B2C] whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-sm sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
@@ -741,7 +735,7 @@ const PropertyCard = ({
                 <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-xs text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-sm sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
@@ -751,7 +745,7 @@ const PropertyCard = ({
                   {price}
                 </span>
                 {fee && fee > 0 && (
-                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                  <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                     {fee.toLocaleString('sv-SE')} kr/mån
                   </span>
                 )}
@@ -775,34 +769,34 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-0.5">
-            <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bedrooms}</span>
-            <span className="text-[9px] sm:text-[10px] text-muted-foreground">rum</span>
-          </div>
-
-          <div className="flex items-center gap-0.5">
-            <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{bathrooms}</span>
-            <span className="text-[9px] sm:text-[10px] text-muted-foreground hidden sm:inline">bad</span>
-          </div>
-
-          <div className="flex items-center gap-0.5">
-            <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs font-semibold text-foreground">{area}</span>
-            <span className="text-[9px] sm:text-[10px] text-muted-foreground">m²</span>
-          </div>
-
-          {floor && (
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm">
             <div className="flex items-center gap-0.5">
-              <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-              <span className="text-[10px] sm:text-xs font-semibold text-foreground">
-                {floor}{totalFloors ? `/${totalFloors}` : ''}
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-muted-foreground">vån</span>
+              <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
             </div>
-          )}
+            <div className="flex items-center gap-0.5">
+              <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
+            </div>
+            {floor && (
+              <div className="flex items-center gap-0.5">
+                <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm sm:text-base font-semibold text-foreground">
+                  {floor}{totalFloors ? `/${totalFloors}` : ''}
+                </span>
+                <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
+              </div>
+            )}
+          </div>
+          {/* The date/time row is already present below or above, so no duplicate here */}
         </div>
 
         {agent_name && (
@@ -848,9 +842,9 @@ const PropertyCard = ({
         )}
 
         {!isSold && (
-          <div className="flex items-center justify-end text-foreground mt-0.5">
-            <Calendar className="w-3 h-3 mr-0.5 text-foreground flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+          <div className="flex items-center justify-end text-foreground mt-1">
+            <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
+            <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
           </div>
         )}
 
