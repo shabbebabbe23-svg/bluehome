@@ -1005,7 +1005,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full mx-auto" : ""}`}>
             <div className="hidden sm:block" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
-              {showFinalPrices ? "Sålda fastigheter" : "Våra fastigheter"}
+              {showFinalPrices ? "Sålda fastigheter" : "Alla objekt"}
             </h2>
             {/* Listvy-knapp överst */}
             <div className="flex flex-col gap-2 w-full sm:w-auto mt-8">

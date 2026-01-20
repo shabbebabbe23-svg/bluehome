@@ -245,6 +245,25 @@ const PropertyCard = ({
     sessionStorage.setItem('scrollPosition', window.scrollY.toString());
   };
 
+  const getBadgeColor = (type: string) => {
+    switch (type) {
+      case 'Villa':
+        return 'bg-blue-500 hover:bg-blue-600 text-white border-transparent';
+      case 'Lägenhet':
+        return 'bg-green-500 hover:bg-green-600 text-white border-transparent';
+      case 'Radhus':
+        return 'bg-purple-500 hover:bg-purple-600 text-white border-transparent';
+      case 'Parhus':
+        return 'bg-teal-500 hover:bg-teal-600 text-white border-transparent';
+      case 'Tomt':
+        return 'bg-orange-500 hover:bg-orange-600 text-white border-transparent';
+      case 'Fritidshus':
+        return 'bg-pink-500 hover:bg-pink-600 text-white border-transparent';
+      default:
+        return 'bg-white/90 text-foreground hover:bg-white/100';
+    }
+  };
+
   // List view layout
   if (viewMode === "list") {
     return (
@@ -286,7 +305,7 @@ const PropertyCard = ({
 
             {/* Property type badge */}
             <div className="absolute top-3 left-3">
-              <Badge variant="secondary" className="bg-muted/90 text-foreground text-sm">
+              <Badge variant="secondary" className={`${getBadgeColor(type)} text-sm shadow-sm`}>
                 {type}
               </Badge>
             </div>
@@ -580,7 +599,7 @@ const PropertyCard = ({
         </div>
         {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && vendorLogo && (
-            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
+          <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
             <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain drop-shadow-md" />
           </div>
         )}
@@ -610,7 +629,7 @@ const PropertyCard = ({
               <span className="font-semibold">Budgivning pågår</span>
             </Badge>
           )}
-          <Badge variant="secondary" className="bg-white/90 text-foreground">
+          <Badge variant="secondary" className={`${getBadgeColor(type)} shadow-sm`}>
             {type}
           </Badge>
         </div>
@@ -816,38 +835,38 @@ const PropertyCard = ({
 
 
         <div className="mt-auto pt-1">
-                              <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm mb-1">
-                                <div className="flex items-center gap-0.5">
-                                  <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                                  <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
-                                  <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
-                                </div>
-                                <div className="flex items-center gap-0.5">
-                                  <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                                  <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
-                                  <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
-                                </div>
-                                <div className="flex items-center gap-0.5">
-                                  <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                                  <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
-                                  <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
-                                </div>
-                                {floor && (
-                                  <div className="flex items-center gap-0.5">
-                                    <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                                    <span className="text-sm sm:text-base font-semibold text-foreground">
-                                      {floor}{totalFloors ? `/${totalFloors}` : ''}
-                                    </span>
-                                    <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
-                                  </div>
-                                )}
-                              </div>
-                    {viewDate && (
-                      <div className="flex items-center justify-end text-foreground mb-1">
-                        <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
-                        <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
-                      </div>
-                    )}
+          <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm mb-1">
+            <div className="flex items-center gap-0.5">
+              <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
+            </div>
+            {floor && (
+              <div className="flex items-center gap-0.5">
+                <Building2 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm sm:text-base font-semibold text-foreground">
+                  {floor}{totalFloors ? `/${totalFloors}` : ''}
+                </span>
+                <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
+              </div>
+            )}
+          </div>
+          {viewDate && (
+            <div className="flex items-center justify-end text-foreground mb-1">
+              <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
+              <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+            </div>
+          )}
           {onButtonClick ? (
             <Button
               onClick={(e) => {
