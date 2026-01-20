@@ -91,6 +91,18 @@ const AgentGrid = ({
         className="p-3 xs:p-4 sm:p-6 md:px-8 md:py-6 hover:shadow-2xl transition-shadow cursor-pointer mx-0 rounded-xl border-2 border-primary/30 bg-white/95 w-full max-w-full sm:max-w-2xl flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-8"
         style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
       >
+          {/* Agent avatar always visible */}
+          <div className="flex-shrink-0">
+            <Avatar className="w-16 h-16 border border-border">
+              {agent.avatar_url ? (
+                <AvatarImage src={agent.avatar_url} className="object-cover" />
+              ) : (
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                  {getInitials(agent.full_name)}
+                </AvatarFallback>
+              )}
+            </Avatar>
+          </div>
           <div className="flex flex-col justify-between flex-1 min-w-0 gap-2 w-full">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 w-full">
               <h3 className="font-bold text-2xl md:text-2xl text-left mb-1 md:mb-0 break-words w-full">{agent.full_name || "Mäklare"}</h3>
