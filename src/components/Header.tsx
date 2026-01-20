@@ -269,10 +269,10 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-[44px] w-[44px] hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center"
+            className="md:hidden h-10 w-10 sm:h-11 sm:w-11 hover:scale-110 transition-all duration-300 ease-out hover:bg-white/20 flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <span className="relative top-[1px] block h-[48px] w-[48px] sm:h-[52px] sm:w-[52px]">
+            <span className="relative block h-8 w-8 sm:h-9 sm:w-9 ml-2 mt-1">
               {/* Menu Icon with gradient */}
               <svg
                 viewBox="0 0 24 24"
@@ -287,7 +287,7 @@ const Header = () => {
                     <stop offset="100%" stopColor="#12873D" />
                   </linearGradient>
                 </defs>
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:stroke-[3]" />
               </svg>
 
               {/* X Icon with gradient */}
@@ -304,7 +304,7 @@ const Header = () => {
                     <stop offset="100%" stopColor="#12873D" />
                   </linearGradient>
                 </defs>
-                <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:stroke-[3]" />
               </svg>
             </span>
           </Button>

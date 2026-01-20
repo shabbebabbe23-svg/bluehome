@@ -184,7 +184,14 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
 
             {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-              <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5">
+              <Badge className={`${currentProperty.type === 'Villa' ? 'bg-blue-500 hover:bg-blue-600' :
+                  currentProperty.type === 'Lägenhet' ? 'bg-green-500 hover:bg-green-600' :
+                    currentProperty.type === 'Radhus' ? 'bg-purple-500 hover:bg-purple-600' :
+                      currentProperty.type === 'Parhus' ? 'bg-teal-500 hover:bg-teal-600' :
+                        currentProperty.type === 'Tomt' ? 'bg-orange-500 hover:bg-orange-600' :
+                          currentProperty.type === 'Fritidshus' ? 'bg-pink-500 hover:bg-pink-600' :
+                            'bg-primary text-primary-foreground'
+                } text-white text-[10px] px-1.5 py-0.5 border-transparent`}>
                 {currentProperty.type}
               </Badge>
               {currentProperty.hasVR && (
