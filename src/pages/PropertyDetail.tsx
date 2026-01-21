@@ -99,7 +99,7 @@ const PropertyDetail = () => {
               .single();
             if (profile) {
               setAgentProfile(profile);
-              
+
               // Hämta byråns logga och hemsida
               if (profile.agency_id) {
                 const { data: agency } = await supabase
@@ -583,14 +583,23 @@ const PropertyDetail = () => {
             />
           </svg>
 
-          {/* Profile Avatar with Glow */}
-          {user && (
-            <Link to="/maklare?tab=profile" className="relative ml-2">
+          {/* Profile Avatar with Glow - Shows User or Agent */}
+          {(user || agentProfile) && (
+            <Link
+              to={user ? "/maklare?tab=profile" : `/agent/${dbProperty?.user_id}`}
+              className="relative ml-2"
+              title={user ? "Min profil" : `Mäklare: ${agentProfile?.full_name || 'Okänd'}`}
+            >
               <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
               <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
-                <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
+                <AvatarImage
+                  src={(user ? avatarUrl : agentProfile?.avatar_url) || undefined}
+                  alt={(user ? profileName : agentProfile?.full_name) || "Profil"}
+                />
                 <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
-                  {profileName ? profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                  {(user ? profileName : agentProfile?.full_name)
+                    ? (user ? profileName : agentProfile?.full_name).split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+                    : <User className="w-4 h-4" />}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -1357,8 +1366,8 @@ const PropertyDetail = () => {
           ) : (
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
               {bidHistory.map((bid, index) => (
-                <div 
-                  key={bid.id} 
+                <div
+                  key={bid.id}
                   className={`flex items-center justify-between p-4 rounded-lg border ${index === 0 ? 'bg-orange-50 border-orange-200' : 'bg-muted/30 border-border'}`}
                 >
                   <div className="flex items-center gap-3">
@@ -1370,8 +1379,8 @@ const PropertyDetail = () => {
                         {bid.bid_amount.toLocaleString('sv-SE')} kr
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {new Date(bid.created_at).toLocaleDateString('sv-SE', { 
-                          day: 'numeric', 
+                        {new Date(bid.created_at).toLocaleDateString('sv-SE', {
+                          day: 'numeric',
                           month: 'short',
                           hour: '2-digit',
                           minute: '2-digit'
