@@ -54,6 +54,7 @@ interface PropertyCardProps {
   hasBalcony?: boolean;
   constructionYear?: number;
   operatingCost?: number;
+  brfDebtPerSqm?: number;
   floor?: number;
   totalFloors?: number;
   tagline?: string;
@@ -104,6 +105,7 @@ const PropertyCard = ({
   hasBalcony,
   constructionYear,
   operatingCost,
+  brfDebtPerSqm,
   floor,
   totalFloors,
   tagline,
@@ -345,6 +347,7 @@ const PropertyCard = ({
                       hasBalcony,
                       constructionYear,
                       operatingCost,
+                      brfDebtPerSqm,
                     });
                   }}
                   title={isComparing ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
@@ -669,6 +672,7 @@ const PropertyCard = ({
                   hasBalcony,
                   constructionYear,
                   operatingCost,
+                  brfDebtPerSqm,
                 });
               }}
               title={isComparing ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}
@@ -720,11 +724,11 @@ const PropertyCard = ({
         <div className="flex items-start justify-between gap-2">
           {/* Left side - Address */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
+            <h3 className="font-semibold text-[15px] sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
               {title}
             </h3>
             {/* Dynamic subtitle text */}
-            <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+            <div className="text-[11px] sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
               {tagline || 'Lägenhet med en charmig touch'}
             </div>
           </div>
@@ -733,46 +737,46 @@ const PropertyCard = ({
           <div className="flex flex-col items-end flex-shrink-0">
             {isSold && soldPrice ? (
               <>
-                <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-[17px] sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {soldPrice}
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-[10px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
             ) : newPrice && hasActiveBidding ? (
               <>
-                <span className="text-lg sm:text-xl font-bold text-[#FF6B2C] whitespace-nowrap">
+                <span className="text-[17px] sm:text-xl font-bold text-[#FF6B2C] whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-sm sm:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-xs sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
             ) : newPrice ? (
               <>
-                <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
+                <span className="text-[17px] sm:text-xl font-bold bg-clip-text text-transparent bg-hero-gradient whitespace-nowrap">
                   {newPrice}
                 </span>
-                <span className="text-sm sm:text-base text-muted-foreground line-through whitespace-nowrap">
+                <span className="text-xs sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
               </>
             ) : (
               <>
-                <span className="text-lg sm:text-xl font-bold text-primary whitespace-nowrap">
+                <span className="text-[17px] sm:text-xl font-bold text-primary whitespace-nowrap">
                   {price}
                 </span>
                 {fee && fee > 0 && (
-                  <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
                     {fee.toLocaleString('sv-SE')} kr/mån
                   </span>
                 )}
               </>
             )}
             {hasActiveBidding && !isSold && (
-              <div className="flex items-center gap-1 text-[#FF6B2C] font-bold text-[11px] mt-0.5">
-                <Gavel className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1 text-[#FF6B2C] font-bold text-[10px] mt-0.5">
+                <Gavel className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>Pågående budgivning</span>
               </div>
             )}
@@ -781,8 +785,8 @@ const PropertyCard = ({
 
         {isSold && soldDate && (
           <div className="flex items-center text-muted-foreground">
-            <Calendar className="w-3.5 h-3.5 mr-0.5 flex-shrink-0" />
-            <span className="text-[11px] sm:text-sm">
+            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 flex-shrink-0" />
+            <span className="text-[10px] sm:text-sm">
               Såld {new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })}
             </span>
           </div>
@@ -798,7 +802,7 @@ const PropertyCard = ({
               className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
               onClick={(e) => e.stopPropagation()}
             >
-              <Avatar className="w-7 h-7 border border-border">
+              <Avatar className="w-6 h-6 sm:w-7 sm:h-7 border border-border">
                 <AvatarImage src={agent_avatar} className="object-cover" />
                 <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
                   <User className="w-3 h-3" />
@@ -839,17 +843,17 @@ const PropertyCard = ({
             <div className="flex items-center gap-0.5">
               <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
               <span className="text-sm sm:text-base font-semibold text-foreground">{bedrooms}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">rum</span>
+              <span className="text-[10px] sm:text-sm text-muted-foreground">rum</span>
             </div>
             <div className="flex items-center gap-0.5">
               <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
               <span className="text-sm sm:text-base font-semibold text-foreground">{bathrooms}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
+              <span className="text-[10px] sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
             </div>
             <div className="flex items-center gap-0.5">
               <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
               <span className="text-sm sm:text-base font-semibold text-foreground">{area}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">m²</span>
+              <span className="text-[10px] sm:text-sm text-muted-foreground">m²</span>
             </div>
             {floor && (
               <div className="flex items-center gap-0.5">
@@ -857,14 +861,14 @@ const PropertyCard = ({
                 <span className="text-sm sm:text-base font-semibold text-foreground">
                   {floor}{totalFloors ? `/${totalFloors}` : ''}
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground">vån</span>
+                <span className="text-[10px] sm:text-sm text-muted-foreground">vån</span>
               </div>
             )}
           </div>
           {viewDate && (
             <div className="flex items-center justify-end text-foreground mb-1">
-              <Calendar className="w-4 h-4 mr-1 text-foreground flex-shrink-0" />
-              <span className="text-sm sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
+              <Calendar className="w-3.5 h-3.5 mr-1 text-foreground flex-shrink-0" />
+              <span className="text-xs sm:text-base text-foreground">{dayLabel}{timeLabel ? ` ${timeLabel}` : ""}</span>
             </div>
           )}
           {onButtonClick ? (
@@ -874,18 +878,18 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-sm sm:text-base py-1"
+              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10"
             >
               {buttonText || "Visa detaljer"}
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
-              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-sm sm:text-base py-1">
+              <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10">
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>
           )}
-          <p className="text-xs sm:text-base font-semibold text-muted-foreground text-right mt-0.5 truncate">
+          <p className="text-[10px] sm:text-sm font-semibold text-muted-foreground text-right mt-1 truncate">
             {isSold && soldDate
               ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
               : daysOnMarketText

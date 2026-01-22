@@ -127,6 +127,7 @@ const Index = () => {
             agent_id: profile?.id,
             additional_images: prop.additional_images || [],
             hasActiveBidding: bidsMap[prop.id] || false,
+            housing_association: prop.housing_association || undefined,
           };
         });
         setAllProperties(formattedProperties);

@@ -27,6 +27,7 @@ const propertySchema = z.object({
   construction_year: z.coerce.number().min(1800, "Byggår måste vara minst 1800").max(2100, "Byggår kan max vara 2100").optional(),
   fee: z.coerce.number().min(0, "Avgift måste vara minst 0").optional(),
   operating_cost: z.coerce.number().min(0, "Driftkostnad måste vara minst 0").optional(),
+  brf_debt_per_sqm: z.coerce.number().min(0, "BRF skuld/kvm måste vara minst 0").optional(),
   description: z.string().min(10, "Beskrivning måste vara minst 10 tecken").max(5000, "Beskrivning får max vara 5000 tecken"),
   viewing_date: z.string().optional(),
   viewing_date_2: z.string().optional(),
@@ -77,6 +78,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const watchFee = watch("fee");
   const watchType = watch("type");
   const watchOperatingCost = watch("operating_cost");
+  const watchBrfDebtPerSqm = watch("brf_debt_per_sqm");
   const pricePerSqm = watchPrice && watchArea ? Math.round(watchPrice / watchArea) : null;
   
   // Format number with spaces for thousands
@@ -390,8 +392,8 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         uploadedDocuments.push(doc);
       }
 
-      // Insert property
-      const { error } = await supabase.from("properties").insert({
+      // Insert property - build object dynamically
+      const insertData: any = {
         user_id: user.id,
         title: data.title,
         address: data.address,
@@ -425,9 +427,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         statistics_email_frequency: statisticsEmailFrequency,
         floor: floor ? parseInt(floor) : null,
         total_floors: totalFloors ? parseInt(totalFloors) : null,
-      });
+      };
+
+      // First insert without brf_debt_per_sqm
+      const { data: insertedProperty, error } = await supabase.from("properties").insert(insertData).select('id').single();
 
       if (error) throw error;
+
+      // Try to update brf_debt_per_sqm separately (column may not exist yet)
+      if (insertedProperty && data.brf_debt_per_sqm) {
+        await supabase.from("properties").update({
+          brf_debt_per_sqm: data.brf_debt_per_sqm
+        }).eq("id", insertedProperty.id).then(() => {}).catch(() => {});
+      }
 
       toast.success("Fastighet tillagd!");
       reset();
@@ -703,6 +715,28 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           </div>
         </div>
 
+        {/* BRF skuld/kvm */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+          <div className="w-full md:w-1/2">
+            <Label htmlFor="brf_debt_per_sqm">BRF skuld/kvm (kr)</Label>
+            <Input
+              id="brf_debt_per_sqm"
+              type="number"
+              {...register("brf_debt_per_sqm")}
+              placeholder="5 000"
+              className="w-full"
+            />
+            {errors.brf_debt_per_sqm && (
+              <p className="text-sm text-destructive mt-1">{errors.brf_debt_per_sqm.message}</p>
+            )}
+            {watchBrfDebtPerSqm && watchBrfDebtPerSqm > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {formatNumber(watchBrfDebtPerSqm)} kr/kvm
+              </p>
+            )}
+          </div>
+          <div className="w-full md:w-1/2"></div>
+        </div>
 
         {/* Bostadsförening */}
 

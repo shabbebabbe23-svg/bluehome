@@ -56,7 +56,7 @@ function PropertyImageCarousel({
   if (images.length === 0) return null;
 
   return (
-    <div className="relative aspect-video rounded-lg overflow-hidden group">
+    <div className="relative aspect-[16/12] rounded-lg overflow-hidden group">
       <div
         className="w-full h-full"
         onTouchStart={onTouchStart}
@@ -138,6 +138,18 @@ export function ComparisonModal() {
     return isBetter ? 'text-green-600 font-semibold' : 'text-muted-foreground';
   };
 
+  const getTypeColor = (type: string) => {
+    const colors: Record<string, string> = {
+      'Lägenhet': 'bg-blue-100 text-blue-800 border-blue-200',
+      'Villa': 'bg-green-100 text-green-800 border-green-200',
+      'Radhus': 'bg-orange-100 text-orange-800 border-orange-200',
+      'Fritidshus': 'bg-purple-100 text-purple-800 border-purple-200',
+      'Tomt': 'bg-amber-100 text-amber-800 border-amber-200',
+      'Gård': 'bg-lime-100 text-lime-800 border-lime-200',
+    };
+    return colors[type] || 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
   const parsePrice = (price: string) => {
     return parseInt(price.replace(/\D/g, '')) || 0;
   };
@@ -155,39 +167,36 @@ export function ComparisonModal() {
     value2: React.ReactNode,
     icon?: React.ReactNode
   ) => (
-    <div className="grid grid-cols-3 gap-4 py-3 border-b border-border/50 last:border-0">
-      <div className="flex items-center gap-2 text-muted-foreground text-sm">
+    <div className="grid grid-cols-[1fr_2fr_2fr] gap-4 py-2 border-b border-border last:border-0">
+      <div className="flex items-center gap-2 text-muted-foreground text-base pl-4">
         {icon}
         {label}
       </div>
-      <div className="text-center font-medium">{value1}</div>
-      <div className="text-center font-medium">{value2}</div>
+      <div className="text-center font-medium text-base">{value1}</div>
+      <div className="text-center font-medium text-base">{value2}</div>
     </div>
   );
 
   return (
     <Dialog open={isCompareModalOpen} onOpenChange={setIsCompareModalOpen}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+        <DialogHeader className="pb-2">
           <DialogTitle className="text-xl flex items-center gap-2">
             Jämför fastigheter
           </DialogTitle>
         </DialogHeader>
 
         {/* Property images header with carousel */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-[1fr_2fr_2fr] gap-6 mb-3">
           <div></div>
           {[prop1, prop2].map((prop) => (
-            <div key={prop.id} className="text-center">
+            <div key={prop.id} className="text-center flex flex-col items-center">
               <PropertyImageCarousel
                 images={getPropertyImages(prop)}
                 title={prop.title}
                 isSold={prop.isSold}
               />
-              <h3 className="font-semibold text-sm line-clamp-1 mt-2">{prop.title}</h3>
-              <p className="text-xs text-muted-foreground line-clamp-1">
-                {prop.address || prop.location}
-              </p>
+              <h3 className="font-semibold text-lg line-clamp-1 mt-2">{prop.title}</h3>
             </div>
           ))}
         </div>
@@ -206,8 +215,8 @@ export function ComparisonModal() {
 
           {renderComparisonRow(
             'Typ',
-            <Badge variant="secondary">{prop1.type}</Badge>,
-            <Badge variant="secondary">{prop2.type}</Badge>
+            <Badge className={`${getTypeColor(prop1.type)} border`}>{prop1.type}</Badge>,
+            <Badge className={`${getTypeColor(prop2.type)} border`}>{prop2.type}</Badge>
           )}
 
           {renderComparisonRow(
@@ -260,6 +269,17 @@ export function ComparisonModal() {
             <Calendar className="w-4 h-4" />
           )}
 
+          {renderComparisonRow(
+            'BRF skuld/m²',
+            <span className={getComparisonClass(prop2.brfDebtPerSqm, prop1.brfDebtPerSqm, false)}>
+              {prop1.brfDebtPerSqm ? `${prop1.brfDebtPerSqm.toLocaleString('sv-SE')} kr/m²` : '-'}
+            </span>,
+            <span className={getComparisonClass(prop1.brfDebtPerSqm, prop2.brfDebtPerSqm, false)}>
+              {prop2.brfDebtPerSqm ? `${prop2.brfDebtPerSqm.toLocaleString('sv-SE')} kr/m²` : '-'}
+            </span>,
+            <Building2 className="w-4 h-4" />
+          )}
+
           {(prop1.operatingCost !== undefined || prop2.operatingCost !== undefined) && renderComparisonRow(
             'Driftkostnad',
             <span className={getComparisonClass(prop2.operatingCost, prop1.operatingCost, false)}>
@@ -273,40 +293,48 @@ export function ComparisonModal() {
 
           {(prop1.constructionYear || prop2.constructionYear) && renderComparisonRow(
             'Byggår',
-            prop1.constructionYear || '-',
-            prop2.constructionYear || '-',
+            <span className={getComparisonClass(prop1.constructionYear, prop2.constructionYear, true)}>
+              {prop1.constructionYear || '-'}
+            </span>,
+            <span className={getComparisonClass(prop2.constructionYear, prop1.constructionYear, true)}>
+              {prop2.constructionYear || '-'}
+            </span>,
             <Calendar className="w-4 h-4" />
           )}
 
           {renderComparisonRow(
             'Hiss',
-            prop1.hasElevator ? <span className="text-green-600">Ja</span> : <span className="text-muted-foreground">Nej</span>,
-            prop2.hasElevator ? <span className="text-green-600">Ja</span> : <span className="text-muted-foreground">Nej</span>,
+            prop1.hasElevator ? <span className="text-green-600 font-semibold">Ja</span> : <span className="text-muted-foreground">Nej</span>,
+            prop2.hasElevator ? <span className="text-green-600 font-semibold">Ja</span> : <span className="text-muted-foreground">Nej</span>,
             <ArrowUpDown className="w-4 h-4" />
           )}
 
           {renderComparisonRow(
             'Balkong',
-            prop1.hasBalcony ? <span className="text-green-600">Ja</span> : <span className="text-muted-foreground">Nej</span>,
-            prop2.hasBalcony ? <span className="text-green-600">Ja</span> : <span className="text-muted-foreground">Nej</span>,
+            prop1.hasBalcony ? <span className="text-green-600 font-semibold">Ja</span> : <span className="text-muted-foreground">Nej</span>,
+            prop2.hasBalcony ? <span className="text-green-600 font-semibold">Ja</span> : <span className="text-muted-foreground">Nej</span>,
             <LayoutDashboard className="w-4 h-4" />
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center justify-between mt-4">
-          <Button variant="outline" onClick={clearComparison}>
-            Rensa jämförelse
-          </Button>
-          <div className="flex gap-2">
+        {/* Action buttons - matching grid layout */}
+        <div className="grid grid-cols-[1fr_2fr_2fr] gap-6 mt-4">
+          <div className="flex items-center pl-4">
+            <Button variant="outline" size="sm" onClick={clearComparison} className="hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all">
+              Rensa jämförelse
+            </Button>
+          </div>
+          <div className="flex justify-center">
             <Link to={`/fastighet/${prop1.id}`}>
-              <Button variant="outline" size="sm">
-                Visa {prop1.title.slice(0, 15)}...
+              <Button variant="outline" size="sm" className="hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all">
+                Visa fastighet
               </Button>
             </Link>
+          </div>
+          <div className="flex justify-center">
             <Link to={`/fastighet/${prop2.id}`}>
-              <Button variant="outline" size="sm">
-                Visa {prop2.title.slice(0, 15)}...
+              <Button variant="outline" size="sm" className="hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all">
+                Visa fastighet
               </Button>
             </Link>
           </div>

@@ -43,7 +43,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [propertyType, setPropertyType] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area'; price?: number }>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area' | 'brf'; price?: number }>>([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
   const [agentHighlightedIndex, setAgentHighlightedIndex] = useState(-1);
@@ -175,8 +175,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
           });
         }
 
-        // Fetch matching addresses from Supabase
+        // Fetch matching addresses and BRF from Supabase
         try {
+          // Fetch addresses
           const { data: addressData, error } = await supabase
             .from('properties')
             .select('address, location, price')
@@ -184,6 +185,15 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
             .not('address', 'is', null)
             .eq('is_deleted', false)
             .limit(5);
+
+          // Fetch BRF associations
+          const { data: brfData, error: brfError } = await supabase
+            .from('properties')
+            .select('housing_association, location')
+            .ilike('housing_association', `%${value}%`)
+            .not('housing_association', 'is', null)
+            .eq('is_deleted', false)
+            .limit(10);
 
           if (error) throw error;
 
@@ -203,7 +213,21 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               index === self.findIndex((t) => t.name === addr.name)
             );
 
-            const combinedSuggestions = [...areaSuggestions, ...municipalitySuggestions, ...uniqueAddresses];
+            // Process BRF suggestions (unique)
+            const brfSuggestions = (brfData || [])
+              .filter(p => p.housing_association)
+              .map(p => ({
+                name: p.housing_association!,
+                county: p.location || 'Sverige',
+                type: 'brf' as const
+              }));
+
+            // Remove duplicate BRF names
+            const uniqueBrfs = brfSuggestions.filter((brf, index, self) =>
+              index === self.findIndex((t) => t.name.toLowerCase() === brf.name.toLowerCase())
+            );
+
+            const combinedSuggestions = [...areaSuggestions, ...uniqueBrfs, ...municipalitySuggestions, ...uniqueAddresses];
             setSuggestions(combinedSuggestions);
             setShowSuggestions(combinedSuggestions.length > 0);
           }
@@ -345,7 +369,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               <div className="relative" ref={searchRef}>
                 <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 sm:w-6 sm:h-6 z-10" />
                 <Input
-                  placeholder={searchMode === 'property' ? 'Skriv område eller adress' : 'Sök på namn, byrå eller område'}
+                  placeholder={searchMode === 'property' ? 'Sök efter område, adress eller BRF' : 'Sök på namn, byrå eller område'}
                   value={searchLocation}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => {
@@ -421,6 +445,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                           <Home className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         ) : suggestion.type === 'area' ? (
                           <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        ) : suggestion.type === 'brf' ? (
+                          <Building className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         ) : (
                           <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         )}
@@ -431,7 +457,9 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                               ? `${suggestion.county}${suggestion.price ? ` • ${suggestion.price.toLocaleString('sv-SE')} kr` : ''}`
                               : suggestion.type === 'area'
                                 ? 'Område'
-                                : suggestion.county}
+                                : suggestion.type === 'brf'
+                                  ? `BRF • ${suggestion.county}`
+                                  : suggestion.county}
                           </p>
                         </div>
                       </button>

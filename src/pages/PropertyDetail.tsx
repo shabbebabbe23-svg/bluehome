@@ -664,6 +664,7 @@ const PropertyDetail = () => {
                     hasBalcony: property.has_balcony,
                     constructionYear: property.construction_year || property.buildYear,
                     operatingCost: property.operating_cost,
+                    brfDebtPerSqm: property.brf_debt_per_sqm,
                   });
                 }}
                 aria-label={id && isInComparison(String(id)) ? 'Ta bort från jämförelse' : 'Lägg till i jämförelse'}

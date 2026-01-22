@@ -90,6 +90,7 @@ export interface Property {
   is_new_production?: boolean;
   has_elevator?: boolean;
   has_balcony?: boolean;
+  brf_debt_per_sqm?: number;
   agent_name?: string;
   agent_avatar?: string;
   agent_phone?: string;
@@ -103,6 +104,7 @@ export interface Property {
   total_floors?: number;
   construction_year?: number;
   hasActiveBidding?: boolean;
+  housing_association?: string;
 }
 
 export const allProperties: Property[] = [
@@ -697,6 +699,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             floor: prop.floor || undefined,
             total_floors: prop.total_floors || undefined,
             construction_year: prop.construction_year || undefined,
+            brf_debt_per_sqm: (prop as any).brf_debt_per_sqm || undefined,
+            housing_association: prop.housing_association || undefined,
             createdAt: new Date(prop.created_at),
             listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
             additional_images: prop.additional_images || [],
@@ -779,6 +783,24 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   // Filtering function (was missing definition)
   function filterByType(propertiesWithFallback: Property[]) {
     let filtered = [...propertiesWithFallback];
+
+    // Filter by property type
+    if (propertyType && propertyType.trim() !== '') {
+      filtered = filtered.filter(property => 
+        property.type.toLowerCase() === propertyType.toLowerCase()
+      );
+    }
+
+    // Filter by search address (matches address, location, or housing_association/BRF)
+    if (searchAddress && searchAddress.trim() !== '') {
+      const searchLower = searchAddress.toLowerCase().trim();
+      filtered = filtered.filter(property => {
+        const addressMatch = property.address?.toLowerCase().includes(searchLower);
+        const locationMatch = property.location?.toLowerCase().includes(searchLower);
+        const brfMatch = property.housing_association?.toLowerCase().includes(searchLower);
+        return addressMatch || locationMatch || brfMatch;
+      });
+    }
 
     // Filter by price range
     if (priceRange) {
@@ -1116,6 +1138,10 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   floor={property.floor}
                   totalFloors={property.total_floors}
                   additionalImages={property.additional_images}
+                  hasElevator={property.has_elevator}
+                  hasBalcony={property.has_balcony}
+                  constructionYear={property.construction_year}
+                  brfDebtPerSqm={property.brf_debt_per_sqm}
                 />
               </div>
             );

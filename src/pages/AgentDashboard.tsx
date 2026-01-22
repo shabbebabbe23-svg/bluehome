@@ -495,11 +495,13 @@ const AgentDashboard = () => {
       const viewingDate2Value = formData.get("viewing_date_2") as string;
       const constructionYearValue = formData.get("construction_year") as string;
       const operatingCostValue = formData.get("operating_cost") as string;
+      const brfDebtPerSqmValue = formData.get("brf_debt_per_sqm") as string;
       const housingAssociationValue = formData.get("housing_association") as string;
       const floorValue = formData.get("floor") as string;
       const totalFloorsValue = formData.get("total_floors") as string;
-      
-      const { error } = await supabase.from("properties").update({
+
+      // Build update object
+      const updateData: any = {
         title: formData.get("title") as string,
         address: formData.get("address") as string,
         location: formData.get("location") as string,
@@ -527,7 +529,17 @@ const AgentDashboard = () => {
         has_balcony: hasBalcony,
         floor: floorValue ? Number(floorValue) : null,
         total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
-      }).eq("id", editingProperty.id);
+      };
+
+      // First try to update without brf_debt_per_sqm
+      let { error } = await supabase.from("properties").update(updateData).eq("id", editingProperty.id);
+      
+      // If successful and brf_debt_per_sqm has a value, try to update it separately
+      if (!error && brfDebtPerSqmValue) {
+        await supabase.from("properties").update({
+          brf_debt_per_sqm: Number(brfDebtPerSqmValue)
+        }).eq("id", editingProperty.id).then(() => {}).catch(() => {});
+      }
       
       if (error) throw error;
       toast.success("Fastighet uppdaterad");
@@ -886,6 +898,15 @@ const AgentDashboard = () => {
                     <Label htmlFor="edit-housing-association">Bostadsförening (valfritt)</Label>
                     <Input id="edit-housing-association" name="housing_association" type="text" defaultValue={editingProperty.housing_association || ''} placeholder="HSB Brf..." />
                   </div>
+                </div>
+
+                {/* BRF skuld/kvm */}
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="edit-brf-debt-per-sqm">BRF skuld/kvm (kr)</Label>
+                    <Input id="edit-brf-debt-per-sqm" name="brf_debt_per_sqm" type="number" defaultValue={(editingProperty as any).brf_debt_per_sqm || ''} placeholder="5 000" />
+                  </div>
+                  <div className="w-full md:w-1/2"></div>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">

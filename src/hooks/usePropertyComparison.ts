@@ -20,6 +20,7 @@ export interface ComparisonProperty {
   hasBalcony?: boolean;
   constructionYear?: number;
   operatingCost?: number;
+  brfDebtPerSqm?: number;
 }
 
 const MAX_COMPARISON = 2;
