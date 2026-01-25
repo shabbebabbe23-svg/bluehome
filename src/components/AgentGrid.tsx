@@ -16,6 +16,8 @@ export interface Agent {
   office: string | null;
   avatar_url: string | null;
   bio: string | null;
+  agency_logo_url: string | null;
+  agency_website: string | null;
 }
 interface AgentGridProps {
   searchQuery?: string;
@@ -39,7 +41,13 @@ const AgentGrid = ({
         if (rolesError) throw rolesError;
         if (agentRoles && agentRoles.length > 0) {
           const agentIds = agentRoles.map(role => role.user_id);
-          let query = supabase.from('profiles').select('*').in('id', agentIds);
+          let query = supabase.from('profiles').select(`
+            *,
+            agencies:agency_id (
+              logo_url,
+              website
+            )
+          `).in('id', agentIds);
 
           // Apply search filter if provided
           if (searchQuery.trim()) {
@@ -50,7 +58,14 @@ const AgentGrid = ({
             error
           } = await query;
           if (error) throw error;
-          setAgents(data || []);
+          
+          // Map the data to include agency_logo_url and agency_website
+          const agentsWithAgencyInfo = (data || []).map(agent => ({
+            ...agent,
+            agency_logo_url: agent.agencies?.logo_url || null,
+            agency_website: agent.agencies?.website || null,
+          }));
+          setAgents(agentsWithAgencyInfo);
         } else {
           setAgents([]);
         }
@@ -91,7 +106,7 @@ const AgentGrid = ({
         className="p-3 xs:p-4 sm:p-6 md:px-8 md:py-6 hover:shadow-2xl transition-shadow cursor-pointer mx-0 rounded-xl border-2 border-primary/30 bg-white/95 w-full max-w-full sm:max-w-2xl flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-8"
         style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
       >
-          {/* Agent avatar always visible */}
+,          {/* Agent avatar always visible */}
           <div className="flex-shrink-0">
             <Avatar className="w-16 h-16 border border-border">
               {agent.avatar_url ? (

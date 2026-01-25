@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ComparisonProvider } from "@/contexts/ComparisonContext";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -36,8 +37,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
-        <ComparisonProvider>
-          <TooltipProvider>
+        <FavoritesProvider>
+          <ComparisonProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <TopLoadingBar />
@@ -67,8 +69,9 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </TooltipProvider>
-        </ComparisonProvider>
+            </TooltipProvider>
+          </ComparisonProvider>
+        </FavoritesProvider>
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
