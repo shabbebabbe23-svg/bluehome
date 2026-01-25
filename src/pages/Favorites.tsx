@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -57,42 +57,47 @@ const Favorites = () => {
     try {
       const { data, error } = await supabase
         .from("properties")
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            avatar_url,
-            phone
-          )
-        `)
+        .select("*")
         .in("id", favorites)
         .eq("is_deleted", false);
 
       if (error) throw error;
 
-      const formattedData = data.map((property: any) => ({
-        id: property.id,
-        title: property.title,
-        address: property.address,
-        location: property.location,
-        price: property.price.toString(),
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        area: property.area,
-        image: property.image_url || "",
-        hoverImage: property.hover_image_url,
-        type: property.type,
-        fee: property.fee,
-        isSold: property.is_sold,
-        isNew: property.is_coming_soon,
-        agent_name: property.profiles?.full_name,
-        agent_avatar: property.profiles?.avatar_url,
-        agent_phone: property.profiles?.phone,
-        listedDate: property.listed_date,
-        soldDate: property.sold_date,
-        soldPrice: property.sold_price?.toString(),
-        hasVR: property.has_vr
-      }));
+      // Fetch profiles separately since there's no direct FK relationship
+      const userIds = [...new Set(data.map(p => p.user_id))];
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .in("id", userIds);
+
+      const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+
+      const formattedData = data.map((property: any) => {
+        const profile = profilesMap.get(property.user_id);
+        return {
+          id: property.id,
+          title: property.title,
+          address: property.address,
+          location: property.location,
+          price: property.price.toString(),
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          area: property.area,
+          image: property.image_url || "",
+          hoverImage: property.hover_image_url,
+          type: property.type,
+          fee: property.fee,
+          isSold: property.is_sold,
+          isNew: property.is_coming_soon,
+          agent_name: profile?.full_name,
+          agent_avatar: profile?.avatar_url,
+          agent_phone: profile?.phone,
+          listedDate: property.listed_date,
+          soldDate: property.sold_date,
+          soldPrice: property.sold_price?.toString(),
+          hasVR: property.has_vr
+        };
+      });
 
       setProperties(formattedData);
     } catch (error) {
@@ -126,7 +131,7 @@ const Favorites = () => {
             <div className="text-center py-16">
               <Heart className="w-20 h-20 mx-auto mb-4 text-muted-foreground opacity-20" />
               <h2 className="text-2xl font-semibold mb-2">Inga favoriter ännu</h2>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-white mb-6">
                 Börja spara dina favoritbostäder genom att klicka på hjärtikonen
               </p>
             </div>
