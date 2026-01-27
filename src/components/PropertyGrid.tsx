@@ -56,6 +56,7 @@ interface PropertyGridProps {
   elevatorFilter?: boolean;
   balconyFilter?: boolean;
   biddingFilter?: boolean;
+  executiveAuctionFilter?: boolean;
   feeRange?: [number, number];
   soldWithinMonths?: number | null;
   daysOnSiteFilter?: number | null;
@@ -108,6 +109,7 @@ export interface Property {
   hasActiveBidding?: boolean;
   housing_association?: string;
   user_id?: string;
+  is_executive_auction?: boolean;
 }
 
 export const allProperties: Property[] = [
@@ -580,7 +582,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, executiveAuctionFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
   const navigate = useNavigate();
   const { user, userType } = useAuth();
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
@@ -853,6 +855,11 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     // Filter by active bidding
     if (biddingFilter) {
       filtered = filtered.filter(property => propertyBids[property.id as string] === true);
+    }
+
+    // Filter by executive auction
+    if (executiveAuctionFilter) {
+      filtered = filtered.filter(property => property.is_executive_auction === true);
     }
 
     // Filter by fee

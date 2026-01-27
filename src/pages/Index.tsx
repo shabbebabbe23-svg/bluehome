@@ -32,6 +32,7 @@ const Index = () => {
   const [elevatorFilter, setElevatorFilter] = useState(false);
   const [balconyFilter, setBalconyFilter] = useState(false);
   const [biddingFilter, setBiddingFilter] = useState(false);
+  const [executiveAuctionFilter, setExecutiveAuctionFilter] = useState(false);
   const [feeRange, setFeeRange] = useState<[number, number]>([0, 15000]);
   const [daysOnSiteFilter, setDaysOnSiteFilter] = useState<number | null>(null);
   const [floorRange, setFloorRange] = useState<[number, number]>([0, 10]);
@@ -177,6 +178,7 @@ const Index = () => {
             onElevatorFilterChange={setElevatorFilter}
             onBalconyFilterChange={setBalconyFilter}
             onBiddingFilterChange={setBiddingFilter}
+            onExecutiveAuctionFilterChange={setExecutiveAuctionFilter}
             onFeeRangeChange={setFeeRange}
             soldWithinMonths={soldWithinMonths}
             onSoldWithinMonthsChange={setSoldWithinMonths}
@@ -231,6 +233,7 @@ const Index = () => {
                 elevatorFilter={elevatorFilter}
                 balconyFilter={balconyFilter}
                 biddingFilter={biddingFilter}
+                executiveAuctionFilter={executiveAuctionFilter}
                 feeRange={feeRange}
                 soldWithinMonths={soldWithinMonths}
                 daysOnSiteFilter={daysOnSiteFilter}
