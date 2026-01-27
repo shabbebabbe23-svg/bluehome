@@ -74,6 +74,7 @@ const AgentDashboard = () => {
   const [showViewerCount, setShowViewerCount] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
 
   // Sold price dialog states
   const [isSoldDialogOpen, setIsSoldDialogOpen] = useState(false);
@@ -192,6 +193,7 @@ const AgentDashboard = () => {
     setShowViewerCount(property.show_viewer_count || false);
     setHasElevator(property.has_elevator || false);
     setHasBalcony(property.has_balcony || false);
+    setIsExecutiveAuction(property.is_executive_auction || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
     
@@ -547,6 +549,7 @@ const AgentDashboard = () => {
         show_viewer_count: showViewerCount,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        is_executive_auction: isExecutiveAuction,
         floor: floorValue ? Number(floorValue) : null,
         total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
       };
@@ -1000,6 +1003,19 @@ const AgentDashboard = () => {
                     />
                     <Label htmlFor="edit-has-balcony" className="cursor-pointer font-medium text-sm">
                       Balkong
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2 bg-orange-50 border-orange-200">
+                    <input
+                      type="checkbox"
+                      id="edit-is-executive-auction"
+                      checked={isExecutiveAuction}
+                      onChange={(e) => setIsExecutiveAuction(e.target.checked)}
+                      className="w-4 h-4 rounded border-input cursor-pointer accent-orange-500"
+                    />
+                    <Label htmlFor="edit-is-executive-auction" className="cursor-pointer font-medium text-sm text-orange-700">
+                      Exekutiv auktion
                     </Label>
                   </Card>
 

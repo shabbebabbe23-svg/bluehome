@@ -24,6 +24,7 @@ interface HeroProps {
   onElevatorFilterChange?: (value: boolean) => void;
   onBalconyFilterChange?: (value: boolean) => void;
   onBiddingFilterChange?: (value: boolean) => void;
+  onExecutiveAuctionFilterChange?: (value: boolean) => void;
   onFeeRangeChange?: (value: [number, number]) => void;
   soldWithinMonths?: number | null;
   onSoldWithinMonthsChange?: (value: number | null) => void;
@@ -33,7 +34,7 @@ interface HeroProps {
   onConstructionYearRangeChange?: (value: [number, number]) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onExecutiveAuctionFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -53,6 +54,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
   const [hasBidding, setHasBidding] = useState(false);
+  const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
   const [floorRange, setFloorRange] = useState([0, 10]);
   const [constructionYearRange, setConstructionYearRange] = useState([1900, 2026]);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -70,6 +72,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasElevator(false);
     setHasBalcony(false);
     setHasBidding(false);
+    setIsExecutiveAuction(false);
     setFloorRange([0, 10]);
     setConstructionYearRange([1900, 2026]);
     onSearchAddressChange?.("");
@@ -82,6 +85,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onElevatorFilterChange?.(false);
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
+    onExecutiveAuctionFilterChange?.(false);
     onSoldWithinMonthsChange?.(null);
     onFloorRangeChange?.([0, 10]);
     onConstructionYearRangeChange?.([1900, 2026]);
@@ -120,7 +124,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     floorRange[0] !== 0 || floorRange[1] !== 10 ||
     constructionYearRange[0] !== 1900 || constructionYearRange[1] !== 2026 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony || hasBidding;
+    hasElevator || hasBalcony || hasBidding || isExecutiveAuction;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -784,6 +788,16 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                           className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${hasBidding ? "bg-hero-gradient text-white border-transparent hover:text-black" : "hover:border-primary"}`}
                         >
                           Pågående budgivning
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setIsExecutiveAuction(!isExecutiveAuction);
+                            onExecutiveAuctionFilterChange?.(!isExecutiveAuction);
+                          }}
+                          className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${isExecutiveAuction ? "bg-orange-500 text-white border-transparent hover:bg-orange-600" : "hover:border-orange-500 text-orange-600 border-orange-300"}`}
+                        >
+                          Exekutiv auktion
                         </Button>
                       </div>
                     </div>

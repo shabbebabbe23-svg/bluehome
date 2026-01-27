@@ -54,6 +54,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
   const [showViewerCount, setShowViewerCount] = useState(false);
@@ -422,6 +423,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        is_executive_auction: isExecutiveAuction,
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
         statistics_email_frequency: statisticsEmailFrequency,
@@ -454,6 +456,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
+      setIsExecutiveAuction(false);
       setDocuments([]);
       setDocumentNames([]);
       setShowViewerCount(false);
@@ -856,6 +859,19 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             />
             <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
               Balkong
+            </Label>
+          </Card>
+
+          <Card className="p-2 px-3 flex items-center space-x-2 bg-orange-50 border-orange-200">
+            <input
+              type="checkbox"
+              id="is_executive_auction"
+              checked={isExecutiveAuction}
+              onChange={(e) => setIsExecutiveAuction(e.target.checked)}
+              className="w-4 h-4 rounded border-input cursor-pointer accent-orange-500"
+            />
+            <Label htmlFor="is_executive_auction" className="cursor-pointer font-medium text-sm text-orange-700">
+              Exekutiv auktion
             </Label>
           </Card>
 
