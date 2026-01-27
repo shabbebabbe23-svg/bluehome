@@ -75,6 +75,11 @@ const AgentDashboard = () => {
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
 
+  // Sold price dialog states
+  const [isSoldDialogOpen, setIsSoldDialogOpen] = useState(false);
+  const [soldPriceInput, setSoldPriceInput] = useState("");
+  const [isMarkingSold, setIsMarkingSold] = useState(false);
+
   // Generate array of years from 2020 to current year
   const years = Array.from({
     length: new Date().getFullYear() - 2019
@@ -202,6 +207,21 @@ const AgentDashboard = () => {
     setExistingAdditionalImages(property.additional_images || []);
     setRemovedImages({ floorplan: [], additional: [] });
   };
+
+  // Handle edit query parameter - open edit dialog for specific property
+  useEffect(() => {
+    const editPropertyId = searchParams.get("edit");
+    if (editPropertyId && properties && properties.length > 0) {
+      const propertyToEdit = properties.find(p => p.id === editPropertyId);
+      if (propertyToEdit) {
+        // Switch to existing tab and open edit dialog
+        setActiveTab("existing");
+        handleEditProperty(propertyToEdit);
+        // Clear the query param from URL
+        navigate("/maklare", { replace: true });
+      }
+    }
+  }, [searchParams, properties]);
 
   const handleAddBid = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1003,37 +1023,9 @@ const AgentDashboard = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={async () => {
-                        const soldPrice = window.prompt("Ange slutpris för fastigheten (kr):", editingProperty.price.toString());
-                        if (soldPrice && !isNaN(Number(soldPrice))) {
-                          try {
-                            const { error } = await supabase
-                              .from('properties')
-                              .update({
-                                is_sold: true,
-                                sold_price: Number(soldPrice),
-                                sold_date: new Date().toISOString()
-                              })
-                              .eq('id', editingProperty.id);
-
-                            if (error) throw error;
-
-                            // Trigger celebration confetti
-                            confetti({
-                              particleCount: 100,
-                              spread: 70,
-                              origin: { y: 0.6 },
-                              colors: ['#0891b2', '#16a34a', '#22c55e', '#06b6d4']
-                            });
-
-                            toast.success("Grattis! Fastigheten har markerats som såld! 🎉");
-                            await refetch();
-                            setEditingProperty({...editingProperty, is_sold: true, sold_price: Number(soldPrice), sold_date: new Date().toISOString()});
-                          } catch (error) {
-                            console.error('Error marking property as sold:', error);
-                            toast.error("Kunde inte markera fastighet som såld");
-                          }
-                        }
+                      onClick={() => {
+                        setSoldPriceInput(editingProperty.price.toString());
+                        setIsSoldDialogOpen(true);
                       }}
                       className="w-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,36%)] text-white hover:opacity-90 border-0"
                     >
@@ -1410,6 +1402,101 @@ const AgentDashboard = () => {
               </TabsContent>
             </Tabs>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Sold Price Dialog */}
+      <Dialog open={isSoldDialogOpen} onOpenChange={setIsSoldDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl">🎉 Markera som såld</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Grattis till försäljningen! Ange slutpriset för fastigheten.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sold-price" className="text-base font-medium">Slutpris (kr)</Label>
+              <Input
+                id="sold-price"
+                type="text"
+                value={soldPriceInput ? Number(soldPriceInput.replace(/\s/g, '')).toLocaleString('sv-SE').replace(/,/g, ' ') : ''}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\s/g, '');
+                  if (value === '' || !isNaN(Number(value))) {
+                    setSoldPriceInput(value);
+                  }
+                }}
+                placeholder="T.ex. 3 500 000"
+                className="text-3xl h-16 text-center font-bold tracking-wide"
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsSoldDialogOpen(false)}
+                className="flex-1"
+                disabled={isMarkingSold}
+              >
+                Avbryt
+              </Button>
+              <Button
+                onClick={async () => {
+                  const priceValue = soldPriceInput.replace(/\s/g, '');
+                  if (!priceValue || isNaN(Number(priceValue))) {
+                    toast.error("Ange ett giltigt pris");
+                    return;
+                  }
+                  setIsMarkingSold(true);
+                  try {
+                    const { error } = await supabase
+                      .from('properties')
+                      .update({
+                        is_sold: true,
+                        sold_price: Number(priceValue),
+                        sold_date: new Date().toISOString()
+                      })
+                      .eq('id', editingProperty.id);
+
+                    if (error) throw error;
+
+                    setIsSoldDialogOpen(false);
+
+                    // Trigger celebration confetti
+                    setTimeout(() => {
+                      confetti({
+                        particleCount: 150,
+                        spread: 100,
+                        origin: { y: 0.6 },
+                        colors: ['#0891b2', '#16a34a', '#22c55e', '#06b6d4', '#fbbf24', '#f97316']
+                      });
+                    }, 100);
+
+                    toast.success(
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold text-lg">🎉 Grattis till försäljningen!</span>
+                        <span className="text-sm">Fastigheten har markerats som såld för <strong>{Number(priceValue).toLocaleString('sv-SE').replace(/,/g, ' ')} kr</strong></span>
+                      </div>,
+                      { duration: 5000 }
+                    );
+                    await refetch();
+                    setEditingProperty({...editingProperty, is_sold: true, sold_price: Number(priceValue), sold_date: new Date().toISOString()});
+                  } catch (error) {
+                    console.error('Error marking property as sold:', error);
+                    toast.error("Kunde inte markera fastighet som såld");
+                  } finally {
+                    setIsMarkingSold(false);
+                  }
+                }}
+                disabled={isMarkingSold}
+                className="flex-1 bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,36%)] text-white hover:opacity-90"
+              >
+                {isMarkingSold ? "Sparar..." : "Bekräfta försäljning"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>;

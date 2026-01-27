@@ -121,13 +121,11 @@ const InvitationAccept = () => {
         console.error("Error marking invitation as used:", updateError);
       }
 
-      toast.success("Konto skapat! Du är nu inloggad.");
-      
-      if (invitation.role === "agency_admin") {
-        navigate("/byra-admin");
-      } else {
-        navigate("/maklare");
-      }
+      // Logga ut användaren så att de måste logga in manuellt
+      await supabase.auth.signOut();
+
+      // Navigera till bekräftelsesidan
+      navigate("/mail-confirmation");
     } catch (error: any) {
       console.error("Error signing up:", error);
       toast.error(error.message || "Ett fel uppstod vid registrering");

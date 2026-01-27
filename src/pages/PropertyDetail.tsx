@@ -49,6 +49,7 @@ const PropertyDetail = () => {
 
   const [loading, setLoading] = useState(true);
   const [dbProperty, setDbProperty] = useState<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -79,6 +80,7 @@ const PropertyDetail = () => {
       try {
         if (!id) return;
         setLoading(true);
+        setLoadError(null);
 
         const { data, error } = await supabase
           .from('properties')
@@ -86,9 +88,28 @@ const PropertyDetail = () => {
           .eq('id', id)
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          if (error.code === 'PGRST116') {
+            // No rows returned - property doesn't exist
+            setLoadError('Fastigheten kunde inte hittas.');
+          } else {
+            setLoadError('Ett fel uppstod vid hämtning av fastigheten.');
+          }
+          setLoading(false);
+          return;
+        }
 
         if (data) {
+          // Check if property is deleted
+          if (data.is_deleted) {
+            console.log('Property is deleted');
+            setLoadError('Denna fastighet är borttagen.');
+            setDbProperty(null);
+            setLoading(false);
+            return;
+          }
+          
           setDbProperty(data);
 
           if (data.user_id) {
@@ -370,10 +391,10 @@ const PropertyDetail = () => {
       </div>
     </div>;
   }
-  if (!property) {
+  if (loadError || !property) {
     return <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Fastighet hittades inte</h1>
+        <h1 className="text-2xl font-bold mb-4">{loadError || 'Fastighet hittades inte'}</h1>
         <Link to="/">
           <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
         </Link>
@@ -706,6 +727,19 @@ const PropertyDetail = () => {
             <h1 className="text-3xl sm:text-4xl font-bold text-center">
               {property.title}
             </h1>
+            
+            {/* Real-time viewer count */}
+            {dbProperty?.show_viewer_count && viewerCount > 0 && (
+              <div className="p-2 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-lg border-2 border-primary/20 animate-pulse">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <span className="text-sm font-bold text-foreground">
+                    Antal live: {viewerCount}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-center gap-3">
               {/* Dela bostad-knappen flyttad till agentsektionen */}
               {(dbProperty?.has_vr || property.has_vr) && (
@@ -721,16 +755,6 @@ const PropertyDetail = () => {
               )}
             </div>
           </div>
-
-          {/* Real-time viewer count */}
-          {dbProperty?.show_viewer_count && viewerCount > 0 && (
-            <div className="flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-primary/10 to-green-500/10 rounded-full border border-primary/20 animate-pulse">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-foreground">
-                Antal live: {viewerCount}
-              </span>
-            </div>
-          )}
 
           {/* Property Info */}
           <Card>
@@ -1000,6 +1024,7 @@ const PropertyDetail = () => {
             area={property.area}
             type={property.type}
             operatingCost={property.operating_cost || 0}
+            brfDebtPerSqm={property.brf_debt_per_sqm}
           />
         </div>
 
@@ -1020,7 +1045,16 @@ const PropertyDetail = () => {
                 );
               })()}
 
-              {(dbProperty?.viewing_date || dbProperty?.viewing_date_2) && (
+              {/* Sold date information for sold properties */}
+              {(property.is_sold || property.isSold) && dbProperty?.sold_date && (
+                <div className="mb-2 p-2 bg-red-100 rounded-lg border-2 border-red-300">
+                  <p className="text-sm text-center font-bold text-red-700">
+                    🏠 Såld {new Date(dbProperty.sold_date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+              )}
+
+              {(dbProperty?.viewing_date || dbProperty?.viewing_date_2) && !(property.is_sold || property.isSold) && (
                 <div>
                   <h4 className="font-semibold text-sm mb-2">Visningar</h4>
                   <div className="space-y-2 mb-3">
@@ -1169,17 +1203,19 @@ const PropertyDetail = () => {
                       <Mail className="w-5 h-5 mr-2" />
                       Skicka meddelande
                     </Button>
-                    <Button
-                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base"
-                      onClick={() => {
-                        const subject = `Boka visning: ${property.address}`;
-                        const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                        window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                      }}
-                    >
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Boka visning
-                    </Button>
+                    {!(property.is_sold || property.isSold) && (
+                      <Button
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej ${agentProfile.full_name || 'Mäklare'},\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:${agentProfile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Boka visning
+                      </Button>
+                    )}
                     <Button
                       className="w-full border border-primary bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105 h-11 text-base mt-2"
                       variant="outline"
@@ -1222,17 +1258,19 @@ const PropertyDetail = () => {
                     >
                       Skicka meddelande
                     </Button>
-                    <Button
-                      className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
-                      size="lg"
-                      onClick={() => {
-                        const subject = `Boka visning: ${property.address}`;
-                        const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
-                        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                      }}
-                    >
-                      Boka visning
-                    </Button>
+                    {!(property.is_sold || property.isSold) && (
+                      <Button
+                        className="w-full border border-border bg-white text-foreground hover:bg-hero-gradient hover:text-white transition-transform hover:scale-105"
+                        size="lg"
+                        onClick={() => {
+                          const subject = `Boka visning: ${property.address}`;
+                          const body = `Hej,\n\nJag vill boka en visning för fastigheten på ${property.address}.\n\nMed vänliga hälsningar`;
+                          window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        }}
+                      >
+                        Boka visning
+                      </Button>
+                    )}
                   </div>
                 </>}
 
