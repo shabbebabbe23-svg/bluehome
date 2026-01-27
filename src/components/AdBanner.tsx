@@ -31,34 +31,34 @@ const AdBanner = ({
 
   return (
     // Fixed position at top - same position regardless of view mode
-    <aside className={`w-full lg:w-72 xl:w-[340px] shrink-0 ${className ?? ""} lg:sticky lg:top-24 lg:self-start`}>
-      <div className="p-2 lg:p-0 xl:p-4">
+    <aside className={`w-full lg:w-[229px] xl:w-[264px] 2xl:w-[300px] shrink-0 ${className ?? ""} lg:sticky lg:top-24 lg:self-start`}>
+      <div className="p-2 lg:p-1 xl:p-2 2xl:p-2">
         <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-auto flex flex-row lg:flex-col">
-          <div className="w-1/3 lg:w-full shrink-0">
+          <div className="w-1/3 sm:w-1/4 lg:w-full shrink-0">
             <img
               src={imageSrc}
               alt={alt}
-              className="w-full h-full lg:h-40 xl:h-52 object-cover"
+              className="w-full h-full lg:h-36 xl:h-44 2xl:h-52 object-cover"
             />
           </div>
-          <div className="p-3 sm:p-4 xl:p-5 space-y-1 sm:space-y-2 xl:space-y-3 flex-1 flex flex-col justify-center lg:justify-start">
-            <h3 className="text-lg sm:text-xl xl:text-[1.7rem] font-bold text-foreground leading-tight">
+          <div className="p-2 sm:p-3 lg:p-3 xl:p-4 2xl:p-5 space-y-1 sm:space-y-1.5 lg:space-y-2 xl:space-y-2 2xl:space-y-3 flex-1 flex flex-col justify-center lg:justify-start">
+            <h3 className="text-base sm:text-lg lg:text-lg xl:text-xl 2xl:text-[1.7rem] font-bold text-foreground leading-tight">
               {title}
             </h3>
-            <p className="text-xs sm:text-sm xl:text-lg text-muted-foreground line-clamp-2 lg:line-clamp-none">
+            <p className="text-[11px] sm:text-xs lg:text-sm xl:text-sm 2xl:text-lg text-muted-foreground line-clamp-2 lg:line-clamp-none">
               {description}
             </p>
-            <ul className="hidden sm:block space-y-1 xl:space-y-2 text-[10px] sm:text-xs xl:text-base text-muted-foreground">
+            <ul className="hidden sm:block space-y-0.5 lg:space-y-1 xl:space-y-1 2xl:space-y-2 text-[9px] sm:text-[10px] lg:text-xs xl:text-xs 2xl:text-base text-muted-foreground">
               {bullets.slice(0, 3).map((b) => (
                 <li key={b} className="whitespace-nowrap overflow-hidden text-ellipsis">{b}</li>
               ))}
             </ul>
-            <div className="mt-auto pt-1 sm:pt-2">
-              <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-xs sm:text-sm xl:text-lg h-7 sm:h-9 xl:h-11">
+            <div className="mt-auto pt-1 sm:pt-1.5 lg:pt-2">
+              <Button className="w-full bg-primary hover:bg-hero-gradient hover:text-white transition-colors text-[10px] sm:text-xs lg:text-sm xl:text-sm 2xl:text-lg h-6 sm:h-7 lg:h-9 xl:h-9 2xl:h-11">
                 {buttonText}
               </Button>
             </div>
-            <p className="hidden md:block text-[10px] sm:text-xs xl:text-sm text-muted-foreground text-center mt-1 sm:mt-2">
+            <p className="hidden md:block text-[9px] sm:text-[10px] lg:text-xs xl:text-xs 2xl:text-sm text-muted-foreground text-center mt-1 lg:mt-1.5 xl:mt-2">
               {note}
             </p>
           </div>

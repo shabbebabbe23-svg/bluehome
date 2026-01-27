@@ -837,8 +837,8 @@ const AgentDashboard = () => {
                 <form onSubmit={handleUpdateProperty} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <Label htmlFor="edit-title">Titel (max 50 tecken)</Label>
-                  <Input id="edit-title" name="title" defaultValue={editingProperty.title} required minLength={5} maxLength={50} />
+                  <Label htmlFor="edit-title">Titel (max 60 tecken)</Label>
+                  <Input id="edit-title" name="title" defaultValue={editingProperty.title} required minLength={5} maxLength={60} />
                 </div>
 
                 <div>

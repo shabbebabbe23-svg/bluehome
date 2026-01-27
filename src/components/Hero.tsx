@@ -307,7 +307,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   };
 
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-6 sm:pb-8 md:pb-0">
+    <section className="relative min-h-[70vh] sm:min-h-[80vh] md:min-h-[110vh] flex items-center justify-center overflow-hidden pt-0 -mt-4 sm:-mt-6 md:-mt-10 pb-6 sm:pb-8 md:pb-0">
       {/* Background Image with Overlay */}
       <div
         className="absolute bg-cover bg-center bg-no-repeat"
@@ -319,13 +319,13 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       {/* Content */}
       <div className="relative z-10 w-full max-w-none px-2 sm:px-4 md:px-6 text-center text-white">
         <div className="animate-fade-in">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-5 md:mb-7 leading-tight mt-0">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight mt-14 sm:mt-20 md:mt-28">
             Hitta ditt
             <span className="block bg-hero-gradient bg-clip-text text-transparent">
               Drömhem
             </span>
           </h1>
-          <p className="text-xs sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 md:mb-8 text-white/90 max-w-2xl mx-auto px-2 sm:px-4">
+          <p className="text-[10px] sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 md:mb-5 text-white/90 max-w-2xl mx-auto px-2 sm:px-4">
             Upptäck tusentals fastigheter över hela Sverige med BaraHem
           </p>
         </div>

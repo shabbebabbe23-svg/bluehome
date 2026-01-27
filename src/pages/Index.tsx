@@ -153,7 +153,7 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: 'var(--main-gradient)' }}>
       <Header />
-      <div className="flex flex-col lg:flex-row items-start lg:justify-between gap-4 md:gap-6 lg:gap-6 xl:gap-10 px-3 sm:px-4 lg:px-8 max-w-[2250px] mx-auto lg:items-start">
+      <div className="flex flex-col lg:grid lg:grid-cols-[229px_1fr_229px] xl:grid-cols-[264px_1fr_264px] 2xl:grid-cols-[300px_1fr_300px] items-start gap-4 md:gap-6 lg:gap-4 xl:gap-6 px-3 sm:px-4 lg:px-0 max-w-[2250px] mx-auto overflow-visible">
         <AdBanner
           imageSrc={soffaBanner}
           alt={"Soffa annons"}
@@ -162,7 +162,7 @@ const Index = () => {
           bullets={["✓ Fri hemleverans", "✓ 0% delbetalning", "✓ Många tyger och färger"]}
           buttonText={"Se erbjudanden"}
           note={<><strong className="font-semibold">Spara 5 000 kr</strong>{" - Erbjudande: fri frakt denna månad"}</>}
-          className="lg:order-1 order-3 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
+          className="lg:order-1 order-3 px-2 sm:px-4 lg:px-0"
         />
         <main className="order-1 lg:order-2 flex-1 w-full">
           <Hero
@@ -247,7 +247,7 @@ const Index = () => {
         </main>
         <AdBanner
           note={<><strong className="font-semibold">Specialerbjudande: 15% rabatt i april</strong></>}
-          className="lg:order-3 order-2 lg:transform lg:scale-95 xl:scale-90 px-2 sm:px-4 lg:px-0"
+          className="lg:order-3 order-2 px-2 sm:px-4 lg:px-0"
         />
       </div>
       <div className="w-full px-3 sm:px-4 lg:px-8 mt-8">

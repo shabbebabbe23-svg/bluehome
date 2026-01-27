@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const propertySchema = z.object({
-  title: z.string().min(5, "Titel måste vara minst 5 tecken").max(50, "Titel får max vara 50 tecken"),
+  title: z.string().min(5, "Titel måste vara minst 5 tecken").max(60, "Titel får max vara 60 tecken"),
   address: z.string().min(5, "Adress måste vara minst 5 tecken").max(200, "Adress får max vara 200 tecken"),
   location: z.string().min(2, "Ort måste anges").max(100, "Ort får max vara 100 tecken"),
   type: z.string().min(1, "Välj bostadstyp"),
@@ -478,13 +478,13 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Titel */}
         <div className="md:col-span-2">
-          <Label htmlFor="title">Titel * <span className="text-muted-foreground font-normal">(max 50 tecken)</span></Label>
+          <Label htmlFor="title">Titel * <span className="text-muted-foreground font-normal">(max 60 tecken)</span></Label>
           <Input
             id="title"
             {...register("title")}
             placeholder="T.ex. Rymlig trea i centrala stan"
             className="w-full"
-            maxLength={50}
+            maxLength={60}
           />
           <div className="flex justify-between items-center mt-1">
             {errors.title ? (
@@ -493,7 +493,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               <span />
             )}
             <span className="text-xs text-muted-foreground">
-              {watch("title")?.length || 0}/50
+              {watch("title")?.length || 0}/60
             </span>
           </div>
         </div>

@@ -232,7 +232,7 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
           </div>
 
           {/* Content - matching PropertyCard layout */}
-          <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5 overflow-hidden">
+          <CardContent className="p-4 sm:p-5 flex-1 flex flex-col gap-2 overflow-hidden">
             {/* Address and Price row */}
             <div className="flex items-start justify-between gap-2">
               {/* Left side - Address */}
