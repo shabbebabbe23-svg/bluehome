@@ -9,9 +9,10 @@ interface PropertyCostBreakdownProps {
   area: number;
   type: string;
   operatingCost: number;
+  brfDebtPerSqm?: number;
 }
 
-const PropertyCostBreakdown = ({ price, fee, area, type, operatingCost }: PropertyCostBreakdownProps) => {
+const PropertyCostBreakdown = ({ price, fee, area, type, operatingCost, brfDebtPerSqm }: PropertyCostBreakdownProps) => {
   const [interestRate, setInterestRate] = useState(3);
   const [amortizationRate, setAmortizationRate] = useState(2);
 
@@ -131,6 +132,13 @@ const PropertyCostBreakdown = ({ price, fee, area, type, operatingCost }: Proper
             <span className="text-muted-foreground">Driftkostnad</span>
             <span className="font-medium">{formatCurrency(monthlyOperatingCost)}</span>
           </div>
+
+          {brfDebtPerSqm && brfDebtPerSqm > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">BRF skuld/m²</span>
+              <span className="font-medium">{formatCurrency(brfDebtPerSqm)}</span>
+            </div>
+          )}
 
           <Separator className="my-4" />
 

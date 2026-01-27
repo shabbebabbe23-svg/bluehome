@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,7 @@ interface PropertyCardProps {
   floor?: number;
   totalFloors?: number;
   tagline?: string;
+  onEditClick?: () => void;
 }
 
 const PropertyCard = ({
@@ -109,6 +110,7 @@ const PropertyCard = ({
   floor,
   totalFloors,
   tagline,
+  onEditClick,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
@@ -426,22 +428,22 @@ const PropertyCard = ({
             </p>
 
             {/* Bottom row: Details and Days on market */}
-            <div className="flex items-end justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
-              <div className="flex flex-1 items-center gap-1.5 sm:gap-3 text-lg sm:text-xl text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-base text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="whitespace-nowrap">{bedrooms}</span>
+                  <Bed className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="whitespace-nowrap">{bedrooms} rum</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bath className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <Bath className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="whitespace-nowrap">{bathrooms}</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <Square className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
               </div>
-              <p className="text-lg sm:text-xl font-semibold text-muted-foreground flex-shrink-0 whitespace-nowrap text-right">
+              <p className="text-[10px] sm:text-sm font-semibold text-muted-foreground flex-shrink-0 whitespace-nowrap sm:text-right">
                 {isSold && soldDate
                   ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                   : daysOnMarketText
@@ -743,6 +745,11 @@ const PropertyCard = ({
                 <span className="text-[10px] sm:text-sm text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
+                {fee && fee > 0 && (
+                  <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {fee.toLocaleString('sv-SE')} kr/mån
+                  </span>
+                )}
               </>
             ) : newPrice && hasActiveBidding ? (
               <>
@@ -752,6 +759,11 @@ const PropertyCard = ({
                 <span className="text-xs sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
+                {fee && fee > 0 && (
+                  <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {fee.toLocaleString('sv-SE')} kr/mån
+                  </span>
+                )}
               </>
             ) : newPrice ? (
               <>
@@ -761,6 +773,11 @@ const PropertyCard = ({
                 <span className="text-xs sm:text-base text-muted-foreground line-through whitespace-nowrap">
                   {price}
                 </span>
+                {fee && fee > 0 && (
+                  <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {fee.toLocaleString('sv-SE')} kr/mån
+                  </span>
+                )}
               </>
             ) : (
               <>
@@ -888,6 +905,21 @@ const PropertyCard = ({
                 {buttonText || "Visa detaljer"}
               </Button>
             </Link>
+          )}
+          {/* Edit button (for agent's own properties) */}
+          {onEditClick && (
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEditClick();
+              }}
+              className="w-full mt-2 relative z-20 text-xs sm:text-base py-1 h-8 sm:h-10 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+            >
+              <Pencil className="w-4 h-4 mr-2" />
+              Redigera
+            </Button>
           )}
           <p className="text-[10px] sm:text-sm font-semibold text-muted-foreground text-right mt-1 truncate">
             {isSold && soldDate

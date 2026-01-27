@@ -107,30 +107,8 @@ const handler = async (req: Request): Promise<Response> => {
                         Hej ${name}! 👋
                       </h2>
                       <p style="margin: 0 0 24px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
-                        Grattis! Du har blivit utvald att bli ${roleText} hos <strong style="color: #1e293b;">${agency_name}</strong>.
+                        Du har blivit inbjuden att registrera dig hos BaraHem.se. Genom <strong style="color: #1e293b;">${agency_name}</strong>.
                       </p>
-
-                      <div style="background: linear-gradient(135deg, hsl(200, 98%, 96%), hsl(142, 76%, 96%)); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-                        <h3 style="margin: 0 0 16px 0; color: #1e293b; font-size: 16px; font-weight: 600;">
-                          Som ${roleText} på BaraHem kan du:
-                        </h3>
-                        <ul style="margin: 0; padding: 0 0 0 20px; color: #475569; font-size: 15px; line-height: 1.8;">
-                          ${role === 'maklare' 
-                            ? `
-                              <li>Skapa och publicera bostadsannonser</li>
-                              <li>Följa statistik och intresse för dina objekt</li>
-                              <li>Hantera visningar och budgivning</li>
-                              <li>Kommunicera direkt med intresserade köpare</li>
-                            `
-                            : `
-                              <li>Bjuda in och hantera mäklare i din byrå</li>
-                              <li>Få överblick över alla objekt och försäljningar</li>
-                              <li>Se detaljerad statistik och rapporter</li>
-                              <li>Administrera byråns profil och inställningar</li>
-                            `
-                          }
-                        </ul>
-                      </div>
 
                       <!-- Registreringslänk -->
                       <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; text-align: center;">
@@ -149,16 +127,15 @@ const handler = async (req: Request): Promise<Response> => {
                       <p style="margin: 0; color: #94a3b8; font-size: 14px; text-align: center;">
                         Länken är giltig i 7 dagar.
                       </p>
+                      <p style="margin: 16px 0 0 0; color: #64748b; font-size: 14px; text-align: center;">
+                        Om du har frågor, maila gärna <a href="mailto:info@barahem.se" style="color: hsl(200, 98%, 35%); text-decoration: underline;">info@barahem.se</a>
+                      </p>
                     </td>
                   </tr>
 
                   <!-- Footer -->
                   <tr>
                     <td style="background: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0;">
-                      <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 13px; text-align: center;">
-                        Du får detta mail för att någon har bjudit in dig till BaraHem.<br>
-                        Om du inte förväntat dig denna inbjudan kan du ignorera mailet.
-                      </p>
                       <p style="margin: 0; color: #cbd5e1; font-size: 12px; text-align: center;">
                         © ${new Date().getFullYear()} BaraHem. Alla rättigheter förbehållna.
                       </p>
@@ -182,7 +159,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "BaraHem <noreply@info.barahem.se>",
         to: [email],
-        subject: `Välkommen till ${agency_name} – Din inbjudan till BaraHem`,
+        subject: `Välkommen till BaraHem!`,
         html,
       }),
     });

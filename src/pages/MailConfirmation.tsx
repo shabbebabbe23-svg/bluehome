@@ -1,20 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { CheckCircle } from 'lucide-react';
 
 const MailConfirmation: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-green-600">Email Confirmed!</h1>
-        <p className="mb-6 text-gray-700">
-          Your email has been successfully confirmed. You can now log in to your account.
+        <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold mb-4 text-green-600">Registrering klar!</h1>
+        <p className="mb-4 text-gray-700">
+          Ditt konto har skapats och du är nu registrerad.
         </p>
-        <Link
-          to="/login"
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-        >
-          Go to Login
-        </Link>
+        <p className="text-gray-600 text-sm">
+          Du kan nu stänga denna sida.
+        </p>
       </div>
     </div>
   );

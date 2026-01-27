@@ -115,23 +115,35 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
   const currentImageIndex = imageCounters[currentPropertyIndex] % currentImages.length;
 
   return (
-    <div className="flex flex-col items-center w-full px-4 sm:px-0">
-      <div className="flex items-center gap-1 sm:gap-2 w-full max-w-[500px] sm:max-w-none sm:w-auto">
-        {/* Left arrow */}
+    <div className="flex flex-col items-center w-full">
+      <div className="relative w-full sm:w-[400px] md:w-[450px] md:mx-16">
+        {/* Left arrow - overlay on mobile, outside on desktop */}
         {properties.length > 1 && (
           <Button
             variant="ghost"
             size="icon"
             onClick={goToPrevious}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
+            className="absolute left-2 md:-left-14 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-foreground shadow-lg border border-border/50 rounded-full h-10 w-10 sm:h-12 sm:w-12"
           >
-            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
           </Button>
         )}
 
-        {/* Single centered property card - responsive width */}
+        {/* Right arrow - overlay on mobile, outside on desktop */}
+        {properties.length > 1 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNext}
+            className="absolute right-2 md:-right-14 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-foreground shadow-lg border border-border/50 rounded-full h-10 w-10 sm:h-12 sm:w-12"
+          >
+            <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+          </Button>
+        )}
+
+        {/* Single property card - same size as PropertyCard */}
         <Card
-          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full sm:w-[400px] md:w-[450px]"
+          className="relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 hover:-translate-y-1 w-full"
         >
           <Link
             to={`/fastighet/${currentProperty.id}`}
@@ -156,8 +168,8 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             />
           </button>
 
-          {/* Image with auto-slide */}
-          <div className="relative aspect-[4/3] overflow-hidden">
+          {/* Image with auto-slide - matching PropertyCard aspect ratio */}
+          <div className="relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden">
             <img
               src={currentImages[currentImageIndex]}
               alt={currentProperty.title}
@@ -219,52 +231,66 @@ const RecentPropertiesCarousel = ({ properties }: RecentPropertiesCarouselProps)
             )}
           </div>
 
-          {/* Content */}
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold text-foreground text-base line-clamp-1">
-                {currentProperty.address || currentProperty.title}
-              </h3>
-              <span className="font-bold text-primary text-base whitespace-nowrap ml-2">
-                {currentProperty.price}
-              </span>
+          {/* Content - matching PropertyCard layout */}
+          <CardContent className="p-3 sm:p-4 flex-1 flex flex-col gap-1.5 overflow-hidden">
+            {/* Address and Price row */}
+            <div className="flex items-start justify-between gap-2">
+              {/* Left side - Address */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-[15px] sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
+                  {currentProperty.address || currentProperty.title}
+                </h3>
+                {/* Dynamic subtitle text */}
+                <div className="text-[11px] sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+                  {currentProperty.title}
+                </div>
+              </div>
+
+              {/* Right side - Price */}
+              <div className="flex flex-col items-end flex-shrink-0">
+                <span className="text-[17px] sm:text-xl font-bold text-primary whitespace-nowrap">
+                  {currentProperty.price}
+                </span>
+                {currentProperty.fee && currentProperty.fee > 0 && (
+                  <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {currentProperty.fee.toLocaleString('sv-SE')} kr/mån
+                  </span>
+                )}
+                {currentProperty.hasActiveBidding && (
+                  <div className="flex items-center gap-1 text-[#FF6B2C] font-bold text-[10px] mt-0.5">
+                    <Gavel className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span>Pågående budgivning</span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="text-primary text-sm font-medium mb-3">
-              <span className="line-clamp-1">{currentProperty.title}</span>
-            </div>
-
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Bed className="w-4 h-4" />
-                <span>{currentProperty.bedrooms}</span>
+            <div className="mt-auto pt-1">
+              <div className="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm mb-1">
+                <div className="flex items-center gap-0.5">
+                  <Bed className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-semibold text-foreground">{currentProperty.bedrooms}</span>
+                  <span className="text-[10px] sm:text-sm text-muted-foreground">rum</span>
+                </div>
+                <div className="flex items-center gap-0.5">
+                  <Bath className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-semibold text-foreground">{currentProperty.bathrooms}</span>
+                  <span className="text-[10px] sm:text-sm text-muted-foreground hidden sm:inline">bad</span>
+                </div>
+                <div className="flex items-center gap-0.5">
+                  <Square className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-semibold text-foreground">{currentProperty.area}</span>
+                  <span className="text-[10px] sm:text-sm text-muted-foreground">m²</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Bath className="w-4 h-4" />
-                <span>{currentProperty.bathrooms}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Square className="w-4 h-4" />
-                <span>{currentProperty.area} m²</span>
-              </div>
-              {currentProperty.fee && currentProperty.fee > 0 && (
-                <span className="text-xs">{currentProperty.fee.toLocaleString('sv-SE')} kr/mån</span>
-              )}
+              <Link to={`/fastighet/${currentProperty.id}`} className="relative z-20">
+                <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10">
+                  Visa detaljer
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
-
-        {/* Right arrow */}
-        {properties.length > 1 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToNext}
-            className="bg-background/80 hover:bg-background shadow-md rounded-full h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
-          >
-            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
-        )}
       </div>
 
       {/* Property indicators */}

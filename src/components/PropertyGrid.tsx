@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import PropertyCard from "./PropertyCard";
 import RecentSoldCarousel from "./RecentSoldCarousel";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 import { ArrowUpDown, Grid3x3, List } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -105,6 +107,7 @@ export interface Property {
   construction_year?: number;
   hasActiveBidding?: boolean;
   housing_association?: string;
+  user_id?: string;
 }
 
 export const allProperties: Property[] = [
@@ -578,6 +581,8 @@ export const soldProperties: Property[] = [
 ];
 
 const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
+  const navigate = useNavigate();
+  const { user, userType } = useAuth();
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
   const [showAll, setShowAll] = useState(() => {
     // Restore showAll state from sessionStorage
@@ -704,6 +709,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             createdAt: new Date(prop.created_at),
             listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
             additional_images: prop.additional_images || [],
+            user_id: prop.user_id,
           }));
           setDbProperties(formattedProperties);
 
@@ -1023,19 +1029,19 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           </section>
         )}
         {/* Header */}
-        <div className="mb-2 md:mb-3 animate-fade-in">
-          <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 mb-1 ${viewMode === "list" ? "w-full mx-auto" : ""}`}>
+        <div className="mb-0.5 md:mb-1 animate-fade-in">
+          <div className={`flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-1.5 mb-0.5 ${viewMode === "list" ? "w-full mx-auto" : ""}`}>
             <div className="hidden sm:block" />
             <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center">
               {showFinalPrices ? "Sålda fastigheter" : "Alla objekt"}
             </h2>
             {/* Listvy-knapp överst */}
-            <div className="flex flex-col gap-2 w-full sm:w-auto mt-8">
+            <div className="flex flex-col gap-1.5 w-full sm:w-auto mt-2">
               <div className="flex justify-center sm:justify-end w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                  className="flex gap-1.5 h-9 px-3 sm:px-4 text-sm"
+                  className="flex gap-1.5 h-7 px-3 sm:px-4 text-sm"
                 >
                   {viewMode === "grid" ? (
                     <>
@@ -1081,7 +1087,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   </div>
                 )}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[120px] sm:w-[145px] h-10 text-xs sm:text-sm bg-hero-gradient text-white border-transparent">
+                  <SelectTrigger className="w-[120px] sm:w-[145px] h-8 text-xs sm:text-sm bg-hero-gradient text-white border-transparent">
                     <ArrowUpDown className="w-3.5 h-3.5 mr-1 shrink-0" />
                     <SelectValue placeholder="Sortera efter" />
                   </SelectTrigger>
@@ -1111,6 +1117,20 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           {displayedProperties.map((property, index) => {
             // Only show bulk select for database properties (UUIDs)
             const isDbProperty = dbProperties.some(p => String(p.id) === String(property.id));
+            // Check if current user owns this property
+            const isOwnProperty = !!(user && isDbProperty && property.user_id && property.user_id === user.id);
+            
+            // Debug logging (remove in production)
+            if (isDbProperty && user) {
+              console.log('Property check:', {
+                propertyId: property.id,
+                propertyAddress: property.address,
+                propertyUserId: property.user_id,
+                currentUserId: user.id,
+                isOwnProperty
+              });
+            }
+            
             return (
               <div
                 key={property.id}
@@ -1142,6 +1162,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   hasBalcony={property.has_balcony}
                   constructionYear={property.construction_year}
                   brfDebtPerSqm={property.brf_debt_per_sqm}
+                  onEditClick={isOwnProperty ? () => navigate(`/maklare?edit=${property.id}`) : undefined}
                 />
               </div>
             );
