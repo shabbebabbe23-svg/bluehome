@@ -355,24 +355,37 @@ const AgentDashboard = () => {
         return;
       }
 
+      console.log("Sending statistics for property:", editingProperty.id);
+      
       const response = await supabase.functions.invoke('send-property-statistics', {
         body: { property_id: editingProperty.id },
       });
 
+      console.log("Response from edge function:", response);
+
       if (response.error) {
         console.error("Edge function error:", response.error);
-        throw new Error(response.error.message);
+        toast.error(`Fel: ${response.error.message || 'Okänt fel från servern'}`);
+        return;
       }
       
       // Check if the response data indicates a failure
       if (response.data && response.data.success === false) {
-        throw new Error(response.data.message || "Kunde inte skicka statistik");
+        console.error("Edge function returned failure:", response.data);
+        toast.error(response.data.message || "Kunde inte skicka statistik");
+        return;
+      }
+      
+      if (response.data && response.data.error) {
+        console.error("Edge function returned error:", response.data);
+        toast.error(response.data.error);
+        return;
       }
 
       toast.success(`Statistik skickad till ${sellerEmail}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending statistics:", error);
-      toast.error("Kunde inte skicka statistik till säljaren");
+      toast.error(error.message || "Kunde inte skicka statistik till säljaren");
     } finally {
       setIsSendingStatistics(false);
     }
