@@ -39,25 +39,27 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     const token = authHeader.replace("Bearer ", "");
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
-    // Only allow requests with service role key or anon key (from database triggers)
+    // Check if it's a service role request (from internal triggers)
     const isServiceRole = token === serviceRoleKey;
-    const isAnonKey = token === anonKey;
     
-    if (!isServiceRole && !isAnonKey) {
-      // Verify it's a valid authenticated user with proper role
-      const supabaseAuth = createClient(supabaseUrl, token);
-      const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    let userId: string | null = null;
+    
+    if (!isServiceRole) {
+      // Verify JWT token by decoding and checking with Supabase
+      // Use the admin client to verify the user exists
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
       
       if (authError || !user) {
-        console.error("Unauthorized request rejected - invalid token");
+        console.error("Unauthorized request rejected - invalid token", authError);
         return new Response(
           JSON.stringify({ error: "Unauthorized" }),
           { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
+      
+      userId = user.id;
       
       // Check if user has maklare or admin role
       const { data: roles } = await supabase
