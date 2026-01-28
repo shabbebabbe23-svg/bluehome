@@ -2,10 +2,17 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { BarChart3, Eye, Clock, TrendingUp, Image, MapPin, Mail, Loader2, Smartphone, Monitor, Tablet, Share2, Calendar } from "lucide-react";
+import { BarChart3, Eye, Clock, TrendingUp, Image, MapPin, Mail, Loader2, Smartphone, Monitor, Tablet, Share2, Calendar, X, ZoomIn, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ImageStat {
   image_index: number;
@@ -37,6 +44,8 @@ export const AgentStatistics = () => {
   const [totalViews, setTotalViews] = useState(0);
   const [totalAvgTime, setTotalAvgTime] = useState(0);
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyStats | null>(null);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -349,14 +358,19 @@ export const AgentStatistics = () => {
               <p className="text-sm">Klick kommer att visas här när personer besöker dina objekt</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {stats.map((stat) => (
                 <div
                   key={stat.property_id}
-                  className="flex flex-col p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="flex flex-col p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-base flex-1">{stat.property_title}</h4>
+                  <div className="flex items-start justify-between mb-1">
+                    <Link 
+                      to={`/fastighet/${stat.property_id}`}
+                      className="font-medium text-base flex-1 line-clamp-1 hover:text-primary hover:underline transition-colors"
+                    >
+                      {stat.property_title}
+                    </Link>
                     <div className="text-xl font-bold text-primary ml-2">
                       {stat.total_views}
                     </div>
@@ -364,17 +378,17 @@ export const AgentStatistics = () => {
                   
                   {/* Property Image */}
                   {stat.property_image && (
-                    <div className="mb-3">
+                    <Link to={`/fastighet/${stat.property_id}`} className="mb-2 block">
                       <img 
                         src={stat.property_image} 
                         alt={stat.property_title}
-                        className="w-full h-32 object-cover rounded"
+                        className="w-full h-20 object-cover rounded hover:opacity-90 transition-opacity"
                       />
-                    </div>
+                    </Link>
                   )}
                   
                   {/* Main Stats Row */}
-                  <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+                  <div className="grid grid-cols-2 gap-1 mb-2 text-xs">
                     <div className="flex items-center gap-1">
                       <Eye className="w-3 h-3 text-muted-foreground" />
                       <span>{stat.total_views} visningar</span>
@@ -394,8 +408,7 @@ export const AgentStatistics = () => {
                   </div>
 
                   {/* Device Stats */}
-                  <div className="mb-3 p-2 bg-muted/50 rounded-lg">
-                    <h5 className="text-xs font-medium text-muted-foreground mb-1">Enheter</h5>
+                  <div className="mb-2 p-1.5 bg-muted/50 rounded">
                     <div className="flex gap-3 text-xs">
                       <div className="flex items-center gap-1">
                         <Monitor className="w-3 h-3" />
@@ -414,39 +427,102 @@ export const AgentStatistics = () => {
 
                   {/* Locations */}
                   {stat.visitor_locations.length > 0 && (
-                    <div className="mb-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1 mb-1">
+                    <div className="mb-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 mb-0.5">
                         <MapPin className="w-3 h-3" />
-                        <span className="font-medium">Besökare från:</span>
+                        <span className="font-medium">Besökare:</span>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {stat.visitor_locations.map((loc, idx) => (
-                          <span key={idx} className="bg-muted px-2 py-0.5 rounded">
-                            {loc.city}, {loc.region} ({loc.count})
+                      <div className="flex flex-wrap gap-1">
+                        {stat.visitor_locations.slice(0, 3).map((loc, idx) => (
+                          <span key={idx} className="bg-muted px-1.5 py-0.5 rounded text-[11px]">
+                            {loc.city} ({loc.count})
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Send Email Button */}
-                  <div className="pt-3 border-t">
+                  {/* Image Stats */}
+                  {stat.image_views > 0 && (
+                    <div className="mb-2 p-1.5 bg-purple-50 dark:bg-purple-950/30 rounded">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1">
+                          <Image className="w-3 h-3 text-purple-600" />
+                          <span className="text-xs font-medium text-purple-700 dark:text-purple-400">{stat.image_views} bildklick</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedProperty(stat);
+                            setImageModalOpen(true);
+                          }}
+                          className="flex items-center gap-0.5 text-[11px] text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300"
+                        >
+                          <ZoomIn className="w-3 h-3" />
+                          Visa alla
+                        </button>
+                      </div>
+                      {stat.top_images.length > 0 && (
+                        <div 
+                          className="flex gap-1 overflow-x-auto cursor-pointer"
+                          onClick={() => {
+                            setSelectedProperty(stat);
+                            setImageModalOpen(true);
+                          }}
+                        >
+                          {stat.top_images.slice(0, 3).map((img, idx) => (
+                            <div key={idx} className="flex-shrink-0 relative group">
+                              {img.image_url ? (
+                                <div className="relative">
+                                  <img 
+                                    src={img.image_url} 
+                                    alt={`Bild ${img.image_index + 1}`}
+                                    className="w-10 h-8 object-cover rounded border group-hover:opacity-80 transition-opacity"
+                                  />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] text-center rounded-b">
+                                    {img.views}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-10 h-8 bg-muted rounded flex items-center justify-center text-[9px] text-muted-foreground">
+                                  {img.views}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="pt-2 border-t mt-auto space-y-1.5">
+                    <Button
+                      size="sm"
+                      variant="default"
+                      asChild
+                      className="w-full h-7 text-xs"
+                    >
+                      <Link to={`/fastighet/${stat.property_id}`}>
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        Visa objekt
+                      </Link>
+                    </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => sendStatisticsEmail(stat.property_id, stat.seller_email)}
                       disabled={sendingEmail === stat.property_id || !stat.seller_email}
-                      className="w-full"
+                      className="w-full h-7 text-xs"
                     >
                       {sendingEmail === stat.property_id ? (
                         <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
                           Skickar...
                         </>
                       ) : (
                         <>
-                          <Mail className="w-4 h-4 mr-2" />
-                          {stat.seller_email ? "Skicka statistik till säljaren" : "Ingen säljar-email"}
+                          <Mail className="w-3 h-3 mr-1" />
+                          {stat.seller_email ? "Skicka statistik" : "Ingen email"}
                         </>
                       )}
                     </Button>
@@ -457,6 +533,81 @@ export const AgentStatistics = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Image Statistics Modal */}
+      <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Image className="w-5 h-5 text-purple-600" />
+              Bildstatistik - {selectedProperty?.property_title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedProperty && (
+            <div className="space-y-4">
+              {/* Summary */}
+              <div className="flex items-center gap-4 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">{selectedProperty.image_views}</div>
+                  <div className="text-xs text-muted-foreground">Totalt bildklick</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">~{selectedProperty.avg_images_per_session}</div>
+                  <div className="text-xs text-muted-foreground">Bilder/besök</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">{selectedProperty.top_images.length}</div>
+                  <div className="text-xs text-muted-foreground">Unika bilder</div>
+                </div>
+              </div>
+
+              {/* Image Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {selectedProperty.top_images.map((img, idx) => (
+                  <div key={idx} className="relative group">
+                    {img.image_url ? (
+                      <div className="relative">
+                        <img 
+                          src={img.image_url} 
+                          alt={`Bild ${img.image_index + 1}`}
+                          className="w-full h-40 object-cover rounded-lg border shadow-sm"
+                        />
+                        {/* Ranking Badge */}
+                        <div className="absolute top-2 left-2 bg-purple-600 text-white text-sm font-bold rounded-full w-7 h-7 flex items-center justify-center shadow">
+                          #{idx + 1}
+                        </div>
+                        {/* Stats Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 rounded-b-lg">
+                          <div className="text-white">
+                            <div className="text-lg font-bold">{img.views} visningar</div>
+                            <div className="text-xs opacity-80">
+                              {img.image_index === 0 ? 'Huvudbild' : `Bild ${img.image_index + 1}`}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-40 bg-muted rounded-lg flex flex-col items-center justify-center">
+                        <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                        <div className="text-sm font-medium">{img.views} visningar</div>
+                        <div className="text-xs text-muted-foreground">Bild {img.image_index + 1}</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {selectedProperty.top_images.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p>Ingen bildstatistik tillgänglig ännu</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

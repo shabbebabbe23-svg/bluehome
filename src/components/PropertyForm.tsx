@@ -54,6 +54,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [distanceToWater, setDistanceToWater] = useState<string>("");
   const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
   const [documents, setDocuments] = useState<File[]>([]);
   const [documentNames, setDocumentNames] = useState<string[]>([]);
@@ -423,6 +424,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        distance_to_water: distanceToWater ? parseInt(distanceToWater) : null,
         is_executive_auction: isExecutiveAuction,
         documents: uploadedDocuments,
         show_viewer_count: showViewerCount,
@@ -456,6 +458,7 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
+      setDistanceToWater("");
       setIsExecutiveAuction(false);
       setDocuments([]);
       setDocumentNames([]);
@@ -859,6 +862,21 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             />
             <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
               Balkong
+            </Label>
+          </Card>
+
+          <Card className="p-2 px-3 flex items-center space-x-2 bg-blue-50 border-blue-200">
+            <Waves className="w-4 h-4 text-blue-500" />
+            <Input
+              type="number"
+              id="distance_to_water"
+              value={distanceToWater}
+              onChange={(e) => setDistanceToWater(e.target.value)}
+              placeholder="meter"
+              className="w-20 h-7 text-sm"
+            />
+            <Label htmlFor="distance_to_water" className="cursor-pointer font-medium text-sm text-blue-700">
+              Avstånd till vatten
             </Label>
           </Card>
 

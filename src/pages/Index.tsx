@@ -33,6 +33,7 @@ const Index = () => {
   const [balconyFilter, setBalconyFilter] = useState(false);
   const [biddingFilter, setBiddingFilter] = useState(false);
   const [executiveAuctionFilter, setExecutiveAuctionFilter] = useState(false);
+  const [waterDistanceFilter, setWaterDistanceFilter] = useState<number | null>(null);
   const [feeRange, setFeeRange] = useState<[number, number]>([0, 15000]);
   const [daysOnSiteFilter, setDaysOnSiteFilter] = useState<number | null>(null);
   const [floorRange, setFloorRange] = useState<[number, number]>([0, 10]);
@@ -179,6 +180,7 @@ const Index = () => {
             onBalconyFilterChange={setBalconyFilter}
             onBiddingFilterChange={setBiddingFilter}
             onExecutiveAuctionFilterChange={setExecutiveAuctionFilter}
+            onWaterDistanceFilterChange={setWaterDistanceFilter}
             onFeeRangeChange={setFeeRange}
             soldWithinMonths={soldWithinMonths}
             onSoldWithinMonthsChange={setSoldWithinMonths}
@@ -239,6 +241,7 @@ const Index = () => {
                 daysOnSiteFilter={daysOnSiteFilter}
                 floorRange={floorRange}
                 constructionYearRange={constructionYearRange}
+                waterDistanceFilter={waterDistanceFilter}
               />
             ) : (
               <AgentGrid searchQuery={searchAddress} />

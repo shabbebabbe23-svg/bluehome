@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User, Mail } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User, Mail, Waves } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import confetti from 'canvas-confetti';
 import agentDashboardBg from "@/assets/agent-dashboard-bg.jpg";
@@ -74,6 +74,7 @@ const AgentDashboard = () => {
   const [showViewerCount, setShowViewerCount] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [distanceToWater, setDistanceToWater] = useState<string>("");
   const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
 
   // Sold price dialog states
@@ -196,6 +197,7 @@ const AgentDashboard = () => {
     setShowViewerCount(property.show_viewer_count || false);
     setHasElevator(property.has_elevator || false);
     setHasBalcony(property.has_balcony || false);
+    setDistanceToWater(property.distance_to_water?.toString() || "");
     setIsExecutiveAuction(property.is_executive_auction || false);
     setIsEditDialogOpen(true);
     setEditDialogTab("property");
@@ -616,21 +618,15 @@ const AgentDashboard = () => {
         show_viewer_count: showViewerCount,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        distance_to_water: distanceToWater ? Number(distanceToWater) : null,
         is_executive_auction: isExecutiveAuction,
         floor: floorValue ? Number(floorValue) : null,
         total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
         seller_email: sellerEmailValue || null,
+        brf_debt_per_sqm: brfDebtPerSqmValue ? Number(brfDebtPerSqmValue) : null,
       };
 
-      // First try to update without brf_debt_per_sqm
-      let { error } = await supabase.from("properties").update(updateData).eq("id", editingProperty.id);
-      
-      // If successful and brf_debt_per_sqm has a value, try to update it separately
-      if (!error && brfDebtPerSqmValue) {
-        await supabase.from("properties").update({
-          brf_debt_per_sqm: Number(brfDebtPerSqmValue)
-        }).eq("id", editingProperty.id).then(() => {}).catch(() => {});
-      }
+      const { error } = await supabase.from("properties").update(updateData).eq("id", editingProperty.id);
       
       if (error) throw error;
       toast.success("Fastighet uppdaterad");
@@ -1071,6 +1067,21 @@ const AgentDashboard = () => {
                     />
                     <Label htmlFor="edit-has-balcony" className="cursor-pointer font-medium text-sm">
                       Balkong
+                    </Label>
+                  </Card>
+
+                  <Card className="p-2 px-3 flex items-center space-x-2 bg-blue-50 border-blue-200">
+                    <Waves className="w-4 h-4 text-blue-500" />
+                    <Input
+                      type="number"
+                      id="edit-distance-to-water"
+                      value={distanceToWater}
+                      onChange={(e) => setDistanceToWater(e.target.value)}
+                      placeholder="meter"
+                      className="w-20 h-7 text-sm"
+                    />
+                    <Label htmlFor="edit-distance-to-water" className="cursor-pointer font-medium text-sm text-blue-700">
+                      Avstånd vatten
                     </Label>
                   </Card>
 

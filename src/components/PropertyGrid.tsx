@@ -57,6 +57,7 @@ interface PropertyGridProps {
   balconyFilter?: boolean;
   biddingFilter?: boolean;
   executiveAuctionFilter?: boolean;
+  waterDistanceFilter?: number | null;
   feeRange?: [number, number];
   soldWithinMonths?: number | null;
   daysOnSiteFilter?: number | null;
@@ -110,6 +111,7 @@ export interface Property {
   housing_association?: string;
   user_id?: string;
   is_executive_auction?: boolean;
+  distance_to_water?: number | null;
 }
 
 export const allProperties: Property[] = [
@@ -582,7 +584,7 @@ export const soldProperties: Property[] = [
   },
 ];
 
-const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, executiveAuctionFilter = false, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
+const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddress = "", priceRange, areaRange, roomRange, newConstructionFilter = 'include', elevatorFilter = false, balconyFilter = false, biddingFilter = false, executiveAuctionFilter = false, waterDistanceFilter = null, feeRange = [0, 15000], soldWithinMonths, daysOnSiteFilter, floorRange, constructionYearRange }: PropertyGridProps) => {
   const navigate = useNavigate();
   const { user, userType } = useAuth();
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
@@ -703,6 +705,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             is_new_production: prop.is_new_production || false,
             has_elevator: prop.has_elevator || false,
             has_balcony: prop.has_balcony || false,
+            is_executive_auction: prop.is_executive_auction || false,
+            distance_to_water: prop.distance_to_water || null,
             floor: prop.floor || undefined,
             total_floors: prop.total_floors || undefined,
             construction_year: prop.construction_year || undefined,
@@ -860,6 +864,14 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     // Filter by executive auction
     if (executiveAuctionFilter) {
       filtered = filtered.filter(property => property.is_executive_auction === true);
+    }
+
+    // Filter by water distance
+    if (waterDistanceFilter !== null) {
+      filtered = filtered.filter(property => {
+        const distance = property.distance_to_water;
+        return distance !== null && distance !== undefined && distance <= waterDistanceFilter;
+      });
     }
 
     // Filter by fee

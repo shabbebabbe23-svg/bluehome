@@ -53,6 +53,8 @@ const PropertyDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isFloorplanModalOpen, setIsFloorplanModalOpen] = useState(false);
+  const [currentFloorplanIndex, setCurrentFloorplanIndex] = useState(0);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [agentProfile, setAgentProfile] = useState<any>(null);
   const [agencyLogo, setAgencyLogo] = useState<string | null>(null);
@@ -149,6 +151,16 @@ const PropertyDetail = () => {
           }
           if (bidsData) {
             setBidHistory(bidsData);
+          }
+
+          // Fetch total view count
+          const { count: viewCount } = await supabase
+            .from('property_views')
+            .select('*', { count: 'exact', head: true })
+            .eq('property_id', id);
+
+          if (viewCount !== null) {
+            setDbProperty(prev => prev ? { ...prev, viewCount: viewCount } : prev);
           }
         }
       } catch (error) {
@@ -937,6 +949,18 @@ const PropertyDetail = () => {
                       <span className="font-semibold">{dbProperty.housing_association}</span>
                     </div>
                   )}
+                  {dbProperty?.viewCount !== undefined && dbProperty.viewCount > 0 && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-blue-600">Antal besökare</span>
+                      <span className="font-semibold text-blue-600">{dbProperty.viewCount.toLocaleString('sv-SE')}</span>
+                    </div>
+                  )}
+                  {dbProperty?.brf_debt_per_sqm && dbProperty.brf_debt_per_sqm > 0 && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-muted-foreground">BRF-lån /m²</span>
+                      <span className="font-semibold">{dbProperty.brf_debt_per_sqm.toLocaleString('sv-SE')} kr</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -944,13 +968,62 @@ const PropertyDetail = () => {
                 <Separator className="my-6" />
                 <div>
                   <h2 className="text-xl font-bold mb-3">Planritning</h2>
-                  <div className="space-y-4">
-                    {property?.floorplan_images?.length > 0 ? property.floorplan_images.map((imageUrl: string, index: number) => <div key={index} className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                      <img src={getImageUrl(imageUrl) || imageUrl} alt={`Planritning ${index + 1}`} className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
-                    </div>) : <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
-                      <img src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} alt="Planritning" className="w-full max-w-[1200px] h-auto object-contain rounded-lg" />
-                    </div>}
+                  <div className="relative">
+                    {property?.floorplan_images?.length > 0 ? (
+                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center relative">
+                        <img 
+                          src={getImageUrl(property.floorplan_images[currentFloorplanIndex]) || property.floorplan_images[currentFloorplanIndex]} 
+                          alt={`Planritning ${currentFloorplanIndex + 1}`} 
+                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
+                          onClick={() => setIsFloorplanModalOpen(true)}
+                        />
+                        
+                        {/* Navigation buttons when multiple floorplans */}
+                        {property.floorplan_images.length > 1 && (
+                          <>
+                            <Button 
+                              variant="secondary" 
+                              size="icon" 
+                              className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all shadow-md" 
+                              onClick={() => setCurrentFloorplanIndex(prev => prev === 0 ? property.floorplan_images.length - 1 : prev - 1)}
+                            >
+                              <ChevronLeft className="w-5 h-5" />
+                            </Button>
+                            <Button 
+                              variant="secondary" 
+                              size="icon" 
+                              className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all shadow-md" 
+                              onClick={() => setCurrentFloorplanIndex(prev => prev === property.floorplan_images.length - 1 ? 0 : prev + 1)}
+                            >
+                              <ChevronRight className="w-5 h-5" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-muted/30 rounded-lg p-4 flex justify-center">
+                        <img 
+                          src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} 
+                          alt="Planritning" 
+                          className="w-full max-w-[1200px] h-auto object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
+                          onClick={() => {
+                            setCurrentFloorplanIndex(0);
+                            setIsFloorplanModalOpen(true);
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* Floorplan counter and help text */}
+                  <div className="flex items-center justify-center gap-4 mt-3">
+                    {property?.floorplan_images?.length > 1 && (
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {currentFloorplanIndex + 1} / {property.floorplan_images.length} ritningar
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 text-center">Klicka på bilden för att förstora</p>
                 </div>
               </>}
 
@@ -1440,6 +1513,54 @@ const PropertyDetail = () => {
           <p className="text-xs text-muted-foreground text-center">
             Budhistoriken uppdateras i realtid. Kontakta mäklaren för att lägga ett bud.
           </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Floorplan Modal */}
+    <Dialog open={isFloorplanModalOpen} onOpenChange={setIsFloorplanModalOpen}>
+      <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+        <div className="relative w-full h-full flex items-center justify-center bg-black/90">
+          {property?.floorplan_images?.length > 0 ? (
+            <img 
+              src={getImageUrl(property.floorplan_images[currentFloorplanIndex]) || property.floorplan_images[currentFloorplanIndex]} 
+              alt={`Planritning ${currentFloorplanIndex + 1}`} 
+              className="max-w-full max-h-[90vh] object-contain" 
+            />
+          ) : property?.floorplan_url && (
+            <img 
+              src={getImageUrl(property.floorplan_url) || (property.address?.includes('Storgatan 15') ? storgatanFloorplan : floorplan)} 
+              alt="Planritning" 
+              className="max-w-full max-h-[90vh] object-contain" 
+            />
+          )}
+
+          {/* Navigation Buttons for multiple floorplans */}
+          {property?.floorplan_images?.length > 1 && <>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" 
+              onClick={() => setCurrentFloorplanIndex(prev => prev === 0 ? property.floorplan_images.length - 1 : prev - 1)}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white hover:scale-110 transition-all" 
+              onClick={() => setCurrentFloorplanIndex(prev => prev === property.floorplan_images.length - 1 ? 0 : prev + 1)}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </>}
+
+          {/* Floorplan Counter */}
+          {property?.floorplan_images?.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+              {currentFloorplanIndex + 1} / {property.floorplan_images.length}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

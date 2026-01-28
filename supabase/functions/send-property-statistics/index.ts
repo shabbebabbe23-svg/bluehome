@@ -207,7 +207,7 @@ const handler = async (req: Request): Promise<Response> => {
       
       const { data: property, error: propError } = await supabase
         .from("properties")
-        .select("id, title, address, seller_email")
+        .select("id, title, address, seller_email, image_url, additional_images")
         .eq("id", body.property_id)
         .single();
 
@@ -251,6 +251,40 @@ const handler = async (req: Request): Promise<Response> => {
       const favorites_count = favorites?.length || 0;
       const recent_favorites = favorites?.filter(f => f.created_at > last24Hours).length || 0;
 
+      // Get image view statistics
+      const { data: imageViews } = await supabase
+        .from("image_views")
+        .select("image_index, image_url")
+        .eq("property_id", property.id);
+
+      const total_image_clicks = imageViews?.length || 0;
+      
+      // Calculate most viewed image
+      const imageViewCounts: { [key: number]: { count: number; url: string | null } } = {};
+      imageViews?.forEach(iv => {
+        if (!imageViewCounts[iv.image_index]) {
+          imageViewCounts[iv.image_index] = { count: 0, url: iv.image_url };
+        }
+        imageViewCounts[iv.image_index].count++;
+      });
+
+      // Find the most viewed image
+      let mostViewedImageIndex = -1;
+      let mostViewedImageCount = 0;
+      let mostViewedImageUrl = '';
+      
+      Object.entries(imageViewCounts).forEach(([index, data]) => {
+        if (data.count > mostViewedImageCount) {
+          mostViewedImageIndex = parseInt(index);
+          mostViewedImageCount = data.count;
+          mostViewedImageUrl = data.url || '';
+        }
+      });
+
+      // Get all images for display
+      const allImages = [property.image_url, ...(property.additional_images || [])].filter(Boolean);
+      const mostViewedImageLabel = mostViewedImageIndex === 0 ? 'Huvudbilden' : `Bild ${mostViewedImageIndex + 1}`;
+
       // Send statistics email
       await resend.emails.send({
         from: "BaraHem <noreply@info.barahem.se>",
@@ -263,6 +297,16 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="color: white; margin-top: 10px; opacity: 0.9;">📊 Statistik för ditt objekt</p>
             </div>
             
+            ${property.image_url ? `
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding: 0;">
+                  <img src="${property.image_url}" alt="${property.title}" width="600" style="width: 100%; height: auto; display: block; border: 0;" />
+                </td>
+              </tr>
+            </table>
+            ` : ''}
+            
             <div style="padding: 30px; background: #f9f9f9;">
               <h2 style="color: #333; margin-top: 0;">${property.title}</h2>
               <p style="color: #666; margin-bottom: 30px;">${property.address}</p>
@@ -270,49 +314,110 @@ const handler = async (req: Request): Promise<Response> => {
               <!-- Views section -->
               <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📈 Antal visningar</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                  <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
-                  </div>
-                  <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${recent_views}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
-                  </div>
-                </div>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="50%" style="padding: 0 7px 0 0;">
+                      <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #0369a1;">${views_count}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
+                      </div>
+                    </td>
+                    <td width="50%" style="padding: 0 0 0 7px;">
+                      <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #0369a1;">${recent_views}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </div>
 
               <!-- Time spent section -->
               <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">⏱️ Hur länge besökare tittar på annonsen</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                  <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
-                  </div>
-                  <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
-                  </div>
-                </div>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="50%" style="padding: 0 7px 0 0;">
+                      <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
+                      </div>
+                    </td>
+                    <td width="50%" style="padding: 0 0 0 7px;">
+                      <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </div>
 
               <!-- Favorites section -->
               <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">❤️ Antal som sparat som favorit</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                  <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
-                  </div>
-                  <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
-                    <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${recent_favorites}</div>
-                    <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
-                  </div>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="50%" style="padding: 0 7px 0 0;">
+                      <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #15803d;">${favorites_count}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
+                      </div>
+                    </td>
+                    <td width="50%" style="padding: 0 0 0 7px;">
+                      <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #15803d;">${recent_favorites}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Image clicks section -->
+              <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📸 Bildstatistik</h3>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                  <tr>
+                    <td width="50%" style="padding: 0 7px 0 0;">
+                      <div style="text-align: center; padding: 15px; background: #faf5ff; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #9333ea;">${total_image_clicks}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt bildklick</div>
+                      </div>
+                    </td>
+                    <td width="50%" style="padding: 0 0 0 7px;">
+                      <div style="text-align: center; padding: 15px; background: #f3e8ff; border-radius: 8px;">
+                        <div style="font-size: 32px; font-weight: bold; color: #9333ea;">${allImages.length}</div>
+                        <div style="color: #666; margin-top: 5px; font-size: 14px;">Antal bilder</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                ${mostViewedImageCount > 0 ? `
+                <div style="background: #f8fafc; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0;">
+                  <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">🏆 Mest visade bilden</div>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      ${mostViewedImageUrl ? `
+                      <td style="padding-right: 15px; vertical-align: middle;">
+                        <img src="${mostViewedImageUrl}" alt="Mest visade bilden" width="80" height="60" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px; display: block;" />
+                      </td>
+                      ` : ''}
+                      <td style="vertical-align: middle;">
+                        <div style="font-weight: bold; color: #333;">${mostViewedImageLabel}</div>
+                        <div style="color: #9333ea; font-weight: bold;">${mostViewedImageCount} visningar</div>
+                      </td>
+                    </tr>
+                  </table>
                 </div>
+                ` : `
+                <div style="text-align: center; padding: 15px; background: #f8fafc; border-radius: 8px; color: #64748b;">
+                  Inga bildklick registrerade ännu
+                </div>
+                `}
               </div>
               
-              <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 20px; border-radius: 8px; text-align: center;">
+              <div style="background: linear-gradient(135deg, #0369a1, #15803d); padding: 20px; border-radius: 8px; text-align: center;">
                 <p style="color: white; margin: 0 0 15px 0; font-size: 16px;">
                   ${views_count > 0 
                     ? "Din bostad får bra uppmärksamhet! Fortsätt så." 
@@ -320,7 +425,7 @@ const handler = async (req: Request): Promise<Response> => {
                 </p>
                 <a href="https://barahem.se/fastighet/${property.id}" 
                    style="background: white; 
-                          color: hsl(200 98% 35%); 
+                          color: #0369a1; 
                           padding: 12px 30px; 
                           text-decoration: none; 
                           border-radius: 5px; 
@@ -357,7 +462,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Fetch all active properties with seller emails
     const { data: properties, error: propError } = await supabase
       .from("properties")
-      .select("id, title, address, seller_email")
+      .select("id, title, address, seller_email, image_url, additional_images")
       .not("seller_email", "is", null)
       .eq("is_deleted", false)
       .eq("is_sold", false);
@@ -397,6 +502,40 @@ const handler = async (req: Request): Promise<Response> => {
         const favorites_count = favorites?.length || 0;
         const recent_favorites = favorites?.filter(f => f.created_at > last24Hours).length || 0;
 
+        // Get image view statistics
+        const { data: imageViews } = await supabase
+          .from("image_views")
+          .select("image_index, image_url")
+          .eq("property_id", property.id);
+
+        const total_image_clicks = imageViews?.length || 0;
+        
+        // Calculate most viewed image
+        const imageViewCounts: { [key: number]: { count: number; url: string | null } } = {};
+        imageViews?.forEach(iv => {
+          if (!imageViewCounts[iv.image_index]) {
+            imageViewCounts[iv.image_index] = { count: 0, url: iv.image_url };
+          }
+          imageViewCounts[iv.image_index].count++;
+        });
+
+        // Find the most viewed image
+        let mostViewedImageIndex = -1;
+        let mostViewedImageCount = 0;
+        let mostViewedImageUrl = '';
+        
+        Object.entries(imageViewCounts).forEach(([index, data]) => {
+          if (data.count > mostViewedImageCount) {
+            mostViewedImageIndex = parseInt(index);
+            mostViewedImageCount = data.count;
+            mostViewedImageUrl = data.url || '';
+          }
+        });
+
+        // Get all images for display
+        const allImages = [property.image_url, ...(property.additional_images || [])].filter(Boolean);
+        const mostViewedImageLabel = mostViewedImageIndex === 0 ? 'Huvudbilden' : `Bild ${mostViewedImageIndex + 1}`;
+
         // Send statistics email
         const emailResponse = await resend.emails.send({
           from: "BaraHem <noreply@info.barahem.se>",
@@ -404,10 +543,20 @@ const handler = async (req: Request): Promise<Response> => {
           subject: `📊 Månadsstatistik för ${property.title}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 30px; text-align: center;">
+              <div style="background: linear-gradient(135deg, #0369a1, #15803d); padding: 30px; text-align: center;">
                 <h1 style="color: white; margin: 0; font-size: 28px;">BaraHem</h1>
-                <p style="color: white; margin-top: 10px; opacity: 0.9;">📊 Utökad statistik i realtid</p>
+                <p style="color: white; margin-top: 10px; opacity: 0.9;">📊 Månadsstatistik för ditt objekt</p>
               </div>
+              
+              ${property.image_url ? `
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding: 0;">
+                    <img src="${property.image_url}" alt="${property.title}" width="600" style="width: 100%; height: auto; display: block; border: 0;" />
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
               
               <div style="padding: 30px; background: #f9f9f9;">
                 <h2 style="color: #333; margin-top: 0;">${property.title}</h2>
@@ -415,66 +564,111 @@ const handler = async (req: Request): Promise<Response> => {
                 
                 <!-- Real-time views section -->
                 <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📈 Antal visningar i realtid</h3>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${views_count}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
-                    </div>
-                    <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: hsl(200 98% 35%);">${recent_views}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
-                    </div>
-                  </div>
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📈 Antal visningar</h3>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td width="50%" style="padding: 0 7px 0 0;">
+                        <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #0369a1;">${views_count}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal visningar</div>
+                        </div>
+                      </td>
+                      <td width="50%" style="padding: 0 0 0 7px;">
+                        <div style="text-align: center; padding: 15px; background: #e0f2fe; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #0369a1;">${recent_views}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Senaste 24h</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
                 </div>
 
                 <!-- Time spent section -->
                 <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                   <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">⏱️ Hur länge besökare tittar på annonsen</h3>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
-                    </div>
-                    <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
-                    </div>
-                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td width="50%" style="padding: 0 7px 0 0;">
+                        <div style="text-align: center; padding: 15px; background: #fef9e7; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor(average_time_spent / 60)}:${String(average_time_spent % 60).padStart(2, '0')}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Genomsnittlig visningstid</div>
+                        </div>
+                      </td>
+                      <td width="50%" style="padding: 0 0 0 7px;">
+                        <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${Math.floor((average_time_spent * views_count) / 60)}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Total minuter</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
                 </div>
 
                 <!-- Favorites section -->
                 <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                   <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">❤️ Antal som sparat som favorit</h3>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${favorites_count}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
-                    </div>
-                    <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
-                      <div style="font-size: 32px; font-weight: bold; color: hsl(142 76% 30%);">${recent_favorites}</div>
-                      <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
-                    </div>
-                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td width="50%" style="padding: 0 7px 0 0;">
+                        <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #15803d;">${favorites_count}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt antal favoriter</div>
+                        </div>
+                      </td>
+                      <td width="50%" style="padding: 0 0 0 7px;">
+                        <div style="text-align: center; padding: 15px; background: #dcfce7; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #15803d;">${recent_favorites}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Nya senaste 24h</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
                 </div>
 
-                <!-- Image clicks section - coming soon -->
-                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; opacity: 0.6;">
-                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📸 Vilka bilder som klickas mest</h3>
-                  <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-                    <div style="color: #666; font-style: italic;">Bildinteraktionsdata kommer snart</div>
+                <!-- Image clicks section -->
+                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">📸 Bildstatistik</h3>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                    <tr>
+                      <td width="50%" style="padding: 0 7px 0 0;">
+                        <div style="text-align: center; padding: 15px; background: #faf5ff; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #9333ea;">${total_image_clicks}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Totalt bildklick</div>
+                        </div>
+                      </td>
+                      <td width="50%" style="padding: 0 0 0 7px;">
+                        <div style="text-align: center; padding: 15px; background: #f3e8ff; border-radius: 8px;">
+                          <div style="font-size: 32px; font-weight: bold; color: #9333ea;">${allImages.length}</div>
+                          <div style="color: #666; margin-top: 5px; font-size: 14px;">Antal bilder</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  ${mostViewedImageCount > 0 ? `
+                  <div style="background: #f8fafc; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">🏆 Mest visade bilden</div>
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        ${mostViewedImageUrl ? `
+                        <td style="padding-right: 15px; vertical-align: middle;">
+                          <img src="${mostViewedImageUrl}" alt="Mest visade bilden" width="80" height="60" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px; display: block;" />
+                        </td>
+                        ` : ''}
+                        <td style="vertical-align: middle;">
+                          <div style="font-weight: bold; color: #333;">${mostViewedImageLabel}</div>
+                          <div style="color: #9333ea; font-weight: bold;">${mostViewedImageCount} visningar</div>
+                        </td>
+                      </tr>
+                    </table>
                   </div>
-                </div>
-
-                <!-- Geographic distribution - coming soon -->
-                <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; opacity: 0.6;">
-                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">🌍 Geografisk fördelning av besökare</h3>
-                  <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-                    <div style="color: #666; font-style: italic;">Geografisk data kommer snart</div>
+                  ` : `
+                  <div style="text-align: center; padding: 15px; background: #f8fafc; border-radius: 8px; color: #64748b;">
+                    Inga bildklick registrerade ännu
                   </div>
+                  `}
                 </div>
                 
-                <div style="background: linear-gradient(135deg, hsl(200 98% 35%), hsl(142 76% 30%)); padding: 20px; border-radius: 8px; text-align: center;">
+                <div style="background: linear-gradient(135deg, #0369a1, #15803d); padding: 20px; border-radius: 8px; text-align: center;">
                   <p style="color: white; margin: 0 0 15px 0; font-size: 16px;">
                     ${views_count > 0 
                       ? "Din bostad får bra uppmärksamhet! Fortsätt så." 
@@ -482,7 +676,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </p>
                   <a href="https://barahem.se/fastighet/${property.id}" 
                      style="background: white; 
-                            color: hsl(200 98% 35%); 
+                            color: #0369a1; 
                             padding: 12px 30px; 
                             text-decoration: none; 
                             border-radius: 5px; 
