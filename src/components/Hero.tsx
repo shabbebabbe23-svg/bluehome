@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User, X } from "lucide-react";
+import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User, X, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -32,9 +32,10 @@ interface HeroProps {
   onDaysOnSiteFilterChange?: (value: number | null) => void;
   onFloorRangeChange?: (value: [number, number]) => void;
   onConstructionYearRangeChange?: (value: [number, number]) => void;
+  onWaterDistanceFilterChange?: (value: number | null) => void;
 }
 
-const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onExecutiveAuctionFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange }: HeroProps) => {
+const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onExecutiveAuctionFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange, onWaterDistanceFilterChange }: HeroProps) => {
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -55,6 +56,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [hasBalcony, setHasBalcony] = useState(false);
   const [hasBidding, setHasBidding] = useState(false);
   const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
+  const [waterDistanceFilter, setWaterDistanceFilter] = useState<number | null>(null);
   const [floorRange, setFloorRange] = useState([0, 10]);
   const [constructionYearRange, setConstructionYearRange] = useState([1900, 2026]);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -73,6 +75,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setHasBalcony(false);
     setHasBidding(false);
     setIsExecutiveAuction(false);
+    setWaterDistanceFilter(null);
     setFloorRange([0, 10]);
     setConstructionYearRange([1900, 2026]);
     onSearchAddressChange?.("");
@@ -86,6 +89,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     onBalconyFilterChange?.(false);
     onBiddingFilterChange?.(false);
     onExecutiveAuctionFilterChange?.(false);
+    onWaterDistanceFilterChange?.(null);
     onSoldWithinMonthsChange?.(null);
     onFloorRangeChange?.([0, 10]);
     onConstructionYearRangeChange?.([1900, 2026]);
@@ -799,6 +803,35 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         >
                           Exekutiv auktion
                         </Button>
+                      </div>
+                    </div>
+
+                    {/* Water distance filter */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+                        <Waves className="w-4 h-4 text-blue-500" />
+                        Max avstånd till vatten
+                      </h3>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          { label: "100m", value: 100 },
+                          { label: "250m", value: 250 },
+                          { label: "500m", value: 500 },
+                          { label: "1km", value: 1000 },
+                          { label: "Alla", value: null },
+                        ].map((distance) => (
+                          <Button
+                            key={distance.label}
+                            variant="outline"
+                            onClick={() => {
+                              setWaterDistanceFilter(distance.value);
+                              onWaterDistanceFilterChange?.(distance.value);
+                            }}
+                            className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${waterDistanceFilter === distance.value ? "bg-blue-500 text-white border-transparent hover:bg-blue-600" : "hover:border-blue-500 text-blue-600 border-blue-300"}`}
+                          >
+                            {distance.label}
+                          </Button>
+                        ))}
                       </div>
                     </div>
 

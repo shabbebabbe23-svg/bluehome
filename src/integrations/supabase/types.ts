@@ -311,9 +311,11 @@ export type Database = {
           area: number
           bathrooms: number
           bedrooms: number
+          brf_debt_per_sqm: number | null
           construction_year: number | null
           created_at: string | null
           description: string | null
+          distance_to_water: number | null
           documents: Json | null
           fee: number | null
           floor: number | null
@@ -328,6 +330,7 @@ export type Database = {
           image_url: string | null
           is_coming_soon: boolean | null
           is_deleted: boolean | null
+          is_executive_auction: boolean | null
           is_manual_price_change: boolean | null
           is_new_production: boolean | null
           is_sold: boolean | null
@@ -357,9 +360,11 @@ export type Database = {
           area: number
           bathrooms: number
           bedrooms: number
+          brf_debt_per_sqm?: number | null
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          distance_to_water?: number | null
           documents?: Json | null
           fee?: number | null
           floor?: number | null
@@ -374,6 +379,7 @@ export type Database = {
           image_url?: string | null
           is_coming_soon?: boolean | null
           is_deleted?: boolean | null
+          is_executive_auction?: boolean | null
           is_manual_price_change?: boolean | null
           is_new_production?: boolean | null
           is_sold?: boolean | null
@@ -403,9 +409,11 @@ export type Database = {
           area?: number
           bathrooms?: number
           bedrooms?: number
+          brf_debt_per_sqm?: number | null
           construction_year?: number | null
           created_at?: string | null
           description?: string | null
+          distance_to_water?: number | null
           documents?: Json | null
           fee?: number | null
           floor?: number | null
@@ -420,6 +428,7 @@ export type Database = {
           image_url?: string | null
           is_coming_soon?: boolean | null
           is_deleted?: boolean | null
+          is_executive_auction?: boolean | null
           is_manual_price_change?: boolean | null
           is_new_production?: boolean | null
           is_sold?: boolean | null
