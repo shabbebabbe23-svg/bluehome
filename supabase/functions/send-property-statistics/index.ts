@@ -281,9 +281,40 @@ const handler = async (req: Request): Promise<Response> => {
         }
       });
 
+      // Get top 3 most viewed images
+      const topImages = Object.entries(imageViewCounts)
+        .map(([index, data]) => ({
+          index: parseInt(index),
+          count: data.count,
+          url: data.url || ''
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3);
+
       // Get all images for display
       const allImages = [property.image_url, ...(property.additional_images || [])].filter(Boolean);
       const mostViewedImageLabel = mostViewedImageIndex === 0 ? 'Huvudbilden' : `Bild ${mostViewedImageIndex + 1}`;
+      
+      // Generate HTML for top images
+      const topImagesHtml = topImages.length > 0 ? topImages.map((img, rank) => {
+        const label = img.index === 0 ? 'Huvudbilden' : `Bild ${img.index + 1}`;
+        const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : '🥉';
+        return `
+          <tr>
+            ${img.url ? `
+            <td style="padding: 8px 15px 8px 0; vertical-align: middle;">
+              <img src="${img.url}" alt="${label}" width="60" height="45" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; display: block;" />
+            </td>
+            ` : ''}
+            <td style="vertical-align: middle; padding: 8px 0;">
+              <div style="color: #333; font-size: 14px;">${medal} ${label}</div>
+            </td>
+            <td style="vertical-align: middle; text-align: right; padding: 8px 0;">
+              <div style="color: #9333ea; font-weight: bold;">${img.count} visningar</div>
+            </td>
+          </tr>
+        `;
+      }).join('') : '';
 
       // Send statistics email
       await resend.emails.send({
@@ -393,21 +424,11 @@ const handler = async (req: Request): Promise<Response> => {
                     </td>
                   </tr>
                 </table>
-                ${mostViewedImageCount > 0 ? `
+                ${topImages.length > 0 ? `
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0;">
-                  <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">🏆 Mest visade bilden</div>
-                  <table cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      ${mostViewedImageUrl ? `
-                      <td style="padding-right: 15px; vertical-align: middle;">
-                        <img src="${mostViewedImageUrl}" alt="Mest visade bilden" width="80" height="60" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px; display: block;" />
-                      </td>
-                      ` : ''}
-                      <td style="vertical-align: middle;">
-                        <div style="font-weight: bold; color: #333;">${mostViewedImageLabel}</div>
-                        <div style="color: #9333ea; font-weight: bold;">${mostViewedImageCount} visningar</div>
-                      </td>
-                    </tr>
+                  <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">🏆 Mest visade bilderna</div>
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    ${topImagesHtml}
                   </table>
                 </div>
                 ` : `
