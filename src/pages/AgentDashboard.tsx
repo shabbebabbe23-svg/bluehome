@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User } from "lucide-react";
+import { Home, Plus, Archive, LogOut, BarChart3, Calendar, UserCircle, Pencil, Trash2, X, Upload, Image as ImageIcon, Gavel, User, Mail } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import confetti from 'canvas-confetti';
 import agentDashboardBg from "@/assets/agent-dashboard-bg.jpg";
@@ -80,6 +80,9 @@ const AgentDashboard = () => {
   const [isSoldDialogOpen, setIsSoldDialogOpen] = useState(false);
   const [soldPriceInput, setSoldPriceInput] = useState("");
   const [isMarkingSold, setIsMarkingSold] = useState(false);
+  
+  // Statistics email state
+  const [isSendingStatistics, setIsSendingStatistics] = useState(false);
 
   // Generate array of years from 2020 to current year
   const years = Array.from({
@@ -325,6 +328,56 @@ const AgentDashboard = () => {
     }
   };
 
+  // Function to send statistics to seller
+  const handleSendStatistics = async () => {
+    if (!editingProperty?.id) return;
+    
+    // Get the current value from the input field (in case it hasn't been saved yet)
+    const sellerEmailInput = document.getElementById('edit-seller-email') as HTMLInputElement;
+    const sellerEmail = sellerEmailInput?.value || editingProperty.seller_email;
+    
+    if (!sellerEmail) {
+      toast.error("Ingen säljare e-post är angiven för denna fastighet");
+      return;
+    }
+    
+    // Check if email needs to be saved first
+    if (sellerEmail !== editingProperty.seller_email) {
+      toast.error("Spara ändringarna först innan du skickar statistik");
+      return;
+    }
+    
+    setIsSendingStatistics(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Du måste vara inloggad");
+        return;
+      }
+
+      const response = await supabase.functions.invoke('send-property-statistics', {
+        body: { property_id: editingProperty.id },
+      });
+
+      if (response.error) {
+        console.error("Edge function error:", response.error);
+        throw new Error(response.error.message);
+      }
+      
+      // Check if the response data indicates a failure
+      if (response.data && response.data.success === false) {
+        throw new Error(response.data.message || "Kunde inte skicka statistik");
+      }
+
+      toast.success(`Statistik skickad till ${sellerEmail}`);
+    } catch (error) {
+      console.error("Error sending statistics:", error);
+      toast.error("Kunde inte skicka statistik till säljaren");
+    } finally {
+      setIsSendingStatistics(false);
+    }
+  };
+
   // Generate bid amount options with smart increments up to 60 million kr
   const generateBidOptions = () => {
     if (!editingProperty?.price) return [];
@@ -521,6 +574,7 @@ const AgentDashboard = () => {
       const housingAssociationValue = formData.get("housing_association") as string;
       const floorValue = formData.get("floor") as string;
       const totalFloorsValue = formData.get("total_floors") as string;
+      const sellerEmailValue = formData.get("seller_email") as string;
 
       // Build update object
       const updateData: any = {
@@ -552,6 +606,7 @@ const AgentDashboard = () => {
         is_executive_auction: isExecutiveAuction,
         floor: floorValue ? Number(floorValue) : null,
         total_floors: totalFloorsValue ? Number(totalFloorsValue) : null,
+        seller_email: sellerEmailValue || null,
       };
 
       // First try to update without brf_debt_per_sqm
@@ -1031,6 +1086,34 @@ const AgentDashboard = () => {
                       Antal live
                     </Label>
                   </Card>
+                </div>
+
+                {/* Seller email and statistics */}
+                <div className="md:col-span-2">
+                  <Label htmlFor="edit-seller-email">Säljarens e-post (för statistik)</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      id="edit-seller-email"
+                      name="seller_email"
+                      type="email"
+                      defaultValue={editingProperty.seller_email || ''}
+                      placeholder="saljare@example.com"
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSendStatistics}
+                      disabled={isSendingStatistics || !editingProperty.seller_email}
+                      className="gap-2 whitespace-nowrap"
+                    >
+                      <Mail className="w-4 h-4" />
+                      {isSendingStatistics ? "Skickar..." : "Skicka statistik"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Ange säljarens e-post och spara innan du skickar statistik
+                  </p>
                 </div>
 
                 {/* Mark as sold button */}
