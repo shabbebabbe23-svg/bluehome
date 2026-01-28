@@ -391,9 +391,11 @@ const PropertyCard = ({
                 <h3 className="font-bold text-lg sm:text-xl text-black line-clamp-2" style={{ color: '#111' }}>
                   {title}
                 </h3>
-                <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
-                  {tagline || 'Lägenhet med en charmig touch'}
-                </div>
+                {tagline && (
+                  <div className="text-xs sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+                    {tagline}
+                  </div>
+                )}
               </div>
               <div className="text-right flex-shrink-0">
                 {isSold && soldPrice ? (
@@ -730,9 +732,11 @@ const PropertyCard = ({
               {title}
             </h3>
             {/* Dynamic subtitle text */}
-            <div className="text-[11px] sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
-              {tagline || 'Lägenhet med en charmig touch'}
-            </div>
+            {tagline && (
+              <div className="text-[11px] sm:text-sm text-primary font-medium line-clamp-2 sm:truncate">
+                {tagline}
+              </div>
+            )}
           </div>
 
           {/* Right side - Price */}
