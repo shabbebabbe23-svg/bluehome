@@ -134,7 +134,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       // Send "property sold" email
       await resend.emails.send({
-        from: "BaraHem <onboarding@resend.dev>",
+        from: "BaraHem <noreply@info.barahem.se>",
         to: [property.seller_email],
         subject: `🎉 Grattis! ${property.title} är såld!`,
         html: `
@@ -253,7 +253,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       // Send statistics email
       await resend.emails.send({
-        from: "BaraHem Statistik <onboarding@resend.dev>",
+        from: "BaraHem <noreply@info.barahem.se>",
         to: [property.seller_email],
         subject: `📊 Statistik för ${property.title}`,
         html: `
@@ -399,7 +399,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         // Send statistics email
         const emailResponse = await resend.emails.send({
-          from: "BaraHem Statistik <onboarding@resend.dev>",
+          from: "BaraHem <noreply@info.barahem.se>",
           to: [property.seller_email],
           subject: `📊 Månadsstatistik för ${property.title}`,
           html: `
