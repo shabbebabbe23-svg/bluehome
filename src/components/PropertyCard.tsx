@@ -887,6 +887,12 @@ const PropertyCard = ({
                 <span className="text-[10px] sm:text-sm text-muted-foreground">vån</span>
               </div>
             )}
+            {viewCount !== undefined && viewCount > 0 && (
+              <div className="flex items-center gap-0.5">
+                <Eye className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                <span className="text-sm sm:text-base font-semibold text-blue-600">{viewCount}</span>
+              </div>
+            )}
           </div>
           {viewDate && (
             <div className="flex items-center justify-end text-foreground mb-1">

@@ -112,6 +112,7 @@ export interface Property {
   user_id?: string;
   is_executive_auction?: boolean;
   distance_to_water?: number | null;
+  viewCount?: number;
 }
 
 export const allProperties: Property[] = [
@@ -601,6 +602,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [dbProperties, setDbProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [propertyBids, setPropertyBids] = useState<Record<string, boolean>>({});
+  const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -735,6 +737,20 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
             });
             console.log('PropertyBids map:', bidsMap);
             setPropertyBids(bidsMap);
+          }
+
+          // Fetch view counts for all properties
+          const { data: viewsData } = await supabase
+            .from('property_views')
+            .select('property_id')
+            .in('property_id', propertyIds);
+
+          if (viewsData) {
+            const viewCountsMap: Record<string, number> = {};
+            propertyIds.forEach(id => {
+              viewCountsMap[id] = viewsData.filter(v => v.property_id === id).length;
+            });
+            setViewCounts(viewCountsMap);
           }
         } else {
           // Om inga fastigheter finns i databasen, visa dummy-fastigheter
@@ -1181,6 +1197,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   hasBalcony={property.has_balcony}
                   constructionYear={property.construction_year}
                   brfDebtPerSqm={property.brf_debt_per_sqm}
+                  viewCount={viewCounts[property.id as string]}
                   onEditClick={isOwnProperty ? () => navigate(`/maklare?edit=${property.id}`) : undefined}
                 />
               </div>
