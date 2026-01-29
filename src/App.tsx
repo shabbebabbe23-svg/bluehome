@@ -12,6 +12,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import CommercialProperties from "./pages/CommercialProperties";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
+import AgencyProfile from "./pages/AgencyProfile";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import AgencyAdminDashboard from "./pages/AgencyAdminDashboard";
 import InvitationAccept from "./pages/InvitationAccept";
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/foretag" element={<CommercialProperties />} />
               <Route path="/maklare" element={<AgentDashboard />} />
               <Route path="/agent/:agentId" element={<AgentProfile />} />
+              <Route path="/byra/:agencyId" element={<AgencyProfile />} />
               <Route path="/superadmin" element={<SuperAdminDashboard />} />
               <Route path="/byra-admin" element={<AgencyAdminDashboard />} />
               <Route path="/skapa-byra-manuellt" element={<CreateAgencyManual />} />

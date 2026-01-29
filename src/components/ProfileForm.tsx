@@ -75,9 +75,12 @@ export const ProfileForm = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   });
+
+  const bioValue = watch("bio") || "";
 
   useEffect(() => {
     if (user) {
@@ -375,7 +378,7 @@ export const ProfileForm = () => {
                 <p className="text-sm text-destructive">{errors.bio.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Din presentation visas på din publika mäklarprofil. Max 1000 tecken.
+                Din presentation visas på din publika mäklarprofil. <span className={bioValue.length > 1000 ? "text-destructive font-medium" : ""}>{bioValue.length}/1000 tecken</span>
               </p>
             </div>
           </div>
