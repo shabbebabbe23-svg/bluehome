@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, MapPin, Home, Filter, Building, Building2, TreePine, Square, User, X, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ interface HeroProps {
 }
 
 const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange, onSearchModeChange, onSearchSubmit, onPriceRangeChange, onAreaRangeChange, onRoomRangeChange, onNewConstructionFilterChange, onElevatorFilterChange, onBalconyFilterChange, onBiddingFilterChange, onExecutiveAuctionFilterChange, onFeeRangeChange, soldWithinMonths, onSoldWithinMonthsChange, daysOnSiteFilter, onDaysOnSiteFilterChange, onFloorRangeChange, onConstructionYearRangeChange, onWaterDistanceFilterChange }: HeroProps) => {
+  const navigate = useNavigate();
   const [searchMode, setSearchMode] = useState<'property' | 'agent'>('property');
   const [searchLocation, setSearchLocation] = useState("");
   const [priceRange, setPriceRange] = useState([0, 20000000]);
@@ -47,7 +49,8 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{ name: string; county: string; type: 'municipality' | 'address' | 'area' | 'brf'; price?: number }>>([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null }>>([]);
+  const [agentSuggestions, setAgentSuggestions] = useState<Array<{ id: string; full_name: string; agency: string | null; area: string | null; type: 'agent' }>>([]);
+  const [agencySuggestions, setAgencySuggestions] = useState<Array<{ id: string; name: string; logo_url: string | null; type: 'agency' }>>([]);
   const [agentHighlightedIndex, setAgentHighlightedIndex] = useState(-1);
   const [showFinalPrices, setShowFinalPrices] = useState(false);
   const [keywords, setKeywords] = useState("");
@@ -148,7 +151,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
 
   useEffect(() => {
     setAgentHighlightedIndex(-1);
-  }, [agentSuggestions]);
+  }, [agentSuggestions, agencySuggestions]);
 
   const lastSearchRef = useRef<number>(0);
 
@@ -256,16 +259,17 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
       // Agent mode
       if (value.trim()) {
         try {
-          // Fetch all agents
+          // Fetch agents
           const { data: agentRoles } = await supabase
             .from('user_roles')
             .select('user_id')
             .eq('user_type', 'maklare');
 
+          let agents: Array<{ id: string; full_name: string; agency: string | null; area: string | null; type: 'agent' }> = [];
           if (agentRoles && agentRoles.length > 0) {
             const agentIds = agentRoles.map(role => role.user_id);
 
-            const { data: agents } = await supabase
+            const { data: agentsData } = await supabase
               .from('profiles')
               .select('id, full_name, agency, area')
               .in('id', agentIds)
@@ -276,16 +280,31 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
               )
               .limit(5);
 
-            if (lastSearchRef.current === searchId && agents) {
-              setAgentSuggestions(agents);
-              setShowSuggestions(agents.length > 0);
+            if (agentsData) {
+              agents = agentsData.map(a => ({ ...a, type: 'agent' as const }));
             }
           }
+
+          // Fetch agencies
+          const { data: agenciesData } = await supabase
+            .from('agencies')
+            .select('id, name, logo_url')
+            .ilike('name', `%${value}%`)
+            .limit(5);
+
+          const agencies = agenciesData?.map(a => ({ ...a, type: 'agency' as const })) || [];
+
+          if (lastSearchRef.current === searchId) {
+            setAgentSuggestions(agents);
+            setAgencySuggestions(agencies);
+            setShowSuggestions(agents.length > 0 || agencies.length > 0);
+          }
         } catch (error) {
-          console.error('Error fetching agent suggestions:', error);
+          console.error('Error fetching agent/agency suggestions:', error);
         }
       } else {
         setAgentSuggestions([]);
+        setAgencySuggestions([]);
         setShowSuggestions(false);
       }
     }
@@ -301,6 +320,11 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setSearchLocation(agent.full_name);
     onSearchAddressChange?.(agent.full_name);
     setShowSuggestions(false);
+  };
+
+  const handleAgencySuggestionClick = (agency: { id: string; name: string }) => {
+    setShowSuggestions(false);
+    navigate(`/byra/${agency.id}`);
   };
 
   const formatPrice = (value: number) => {
@@ -408,20 +432,25 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                         setShowSuggestions(false);
                         setHighlightedIndex(-1);
                       }
-                    } else if (searchMode === 'agent' && showSuggestions && agentSuggestions.length > 0) {
+                    } else if (searchMode === 'agent' && showSuggestions && (agentSuggestions.length > 0 || agencySuggestions.length > 0)) {
+                      const totalItems = agencySuggestions.length + agentSuggestions.length;
                       if (e.key === 'ArrowDown') {
                         e.preventDefault();
                         setAgentHighlightedIndex(prev =>
-                          prev < agentSuggestions.length - 1 ? prev + 1 : 0
+                          prev < totalItems - 1 ? prev + 1 : 0
                         );
                       } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
                         setAgentHighlightedIndex(prev =>
-                          prev > 0 ? prev - 1 : agentSuggestions.length - 1
+                          prev > 0 ? prev - 1 : totalItems - 1
                         );
                       } else if (e.key === 'Enter' && agentHighlightedIndex >= 0) {
                         e.preventDefault();
-                        handleAgentSuggestionClick(agentSuggestions[agentHighlightedIndex]);
+                        if (agentHighlightedIndex < agencySuggestions.length) {
+                          handleAgencySuggestionClick(agencySuggestions[agentHighlightedIndex]);
+                        } else {
+                          handleAgentSuggestionClick(agentSuggestions[agentHighlightedIndex - agencySuggestions.length]);
+                        }
                         onSearchSubmit?.();
                       } else if (e.key === 'Enter') {
                         setShowSuggestions(false);
@@ -475,28 +504,61 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                   </div>
                 )}
 
-                {/* Agent Suggestions */}
-                {showSuggestions && searchMode === 'agent' && agentSuggestions.length > 0 && (
+                {/* Agent and Agency Suggestions */}
+                {showSuggestions && searchMode === 'agent' && (agentSuggestions.length > 0 || agencySuggestions.length > 0) && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-border max-h-80 overflow-y-auto z-50">
-                    {agentSuggestions.map((agent, index) => (
-                      <button
-                        key={agent.id}
-                        onClick={() => handleAgentSuggestionClick(agent)}
-                        onMouseEnter={() => setAgentHighlightedIndex(index)}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'
-                          }`}
-                      >
-                        <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-foreground">{agent.full_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {agent.agency && agent.area
-                              ? `${agent.agency} • ${agent.area}`
-                              : agent.agency || agent.area || 'Mäklare'}
-                          </p>
+                    {/* Agencies Section */}
+                    {agencySuggestions.length > 0 && (
+                      <>
+                        <div className="px-4 py-2 bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          Mäklarbyråer
                         </div>
-                      </button>
-                    ))}
+                        {agencySuggestions.map((agency, index) => (
+                          <button
+                            key={`agency-${agency.id}`}
+                            onClick={() => handleAgencySuggestionClick(agency)}
+                            onMouseEnter={() => setAgentHighlightedIndex(index)}
+                            className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border ${index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'}`}
+                          >
+                            {agency.logo_url ? (
+                              <img src={agency.logo_url} alt={agency.name} className="w-6 h-6 object-contain rounded" />
+                            ) : (
+                              <Building className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            )}
+                            <div>
+                              <p className="font-medium text-foreground">{agency.name}</p>
+                              <p className="text-sm text-muted-foreground">Mäklarbyrå</p>
+                            </div>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                    {/* Agents Section */}
+                    {agentSuggestions.length > 0 && (
+                      <>
+                        <div className="px-4 py-2 bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          Mäklare
+                        </div>
+                        {agentSuggestions.map((agent, index) => (
+                          <button
+                            key={`agent-${agent.id}`}
+                            onClick={() => handleAgentSuggestionClick(agent)}
+                            onMouseEnter={() => setAgentHighlightedIndex(agencySuggestions.length + index)}
+                            className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border last:border-b-0 ${(agencySuggestions.length + index) === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'}`}
+                          >
+                            <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-foreground">{agent.full_name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {agent.agency && agent.area
+                                  ? `${agent.agency} • ${agent.area}`
+                                  : agent.agency || agent.area || 'Mäklare'}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -806,35 +868,6 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                       </div>
                     </div>
 
-                    {/* Water distance filter */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
-                        <Waves className="w-4 h-4 text-blue-500" />
-                        Max avstånd till vatten
-                      </h3>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {[
-                          { label: "100m", value: 100 },
-                          { label: "250m", value: 250 },
-                          { label: "500m", value: 500 },
-                          { label: "1km", value: 1000 },
-                          { label: "Alla", value: null },
-                        ].map((distance) => (
-                          <Button
-                            key={distance.label}
-                            variant="outline"
-                            onClick={() => {
-                              setWaterDistanceFilter(distance.value);
-                              onWaterDistanceFilterChange?.(distance.value);
-                            }}
-                            className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${waterDistanceFilter === distance.value ? "bg-blue-500 text-white border-transparent hover:bg-blue-600" : "hover:border-blue-500 text-blue-600 border-blue-300"}`}
-                          >
-                            {distance.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Sold within time period - only shown when showFinalPrices is ON */}
                     {showFinalPrices && (
                       <div className="space-y-3">
@@ -969,6 +1002,35 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                           Exkluderar
                         </ToggleGroupItem>
                       </ToggleGroup>
+                    </div>
+
+                    {/* Water distance filter */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center justify-center gap-2">
+                        <Waves className="w-4 h-4 text-blue-500" />
+                        Max avstånd till vatten
+                      </h3>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          { label: "100m", value: 100 },
+                          { label: "250m", value: 250 },
+                          { label: "500m", value: 500 },
+                          { label: "1km", value: 1000 },
+                          { label: "Alla", value: null },
+                        ].map((distance) => (
+                          <Button
+                            key={distance.label}
+                            variant="outline"
+                            onClick={() => {
+                              setWaterDistanceFilter(distance.value);
+                              onWaterDistanceFilterChange?.(distance.value);
+                            }}
+                            className={`h-9 px-4 text-sm sm:text-base font-semibold border-2 rounded-full ${waterDistanceFilter === distance.value ? "bg-blue-500 text-white border-transparent hover:bg-blue-600" : "hover:border-blue-500 text-blue-600 border-blue-300"}`}
+                          >
+                            {distance.label}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
 
                     {/* Floor Filter */}
