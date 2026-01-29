@@ -663,7 +663,7 @@ const BuyerDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 py-20 sm:py-24">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,45%)] bg-clip-text text-transparent mb-2">
             Mina önskemål
           </h1>
           <p className="text-white/90 text-xl">
@@ -671,62 +671,64 @@ const BuyerDashboard = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Card className="bg-gradient-to-br from-blue-50/95 to-blue-100/95 dark:from-blue-950/95 dark:to-blue-900/95 border-blue-200 dark:border-blue-800 backdrop-blur-sm">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="p-3 rounded-full bg-blue-500/20">
-                <Filter className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Aktiva filter</p>
-                <p className="text-2xl font-bold text-blue-600">{getActivePreferencesCount()}</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-green-50/95 to-green-100/95 dark:from-green-950/95 dark:to-green-900/95 border-green-200 dark:border-green-800 backdrop-blur-sm">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="p-3 rounded-full bg-green-500/20">
-                <Home className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Matchande bostäder</p>
-                <p className="text-2xl font-bold text-green-600">{matchCount}</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-purple-50/95 to-purple-100/95 dark:from-purple-950/95 dark:to-purple-900/95 border-purple-200 dark:border-purple-800 backdrop-blur-sm">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="p-3 rounded-full bg-purple-500/20">
-                <Bell className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Notiser</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {preferences?.email_notifications ? 'På' : 'Av'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Stats Cards - Sticky */}
+        <div className="sticky top-16 z-20 py-4 -mx-4 px-4 bg-gradient-to-b from-black/60 to-transparent backdrop-blur-sm">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            <Card className="bg-gradient-to-br from-blue-50/95 to-blue-100/95 dark:from-blue-950/95 dark:to-blue-900/95 border-blue-200 dark:border-blue-800 backdrop-blur-sm">
+              <CardContent className="p-2 sm:p-4 flex items-center gap-2 sm:gap-4">
+                <div className="p-2 sm:p-3 rounded-full bg-blue-500/20">
+                  <Filter className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Aktiva filter</p>
+                  <p className="text-lg sm:text-2xl font-bold text-blue-600">{getActivePreferencesCount()}</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-green-50/95 to-green-100/95 dark:from-green-950/95 dark:to-green-900/95 border-green-200 dark:border-green-800 backdrop-blur-sm">
+              <CardContent className="p-2 sm:p-4 flex items-center gap-2 sm:gap-4">
+                <div className="p-2 sm:p-3 rounded-full bg-green-500/20">
+                  <Home className="w-4 h-4 sm:w-6 sm:h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Matchande</p>
+                  <p className="text-lg sm:text-2xl font-bold text-green-600">{matchCount}</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-purple-50/95 to-purple-100/95 dark:from-purple-950/95 dark:to-purple-900/95 border-purple-200 dark:border-purple-800 backdrop-blur-sm">
+              <CardContent className="p-2 sm:p-4 flex items-center gap-2 sm:gap-4">
+                <div className="p-2 sm:p-3 rounded-full bg-purple-500/20">
+                  <Bell className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Notiser</p>
+                  <p className="text-lg sm:text-2xl font-bold text-purple-600">
+                    {preferences?.email_notifications ? 'På' : 'Av'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-auto p-1.5 bg-white/95 dark:bg-card/95 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-2 h-auto p-1 sm:p-1.5 bg-white/95 dark:bg-card/95 backdrop-blur-sm">
             <TabsTrigger 
               value="matching" 
-              className="flex items-center justify-center gap-2 py-4 px-6 text-base sm:text-lg font-semibold data-[state=active]:bg-hero-gradient data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+              className="flex items-center justify-center gap-1 sm:gap-2 py-3 sm:py-4 px-2 sm:px-6 text-xs sm:text-lg font-semibold data-[state=active]:bg-hero-gradient data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
             >
-              <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span>Matchande bostäder ({matchCount})</span>
+              <Search className="w-4 h-4 sm:w-6 sm:h-6 flex-shrink-0" />
+              <span className="truncate">Matchande <span className="hidden xs:inline">bostäder </span>({matchCount})</span>
             </TabsTrigger>
             <TabsTrigger 
               value="preferences" 
-              className="flex items-center justify-center gap-2 py-4 px-6 text-base sm:text-lg font-semibold data-[state=active]:bg-hero-gradient data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+              className="flex items-center justify-center gap-1 sm:gap-2 py-3 sm:py-4 px-2 sm:px-6 text-xs sm:text-lg font-semibold data-[state=active]:bg-hero-gradient data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
             >
-              <Settings className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span>Mina önskemål</span>
+              <Settings className="w-4 h-4 sm:w-6 sm:h-6 flex-shrink-0" />
+              <span className="truncate">Mina önskemål</span>
             </TabsTrigger>
           </TabsList>
 

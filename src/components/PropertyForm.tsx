@@ -965,32 +965,72 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             </summary>
             
             <div className="mt-3 p-4 bg-muted/30 rounded-lg space-y-4">
-              {/* Bostadens egenskaper */}
+              {/* Läge & Närhet */}
               <div>
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Bostadens egenskaper
+                  <Train className="w-4 h-4" />
+                  Läge & Närhet
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="has_fireplace" checked={hasFireplace} onChange={(e) => setHasFireplace(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    <Label htmlFor="has_fireplace" className="cursor-pointer font-medium text-sm">Öppen spis</Label>
+                    <input type="checkbox" id="near_centrum" checked={nearCentrum} onChange={(e) => setNearCentrum(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Building2 className="w-4 h-4 text-gray-600" />
+                    <Label htmlFor="near_centrum" className="cursor-pointer font-medium text-sm">Nära centrum</Label>
                   </Card>
                   <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="has_garden" checked={hasGarden} onChange={(e) => setHasGarden(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <input type="checkbox" id="near_school" checked={nearSchool} onChange={(e) => setNearSchool(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <GraduationCap className="w-4 h-4 text-blue-600" />
+                    <Label htmlFor="near_school" className="cursor-pointer font-medium text-sm">Nära skola</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_daycare" checked={nearDaycare} onChange={(e) => setNearDaycare(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Baby className="w-4 h-4 text-pink-500" />
+                    <Label htmlFor="near_daycare" className="cursor-pointer font-medium text-sm">Nära dagis</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_public_transport" checked={nearPublicTransport} onChange={(e) => setNearPublicTransport(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Train className="w-4 h-4 text-green-600" />
+                    <Label htmlFor="near_public_transport" className="cursor-pointer font-medium text-sm">Kollektivtrafik</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Natur & Utsikt */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Trees className="w-4 h-4" />
+                  Natur & Utsikt
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_nature" checked={nearNature} onChange={(e) => setNearNature(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
                     <Trees className="w-4 h-4 text-green-500" />
-                    <Label htmlFor="has_garden" className="cursor-pointer font-medium text-sm">Trädgård</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="has_sauna" checked={hasSauna} onChange={(e) => setHasSauna(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Droplets className="w-4 h-4 text-cyan-500" />
-                    <Label htmlFor="has_sauna" className="cursor-pointer font-medium text-sm">Bastu</Label>
+                    <Label htmlFor="near_nature" className="cursor-pointer font-medium text-sm">Nära natur</Label>
                   </Card>
                   <Card className="p-2 px-3 flex items-center space-x-2">
                     <input type="checkbox" id="has_sea_view" checked={hasSeaView} onChange={(e) => setHasSeaView(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
                     <Eye className="w-4 h-4 text-blue-500" />
                     <Label htmlFor="has_sea_view" className="cursor-pointer font-medium text-sm">Sjöutsikt</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="is_quiet_area" checked={isQuietArea} onChange={(e) => setIsQuietArea(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Mountain className="w-4 h-4 text-green-600" />
+                    <Label htmlFor="is_quiet_area" className="cursor-pointer font-medium text-sm">Lugnt område</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Utomhus & Ljus */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Sun className="w-4 h-4" />
+                  Utomhus & Ljus
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_garden" checked={hasGarden} onChange={(e) => setHasGarden(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Trees className="w-4 h-4 text-green-500" />
+                    <Label htmlFor="has_garden" className="cursor-pointer font-medium text-sm">Trädgård</Label>
                   </Card>
                   <Card className="p-2 px-3 flex items-center space-x-2">
                     <input type="checkbox" id="is_south_facing" checked={isSouthFacing} onChange={(e) => setIsSouthFacing(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
@@ -1000,11 +1040,31 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                 </div>
               </div>
 
-              {/* Parkering & Förvaring */}
+              {/* Inomhus & Komfort */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Flame className="w-4 h-4" />
+                  Inomhus & Komfort
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_fireplace" checked={hasFireplace} onChange={(e) => setHasFireplace(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Flame className="w-4 h-4 text-orange-500" />
+                    <Label htmlFor="has_fireplace" className="cursor-pointer font-medium text-sm">Öppen spis</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_sauna" checked={hasSauna} onChange={(e) => setHasSauna(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Droplets className="w-4 h-4 text-cyan-500" />
+                    <Label htmlFor="has_sauna" className="cursor-pointer font-medium text-sm">Bastu</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Parkering & Bil */}
               <div>
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   <Car className="w-4 h-4" />
-                  Parkering & Förvaring
+                  Parkering & Bil
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   <Card className="p-2 px-3 flex items-center space-x-2">
@@ -1022,70 +1082,40 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                     <Plug className="w-4 h-4 text-green-600" />
                     <Label htmlFor="has_ev_charging" className="cursor-pointer font-medium text-sm text-green-700">Laddstolpe</Label>
                   </Card>
+                </div>
+              </div>
+
+              {/* Förvaring & Service */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Förvaring & Service
+                </h4>
+                <div className="flex flex-wrap gap-2">
                   <Card className="p-2 px-3 flex items-center space-x-2">
                     <input type="checkbox" id="has_storage" checked={hasStorage} onChange={(e) => setHasStorage(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
                     <Package className="w-4 h-4 text-amber-600" />
                     <Label htmlFor="has_storage" className="cursor-pointer font-medium text-sm">Förråd</Label>
                   </Card>
-                </div>
-              </div>
-
-              {/* Förening & Service */}
-              <div>
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                  <WashingMachine className="w-4 h-4" />
-                  Förening & Service
-                </h4>
-                <div className="flex flex-wrap gap-2">
                   <Card className="p-2 px-3 flex items-center space-x-2">
                     <input type="checkbox" id="has_laundry" checked={hasLaundry} onChange={(e) => setHasLaundry(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
                     <WashingMachine className="w-4 h-4 text-blue-500" />
                     <Label htmlFor="has_laundry" className="cursor-pointer font-medium text-sm">Tvättstuga</Label>
                   </Card>
+                </div>
+              </div>
+
+              {/* Övrigt */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Dog className="w-4 h-4" />
+                  Övrigt
+                </h4>
+                <div className="flex flex-wrap gap-2">
                   <Card className="p-2 px-3 flex items-center space-x-2">
                     <input type="checkbox" id="is_pet_friendly" checked={isPetFriendly} onChange={(e) => setIsPetFriendly(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
                     <Dog className="w-4 h-4 text-amber-600" />
                     <Label htmlFor="is_pet_friendly" className="cursor-pointer font-medium text-sm">Husdjur tillåtet</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="is_quiet_area" checked={isQuietArea} onChange={(e) => setIsQuietArea(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Mountain className="w-4 h-4 text-green-600" />
-                    <Label htmlFor="is_quiet_area" className="cursor-pointer font-medium text-sm">Lugnt område</Label>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Närhet till */}
-              <div>
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                  <Train className="w-4 h-4" />
-                  Närhet till
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="near_daycare" checked={nearDaycare} onChange={(e) => setNearDaycare(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Baby className="w-4 h-4 text-pink-500" />
-                    <Label htmlFor="near_daycare" className="cursor-pointer font-medium text-sm">Nära dagis</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="near_school" checked={nearSchool} onChange={(e) => setNearSchool(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <GraduationCap className="w-4 h-4 text-blue-600" />
-                    <Label htmlFor="near_school" className="cursor-pointer font-medium text-sm">Nära skola</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="near_centrum" checked={nearCentrum} onChange={(e) => setNearCentrum(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Building2 className="w-4 h-4 text-gray-600" />
-                    <Label htmlFor="near_centrum" className="cursor-pointer font-medium text-sm">Nära centrum</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="near_public_transport" checked={nearPublicTransport} onChange={(e) => setNearPublicTransport(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Train className="w-4 h-4 text-green-600" />
-                    <Label htmlFor="near_public_transport" className="cursor-pointer font-medium text-sm">Kollektivtrafik</Label>
-                  </Card>
-                  <Card className="p-2 px-3 flex items-center space-x-2">
-                    <input type="checkbox" id="near_nature" checked={nearNature} onChange={(e) => setNearNature(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
-                    <Trees className="w-4 h-4 text-green-500" />
-                    <Label htmlFor="near_nature" className="cursor-pointer font-medium text-sm">Nära natur</Label>
                   </Card>
                 </div>
               </div>
