@@ -236,8 +236,8 @@ const Header = () => {
               </div>
             )}
 
-            {/* Notifications */}
-            {user && (userType === "maklare" || userType === "buyer" || userType === "user") && <NotificationBell />}
+            {/* Notifications - only for buyers/users, not agents */}
+            {user && (userType === "buyer" || userType === "user") && <NotificationBell />}
 
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button variant="outline" size="sm" className={`text-xs lg:text-sm xl:text-base px-2 lg:px-3 ${isCommercialPage ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' : 'bg-black border-black hover:bg-black/90'}`}>
