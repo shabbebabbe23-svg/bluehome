@@ -145,6 +145,117 @@ export type Database = {
           },
         ]
       }
+      buyer_preferences: {
+        Row: {
+          id: string
+          user_id: string
+          preferred_locations: string[]
+          max_commute_minutes: number | null
+          min_price: number | null
+          max_price: number | null
+          min_area: number | null
+          max_area: number | null
+          min_bedrooms: number | null
+          max_bedrooms: number | null
+          min_bathrooms: number | null
+          property_types: string[]
+          wants_balcony: boolean
+          wants_elevator: boolean
+          wants_fireplace: boolean
+          wants_garden: boolean
+          wants_parking: boolean
+          wants_garage: boolean
+          wants_near_daycare: boolean
+          wants_near_school: boolean
+          wants_near_centrum: boolean
+          wants_near_public_transport: boolean
+          wants_near_nature: boolean
+          wants_near_water: boolean
+          wants_new_production: boolean
+          wants_quiet_area: boolean
+          wants_pet_friendly: boolean
+          max_monthly_fee: number | null
+          min_construction_year: number | null
+          max_construction_year: number | null
+          email_notifications: boolean
+          notification_frequency: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          preferred_locations?: string[]
+          max_commute_minutes?: number | null
+          min_price?: number | null
+          max_price?: number | null
+          min_area?: number | null
+          max_area?: number | null
+          min_bedrooms?: number | null
+          max_bedrooms?: number | null
+          min_bathrooms?: number | null
+          property_types?: string[]
+          wants_balcony?: boolean
+          wants_elevator?: boolean
+          wants_fireplace?: boolean
+          wants_garden?: boolean
+          wants_parking?: boolean
+          wants_garage?: boolean
+          wants_near_daycare?: boolean
+          wants_near_school?: boolean
+          wants_near_centrum?: boolean
+          wants_near_public_transport?: boolean
+          wants_near_nature?: boolean
+          wants_near_water?: boolean
+          wants_new_production?: boolean
+          wants_quiet_area?: boolean
+          wants_pet_friendly?: boolean
+          max_monthly_fee?: number | null
+          min_construction_year?: number | null
+          max_construction_year?: number | null
+          email_notifications?: boolean
+          notification_frequency?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          preferred_locations?: string[]
+          max_commute_minutes?: number | null
+          min_price?: number | null
+          max_price?: number | null
+          min_area?: number | null
+          max_area?: number | null
+          min_bedrooms?: number | null
+          max_bedrooms?: number | null
+          min_bathrooms?: number | null
+          property_types?: string[]
+          wants_balcony?: boolean
+          wants_elevator?: boolean
+          wants_fireplace?: boolean
+          wants_garden?: boolean
+          wants_parking?: boolean
+          wants_garage?: boolean
+          wants_near_daycare?: boolean
+          wants_near_school?: boolean
+          wants_near_centrum?: boolean
+          wants_near_public_transport?: boolean
+          wants_near_nature?: boolean
+          wants_near_water?: boolean
+          wants_new_production?: boolean
+          wants_quiet_area?: boolean
+          wants_pet_friendly?: boolean
+          max_monthly_fee?: number | null
+          min_construction_year?: number | null
+          max_construction_year?: number | null
+          email_notifications?: boolean
+          notification_frequency?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string

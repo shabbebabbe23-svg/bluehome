@@ -145,6 +145,16 @@ const Header = () => {
                         </DropdownMenuItem>
                       </>
                     )}
+
+                    {/* Buyer specific - Min bostad-profil */}
+                    {(userType === "buyer" || userType === "user") && (
+                      <DropdownMenuItem asChild className="hover:bg-accent transition-colors duration-200">
+                        <Link to="/min-bostad" className="flex items-center gap-3 cursor-pointer py-3 sm:py-4">
+                          <Home className="w-5 h-5 sm:w-6 sm:h-6" />
+                          <span className="font-medium text-base sm:text-lg">Min bostad-profil</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
@@ -226,8 +236,8 @@ const Header = () => {
               </div>
             )}
 
-            {/* Notifications */}
-            {user && (userType === "maklare" || userType === "buyer" || userType === "user") && <NotificationBell />}
+            {/* Notifications - only for buyers/users, not agents */}
+            {user && (userType === "buyer" || userType === "user") && <NotificationBell />}
 
             <Link to={isCommercialPage ? "/" : "/foretag"}>
               <Button variant="outline" size="sm" className={`text-xs lg:text-sm xl:text-base px-2 lg:px-3 ${isCommercialPage ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' : 'bg-black border-black hover:bg-black/90'}`}>
@@ -397,7 +407,15 @@ const Header = () => {
               </div>
             )}
 
-
+            {/* Buyer Menu Items for Mobile */}
+            {user && (userType === "buyer" || userType === "user") && (
+              <div className="flex flex-col gap-2 px-4 pb-3 border-b border-white/20">
+                <Link to="/min-bostad" className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <Home className="w-5 h-5" />
+                  <span className="font-medium text-base">Min bostad-profil</span>
+                </Link>
+              </div>
+            )}
             <div className="px-4">
               <DropdownMenu>
                 <DropdownMenuTrigger className={`text-lg hover:text-primary transition-colors ${isCommercialPage || isAgentPage ? 'text-white' : 'text-black'}`}>
