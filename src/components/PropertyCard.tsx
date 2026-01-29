@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User, Phone, Building2, Scale, Check, ChevronLeft, ChevronRight, Pencil, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +59,7 @@ interface PropertyCardProps {
   totalFloors?: number;
   tagline?: string;
   onEditClick?: () => void;
+  viewCount?: number;
 }
 
 const PropertyCard = ({
@@ -111,6 +112,7 @@ const PropertyCard = ({
   totalFloors,
   tagline,
   onEditClick,
+  viewCount,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();

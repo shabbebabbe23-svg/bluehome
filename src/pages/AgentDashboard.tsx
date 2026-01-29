@@ -132,6 +132,30 @@ const AgentDashboard = () => {
     enabled: !!user?.id
   });
 
+  // Fetch view counts for properties
+  const { data: viewCounts } = useQuery({
+    queryKey: ["property-view-counts", properties?.map(p => p.id)],
+    queryFn: async () => {
+      if (!properties || properties.length === 0) return {};
+      
+      const propertyIds = properties.map(p => p.id);
+      const { data, error } = await supabase
+        .from("property_views")
+        .select("property_id")
+        .in("property_id", propertyIds);
+      
+      if (error) throw error;
+      
+      // Count views per property
+      const counts: Record<string, number> = {};
+      data?.forEach(view => {
+        counts[view.property_id] = (counts[view.property_id] || 0) + 1;
+      });
+      return counts;
+    },
+    enabled: !!properties && properties.length > 0
+  });
+
   // Fetch agent's removed properties
   const {
     data: removedProperties,
@@ -766,6 +790,7 @@ const AgentDashboard = () => {
                           hideControls={true}
                           buttonText="Redigera fastighet"
                           onButtonClick={() => handleEditProperty(property)}
+                          viewCount={viewCounts?.[property.id]}
                         />
                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <AlertDialog>
