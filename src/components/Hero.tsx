@@ -62,6 +62,27 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
   const [waterDistanceFilter, setWaterDistanceFilter] = useState<number | null>(null);
   const [floorRange, setFloorRange] = useState([0, 10]);
   const [constructionYearRange, setConstructionYearRange] = useState([1900, 2026]);
+  const [showMoreFeatures, setShowMoreFeatures] = useState(false);
+  
+  // Feature filters
+  const [hasFireplace, setHasFireplace] = useState(false);
+  const [hasGarden, setHasGarden] = useState(false);
+  const [hasParking, setHasParking] = useState(false);
+  const [hasGarage, setHasGarage] = useState(false);
+  const [hasEvCharging, setHasEvCharging] = useState(false);
+  const [hasStorage, setHasStorage] = useState(false);
+  const [hasLaundry, setHasLaundry] = useState(false);
+  const [hasSauna, setHasSauna] = useState(false);
+  const [hasSeaView, setHasSeaView] = useState(false);
+  const [isSouthFacing, setIsSouthFacing] = useState(false);
+  const [isQuietArea, setIsQuietArea] = useState(false);
+  const [isPetFriendly, setIsPetFriendly] = useState(false);
+  const [nearDaycare, setNearDaycare] = useState(false);
+  const [nearSchool, setNearSchool] = useState(false);
+  const [nearCentrum, setNearCentrum] = useState(false);
+  const [nearPublicTransport, setNearPublicTransport] = useState(false);
+  const [nearNature, setNearNature] = useState(false);
+  
   const searchRef = useRef<HTMLDivElement>(null);
 
   const clearAllFilters = () => {
@@ -81,6 +102,24 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     setWaterDistanceFilter(null);
     setFloorRange([0, 10]);
     setConstructionYearRange([1900, 2026]);
+    // Clear feature filters
+    setHasFireplace(false);
+    setHasGarden(false);
+    setHasParking(false);
+    setHasGarage(false);
+    setHasEvCharging(false);
+    setHasStorage(false);
+    setHasLaundry(false);
+    setHasSauna(false);
+    setHasSeaView(false);
+    setIsSouthFacing(false);
+    setIsQuietArea(false);
+    setIsPetFriendly(false);
+    setNearDaycare(false);
+    setNearSchool(false);
+    setNearCentrum(false);
+    setNearPublicTransport(false);
+    setNearNature(false);
     onSearchAddressChange?.("");
     onPropertyTypeChange?.("");
     onFinalPricesChange?.(false);
@@ -131,7 +170,11 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
     floorRange[0] !== 0 || floorRange[1] !== 10 ||
     constructionYearRange[0] !== 1900 || constructionYearRange[1] !== 2026 ||
     propertyType !== "" || showFinalPrices || keywords !== "" || newConstructionFilter !== 'include' ||
-    hasElevator || hasBalcony || hasBidding || isExecutiveAuction;
+    hasElevator || hasBalcony || hasBidding || isExecutiveAuction ||
+    hasFireplace || hasGarden || hasParking || hasGarage || hasEvCharging ||
+    hasStorage || hasLaundry || hasSauna || hasSeaView || isSouthFacing ||
+    isQuietArea || isPetFriendly || nearDaycare || nearSchool || nearCentrum ||
+    nearPublicTransport || nearNature;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -866,6 +909,153 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                           Exekutiv auktion
                         </Button>
                       </div>
+                      
+                      {/* Show more features button */}
+                      <Button
+                        variant="ghost"
+                        onClick={() => setShowMoreFeatures(!showMoreFeatures)}
+                        className="text-primary hover:text-primary/80 text-sm font-semibold"
+                      >
+                        {showMoreFeatures ? "▲ Dölj fler egenskaper" : "▼ Visa fler egenskaper"}
+                      </Button>
+                      
+                      {/* Expanded features section */}
+                      {showMoreFeatures && (
+                        <div className="flex flex-wrap gap-2 justify-center pt-2 border-t border-primary/20">
+                          {/* Läge & Närhet */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setNearCentrum(!nearCentrum)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${nearCentrum ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🏙️ Nära centrum
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setNearSchool(!nearSchool)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${nearSchool ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🏫 Nära skola
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setNearDaycare(!nearDaycare)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${nearDaycare ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            👶 Nära dagis
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setNearPublicTransport(!nearPublicTransport)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${nearPublicTransport ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🚌 Kollektivtrafik
+                          </Button>
+                          
+                          {/* Natur & Utsikt */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setNearNature(!nearNature)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${nearNature ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🌲 Nära natur
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasSeaView(!hasSeaView)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasSeaView ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🌊 Sjöutsikt
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsQuietArea(!isQuietArea)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${isQuietArea ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🤫 Lugnt område
+                          </Button>
+                          
+                          {/* Utomhus & Ljus */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasGarden(!hasGarden)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasGarden ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🌿 Trädgård
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsSouthFacing(!isSouthFacing)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${isSouthFacing ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            ☀️ Söderläge
+                          </Button>
+                          
+                          {/* Inomhus & Komfort */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasFireplace(!hasFireplace)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasFireplace ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🔥 Öppen spis
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasSauna(!hasSauna)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasSauna ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🧖 Bastu
+                          </Button>
+                          
+                          {/* Parkering & Bil */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasParking(!hasParking)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasParking ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🅿️ Parkering
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasGarage(!hasGarage)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasGarage ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🚗 Garage
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasEvCharging(!hasEvCharging)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasEvCharging ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            ⚡ Laddstolpe
+                          </Button>
+                          
+                          {/* Förvaring & Service */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasStorage(!hasStorage)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasStorage ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            📦 Förråd
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setHasLaundry(!hasLaundry)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${hasLaundry ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🧺 Tvättstuga
+                          </Button>
+                          
+                          {/* Övrigt */}
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsPetFriendly(!isPetFriendly)}
+                            className={`h-8 px-3 text-xs sm:text-sm font-semibold border rounded-full ${isPetFriendly ? "bg-hero-gradient text-white border-transparent" : "hover:border-primary"}`}
+                          >
+                            🐕 Husdjursvänligt
+                          </Button>
+                        </div>
+                      )}
                     </div>
 
                     {/* Sold within time period - only shown when showFinalPrices is ON */}
