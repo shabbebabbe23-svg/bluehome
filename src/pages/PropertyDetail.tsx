@@ -544,15 +544,15 @@ const PropertyDetail = () => {
     <header className="backdrop-blur-md border-b border-white/20 sticky top-0 z-50" style={{
       background: 'var(--main-gradient)'
     }}>
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4 flex items-center justify-between">
         <svg
-          width="36"
-          height="36"
+          width="28"
+          height="28"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           onClick={() => navigate('/')}
-          className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
+          className="sm:w-9 sm:h-9 cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center"
         >
           <defs>
             <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -564,41 +564,21 @@ const PropertyDetail = () => {
         </svg>
 
         {/* BaraHem Logo - Center */}
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
-          <Home className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-          <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+        <Link to="/" className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity absolute left-1/2 -translate-x-1/2">
+          <Home className="w-5 h-5 sm:w-8 sm:h-8 text-primary" />
+          <span className="text-lg sm:text-3xl md:text-4xl font-bold bg-hero-gradient bg-clip-text text-transparent">
             BaraHem
           </span>
         </Link>
 
-        <div className="flex gap-1 sm:gap-2 items-center">
-          {!isPWA && (
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              onClick={() => window.print()}
-              className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
-            >
-              <defs>
-                <linearGradient id="printerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" stroke="url(#printerGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-
+        <div className="flex gap-1 items-center">
           <svg
-            width="36"
-            height="36"
+            width="28"
+            height="28"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
             onClick={() => id && toggleFavorite(String(id))}
-            className="cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
+            className="sm:w-9 sm:h-9 cursor-pointer hover:scale-110 transition-all duration-300 ease-out"
           >
             <defs>
               <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -620,11 +600,11 @@ const PropertyDetail = () => {
           {(user || agentProfile) && (
             <Link
               to={user ? "/maklare?tab=profile" : `/agent/${dbProperty?.user_id}`}
-              className="relative ml-2"
+              className="relative ml-1 sm:ml-2"
               title={user ? "Min profil" : `Mäklare: ${agentProfile?.full_name || 'Okänd'}`}
             >
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-              <Avatar className="relative w-8 h-8 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+              <div className="absolute -inset-0.5 sm:-inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+              <Avatar className="relative w-7 h-7 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                 <AvatarImage
                   src={(user ? avatarUrl : agentProfile?.avatar_url) || undefined}
                   alt={(user ? profileName : agentProfile?.full_name) || "Profil"}
@@ -949,16 +929,16 @@ const PropertyDetail = () => {
                       <span className="font-semibold">{dbProperty.housing_association}</span>
                     </div>
                   )}
-                  {dbProperty?.viewCount !== undefined && dbProperty.viewCount > 0 && (
-                    <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-blue-600">Antal besökare</span>
-                      <span className="font-semibold text-blue-600">{dbProperty.viewCount.toLocaleString('sv-SE')}</span>
-                    </div>
-                  )}
                   {dbProperty?.brf_debt_per_sqm && dbProperty.brf_debt_per_sqm > 0 && (
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">BRF-lån /m²</span>
                       <span className="font-semibold">{dbProperty.brf_debt_per_sqm.toLocaleString('sv-SE')} kr</span>
+                    </div>
+                  )}
+                  {dbProperty?.viewCount !== undefined && dbProperty.viewCount > 0 && (
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="text-blue-600">Antal besökare</span>
+                      <span className="font-semibold text-blue-600">{dbProperty.viewCount.toLocaleString('sv-SE')}</span>
                     </div>
                   )}
                 </div>
