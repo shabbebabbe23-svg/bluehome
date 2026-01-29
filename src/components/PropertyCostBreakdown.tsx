@@ -123,10 +123,12 @@ const PropertyCostBreakdown = ({ price, fee, area, type, operatingCost, brfDebtP
             <span className="font-medium">{formatCurrency(monthlyAmortization)}</span>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Avgift</span>
-            <span className="font-medium">{formatCurrency(monthlyFee)}</span>
-          </div>
+          {monthlyFee > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Avgift</span>
+              <span className="font-medium">{formatCurrency(monthlyFee)}</span>
+            </div>
+          )}
 
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Driftkostnad</span>

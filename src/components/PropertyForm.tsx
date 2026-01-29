@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Upload, Loader2, FileText, X, Move3D, Waves, ImagePlus, PencilRuler, Eye } from "lucide-react";
+import { Upload, Loader2, FileText, X, Move3D, Waves, ImagePlus, PencilRuler, Eye, Flame, Trees, ParkingCircle, Car, Plug, Package, WashingMachine, Droplets, Sun, Mountain, Dog, Baby, GraduationCap, Building2, Train } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +54,23 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [isMainImage360, setIsMainImage360] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
   const [hasBalcony, setHasBalcony] = useState(false);
+  const [hasFireplace, setHasFireplace] = useState(false);
+  const [hasGarden, setHasGarden] = useState(false);
+  const [hasParking, setHasParking] = useState(false);
+  const [hasGarage, setHasGarage] = useState(false);
+  const [hasEvCharging, setHasEvCharging] = useState(false);
+  const [hasStorage, setHasStorage] = useState(false);
+  const [hasLaundry, setHasLaundry] = useState(false);
+  const [hasSauna, setHasSauna] = useState(false);
+  const [hasSeaView, setHasSeaView] = useState(false);
+  const [isSouthFacing, setIsSouthFacing] = useState(false);
+  const [isQuietArea, setIsQuietArea] = useState(false);
+  const [isPetFriendly, setIsPetFriendly] = useState(false);
+  const [nearDaycare, setNearDaycare] = useState(false);
+  const [nearSchool, setNearSchool] = useState(false);
+  const [nearCentrum, setNearCentrum] = useState(false);
+  const [nearPublicTransport, setNearPublicTransport] = useState(false);
+  const [nearNature, setNearNature] = useState(false);
   const [distanceToWater, setDistanceToWater] = useState<string>("");
   const [isExecutiveAuction, setIsExecutiveAuction] = useState(false);
   const [documents, setDocuments] = useState<File[]>([]);
@@ -424,6 +441,23 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         has_vr: isMainImage360 || vrImageIndices.length > 0,
         has_elevator: hasElevator,
         has_balcony: hasBalcony,
+        has_fireplace: hasFireplace,
+        has_garden: hasGarden,
+        has_parking: hasParking,
+        has_garage: hasGarage,
+        has_ev_charging: hasEvCharging,
+        has_storage: hasStorage,
+        has_laundry: hasLaundry,
+        has_sauna: hasSauna,
+        has_sea_view: hasSeaView,
+        is_south_facing: isSouthFacing,
+        is_quiet_area: isQuietArea,
+        is_pet_friendly: isPetFriendly,
+        near_daycare: nearDaycare,
+        near_school: nearSchool,
+        near_centrum: nearCentrum,
+        near_public_transport: nearPublicTransport,
+        near_nature: nearNature,
         distance_to_water: distanceToWater ? parseInt(distanceToWater) : null,
         is_executive_auction: isExecutiveAuction,
         documents: uploadedDocuments,
@@ -458,6 +492,23 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setIsMainImage360(false);
       setHasElevator(false);
       setHasBalcony(false);
+      setHasFireplace(false);
+      setHasGarden(false);
+      setHasParking(false);
+      setHasGarage(false);
+      setHasEvCharging(false);
+      setHasStorage(false);
+      setHasLaundry(false);
+      setHasSauna(false);
+      setHasSeaView(false);
+      setIsSouthFacing(false);
+      setIsQuietArea(false);
+      setIsPetFriendly(false);
+      setNearDaycare(false);
+      setNearSchool(false);
+      setNearCentrum(false);
+      setNearPublicTransport(false);
+      setNearNature(false);
       setDistanceToWater("");
       setIsExecutiveAuction(false);
       setDocuments([]);
@@ -709,15 +760,18 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               <p className="text-sm text-destructive mt-1">{errors.viewing_date.message}</p>
             )}
           </div>
-          {/* Bostadsförening (valfritt) */}
+          {/* Visningsdatum 2 (valfritt) */}
           <div className="w-full md:w-1/2">
-            <Label htmlFor="housing_association">Bostadsförening (valfritt)</Label>
+            <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
             <Input
-              id="housing_association"
-              type="text"
-              {...register("housing_association")}
-              placeholder="HSB Brf..."
+              id="viewing_date_2"
+              type="datetime-local"
+              {...register("viewing_date_2")}
+              className="w-full"
             />
+            {errors.viewing_date_2 && (
+              <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
+            )}
           </div>
         </div>
 
@@ -744,21 +798,16 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           <div className="w-full md:w-1/2"></div>
         </div>
 
-        {/* Bostadsförening */}
-
-        {/* Visningsdatum 2 + Byggår */}
+        {/* Bostadsförening + Byggår */}
         <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:col-span-2">
           <div className="w-full md:w-1/2">
-            <Label htmlFor="viewing_date_2">Visningsdatum 2 (valfritt)</Label>
+            <Label htmlFor="housing_association">Bostadsförening (valfritt)</Label>
             <Input
-              id="viewing_date_2"
-              type="datetime-local"
-              {...register("viewing_date_2")}
-              className="w-full"
+              id="housing_association"
+              type="text"
+              {...register("housing_association")}
+              placeholder="HSB Brf..."
             />
-            {errors.viewing_date_2 && (
-              <p className="text-sm text-destructive mt-1">{errors.viewing_date_2.message}</p>
-            )}
           </div>
           <div className="w-full md:w-1/2">
             <Label htmlFor="construction_year">Byggår</Label>
@@ -825,86 +874,223 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
 
         {/* Snabbval-knappar: Nyproduktion, Hiss, Balkong, Antal live */}
-        <div className="md:col-span-2 flex flex-wrap gap-2">
-          <Card className="p-2 px-3 flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="is_new_production"
-              checked={isNewProduction}
-              onChange={(e) => setIsNewProduction(e.target.checked)}
-              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
-            />
-            <Label htmlFor="is_new_production" className="cursor-pointer font-medium text-sm">
-              Nyproduktion
-            </Label>
-          </Card>
+        <div className="md:col-span-2 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Card className="p-2 px-3 flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_new_production"
+                checked={isNewProduction}
+                onChange={(e) => setIsNewProduction(e.target.checked)}
+                className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="is_new_production" className="cursor-pointer font-medium text-sm">
+                Nyproduktion
+              </Label>
+            </Card>
 
-          <Card className="p-2 px-3 flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="has_elevator"
-              checked={hasElevator}
-              onChange={(e) => setHasElevator(e.target.checked)}
-              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
-            />
-            <Label htmlFor="has_elevator" className="cursor-pointer font-medium text-sm">
-              Hiss
-            </Label>
-          </Card>
+            <Card className="p-2 px-3 flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="has_elevator"
+                checked={hasElevator}
+                onChange={(e) => setHasElevator(e.target.checked)}
+                className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="has_elevator" className="cursor-pointer font-medium text-sm">
+                Hiss
+              </Label>
+            </Card>
 
-          <Card className="p-2 px-3 flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="has_balcony"
-              checked={hasBalcony}
-              onChange={(e) => setHasBalcony(e.target.checked)}
-              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
-            />
-            <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
-              Balkong
-            </Label>
-          </Card>
+            <Card className="p-2 px-3 flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="has_balcony"
+                checked={hasBalcony}
+                onChange={(e) => setHasBalcony(e.target.checked)}
+                className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="has_balcony" className="cursor-pointer font-medium text-sm">
+                Balkong
+              </Label>
+            </Card>
 
-          <Card className="p-2 px-3 flex items-center space-x-2 bg-blue-50 border-blue-200">
-            <Waves className="w-4 h-4 text-blue-500" />
-            <Input
-              type="number"
-              id="distance_to_water"
-              value={distanceToWater}
-              onChange={(e) => setDistanceToWater(e.target.value)}
-              placeholder="meter"
-              className="w-20 h-7 text-sm"
-            />
-            <Label htmlFor="distance_to_water" className="cursor-pointer font-medium text-sm text-blue-700">
-              Avstånd till vatten
-            </Label>
-          </Card>
+            <Card className="p-2 px-3 flex items-center space-x-2 bg-blue-50 border-blue-200">
+              <Waves className="w-4 h-4 text-blue-500" />
+              <Input
+                type="number"
+                id="distance_to_water"
+                value={distanceToWater}
+                onChange={(e) => setDistanceToWater(e.target.value)}
+                placeholder="meter"
+                className="w-20 h-7 text-sm"
+              />
+              <Label htmlFor="distance_to_water" className="cursor-pointer font-medium text-sm text-blue-700">
+                Avstånd till vatten
+              </Label>
+            </Card>
 
-          <Card className="p-2 px-3 flex items-center space-x-2 bg-orange-50 border-orange-200">
-            <input
-              type="checkbox"
-              id="is_executive_auction"
-              checked={isExecutiveAuction}
-              onChange={(e) => setIsExecutiveAuction(e.target.checked)}
-              className="w-4 h-4 rounded border-input cursor-pointer accent-orange-500"
-            />
-            <Label htmlFor="is_executive_auction" className="cursor-pointer font-medium text-sm text-orange-700">
-              Exekutiv auktion
-            </Label>
-          </Card>
+            <Card className="p-2 px-3 flex items-center space-x-2 bg-orange-50 border-orange-200">
+              <input
+                type="checkbox"
+                id="is_executive_auction"
+                checked={isExecutiveAuction}
+                onChange={(e) => setIsExecutiveAuction(e.target.checked)}
+                className="w-4 h-4 rounded border-input cursor-pointer accent-orange-500"
+              />
+              <Label htmlFor="is_executive_auction" className="cursor-pointer font-medium text-sm text-orange-700">
+                Exekutiv auktion
+              </Label>
+            </Card>
 
-          <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
-            <input
-              type="checkbox"
-              id="show_viewer_count"
-              checked={showViewerCount}
-              onChange={(e) => setShowViewerCount(e.target.checked)}
-              className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
-            />
-            <Label htmlFor="show_viewer_count" className="cursor-pointer font-medium text-sm">
-              Antal live
-            </Label>
-          </Card>
+            <Card className="p-2 px-3 flex items-center space-x-2 bg-gradient-to-r from-primary/5 to-green-500/5 border-primary/20">
+              <input
+                type="checkbox"
+                id="show_viewer_count"
+                checked={showViewerCount}
+                onChange={(e) => setShowViewerCount(e.target.checked)}
+                className="w-4 h-4 rounded border-input cursor-pointer accent-primary"
+              />
+              <Label htmlFor="show_viewer_count" className="cursor-pointer font-medium text-sm">
+                Antal live
+              </Label>
+            </Card>
+          </div>
+
+          {/* Fler egenskaper för matchning med köpares önskemål */}
+          <details className="group">
+            <summary className="cursor-pointer text-base font-semibold text-primary hover:text-primary/80 flex items-center gap-2">
+              <span>⭐ Fler egenskaper för bättre matchning</span>
+              <span className="text-sm text-muted-foreground">(klicka för att expandera)</span>
+            </summary>
+            
+            <div className="mt-3 p-4 bg-muted/30 rounded-lg space-y-4">
+              {/* Bostadens egenskaper */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Bostadens egenskaper
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_fireplace" checked={hasFireplace} onChange={(e) => setHasFireplace(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Flame className="w-4 h-4 text-orange-500" />
+                    <Label htmlFor="has_fireplace" className="cursor-pointer font-medium text-sm">Öppen spis</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_garden" checked={hasGarden} onChange={(e) => setHasGarden(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Trees className="w-4 h-4 text-green-500" />
+                    <Label htmlFor="has_garden" className="cursor-pointer font-medium text-sm">Trädgård</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_sauna" checked={hasSauna} onChange={(e) => setHasSauna(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Droplets className="w-4 h-4 text-cyan-500" />
+                    <Label htmlFor="has_sauna" className="cursor-pointer font-medium text-sm">Bastu</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_sea_view" checked={hasSeaView} onChange={(e) => setHasSeaView(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Eye className="w-4 h-4 text-blue-500" />
+                    <Label htmlFor="has_sea_view" className="cursor-pointer font-medium text-sm">Sjöutsikt</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="is_south_facing" checked={isSouthFacing} onChange={(e) => setIsSouthFacing(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Sun className="w-4 h-4 text-yellow-500" />
+                    <Label htmlFor="is_south_facing" className="cursor-pointer font-medium text-sm">Söderläge</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Parkering & Förvaring */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Car className="w-4 h-4" />
+                  Parkering & Förvaring
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_parking" checked={hasParking} onChange={(e) => setHasParking(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <ParkingCircle className="w-4 h-4 text-blue-500" />
+                    <Label htmlFor="has_parking" className="cursor-pointer font-medium text-sm">Parkering</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_garage" checked={hasGarage} onChange={(e) => setHasGarage(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Car className="w-4 h-4 text-gray-600" />
+                    <Label htmlFor="has_garage" className="cursor-pointer font-medium text-sm">Garage</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2 bg-green-50 border-green-200">
+                    <input type="checkbox" id="has_ev_charging" checked={hasEvCharging} onChange={(e) => setHasEvCharging(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-green-500" />
+                    <Plug className="w-4 h-4 text-green-600" />
+                    <Label htmlFor="has_ev_charging" className="cursor-pointer font-medium text-sm text-green-700">Laddstolpe</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_storage" checked={hasStorage} onChange={(e) => setHasStorage(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Package className="w-4 h-4 text-amber-600" />
+                    <Label htmlFor="has_storage" className="cursor-pointer font-medium text-sm">Förråd</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Förening & Service */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <WashingMachine className="w-4 h-4" />
+                  Förening & Service
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="has_laundry" checked={hasLaundry} onChange={(e) => setHasLaundry(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <WashingMachine className="w-4 h-4 text-blue-500" />
+                    <Label htmlFor="has_laundry" className="cursor-pointer font-medium text-sm">Tvättstuga</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="is_pet_friendly" checked={isPetFriendly} onChange={(e) => setIsPetFriendly(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Dog className="w-4 h-4 text-amber-600" />
+                    <Label htmlFor="is_pet_friendly" className="cursor-pointer font-medium text-sm">Husdjur tillåtet</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="is_quiet_area" checked={isQuietArea} onChange={(e) => setIsQuietArea(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Mountain className="w-4 h-4 text-green-600" />
+                    <Label htmlFor="is_quiet_area" className="cursor-pointer font-medium text-sm">Lugnt område</Label>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Närhet till */}
+              <div>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <Train className="w-4 h-4" />
+                  Närhet till
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_daycare" checked={nearDaycare} onChange={(e) => setNearDaycare(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Baby className="w-4 h-4 text-pink-500" />
+                    <Label htmlFor="near_daycare" className="cursor-pointer font-medium text-sm">Nära dagis</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_school" checked={nearSchool} onChange={(e) => setNearSchool(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <GraduationCap className="w-4 h-4 text-blue-600" />
+                    <Label htmlFor="near_school" className="cursor-pointer font-medium text-sm">Nära skola</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_centrum" checked={nearCentrum} onChange={(e) => setNearCentrum(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Building2 className="w-4 h-4 text-gray-600" />
+                    <Label htmlFor="near_centrum" className="cursor-pointer font-medium text-sm">Nära centrum</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_public_transport" checked={nearPublicTransport} onChange={(e) => setNearPublicTransport(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Train className="w-4 h-4 text-green-600" />
+                    <Label htmlFor="near_public_transport" className="cursor-pointer font-medium text-sm">Kollektivtrafik</Label>
+                  </Card>
+                  <Card className="p-2 px-3 flex items-center space-x-2">
+                    <input type="checkbox" id="near_nature" checked={nearNature} onChange={(e) => setNearNature(e.target.checked)} className="w-4 h-4 rounded border-input cursor-pointer accent-primary" />
+                    <Trees className="w-4 h-4 text-green-500" />
+                    <Label htmlFor="near_nature" className="cursor-pointer font-medium text-sm">Nära natur</Label>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         {/* Huvudbild */}

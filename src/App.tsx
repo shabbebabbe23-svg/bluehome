@@ -27,6 +27,7 @@ import ManageAgents from "./pages/ManageAgents";
 import MarketAnalysis from "./pages/MarketAnalysis";
 import VirtualTour from "./pages/VirtualTour";
 import ResetPassword from "./pages/ResetPassword";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import { ComparisonFloatingButton } from "@/components/ComparisonFloatingButton";
@@ -68,6 +69,7 @@ const App = () => (
               <Route path="/virtuell-visning/:id" element={<VirtualTour />} />
               <Route path="/aterstall-losenord" element={<ResetPassword />} />
               <Route path="/mail_confirmation" element={<MailConfirmation />} />
+              <Route path="/min-bostad" element={<BuyerDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

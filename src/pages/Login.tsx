@@ -127,6 +127,38 @@ const Login = () => {
             });
           }
         } else {
+          // Check if user is a buyer and should be redirected to preferences
+          const { data: userData } = await supabase.auth.getUser();
+          const userId = userData?.user?.id;
+          
+          if (userId) {
+            // Check user role
+            const { data: roleData } = await supabase
+              .from('user_roles')
+              .select('user_type')
+              .eq('user_id', userId)
+              .single();
+            
+            // Check if buyer has preferences set
+            if (roleData?.user_type === 'buyer' || roleData?.user_type === 'user') {
+              const { data: prefsData } = await (supabase
+                .from('buyer_preferences' as any)
+                .select('id')
+                .eq('user_id', userId)
+                .single() as any);
+              
+              if (!prefsData) {
+                // No preferences yet, redirect to min-bostad
+                toast({
+                  title: "Välkommen!",
+                  description: "Låt oss börja med att ställa in dina bostadspreferenser.",
+                });
+                navigate("/min-bostad");
+                return;
+              }
+            }
+          }
+          
           toast({
             title: "Välkommen tillbaka!",
             description: "Du är nu inloggad.",
@@ -135,7 +167,8 @@ const Login = () => {
         }
       } else {
         // Signup - automatically set user_type to 'buyer' for all public registrations
-        const redirectUrl = `${window.location.origin}/`;
+        // Redirect to min-bostad after email confirmation so they can set preferences
+        const redirectUrl = `${window.location.origin}/min-bostad`;
         
         const { error } = await supabase.auth.signUp({
           email,
