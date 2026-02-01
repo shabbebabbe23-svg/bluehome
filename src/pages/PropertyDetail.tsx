@@ -692,7 +692,7 @@ const PropertyDetail = () => {
           </div>
 
           {/* Thumbnail Gallery */}
-          <div className="p-2 sm:p-4 bg-muted/30 mx-0">
+          <div className="p-1.5 sm:p-4 bg-muted/30 mx-0">
             <div className="flex gap-1 sm:gap-2 overflow-x-auto py-[2px]">
               {images.map((image, index) => <button key={index} onClick={() => {
                 setCurrentImageIndex(index);
@@ -705,17 +705,17 @@ const PropertyDetail = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_4fr_1.4fr] gap-4 md:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_4fr_1.4fr] gap-2 md:gap-8">
         {/* Left Ad */}
-        <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0">
+        <div className="flex justify-center items-start px-2 sm:px-4 lg:px-0 pt-0">
           <AdBanner className="order-1" />
         </div>
 
         {/* Main Content */}
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-2 md:space-y-6">
 
           {/* Property Title and Share Section */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 md:gap-4">
             <h1 className="text-3xl sm:text-4xl font-bold text-center">
               {property.title}
             </h1>
