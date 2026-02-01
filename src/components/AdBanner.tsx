@@ -32,7 +32,7 @@ const AdBanner = ({
   return (
     // Fixed position at top - same position regardless of view mode
     <aside className={`w-full lg:w-[229px] xl:w-[264px] 2xl:w-[300px] shrink-0 ${className ?? ""} lg:sticky lg:top-24 lg:self-start`}>
-      <div className="p-2 lg:p-1 xl:p-2 2xl:p-2">
+      <div className="p-1 sm:p-2 lg:p-1 xl:p-2 2xl:p-2">
         <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-auto flex flex-row lg:flex-col">
           <div className="w-1/3 sm:w-1/4 lg:w-full shrink-0">
             <img

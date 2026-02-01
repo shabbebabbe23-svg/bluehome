@@ -123,13 +123,34 @@ const PropertyCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [isHorizontalSwipe, setIsHorizontalSwipe] = useState<boolean | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
   // Limit to first 5 images for the slider
   const allImages = [image, ...(additionalImages || [])].filter(Boolean).slice(0, 5) as string[];
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
+
+  // Add non-passive touchmove listener to allow preventDefault for horizontal swipes
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || allImages.length <= 1) return;
+
+    const handleTouchMoveNative = (e: TouchEvent) => {
+      // Only prevent default if we're doing a horizontal swipe
+      if (isHorizontalSwipeRef.current === true) {
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
+    return () => {
+      container.removeEventListener('touchmove', handleTouchMoveNative);
+    };
+  }, [allImages.length]);
 
   useEffect(() => {
     if (!autoSlideImages || images.length <= 1) return;
@@ -144,22 +165,37 @@ const PropertyCard = ({
   // Handle touch events for swiping with visual feedback
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
     setIsSwiping(true);
+    setIsHorizontalSwipe(null);
+    isHorizontalSwipeRef.current = null;
   }, []);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    if (!touchStartX.current || !containerRef.current) return;
+    if (!touchStartX.current || !touchStartY.current || !containerRef.current) return;
 
     const currentX = e.touches[0].clientX;
-    const diff = currentX - touchStartX.current;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartX.current;
+    const diffY = currentY - touchStartY.current;
+
+    // Determine swipe direction on first significant movement
+    if (isHorizontalSwipeRef.current === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+      const isHorizontal = Math.abs(diffX) > Math.abs(diffY);
+      setIsHorizontalSwipe(isHorizontal);
+      isHorizontalSwipeRef.current = isHorizontal;
+    }
+
+    // Only handle horizontal swipes
+    if (isHorizontalSwipeRef.current === false) return;
+
     const containerWidth = containerRef.current.offsetWidth;
 
     // Limit the swipe offset and add resistance at edges
-    let offset = diff;
-    if ((currentImageIndex === 0 && diff > 0) ||
-      (currentImageIndex === allImages.length - 1 && diff < 0)) {
-      offset = diff * 0.3; // Add resistance at edges
+    let offset = diffX;
+    if ((currentImageIndex === 0 && diffX > 0) ||
+      (currentImageIndex === allImages.length - 1 && diffX < 0)) {
+      offset = diffX * 0.3; // Add resistance at edges
     }
 
     setSwipeOffset((offset / containerWidth) * 100);
@@ -169,14 +205,16 @@ const PropertyCard = ({
     if (!containerRef.current) {
       setSwipeOffset(0);
       setIsSwiping(false);
+      setIsHorizontalSwipe(null);
+      isHorizontalSwipeRef.current = null;
       touchStartX.current = null;
+      touchStartY.current = null;
       return;
     }
 
-    const containerWidth = containerRef.current.offsetWidth;
-    const swipeThreshold = 20; // Percentage threshold to trigger slide
+    const swipeThreshold = 15; // Percentage threshold to trigger slide (lowered for easier swiping)
 
-    if (Math.abs(swipeOffset) > swipeThreshold) {
+    if (isHorizontalSwipeRef.current && Math.abs(swipeOffset) > swipeThreshold) {
       if (swipeOffset < 0) {
         // Swipe left - next image or loop to first
         setCurrentImageIndex(prev => (prev === allImages.length - 1 ? 0 : prev + 1));
@@ -188,8 +226,11 @@ const PropertyCard = ({
 
     setSwipeOffset(0);
     setIsSwiping(false);
+    setIsHorizontalSwipe(null);
+    isHorizontalSwipeRef.current = null;
     touchStartX.current = null;
-  }, [swipeOffset, currentImageIndex, allImages.length]);
+    touchStartY.current = null;
+  }, [swipeOffset, allImages.length]);
 
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -273,7 +314,7 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[132px] md:h-[143px] w-full lg:w-[100%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[155px] md:h-[165px] w-full lg:w-[100%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
@@ -433,26 +474,39 @@ const PropertyCard = ({
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
-              <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-base text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+              <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-lg text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bed className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Bed className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   <span className="whitespace-nowrap">{bedrooms} rum</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bath className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Bath className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   <span className="whitespace-nowrap">{bathrooms}</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Square className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Square className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
+                {viewCount !== undefined && (
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <Eye className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-500" />
+                    <span className="whitespace-nowrap font-semibold text-blue-600">{viewCount}</span>
+                  </div>
+                )}
               </div>
-              <p className="text-[10px] sm:text-sm font-semibold text-muted-foreground flex-shrink-0 whitespace-nowrap sm:text-right">
-                {isSold && soldDate
-                  ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
-                  : daysOnMarketText
-                }
-              </p>
+              <div className="flex items-center justify-between w-full sm:w-auto gap-2 sm:gap-3">
+                <p className="text-xs sm:text-base font-semibold text-muted-foreground whitespace-nowrap">
+                  {isSold && soldDate
+                    ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
+                    : daysOnMarketText
+                  }
+                </p>
+                <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail} className="z-20 ml-auto">
+                  <Button className="bg-primary hover:bg-hero-gradient text-white text-sm sm:text-base px-4 py-1.5 h-8 sm:h-9">
+                    Visa objekt
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -495,15 +549,15 @@ const PropertyCard = ({
         </div>
       )}
 
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden z-20">
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none"
-          style={{ touchAction: 'pan-y', WebkitUserSelect: 'none', userSelect: 'none' }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none touch-pan-y"
+          style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+          onTouchStart={allImages.length > 1 ? handleTouchStart : undefined}
+          onTouchMove={allImages.length > 1 ? handleTouchMove : undefined}
+          onTouchEnd={allImages.length > 1 ? handleTouchEnd : undefined}
         >
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
@@ -539,14 +593,14 @@ const PropertyCard = ({
                 ))}
               </div>
 
-              {/* Navigation arrows - always visible and loop */}
+              {/* Navigation arrows - only visible on desktop hover */}
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setCurrentImageIndex(currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1);
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-20 hidden sm:group-hover:flex transition-opacity"
                 aria-label="Föregående bild"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -557,23 +611,17 @@ const PropertyCard = ({
                   e.stopPropagation();
                   setCurrentImageIndex(currentImageIndex === allImages.length - 1 ? 0 : currentImageIndex + 1);
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-20 hidden sm:group-hover:flex transition-opacity"
                 aria-label="Nästa bild"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
-              {/* Image counter/dots - clearer, clickable, always show all */}
+              {/* Image counter/dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {allImages.map((_, index) => (
-                  <button
+                  <div
                     key={index}
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                    className={`w-2 h-2 rounded-full border border-white/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary ${index === currentImageIndex ? 'bg-white scale-125 shadow' : 'bg-white/40 hover:bg-white/70'}`}
-                    aria-label={`Visa bild ${index + 1}`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex ? 'bg-white scale-125 shadow' : 'bg-white/50'}`}
                   />
                 ))}
               </div>
@@ -887,10 +935,10 @@ const PropertyCard = ({
                 <span className="text-[10px] sm:text-sm text-muted-foreground">vån</span>
               </div>
             )}
-            {viewCount !== undefined && viewCount > 0 && (
-              <div className="flex items-center gap-0.5">
+            {viewCount !== undefined && (
+              <div className="flex items-center gap-0.5 ml-auto">
                 <Eye className="w-3 h-3 text-blue-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base font-semibold text-blue-600">{viewCount}</span>
+                <span className="text-xs sm:text-base font-semibold text-blue-600">{viewCount}</span>
               </div>
             )}
           </div>
@@ -909,12 +957,12 @@ const PropertyCard = ({
               }}
               className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10"
             >
-              {buttonText || "Visa detaljer"}
+              {buttonText || "Visa objekt"}
             </Button>
           ) : (
             <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail}>
               <Button className="w-full bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10">
-                {buttonText || "Visa detaljer"}
+                {buttonText || "Visa objekt"}
               </Button>
             </Link>
           )}
