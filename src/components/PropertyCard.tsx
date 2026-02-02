@@ -191,12 +191,8 @@ const PropertyCard = ({
 
     const containerWidth = containerRef.current.offsetWidth;
 
-    // Limit the swipe offset and add resistance at edges
-    let offset = diffX;
-    if ((currentImageIndex === 0 && diffX > 0) ||
-      (currentImageIndex === allImages.length - 1 && diffX < 0)) {
-      offset = diffX * 0.3; // Add resistance at edges
-    }
+    // Allow full swipe in both directions for looping (no resistance at edges)
+    const offset = diffX;
 
     setSwipeOffset((offset / containerWidth) * 100);
   }, [currentImageIndex, allImages.length]);
