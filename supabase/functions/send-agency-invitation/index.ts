@@ -52,12 +52,12 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const signupUrl = `${Deno.env.get("SITE_URL") || "https://qgvloiecyvqbxeplfzwv.lovableproject.com"}/acceptera-inbjudan?token=${encodeURIComponent(token)}`;
+    const signupUrl = `${Deno.env.get("SITE_URL") || "https://barahem.se"}/acceptera-inbjudan?token=${encodeURIComponent(token)}`;
 
     const roleText = role === 'maklare' ? 'mäklare' : 'byrå-administratör';
     
     // Logo URL - kan ersättas med en publikt hostad logo
-    const logoUrl = "https://qgvloiecyvqbxeplfzwv.lovableproject.com/favicon.svg";
+    const logoUrl = "https://barahem.se/logos/barahem-logo.svg";
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
