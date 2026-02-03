@@ -28,7 +28,11 @@ import MarketAnalysis from "./pages/MarketAnalysis";
 import VirtualTour from "./pages/VirtualTour";
 import ResetPassword from "./pages/ResetPassword";
 import BuyerDashboard from "./pages/BuyerDashboard";
+import CookiePolicy from "./pages/CookiePolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import ScrollToTop from "@/components/ScrollToTop";
+import CookieConsent from "@/components/CookieConsent";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import { ComparisonFloatingButton } from "@/components/ComparisonFloatingButton";
 import { ComparisonModal } from "@/components/ComparisonModal";
@@ -70,9 +74,13 @@ const App = () => (
               <Route path="/aterstall-losenord" element={<ResetPassword />} />
               <Route path="/mail_confirmation" element={<MailConfirmation />} />
               <Route path="/min-bostad" element={<BuyerDashboard />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
+              <Route path="/integritet" element={<PrivacyPolicy />} />
+              <Route path="/villkor" element={<TermsOfService />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <CookieConsent />
             </TooltipProvider>
           </ComparisonProvider>
         </FavoritesProvider>
