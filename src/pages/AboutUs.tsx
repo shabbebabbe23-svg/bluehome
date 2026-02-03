@@ -2,11 +2,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Home, Heart, Users, TrendingUp, Award, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import Footer from "@/components/Footer";
 
 const AboutUs = () => {
     const navigate = useNavigate();
+
+    // SEO: Dynamisk sidtitel
+    useEffect(() => {
+        document.title = "Om oss - BaraHem | Sveriges modernaste fastighetsplattform";
+        return () => {
+            document.title = 'BaraHem - Hitta ditt drömhem i Sverige';
+        };
+    }, []);
 
     return (
         <>

@@ -12,3 +12,13 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://www.barahem.se/sitemap.xml
+
+# Disallow admin pages from indexing
+Disallow: /superadmin
+Disallow: /byra-admin
+Disallow: /maklare
+Disallow: /hantera-maklare
+Disallow: /skapa-byra-manuellt
