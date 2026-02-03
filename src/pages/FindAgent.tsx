@@ -5,10 +5,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, MapPin, Star, Phone, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Footer from "@/components/Footer";
 
 const FindAgent = () => {
   const navigate = useNavigate();
+
+  // SEO: Dynamisk sidtitel
+  useEffect(() => {
+    document.title = "Hitta mäklare - Jämför och kontakta mäklare i Sverige | BaraHem";
+    return () => {
+      document.title = 'BaraHem - Hitta ditt drömhem i Sverige';
+    };
+  }, []);
 
   return (
     <>

@@ -41,6 +41,11 @@ const Index = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
+  // SEO: Dynamisk sidtitel
+  useEffect(() => {
+    document.title = "BaraHem - Hitta ditt drömhem i Sverige | Bostäder till salu";
+  }, []);
+
   const scrollToResults = () => {
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });

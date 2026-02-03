@@ -73,6 +73,92 @@ const PropertyDetail = () => {
   const hasActiveBidding = (dbProperty?.bidCount ?? 0) > 0;
   const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
+  // SEO: Dynamisk sidtitel och meta description baserat på fastigheten
+  useEffect(() => {
+    if (dbProperty) {
+      const address = dbProperty.address || 'Fastighet';
+      const city = dbProperty.city || '';
+      const rooms = dbProperty.rooms || '';
+      const area = dbProperty.area || '';
+      const price = dbProperty.price ? Number(dbProperty.price).toLocaleString('sv-SE') : '';
+      const propertyType = dbProperty.type || 'Bostad';
+      
+      // Uppdatera titel
+      document.title = `${address}${city ? `, ${city}` : ''} - Till salu | BaraHem`;
+      
+      // Uppdatera meta description
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      const descriptionText = `${propertyType}${rooms ? ` med ${rooms} rum` : ''}${area ? `, ${area} kvm` : ''} på ${address}${city ? ` i ${city}` : ''}.${price ? ` Pris: ${price} kr.` : ''} Se bilder och boka visning på BaraHem.`;
+      metaDescription.setAttribute('content', descriptionText);
+
+      // Lägg till JSON-LD RealEstateListing schema
+      let schemaScript = document.getElementById('property-schema');
+      if (!schemaScript) {
+        schemaScript = document.createElement('script');
+        schemaScript.id = 'property-schema';
+        schemaScript.type = 'application/ld+json';
+        document.head.appendChild(schemaScript);
+      }
+      
+      const schemaData = {
+        "@context": "https://schema.org",
+        "@type": "RealEstateListing",
+        "name": address,
+        "description": dbProperty.description || descriptionText,
+        "url": `https://www.barahem.se/fastighet/${id}`,
+        "datePosted": dbProperty.created_at,
+        "offers": {
+          "@type": "Offer",
+          "price": dbProperty.price || 0,
+          "priceCurrency": "SEK",
+          "availability": dbProperty.is_sold ? "https://schema.org/SoldOut" : "https://schema.org/InStock"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": address,
+          "addressLocality": city,
+          "addressCountry": "SE"
+        },
+        ...(dbProperty.area && {
+          "floorSize": {
+            "@type": "QuantitativeValue",
+            "value": dbProperty.area,
+            "unitCode": "MTK"
+          }
+        }),
+        ...(dbProperty.rooms && {
+          "numberOfRooms": dbProperty.rooms
+        }),
+        ...(dbProperty.bathrooms && {
+          "numberOfBathroomsTotal": dbProperty.bathrooms
+        }),
+        ...(dbProperty.images?.[0] && {
+          "image": dbProperty.images[0]
+        })
+      };
+      schemaScript.textContent = JSON.stringify(schemaData);
+    } else {
+      document.title = 'Fastighet - BaraHem';
+    }
+    
+    return () => {
+      document.title = 'BaraHem - Hitta ditt drömhem i Sverige';
+      // Återställ meta description
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', 'Sveriges modernaste fastighetsplattform. Utforska tusentals fastigheter till salu över hela Sverige – från storstäder till mindre orter. Hitta ditt nästa hem idag.');
+      }
+      // Ta bort property schema
+      const schema = document.getElementById('property-schema');
+      if (schema) schema.remove();
+    };
+  }, [dbProperty, id]);
+
   useEffect(() => {
     setIsPWA(window.matchMedia('(display-mode: standalone)').matches);
   }, []);
