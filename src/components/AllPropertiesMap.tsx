@@ -327,27 +327,27 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         const fee = property.fee || fullProperty?.fee || 0;
         
         const popupContent = `
-          <div class="popup-container" style="width: clamp(260px, 80vw, 300px); padding: 0; margin: -8px -12px;">
-            ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 25vw, 128px); object-fit: cover; display: block;" />` : ''}
-            <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px);">
-              <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem); margin: 0 0 4px 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
-              <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.8rem); color: #666; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${property.address}, ${property.location}</p>
+          <div class="popup-container" style="width: clamp(265px, 80vw, 320px); padding: 0; margin: -8px -12px;">
+            ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 26vw, 130px); object-fit: cover; display: block;" />` : ''}
+            <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px) clamp(10px, 3vw, 12px);">
+              <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.82rem, 3.5vw, 0.92rem); margin: 0 0 3px 0; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
+              <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.78rem); color: #666; margin: 0 0 4px 0; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.address}, ${property.location}</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span class="popup-price" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem);">${property.price}</span>
-                <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
+                <span class="popup-price" style="font-weight: 600; font-size: clamp(0.82rem, 3.5vw, 0.92rem);">${property.price}</span>
+                <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.73rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
               </div>
-              ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
-              <div class="popup-buttons" style="display: flex; gap: clamp(4px, 1.5vw, 5px);">
-                <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 6px; text-decoration: none; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500;">Visa</a>
-                <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 6px; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500; cursor: pointer;">Rutt</button>
+              ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.73rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
+              <div class="popup-buttons" style="display: flex; gap: clamp(5px, 1.8vw, 7px);">
+                <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 5px; text-decoration: none; font-size: clamp(0.73rem, 3vw, 0.82rem); font-weight: 500;">Visa</a>
+                <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 5px; font-size: clamp(0.73rem, 3vw, 0.82rem); font-weight: 500; cursor: pointer;">Rutt</button>
               </div>
             </div>
           </div>
         `;
         
         marker.bindPopup(popupContent, {
-          maxWidth: 320,
-          minWidth: 260,
+          maxWidth: 360,
+          minWidth: 265,
           className: 'property-popup compact-popup'
         });
 
@@ -420,19 +420,19 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
           const total = propertiesAtLocation.length;
 
           return `
-            <div class="popup-container cluster-popup-content" style="width: clamp(260px, 80vw, 300px); padding: 0; margin: -8px -12px;" data-cluster-key="${locationKey}" data-current-index="${index}">
-              ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 25vw, 128px); object-fit: cover; display: block;" />` : ''}
-              <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px);">
-                <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem); margin: 0 0 4px 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
-                <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.8rem); color: #666; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${property.address}, ${property.location}</p>
+            <div class="popup-container cluster-popup-content" style="width: clamp(265px, 80vw, 320px); padding: 0; margin: -8px -12px;" data-cluster-key="${locationKey}" data-current-index="${index}">
+              ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 26vw, 130px); object-fit: cover; display: block;" />` : ''}
+              <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px) clamp(10px, 3vw, 12px);">
+                <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.82rem, 3.5vw, 0.92rem); margin: 0 0 3px 0; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
+                <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.78rem); color: #666; margin: 0 0 4px 0; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.address}, ${property.location}</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <span class="popup-price" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem);">${property.price}</span>
-                  <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
+                  <span class="popup-price" style="font-weight: 600; font-size: clamp(0.82rem, 3.5vw, 0.92rem);">${property.price}</span>
+                  <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.73rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
                 </div>
-                ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
-                <div class="popup-buttons" style="display: flex; gap: clamp(4px, 1.5vw, 5px);">
-                  <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 6px; text-decoration: none; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500;">Visa</a>
-                  <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 6px; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500; cursor: pointer;">Rutt</button>
+                ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.73rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
+                <div class="popup-buttons" style="display: flex; gap: clamp(5px, 1.8vw, 7px);">
+                  <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 5px; text-decoration: none; font-size: clamp(0.73rem, 3vw, 0.82rem); font-weight: 500;">Visa</a>
+                  <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 5px; font-size: clamp(0.73rem, 3vw, 0.82rem); font-weight: 500; cursor: pointer;">Rutt</button>
                 </div>
               </div>
               <!-- Pagination footer with dots and navigation -->
@@ -453,8 +453,8 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
         let currentIndex = 0;
 
         const popup = L.popup({
-          maxWidth: window.innerWidth < 640 ? 300 : 345,
-          minWidth: window.innerWidth < 640 ? 260 : 315,
+          maxWidth: window.innerWidth < 640 ? 320 : 360,
+          minWidth: window.innerWidth < 640 ? 265 : 300,
           className: 'property-popup compact-popup cluster-popup'
         }).setContent(createClusterPopupContent(0));
 

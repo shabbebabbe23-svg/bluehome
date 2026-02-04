@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { trackLead } from "@/lib/facebookPixel";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Namn krävs").max(100),
@@ -40,6 +41,9 @@ const ContactForm = ({ propertyTitle, agentName, agentPhone, agentEmail }: Conta
       
       // Simulate form submission (in real app, send to backend)
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Track lead to Facebook Pixel
+      trackLead(undefined, 'contact_form');
       
       toast.success("Meddelandet har skickats till mäklaren!");
       setFormData({ name: "", email: "", phone: "", message: "" });

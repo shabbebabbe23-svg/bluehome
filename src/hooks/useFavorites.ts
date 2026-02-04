@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { trackAddToWishlist } from "@/lib/facebookPixel";
 
 export const useFavorites = () => {
   const { user } = useAuth();
@@ -62,6 +63,12 @@ export const useFavorites = () => {
         if (error) throw error;
         setFavorites([...favorites, propertyId]);
         toast.success("Tillagd i favoriter");
+        
+        // Track to Facebook Pixel
+        trackAddToWishlist({
+          id: propertyId,
+          title: propertyId, // Will be updated with real title below
+        });
         
         // Send notification to agent in background
         notifyAgent(propertyId);
