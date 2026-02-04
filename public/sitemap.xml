@@ -31,8 +31,18 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://www.barahem.se/logga-in</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.barahem.se/integritet</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.barahem.se/villkor</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.barahem.se/cookies</loc>
+    <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 </urlset>

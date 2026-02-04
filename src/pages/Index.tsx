@@ -11,6 +11,7 @@ import RecentPropertiesCarousel from "@/components/RecentPropertiesCarousel";
 import { Separator } from "@/components/ui/separator";
 import { Property } from "@/components/PropertyGrid";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO, generateLocalBusinessSchema } from "@/hooks/useSEO";
 import soffaBanner from "@/assets/soffa-banner.png";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
@@ -41,10 +42,14 @@ const Index = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [lastPropertyChange, setLastPropertyChange] = useState(Date.now());
 
-  // SEO: Dynamisk sidtitel
-  useEffect(() => {
-    document.title = "BaraHem - Hitta ditt drömhem i Sverige | Bostäder till salu";
-  }, []);
+  // SEO med hook
+  useSEO({
+    title: "BaraHem - Hitta ditt drömhem i Sverige | Bostäder till salu",
+    description: "Sveriges modernaste fastighetsplattform. Utforska tusentals bostäder till salu över hela Sverige – villor, lägenheter, radhus och mer. Hitta ditt drömhem idag!",
+    url: "https://www.barahem.se",
+    keywords: ["bostäder till salu", "köpa bostad", "hus till salu", "lägenhet", "villa", "mäklare", "Sverige"],
+    schema: generateLocalBusinessSchema()
+  });
 
   const scrollToResults = () => {
     setTimeout(() => {

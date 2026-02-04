@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import PropertyCard from "./PropertyCard";
 import RecentSoldCarousel from "./RecentSoldCarousel";
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Grid3x3, List } from "lucide-react";
+import { ArrowUpDown, Grid3x3, List, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -589,11 +589,6 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const navigate = useNavigate();
   const { user, userType } = useAuth();
   const [favorites, setFavorites] = useState<(string | number)[]>([]);
-  const [showAll, setShowAll] = useState(() => {
-    // Restore showAll state from sessionStorage
-    const saved = sessionStorage.getItem('propertyGridShowAll');
-    return saved === 'true';
-  });
   const [sortBy, setSortBy] = useState<string>("default");
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
     const saved = sessionStorage.getItem('propertyGridViewMode');
@@ -606,12 +601,16 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Pagination state
+  const PAGE_SIZE = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const isFetching = useRef(false);
   // Removed local soldWithinMonths state, now using prop
-
-  // Save showAll state to sessionStorage whenever it changes
-  useEffect(() => {
-    sessionStorage.setItem('propertyGridShowAll', showAll.toString());
-  }, [showAll]);
 
   // Save view mode to sessionStorage whenever it changes
   useEffect(() => {
@@ -631,139 +630,194 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
     }
   }, [loading]);
 
-  // Fetch properties from database
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
+  // Fetch properties from database with pagination
+  const fetchProperties = useCallback(async (page: number = 0, append: boolean = false) => {
+    if (isFetching.current) return;
+    isFetching.current = true;
+    
+    try {
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('is_deleted', false)
-          .order('created_at', { ascending: false });
+      }
+      
+      const start = page * PAGE_SIZE;
+      const end = start + PAGE_SIZE - 1;
+      
+      const { data, error, count } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact' })
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: false })
+        .range(start, end);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        if (data && data.length > 0) {
-          // Fetch profiles with agency info for ALL properties to use agency logo
-          const userIds = [...new Set(data.map(p => p.user_id))];
-          let agencyLogosMap: Record<string, string> = {};
+      if (data && data.length > 0) {
+        // Fetch profiles with agency info for ALL properties to use agency logo
+        const userIds = [...new Set(data.map(p => p.user_id))];
+        let agencyLogosMap: Record<string, string> = {};
 
-          if (userIds.length > 0) {
-            const { data: profilesData } = await supabase
-              .from('profiles')
-              .select('id, agency_id')
-              .in('id', userIds);
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, agency_id')
+            .in('id', userIds);
 
-            if (profilesData) {
-              const agencyIds = [...new Set(profilesData.filter(p => p.agency_id).map(p => p.agency_id))] as string[];
-              if (agencyIds.length > 0) {
-                const { data: agenciesData } = await supabase
-                  .from('agencies')
-                  .select('id, logo_url')
-                  .in('id', agencyIds);
+          if (profilesData) {
+            const agencyIds = [...new Set(profilesData.filter(p => p.agency_id).map(p => p.agency_id))] as string[];
+            if (agencyIds.length > 0) {
+              const { data: agenciesData } = await supabase
+                .from('agencies')
+                .select('id, logo_url')
+                .in('id', agencyIds);
 
-                if (agenciesData) {
-                  // Create a map from user_id to agency logo_url
-                  const agencyLogoMap = new Map(agenciesData.map(a => [a.id, a.logo_url]));
-                  profilesData.forEach(profile => {
-                    if (profile.agency_id) {
-                      const logoUrl = agencyLogoMap.get(profile.agency_id);
-                      if (logoUrl) {
-                        agencyLogosMap[profile.id] = logoUrl;
-                      }
+              if (agenciesData) {
+                // Create a map from user_id to agency logo_url
+                const agencyLogoMap = new Map(agenciesData.map(a => [a.id, a.logo_url]));
+                profilesData.forEach(profile => {
+                  if (profile.agency_id) {
+                    const logoUrl = agencyLogoMap.get(profile.agency_id);
+                    if (logoUrl) {
+                      agencyLogosMap[profile.id] = logoUrl;
                     }
-                  });
-                }
+                  }
+                });
               }
             }
           }
-
-          const formattedProperties: Property[] = data.map((prop) => ({
-            id: prop.id,
-            title: prop.title,
-            price: `${prop.price.toLocaleString('sv-SE')} kr`,
-            priceValue: prop.price,
-            location: prop.location,
-            address: prop.address,
-            bedrooms: prop.bedrooms,
-            bathrooms: prop.bathrooms,
-            area: prop.area,
-            fee: prop.fee || 0,
-            viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
-            viewingDate2: prop.viewing_date_2 ? new Date(prop.viewing_date_2) : undefined,
-            image: prop.image_url || property1,
-            hoverImage: prop.hover_image_url || prop.image_url || property2,
-            type: prop.type,
-            isNew: false,
-            vendorLogo: agencyLogosMap[prop.user_id] || prop.vendor_logo_url || logo1,
-            isSold: prop.is_sold || false,
-            soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
-            hasVR: prop.has_vr || false,
-            description: prop.description || '',
-            sold_price: prop.sold_price || undefined,
-            new_price: prop.new_price || undefined,
-            is_manual_price_change: prop.is_manual_price_change || false,
-            is_new_production: prop.is_new_production || false,
-            has_elevator: prop.has_elevator || false,
-            has_balcony: prop.has_balcony || false,
-            is_executive_auction: prop.is_executive_auction || false,
-            distance_to_water: prop.distance_to_water || null,
-            floor: prop.floor || undefined,
-            total_floors: prop.total_floors || undefined,
-            construction_year: prop.construction_year || undefined,
-            brf_debt_per_sqm: (prop as any).brf_debt_per_sqm || undefined,
-            housing_association: prop.housing_association || undefined,
-            createdAt: new Date(prop.created_at),
-            listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
-            additional_images: prop.additional_images || [],
-            user_id: prop.user_id,
-          }));
-          setDbProperties(formattedProperties);
-
-          // Fetch bidding status for all properties
-          const propertyIds = data.map(p => p.id);
-          const { data: bidsData, error: bidsError } = await supabase
-            .from('property_bids')
-            .select('property_id')
-            .in('property_id', propertyIds);
-
-          console.log('Bids query result:', { bidsData, bidsError, propertyIds });
-
-          if (bidsData) {
-            const bidsMap: Record<string, boolean> = {};
-            propertyIds.forEach(id => {
-              bidsMap[id] = bidsData.some(bid => bid.property_id === id);
-            });
-            console.log('PropertyBids map:', bidsMap);
-            setPropertyBids(bidsMap);
-          }
-
-          // Fetch view counts for all properties
-          const { data: viewsData } = await supabase
-            .from('property_views')
-            .select('property_id')
-            .in('property_id', propertyIds);
-
-          if (viewsData) {
-            const viewCountsMap: Record<string, number> = {};
-            propertyIds.forEach(id => {
-              viewCountsMap[id] = viewsData.filter(v => v.property_id === id).length;
-            });
-            setViewCounts(viewCountsMap);
-          }
-        } else {
-          // Om inga fastigheter finns i databasen, visa dummy-fastigheter
-          setDbProperties(allProperties);
         }
-      } catch (err) {
-        console.error('Error fetching properties:', err);
-      } finally {
-        setLoading(false);
+
+        const formattedProperties: Property[] = data.map((prop) => ({
+          id: prop.id,
+          title: prop.title,
+          price: `${prop.price.toLocaleString('sv-SE')} kr`,
+          priceValue: prop.price,
+          location: prop.location,
+          address: prop.address,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          area: prop.area,
+          fee: prop.fee || 0,
+          viewingDate: prop.viewing_date ? new Date(prop.viewing_date) : new Date(),
+          viewingDate2: prop.viewing_date_2 ? new Date(prop.viewing_date_2) : undefined,
+          image: prop.image_url || property1,
+          hoverImage: prop.hover_image_url || prop.image_url || property2,
+          type: prop.type,
+          isNew: false,
+          vendorLogo: agencyLogosMap[prop.user_id] || prop.vendor_logo_url || logo1,
+          isSold: prop.is_sold || false,
+          soldDate: prop.sold_date ? new Date(prop.sold_date) : undefined,
+          hasVR: prop.has_vr || false,
+          description: prop.description || '',
+          sold_price: prop.sold_price || undefined,
+          new_price: prop.new_price || undefined,
+          is_manual_price_change: prop.is_manual_price_change || false,
+          is_new_production: prop.is_new_production || false,
+          has_elevator: prop.has_elevator || false,
+          has_balcony: prop.has_balcony || false,
+          is_executive_auction: prop.is_executive_auction || false,
+          distance_to_water: prop.distance_to_water || null,
+          floor: prop.floor || undefined,
+          total_floors: prop.total_floors || undefined,
+          construction_year: prop.construction_year || undefined,
+          brf_debt_per_sqm: (prop as any).brf_debt_per_sqm || undefined,
+          housing_association: prop.housing_association || undefined,
+          createdAt: new Date(prop.created_at),
+          listedDate: prop.listed_date ? new Date(prop.listed_date) : new Date(prop.created_at),
+          additional_images: prop.additional_images || [],
+          user_id: prop.user_id,
+        }));
+        
+        if (append) {
+          setDbProperties(prev => [...prev, ...formattedProperties]);
+        } else {
+          setDbProperties(formattedProperties);
+        }
+        
+        // Check if there are more properties to load
+        setHasMore(data.length === PAGE_SIZE);
+        if (count !== null) {
+          setTotalCount(count);
+        }
+
+        // Fetch bidding status for loaded properties
+        const propertyIds = data.map(p => p.id);
+        const { data: bidsData, error: bidsError } = await supabase
+          .from('property_bids')
+          .select('property_id')
+          .in('property_id', propertyIds);
+
+        console.log('Bids query result:', { bidsData, bidsError, propertyIds });
+
+        if (bidsData) {
+          const bidsMap: Record<string, boolean> = {};
+          propertyIds.forEach(id => {
+            bidsMap[id] = bidsData.some(bid => bid.property_id === id);
+          });
+          console.log('PropertyBids map:', bidsMap);
+          setPropertyBids(prev => append ? { ...prev, ...bidsMap } : bidsMap);
+        }
+
+        // Fetch view counts for loaded properties
+        const { data: viewsData } = await supabase
+          .from('property_views')
+          .select('property_id')
+          .in('property_id', propertyIds);
+
+        if (viewsData) {
+          const viewCountsMap: Record<string, number> = {};
+          propertyIds.forEach(id => {
+            viewCountsMap[id] = viewsData.filter(v => v.property_id === id).length;
+          });
+          setViewCounts(prev => append ? { ...prev, ...viewCountsMap } : viewCountsMap);
+        }
+        
+        setCurrentPage(page);
+      } else if (!append) {
+        // Om inga fastigheter finns i databasen, visa dummy-fastigheter
+        setDbProperties(allProperties);
+        setHasMore(false);
       }
-    };
-    fetchProperties();
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+      isFetching.current = false;
+    }
   }, []);
+
+  // Load more function
+  const loadMoreProperties = useCallback(() => {
+    if (hasMore && !isLoadingMore && !loading) {
+      fetchProperties(currentPage + 1, true);
+    }
+  }, [hasMore, isLoadingMore, loading, currentPage, fetchProperties]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !loading) {
+          loadMoreProperties();
+        }
+      },
+      { threshold: 0.1, rootMargin: '200px' }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, loading, loadMoreProperties]);
+
+  // Initial load
+  useEffect(() => {
+    fetchProperties(0);
+  }, [fetchProperties]);
 
   const sortProperties = (props: Property[]) => {
     const sorted = [...props];
@@ -957,7 +1011,8 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
   const dateFilteredProperties = filterBySoldDate(filteredProperties);
   const daysFilteredProperties = filterByDaysOnSite(dateFilteredProperties);
   const sortedProperties = sortProperties(daysFilteredProperties);
-  const displayedProperties = showAll ? sortedProperties : sortedProperties.slice(0, 6);
+  // With pagination, we always show all loaded properties (filtered and sorted)
+  const displayedProperties = sortedProperties;
 
   const handleFavoriteToggle = (id: string | number) => {
     setFavorites(prev =>
@@ -1205,15 +1260,34 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
           })}
         </div>
 
-        <div className="text-center">
-          <Button
-            size="lg"
-            variant="outline"
-            className="hover:scale-105 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all w-full sm:w-auto"
-            onClick={() => setShowAll(!showAll)}
-          >
-            {showAll ? "Visa färre fastigheter" : "Visa alla fastigheter"}
-          </Button>
+        {/* Infinite scroll trigger and load more button */}
+        <div className="text-center py-4">
+          {/* Invisible trigger for infinite scroll */}
+          <div ref={loadMoreRef} className="h-1" />
+          
+          {isLoadingMore && (
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Laddar fler fastigheter...</span>
+            </div>
+          )}
+          
+          {hasMore && !isLoadingMore && displayedProperties.length > 0 && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="hover:scale-105 hover:bg-hero-gradient hover:text-white hover:border-transparent transition-all w-full sm:w-auto"
+              onClick={loadMoreProperties}
+            >
+              Ladda fler fastigheter ({displayedProperties.length} av {totalCount})
+            </Button>
+          )}
+          
+          {!hasMore && displayedProperties.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Visar alla {displayedProperties.length} fastigheter
+            </p>
+          )}
         </div>
       </div>
     </section>

@@ -16,9 +16,15 @@ Allow: /
 # Sitemap
 Sitemap: https://www.barahem.se/sitemap.xml
 
-# Disallow admin pages from indexing
+# Disallow admin and private pages from indexing
 Disallow: /superadmin
 Disallow: /byra-admin
 Disallow: /maklare
 Disallow: /hantera-maklare
 Disallow: /skapa-byra-manuellt
+Disallow: /acceptera-inbjudan
+Disallow: /favoriter
+Disallow: /min-bostad
+Disallow: /logga-in
+Disallow: /aterstall-losenord
+Disallow: /mail_confirmation

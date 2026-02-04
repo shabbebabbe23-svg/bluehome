@@ -28,7 +28,7 @@ const InlineAdBanner = ({
       <div className="border border-border rounded-lg bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
           <div className="md:col-span-1">
-            <img src={imageSrc} alt={alt} className="w-full h-48 object-cover" />
+            <img src={imageSrc} alt={alt} className="w-full h-48 object-cover" loading="lazy" />
           </div>
           <div className="p-4 md:col-span-2 flex flex-col justify-between">
             <div>

@@ -257,7 +257,20 @@ const PropertyCard = ({
   const dayLabel = viewDate ? (isSameDay(viewDate, now) ? "Idag" : viewDate.toLocaleDateString("sv-SE", { day: "numeric", month: "short" })) : "Idag";
   const timeLabel = viewDate ? viewDate.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
 
-  const truncatedListDescription = description
+  // Different truncation lengths for different screen sizes
+  const truncatedListDescriptionShort = description
+    ? description.length > 80
+      ? `${description.slice(0, 80)}…`
+      : description
+    : "";
+
+  const truncatedListDescriptionMedium = description
+    ? description.length > 150
+      ? `${description.slice(0, 150)}…`
+      : description
+    : "";
+
+  const truncatedListDescriptionLong = description
     ? description.length > 254
       ? `${description.slice(0, 254)}…`
       : description
@@ -310,12 +323,12 @@ const PropertyCard = ({
   // List view layout
   if (viewMode === "list") {
     return (
-      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.07] h-auto sm:h-[155px] md:h-[165px] w-full lg:w-[100%] mx-auto ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+      <Card className={`relative group overflow-hidden bg-card shadow-sm hover:shadow-md transition-all duration-300 transform-gpu hover:scale-[1.02] h-auto sm:h-[155px] md:h-[165px] w-full lg:w-[100%] mx-auto cursor-pointer ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
         {/* Full-card clickable overlay */}
         {!bulkSelectMode && (
           <Link
             to={`/fastighet/${id}`}
-            className="absolute inset-0 z-10"
+            className="absolute inset-0 z-30"
             aria-label={`Visa ${title}`}
             onClick={handleNavigateToDetail}
           />
@@ -355,7 +368,7 @@ const PropertyCard = ({
 
             {/* Favorite and Compare buttons - hide for sold properties */}
             {!hideControls && !isSold && (
-              <div className="absolute top-3 right-3 flex gap-1.5 z-20">
+              <div className="absolute top-3 right-3 flex gap-1.5 z-40">
                 {/* Compare button */}
                 <Button
                   variant="secondary"
@@ -463,14 +476,25 @@ const PropertyCard = ({
               </div>
             </div>
 
-            {/* Description - hidden on mobile */}
-            <p className="hidden md:block text-base sm:text-lg text-muted-foreground mt-1 line-clamp-1 min-h-4">
-              {truncatedListDescription || "\u00A0"}
-            </p>
+            {/* Description - responsive for different screen sizes */}
+            <div className="hidden sm:block text-muted-foreground mt-1 min-h-4">
+              {/* Small screens (sm): shorter description */}
+              <p className="block md:hidden text-sm line-clamp-1 leading-tight">
+                {truncatedListDescriptionShort || "\u00A0"}
+              </p>
+              {/* Medium screens (md): medium description */}
+              <p className="hidden md:block lg:hidden text-base line-clamp-1 leading-tight">
+                {truncatedListDescriptionMedium || "\u00A0"}
+              </p>
+              {/* Large screens (lg+): full description */}
+              <p className="hidden lg:block text-base line-clamp-2 leading-tight">
+                {truncatedListDescriptionLong || "\u00A0"}
+              </p>
+            </div>
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
-              <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-lg text-muted-foreground min-w-0 overflow-hidden flex-nowrap">
+              <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-lg text-muted-foreground font-semibold min-w-0 overflow-hidden flex-nowrap">
                 <div className="flex items-center gap-0.5 flex-shrink-0">
                   <Bed className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   <span className="whitespace-nowrap">{bedrooms} rum</span>
@@ -486,7 +510,7 @@ const PropertyCard = ({
                 {viewCount !== undefined && (
                   <div className="flex items-center gap-0.5 flex-shrink-0">
                     <Eye className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-500" />
-                    <span className="whitespace-nowrap font-semibold text-blue-600">{viewCount}</span>
+                    <span className="whitespace-nowrap text-blue-600">{viewCount}</span>
                   </div>
                 )}
               </div>
@@ -512,12 +536,12 @@ const PropertyCard = ({
 
   // Grid view layout (original)
   return (
-    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.05] animate-scale-in h-full flex flex-col ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
+    <Card className={`relative group overflow-hidden bg-property shadow-property hover:shadow-property-hover transition-all duration-300 transform-gpu hover:-translate-y-1 hover:scale-[1.05] animate-scale-in h-full flex flex-col cursor-pointer ${bulkSelectMode && isSelected ? 'ring-4 ring-primary' : ''}`}>
       {/* Full-card clickable overlay (keeps favorite button above) */}
       {!bulkSelectMode && (
         <Link
           to={`/fastighet/${id}`}
-          className="absolute inset-0 z-10"
+          className="absolute inset-0 z-30"
           aria-label={`Visa ${title}`}
           onClick={handleNavigateToDetail}
         />
@@ -526,7 +550,7 @@ const PropertyCard = ({
       {/* Bulk select checkbox */}
       {bulkSelectMode && (
         <div
-          className="absolute top-4 left-4 z-30 cursor-pointer"
+          className="absolute top-4 left-4 z-40 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onSelect?.(id);
@@ -545,7 +569,7 @@ const PropertyCard = ({
         </div>
       )}
 
-      <div className="relative overflow-hidden z-20">
+      <div className="relative overflow-hidden">
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
@@ -596,7 +620,7 @@ const PropertyCard = ({
                   e.stopPropagation();
                   setCurrentImageIndex(currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1);
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-20 hidden sm:group-hover:flex transition-opacity"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-40 hidden sm:group-hover:flex transition-opacity"
                 aria-label="Föregående bild"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -607,7 +631,7 @@ const PropertyCard = ({
                   e.stopPropagation();
                   setCurrentImageIndex(currentImageIndex === allImages.length - 1 ? 0 : currentImageIndex + 1);
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-20 hidden sm:group-hover:flex transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 items-center justify-center text-white z-40 hidden sm:group-hover:flex transition-opacity"
                 aria-label="Nästa bild"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -653,7 +677,7 @@ const PropertyCard = ({
         {/* Agency logo area (bottom right for all properties) */}
         {!hideControls && vendorLogo && (
           <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-4 w-16 sm:w-24 h-10 sm:h-16 flex items-center justify-center overflow-hidden z-10">
-            <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain drop-shadow-md" />
+            <img src={vendorLogo} alt="Mäklarlogo" className="w-full h-full object-contain drop-shadow-md" loading="lazy" />
           </div>
         )}
 
@@ -689,7 +713,7 @@ const PropertyCard = ({
 
         {/* Favorite and Compare buttons - hide for sold properties */}
         {!hideControls && !isSold && (
-          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-1.5 sm:gap-2 z-20">
+          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-1.5 sm:gap-2 z-40">
             {/* Compare button */}
             <Button
               variant="secondary"
@@ -866,7 +890,7 @@ const PropertyCard = ({
           <div className="mt-1 pt-1 border-t border-border/50">
             <Link
               to={`/agent/${agent_id}`}
-              className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-20"
+              className="flex items-center gap-1.5 hover:bg-muted/30 p-1 rounded transition-colors group/agent relative z-40"
               onClick={(e) => e.stopPropagation()}
             >
               <Avatar className="w-6 h-6 sm:w-7 sm:h-7 border border-border">
@@ -951,7 +975,7 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onButtonClick();
               }}
-              className="w-full relative z-20 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10"
+              className="w-full relative z-40 bg-primary hover:bg-hero-gradient group-hover:bg-hero-gradient hover:text-white group-hover:text-white transition-colors text-xs sm:text-base py-1 h-8 sm:h-10"
             >
               {buttonText || "Visa objekt"}
             </Button>
@@ -971,7 +995,7 @@ const PropertyCard = ({
                 e.stopPropagation();
                 onEditClick();
               }}
-              className="w-full mt-2 relative z-20 text-xs sm:text-base py-1 h-8 sm:h-10 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+              className="w-full mt-2 relative z-40 text-xs sm:text-base py-1 h-8 sm:h-10 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
             >
               <Pencil className="w-4 h-4 mr-2" />
               Redigera

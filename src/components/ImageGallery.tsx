@@ -113,7 +113,7 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
               className="relative h-20 sm:h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => openGallery(idx + 1)}
             >
-              <img src={img} alt={`${title} ${idx + 2}`} className="w-full h-full object-cover" />
+              <img src={img} alt={`${title} ${idx + 2}`} className="w-full h-full object-cover" loading="lazy" />
             </div>
           ))}
           {images.length > 3 && (
@@ -121,7 +121,7 @@ const ImageGallery = ({ images, mainImage, title, propertyId }: ImageGalleryProp
               className="relative h-20 sm:h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => openGallery(4)}
             >
-              <img src={images[3]} alt={`${title} 5`} className="w-full h-full object-cover" />
+              <img src={images[3]} alt={`${title} 5`} className="w-full h-full object-cover" loading="lazy" />
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">+{images.length - 3}</span>
               </div>

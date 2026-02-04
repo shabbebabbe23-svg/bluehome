@@ -252,6 +252,42 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     };
   }, [propertiesWithCoords, loading]);
 
+  // Function to create cluster icon for multiple properties at same location
+  const createClusterIcon = (count: number, types: string[]) => {
+    // Get the most common type's color, or use a gradient
+    const uniqueTypes = [...new Set(types)];
+    let color = '#6366f1'; // Default purple for clusters
+    
+    if (uniqueTypes.length === 1) {
+      // Single type - use that type's color
+      switch(uniqueTypes[0]) {
+        case 'Villa': color = '#3b82f6'; break;
+        case 'Lägenhet': color = '#22c55e'; break;
+        case 'Radhus': color = '#a855f7'; break;
+        case 'Parhus': color = '#14b8a6'; break;
+        case 'Tomt': color = '#f59e0b'; break;
+        case 'Fritidshus': color = '#ec4899'; break;
+        default: color = '#6366f1';
+      }
+    }
+
+    const svgIcon = `
+      <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 0C9 0 0 9 0 20c0 15 20 30 20 30s20-15 20-30C40 9 31 0 20 0z" fill="${color}"/>
+        <circle cx="20" cy="18" r="14" fill="white"/>
+        <text x="20" y="23" text-anchor="middle" font-size="14" font-weight="bold" fill="${color}">${count}</text>
+      </svg>
+    `;
+
+    return L.divIcon({
+      html: svgIcon,
+      className: 'custom-cluster-marker',
+      iconSize: [40, 50],
+      iconAnchor: [20, 50],
+      popupAnchor: [0, -45],
+    });
+  };
+
   // Update markers when selectedTypes or propertiesWithCoords change (without affecting zoom)
   useEffect(() => {
     if (!mapInstanceRef.current || !mapReady) return;
@@ -263,108 +299,233 @@ const AllPropertiesMap = ({ properties }: AllPropertiesMapProps) => {
     // Add markers for filtered properties
     const filteredProperties = propertiesWithCoords.filter(p => selectedTypes.includes(p.type));
     
+    // Group properties by location (rounded to 5 decimal places to catch same addresses)
+    const locationGroups: Map<string, PropertyWithCoords[]> = new Map();
+    
     filteredProperties.forEach((property) => {
-      const icon = createColoredIcon(property.type);
-      const marker = L.marker([property.lat, property.lng], { icon }).addTo(mapInstanceRef.current!);
+      // Round coordinates to group properties at same/very close locations
+      const key = `${property.lat.toFixed(5)},${property.lng.toFixed(5)}`;
+      if (!locationGroups.has(key)) {
+        locationGroups.set(key, []);
+      }
+      locationGroups.get(key)!.push(property);
+    });
+
+    // Create markers for each location group
+    locationGroups.forEach((propertiesAtLocation, locationKey) => {
+      const [lat, lng] = locationKey.split(',').map(Number);
       
-      // Find the property in allProperties to get the image
-      const fullProperty = properties.find(p => p.id === property.id);
-      const imageUrl = fullProperty?.image || '';
-      const fee = property.fee || fullProperty?.fee || 0;
-      
-      const popupContent = `
-        <div style="width: 315px; padding: 0; margin: -8px -12px;">
-          ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" style="width: 100%; height: 135px; object-fit: cover; display: block;" />` : ''}
-          <div style="padding: 12px;">
-            <h3 style="font-weight: 600; font-size: 1rem; margin: 0 0 6px 0; line-height: 1.2;">${property.title}</h3>
-            <p style="font-size: 0.85rem; color: #666; margin: 0 0 6px 0;">${property.address}, ${property.location}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <span style="font-weight: 600; font-size: 1rem;">${property.price}</span>
-              <span style="font-size: 0.8rem; color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
-            </div>
-            ${fee > 0 ? `<p style="font-size: 0.8rem; color: #666; margin: 0 0 10px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 10px;"></div>'}
-            <div style="display: flex; gap: 6px;">
-              <a href="/fastighet/${property.id}" style="flex: 1; text-align: center; padding: 9px; background-color: hsl(var(--primary)); color: white; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Visa</a>
-              <button type="button" class="route-to-btn" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: 9px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Rutt</button>
+      if (propertiesAtLocation.length === 1) {
+        // Single property - use normal marker
+        const property = propertiesAtLocation[0];
+        const icon = createColoredIcon(property.type);
+        const marker = L.marker([property.lat, property.lng], { icon }).addTo(mapInstanceRef.current!);
+        
+        // Find the property in allProperties to get the image
+        const fullProperty = properties.find(p => p.id === property.id);
+        const imageUrl = fullProperty?.image || '';
+        const fee = property.fee || fullProperty?.fee || 0;
+        
+        const popupContent = `
+          <div class="popup-container" style="width: clamp(260px, 80vw, 300px); padding: 0; margin: -8px -12px;">
+            ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 25vw, 128px); object-fit: cover; display: block;" />` : ''}
+            <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px);">
+              <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem); margin: 0 0 4px 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
+              <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.8rem); color: #666; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${property.address}, ${property.location}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span class="popup-price" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem);">${property.price}</span>
+                <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
+              </div>
+              ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
+              <div class="popup-buttons" style="display: flex; gap: clamp(4px, 1.5vw, 5px);">
+                <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 6px; text-decoration: none; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500;">Visa</a>
+                <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 6px; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500; cursor: pointer;">Rutt</button>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-      
-
-      marker.bindPopup(popupContent, {
-        maxWidth: 345,
-        minWidth: 315,
-        className: 'property-popup compact-popup'
-      });
-
-      // Event delegation for "Vägbeskrivning till" button
-      marker.on('popupopen', () => {
-        // Fyll automatiskt i 'Från adress' om det är tomt
-        const fromInput = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
-        if (fromInput && !fromInput.value) {
-          fromInput.value = `${property.address}, ${property.location}, Sverige`;
-          fromInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        const popupNode = document.querySelector('.property-popup .route-to-btn[data-address="' + property.address.replace(/"/g, '\"') + ', ' + property.location.replace(/"/g, '\"') + ', Sverige"]');
-        if (popupNode) {
-          popupNode.addEventListener('click', () => {
-            // Fyll i "Till adress" och scrolla till ruttsökning
-            const input = document.querySelector('input[placeholder="Till adress..."]') as HTMLInputElement;
-            if (input) {
-              input.value = `${property.address}, ${property.location}, Sverige`;
-              input.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-            // Starta ruttsökning automatiskt om "Från adress" är ifyllt
-            const fromInput2 = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
-            if (fromInput2 && fromInput2.value) {
-              const btn = document.querySelector('button:enabled[class*="bg-primary"]');
-              if (btn) (btn as HTMLButtonElement).click();
-            }
-            // Scrolla till ruttsökningsformuläret
-            const routeBox = document.querySelector('.bg-muted.rounded-lg');
-            if (routeBox) routeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          });
-        }
-      });
-
-      // Klicka på markören för att uppdatera rutten automatiskt om en rutt redan finns
-      marker.on('click', () => {
-        // Uppdatera "Från adress" med den klickade fastighetens adress
-        const newFromAddress = `${property.address}, ${property.location}, Sverige`;
-        setFromAddress(newFromAddress);
+        `;
         
-        // Om det finns en aktiv rutt och en "Till adress", uppdatera rutten
-        if (routingControlRef.current && toAddress && mapInstanceRef.current) {
-          const updateRoute = async () => {
-            try {
-              // Geocode to address
-              const toResponse = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress + ', Sverige')}`
-              );
-              const toData = await toResponse.json();
+        marker.bindPopup(popupContent, {
+          maxWidth: 320,
+          minWidth: 260,
+          className: 'property-popup compact-popup'
+        });
 
-              if (toData[0]) {
-                const fromLatLng = L.latLng(property.lat, property.lng);
-                const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
-
-                // Uppdatera waypoints på befintlig routing control
-                routingControlRef.current.setWaypoints([fromLatLng, toLatLng]);
-
-                // Fit map to new route
-                const bounds = L.latLngBounds([fromLatLng, toLatLng]);
-                mapInstanceRef.current!.fitBounds(bounds, { padding: [50, 50] });
+        // Event delegation for "Vägbeskrivning till" button
+        marker.on('popupopen', () => {
+          const fromInput = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
+          if (fromInput && !fromInput.value) {
+            fromInput.value = `${property.address}, ${property.location}, Sverige`;
+            fromInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          const popupNode = document.querySelector('.property-popup .route-to-btn[data-address="' + property.address.replace(/"/g, '\"') + ', ' + property.location.replace(/"/g, '\"') + ', Sverige"]');
+          if (popupNode) {
+            popupNode.addEventListener('click', () => {
+              const input = document.querySelector('input[placeholder="Till adress..."]') as HTMLInputElement;
+              if (input) {
+                input.value = `${property.address}, ${property.location}, Sverige`;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
               }
-            } catch (error) {
-              console.error('Error updating route:', error);
+              const fromInput2 = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
+              if (fromInput2 && fromInput2.value) {
+                const btn = document.querySelector('button:enabled[class*="bg-primary"]');
+                if (btn) (btn as HTMLButtonElement).click();
+              }
+              const routeBox = document.querySelector('.bg-muted.rounded-lg');
+              if (routeBox) routeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+          }
+        });
+
+        marker.on('click', () => {
+          const newFromAddress = `${property.address}, ${property.location}, Sverige`;
+          setFromAddress(newFromAddress);
+          
+          if (routingControlRef.current && toAddress && mapInstanceRef.current) {
+            const updateRoute = async () => {
+              try {
+                const toResponse = await fetch(
+                  `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(toAddress + ', Sverige')}`
+                );
+                const toData = await toResponse.json();
+
+                if (toData[0]) {
+                  const fromLatLng = L.latLng(property.lat, property.lng);
+                  const toLatLng = L.latLng(parseFloat(toData[0].lat), parseFloat(toData[0].lon));
+                  routingControlRef.current.setWaypoints([fromLatLng, toLatLng]);
+                  const bounds = L.latLngBounds([fromLatLng, toLatLng]);
+                  mapInstanceRef.current!.fitBounds(bounds, { padding: [50, 50] });
+                }
+              } catch (error) {
+                console.error('Error updating route:', error);
+              }
+            };
+            updateRoute();
+          }
+        });
+
+        markersRef.current.push(marker);
+      } else {
+        // Multiple properties at same location - create cluster marker with pagination
+        const types = propertiesAtLocation.map(p => p.type);
+        const icon = createClusterIcon(propertiesAtLocation.length, types);
+        const marker = L.marker([lat, lng], { icon }).addTo(mapInstanceRef.current!);
+
+        // Create popup with pagination
+        const createClusterPopupContent = (index: number) => {
+          const property = propertiesAtLocation[index];
+          const fullProperty = properties.find(p => p.id === property.id);
+          const imageUrl = fullProperty?.image || '';
+          const fee = property.fee || fullProperty?.fee || 0;
+          const total = propertiesAtLocation.length;
+
+          return `
+            <div class="popup-container cluster-popup-content" style="width: clamp(260px, 80vw, 300px); padding: 0; margin: -8px -12px;" data-cluster-key="${locationKey}" data-current-index="${index}">
+              ${imageUrl ? `<img src="${imageUrl}" alt="${property.title}" class="popup-image" style="width: 100%; height: clamp(100px, 25vw, 128px); object-fit: cover; display: block;" />` : ''}
+              <div class="popup-content" style="padding: clamp(8px, 2.5vw, 10px);">
+                <h3 class="popup-title" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem); margin: 0 0 4px 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${property.title}</h3>
+                <p class="popup-address" style="font-size: clamp(0.7rem, 3vw, 0.8rem); color: #666; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${property.address}, ${property.location}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span class="popup-price" style="font-weight: 600; font-size: clamp(0.85rem, 3.5vw, 0.95rem);">${property.price}</span>
+                  <span class="popup-details" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666;">${property.bedrooms} rum • ${property.area} m²</span>
+                </div>
+                ${fee > 0 ? `<p class="popup-fee" style="font-size: clamp(0.65rem, 2.8vw, 0.75rem); color: #666; margin: 0 0 6px 0;">Avgift: ${fee.toLocaleString('sv-SE')} kr/mån</p>` : '<div style="margin-bottom: 6px;"></div>'}
+                <div class="popup-buttons" style="display: flex; gap: clamp(4px, 1.5vw, 5px);">
+                  <a href="/fastighet/${property.id}" class="popup-btn popup-btn-primary" style="flex: 1; text-align: center; padding: clamp(6px, 2vw, 8px); background-color: hsl(var(--primary)); color: white; border-radius: 6px; text-decoration: none; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500;">Visa</a>
+                  <button type="button" class="route-to-btn popup-btn popup-btn-secondary" data-address="${property.address}, ${property.location}, Sverige" style="flex: 1; padding: clamp(6px, 2vw, 8px); background: #2563eb; color: white; border: none; border-radius: 6px; font-size: clamp(0.75rem, 3vw, 0.85rem); font-weight: 500; cursor: pointer;">Rutt</button>
+                </div>
+              </div>
+              <!-- Pagination footer with dots and navigation -->
+              <div class="popup-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: clamp(6px, 2vw, 8px) clamp(8px, 2.5vw, 10px); background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%); color: white;">
+                <button type="button" class="cluster-prev-btn popup-nav-btn" style="background: rgba(255,255,255,0.2); border: none; border-radius: 4px; padding: 4px clamp(6px, 2vw, 8px); color: white; cursor: pointer; font-weight: 600; ${index === 0 ? 'opacity: 0.3; cursor: not-allowed;' : ''}" ${index === 0 ? 'disabled' : ''}>◀</button>
+                <div class="popup-dots" style="display: flex; align-items: center; gap: clamp(4px, 1.5vw, 6px);">
+                  ${propertiesAtLocation.map((_, i) => `
+                    <button type="button" class="cluster-dot-btn popup-dot" data-dot-index="${i}" style="width: clamp(7px, 2.5vw, 9px); height: clamp(7px, 2.5vw, 9px); border-radius: 50%; border: none; cursor: pointer; background: ${i === index ? 'white' : 'rgba(255,255,255,0.4)'}; transition: background 0.2s;"></button>
+                  `).join('')}
+                </div>
+                <button type="button" class="cluster-next-btn popup-nav-btn" style="background: rgba(255,255,255,0.2); border: none; border-radius: 4px; padding: 4px clamp(6px, 2vw, 8px); color: white; cursor: pointer; font-weight: 600; ${index === total - 1 ? 'opacity: 0.3; cursor: not-allowed;' : ''}" ${index === total - 1 ? 'disabled' : ''}>▶</button>
+              </div>
+            </div>
+          `;
+        };
+
+        // Store current index for this cluster
+        let currentIndex = 0;
+
+        const popup = L.popup({
+          maxWidth: window.innerWidth < 640 ? 300 : 345,
+          minWidth: window.innerWidth < 640 ? 260 : 315,
+          className: 'property-popup compact-popup cluster-popup'
+        }).setContent(createClusterPopupContent(0));
+
+        marker.bindPopup(popup);
+
+        marker.on('popupopen', () => {
+          const setupPaginationListeners = () => {
+            const popupContent = document.querySelector(`.cluster-popup-content[data-cluster-key="${locationKey}"]`);
+            if (!popupContent) return;
+
+            const prevBtn = popupContent.querySelector('.cluster-prev-btn');
+            const nextBtn = popupContent.querySelector('.cluster-next-btn');
+            const dotBtns = popupContent.querySelectorAll('.cluster-dot-btn');
+
+            const updatePopup = (newIndex: number) => {
+              currentIndex = newIndex;
+              popup.setContent(createClusterPopupContent(newIndex));
+              // Re-setup listeners after content change
+              setTimeout(setupPaginationListeners, 0);
+            };
+
+            prevBtn?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (currentIndex > 0) {
+                updatePopup(currentIndex - 1);
+              }
+            });
+
+            nextBtn?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (currentIndex < propertiesAtLocation.length - 1) {
+                updatePopup(currentIndex + 1);
+              }
+            });
+
+            dotBtns.forEach((btn) => {
+              btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const dotIndex = parseInt((btn as HTMLElement).dataset.dotIndex || '0');
+                if (dotIndex !== currentIndex) {
+                  updatePopup(dotIndex);
+                }
+              });
+            });
+
+            // Route button
+            const routeBtn = popupContent.querySelector('.route-to-btn');
+            if (routeBtn) {
+              routeBtn.addEventListener('click', () => {
+                const address = (routeBtn as HTMLElement).dataset.address;
+                const input = document.querySelector('input[placeholder="Till adress..."]') as HTMLInputElement;
+                if (input && address) {
+                  input.value = address;
+                  input.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                const fromInput2 = document.querySelector('input[placeholder="Från adress..."]') as HTMLInputElement;
+                if (fromInput2 && fromInput2.value) {
+                  const btn = document.querySelector('button:enabled[class*="bg-primary"]');
+                  if (btn) (btn as HTMLButtonElement).click();
+                }
+                const routeBox = document.querySelector('.bg-muted.rounded-lg');
+                if (routeBox) routeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              });
             }
           };
-          
-          updateRoute();
-        }
-      });
 
-      markersRef.current.push(marker);
+          setupPaginationListeners();
+        });
+
+        markersRef.current.push(marker);
+      }
     });
   }, [propertiesWithCoords, selectedTypes, properties, mapReady, toAddress]);
 

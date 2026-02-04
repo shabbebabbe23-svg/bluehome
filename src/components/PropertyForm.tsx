@@ -14,6 +14,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { compressMainImage, compressImage, validateImage } from "@/lib/imageCompression";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 
 const propertySchema = z.object({
   title: z.string().min(5, "Titel måste vara minst 5 tecken").max(60, "Titel får max vara 60 tecken"),
@@ -203,10 +205,11 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       return;
     }
 
-    // Check file sizes
+    // Validera varje bild
     for (const file of files) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Varje bild får max vara 5MB");
+      const validation = validateImage(file);
+      if (!validation.valid) {
+        toast.error(validation.error);
         return;
       }
     }
@@ -306,9 +309,12 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   };
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
+    // Komprimera bilden innan uppladdning
+    const compressedFile = await compressMainImage(file);
+    
     const { data, error } = await supabase.storage
       .from("property-images")
-      .upload(path, file, { upsert: true });
+      .upload(path, compressedFile, { upsert: true });
 
     if (error) throw error;
 
@@ -365,6 +371,15 @@ export const PropertyForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
     if (!mainImage) {
       toast.error("Du måste ladda upp minst en huvudbild");
+      return;
+    }
+
+    // Rate limiting - max 5 fastigheter per minut
+    const rateLimitKey = `create-property-${user.id}`;
+    const { allowed, retryAfter } = checkRateLimit(rateLimitKey, RATE_LIMITS.CREATE_PROPERTY);
+    
+    if (!allowed) {
+      toast.error(`Du skapar fastigheter för snabbt. Vänta ${retryAfter} sekunder.`);
       return;
     }
 
