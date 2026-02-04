@@ -32,6 +32,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import TopLoadingBar from "@/components/TopLoadingBar";
 import { ComparisonFloatingButton } from "@/components/ComparisonFloatingButton";
 import { ComparisonModal } from "@/components/ComparisonModal";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
             <ScrollToTop />
             <ComparisonFloatingButton />
             <ComparisonModal />
+            <Analytics />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/logga-in" element={<Login />} />
