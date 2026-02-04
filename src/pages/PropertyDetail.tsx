@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { ViewingRegistrationForm } from "@/components/ViewingRegistrationForm";
+import { trackViewContent, trackLead, trackSchedule, trackShare as fbTrackShare } from "@/lib/facebookPixel";
 import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
@@ -82,19 +83,47 @@ const PropertyDetail = () => {
       const area = dbProperty.area || '';
       const price = dbProperty.price ? Number(dbProperty.price).toLocaleString('sv-SE') : '';
       const propertyType = dbProperty.type || 'Bostad';
+      const propertyImage = dbProperty.images?.[0] || 'https://www.barahem.se/og-image.png';
+      const propertyUrl = `https://www.barahem.se/fastighet/${id}`;
       
       // Uppdatera titel
-      document.title = `${address}${city ? `, ${city}` : ''} - Till salu | BaraHem`;
+      const fullTitle = `${address}${city ? `, ${city}` : ''} - Till salu | BaraHem`;
+      document.title = fullTitle;
       
       // Uppdatera meta description
-      let metaDescription = document.querySelector('meta[name="description"]');
-      if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.setAttribute('name', 'description');
-        document.head.appendChild(metaDescription);
-      }
       const descriptionText = `${propertyType}${rooms ? ` med ${rooms} rum` : ''}${area ? `, ${area} kvm` : ''} på ${address}${city ? ` i ${city}` : ''}.${price ? ` Pris: ${price} kr.` : ''} Se bilder och boka visning på BaraHem.`;
-      metaDescription.setAttribute('content', descriptionText);
+      
+      // Helper för att sätta meta-taggar
+      const setMeta = (name: string, content: string, property = false) => {
+        const attr = property ? 'property' : 'name';
+        let tag = document.querySelector(`meta[${attr}="${name}"]`);
+        if (!tag) {
+          tag = document.createElement('meta');
+          tag.setAttribute(attr, name);
+          document.head.appendChild(tag);
+        }
+        tag.setAttribute('content', content);
+      };
+
+      // Standard meta
+      setMeta('description', descriptionText);
+      
+      // Open Graph (för Facebook)
+      setMeta('og:title', fullTitle, true);
+      setMeta('og:description', descriptionText, true);
+      setMeta('og:image', propertyImage, true);
+      setMeta('og:image:width', '1200', true);
+      setMeta('og:image:height', '630', true);
+      setMeta('og:url', propertyUrl, true);
+      setMeta('og:type', 'website', true);
+      setMeta('og:site_name', 'BaraHem', true);
+      setMeta('og:locale', 'sv_SE', true);
+      
+      // Twitter Card
+      setMeta('twitter:card', 'summary_large_image');
+      setMeta('twitter:title', fullTitle);
+      setMeta('twitter:description', descriptionText);
+      setMeta('twitter:image', propertyImage);
 
       // Lägg till JSON-LD RealEstateListing schema
       let schemaScript = document.getElementById('property-schema');
@@ -148,11 +177,31 @@ const PropertyDetail = () => {
     
     return () => {
       document.title = 'BaraHem - Hitta ditt drömhem i Sverige';
-      // Återställ meta description
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', 'Sveriges modernaste fastighetsplattform. Utforska tusentals fastigheter till salu över hela Sverige – från storstäder till mindre orter. Hitta ditt nästa hem idag.');
-      }
+      const defaultDescription = 'Sveriges modernaste fastighetsplattform. Utforska tusentals fastigheter till salu över hela Sverige – från storstäder till mindre orter. Hitta ditt nästa hem idag.';
+      const defaultImage = 'https://www.barahem.se/og-image.png';
+      const defaultUrl = 'https://www.barahem.se';
+      
+      // Helper för att återställa meta-taggar
+      const setMeta = (name: string, content: string, property = false) => {
+        const attr = property ? 'property' : 'name';
+        const tag = document.querySelector(`meta[${attr}="${name}"]`);
+        if (tag) tag.setAttribute('content', content);
+      };
+
+      // Återställ standard meta
+      setMeta('description', defaultDescription);
+      
+      // Återställ Open Graph
+      setMeta('og:title', 'BaraHem - Hitta ditt drömhem i Sverige', true);
+      setMeta('og:description', defaultDescription, true);
+      setMeta('og:image', defaultImage, true);
+      setMeta('og:url', defaultUrl, true);
+      
+      // Återställ Twitter
+      setMeta('twitter:title', 'BaraHem - Hitta ditt drömhem i Sverige');
+      setMeta('twitter:description', defaultDescription);
+      setMeta('twitter:image', defaultImage);
+      
       // Ta bort property schema
       const schema = document.getElementById('property-schema');
       if (schema) schema.remove();
@@ -257,6 +306,19 @@ const PropertyDetail = () => {
     };
     fetchProperty();
   }, [id, lastPropertyChange]);
+
+  // Facebook Pixel tracking när fastigheten visas
+  useEffect(() => {
+    if (dbProperty && !loading) {
+      trackViewContent({
+        id: String(dbProperty.id),
+        title: dbProperty.address || dbProperty.title || 'Fastighet',
+        price: dbProperty.price ? Number(dbProperty.price) : undefined,
+        type: dbProperty.type,
+        city: dbProperty.city,
+      });
+    }
+  }, [dbProperty, loading]);
 
   // Call this after updating a property (t.ex. efter ändrat visningsdatum)
   const triggerPropertyRefetch = () => setLastPropertyChange(Date.now());
@@ -580,6 +642,8 @@ const PropertyDetail = () => {
         session_id: sessionId,
         share_method: method,
       });
+      // Track share to Facebook Pixel
+      fbTrackShare(method, String(id));
     } catch (error) {
       console.error('Error tracking share:', error);
     }

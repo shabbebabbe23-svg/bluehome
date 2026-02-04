@@ -1,5 +1,16 @@
 {
   "routes": [
+    {
+      "src": "/fastighet/([a-zA-Z0-9-]+)",
+      "dest": "/api/og-middleware",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Pinterest|Slackbot|TelegramBot|WhatsApp|Discordbot).*"
+        }
+      ]
+    },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
