@@ -1425,7 +1425,7 @@ const PropertyDetail = () => {
         <aside className="w-full">
           <div className="p-2 sm:p-4">
             <div className="border border-border rounded-lg bg-card overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <img src={bathroomAd} alt="Badrumrenovering" className="w-full h-32 sm:h-40 md:h-48 object-cover" />
+              <img src={bathroomAd} alt="Badrumrenovering" className="w-full h-32 sm:h-40 md:h-48 object-cover" loading="lazy" />
               <div className="p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3 md:space-y-4">
                 <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
                   Drömbadrum?

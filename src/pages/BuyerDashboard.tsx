@@ -53,8 +53,15 @@ import {
   Package,
   WashingMachine,
   Mountain,
-  Sun
+  Sun,
+  Info
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import loginHero from "@/assets/login-hero.jpg";
 
 interface Property {
@@ -166,39 +173,39 @@ const PROPERTY_TYPES = [
 
 const FEATURE_OPTIONS = [
   // Läge & Närhet
-  { key: 'wants_near_centrum', label: 'Nära centrum', icon: Building2, description: 'Centralt läge' },
-  { key: 'wants_near_school', label: 'Nära skola', icon: GraduationCap, description: 'Skola inom gångavstånd' },
-  { key: 'wants_near_daycare', label: 'Nära dagis', icon: Baby, description: 'Förskola inom gångavstånd' },
-  { key: 'wants_near_public_transport', label: 'Kollektivtrafik', icon: Train, description: 'Buss/tåg i närheten' },
+  { key: 'wants_near_centrum', label: 'Nära centrum', icon: Building2, description: 'Centralt läge', info: 'Vi filtrerar bostäder baserat på deras adress och visar objekt som ligger i eller nära stadscentrum.' },
+  { key: 'wants_near_school', label: 'Nära skola', icon: GraduationCap, description: 'Skola inom gångavstånd', info: 'Visar bostäder som har grundskolor och gymnasier inom bekvämt gångavstånd (ca 1 km).' },
+  { key: 'wants_near_daycare', label: 'Nära dagis', icon: Baby, description: 'Förskola inom gångavstånd', info: 'Filtrerar efter bostäder med förskolor och dagis i närheten - perfekt för småbarnsföräldrar.' },
+  { key: 'wants_near_public_transport', label: 'Kollektivtrafik', icon: Train, description: 'Buss/tåg i närheten', info: 'Visar bostäder med buss- eller tågstationer inom kort promenadavstånd (ca 500 meter).' },
   
   // Natur & Utsikt
-  { key: 'wants_near_nature', label: 'Nära natur', icon: Trees, description: 'Skog eller park i närheten' },
-  { key: 'wants_near_water', label: 'Nära vatten', icon: Waves, description: 'Sjö eller hav i närheten' },
-  { key: 'wants_sea_view', label: 'Sjöutsikt', icon: Eye, description: 'Utsikt över vatten' },
-  { key: 'wants_quiet_area', label: 'Lugnt område', icon: Mountain, description: 'Lugnt och fridfullt' },
+  { key: 'wants_near_nature', label: 'Nära natur', icon: Trees, description: 'Skog eller park i närheten', info: 'Filtrerar efter bostäder med skog, parker eller grönområden i närområdet.' },
+  { key: 'wants_near_water', label: 'Nära vatten', icon: Waves, description: 'Sjö eller hav i närheten', info: 'Visar endast bostäder som ligger nära sjö, hav, å eller annan vattenyta (max 1 km avstånd).' },
+  { key: 'wants_sea_view', label: 'Sjöutsikt', icon: Eye, description: 'Utsikt över vatten', info: 'Filtrerar efter bostäder där mäklaren angett att det finns utsikt över vatten.' },
+  { key: 'wants_quiet_area', label: 'Lugnt område', icon: Mountain, description: 'Lugnt och fridfullt', info: 'Visar bostäder i områden med lägre bullernivåer, borta från trafik och industri.' },
   
   // Utomhus & Ljus
-  { key: 'wants_balcony', label: 'Balkong', icon: DoorOpen, description: 'Balkong eller uteplats' },
-  { key: 'wants_garden', label: 'Trädgård', icon: Trees, description: 'Egen trädgård' },
-  { key: 'wants_south_facing', label: 'Söderläge', icon: Sun, description: 'Sol på balkong/uteplats' },
+  { key: 'wants_balcony', label: 'Balkong', icon: DoorOpen, description: 'Balkong eller uteplats', info: 'Filtrerar efter bostäder som har balkong, terrass eller uteplats.' },
+  { key: 'wants_garden', label: 'Trädgård', icon: Trees, description: 'Egen trädgård', info: 'Visar bostäder med tillgång till egen trädgård eller tomt.' },
+  { key: 'wants_south_facing', label: 'Söderläge', icon: Sun, description: 'Sol på balkong/uteplats', info: 'Filtrerar efter bostäder där balkong eller uteplats vetter mot söder för maximalt solljus.' },
   
   // Inomhus & Komfort
-  { key: 'wants_fireplace', label: 'Öppen spis', icon: Flame, description: 'Öppen spis eller kamin' },
-  { key: 'wants_sauna', label: 'Bastu', icon: Droplets, description: 'Bastu i bostaden/föreningen' },
-  { key: 'wants_elevator', label: 'Hiss', icon: Building2, description: 'Hiss i byggnaden' },
+  { key: 'wants_fireplace', label: 'Öppen spis', icon: Flame, description: 'Öppen spis eller kamin', info: 'Visar bostäder som har öppen spis, braskamin eller liknande.' },
+  { key: 'wants_sauna', label: 'Bastu', icon: Droplets, description: 'Bastu i bostaden/föreningen', info: 'Filtrerar efter bostäder med egen bastu eller tillgång till gemensam bastu i föreningen.' },
+  { key: 'wants_elevator', label: 'Hiss', icon: Building2, description: 'Hiss i byggnaden', info: 'Visar endast lägenheter i byggnader med hiss - viktigt för tillgänglighet.' },
   
   // Parkering & Bil
-  { key: 'wants_parking', label: 'Parkering', icon: ParkingCircle, description: 'Parkeringsplats' },
-  { key: 'wants_garage', label: 'Garage', icon: Car, description: 'Garage eller carport' },
-  { key: 'wants_ev_charging', label: 'Laddstolpe', icon: Plug, description: 'Laddning för elbil' },
+  { key: 'wants_parking', label: 'Parkering', icon: ParkingCircle, description: 'Parkeringsplats', info: 'Filtrerar efter bostäder med parkeringsplats (egen eller i garage).' },
+  { key: 'wants_garage', label: 'Garage', icon: Car, description: 'Garage eller carport', info: 'Visar bostäder som inkluderar garage, carport eller uppvärmt garage.' },
+  { key: 'wants_ev_charging', label: 'Laddstolpe', icon: Plug, description: 'Laddning för elbil', info: 'Filtrerar efter bostäder med laddstolpe för elbil eller möjlighet att installera sådan.' },
   
   // Förvaring & Service
-  { key: 'wants_storage', label: 'Förråd', icon: Package, description: 'Förrådsutrymme' },
-  { key: 'wants_laundry', label: 'Tvättstuga', icon: WashingMachine, description: 'Gemensam tvättstuga' },
+  { key: 'wants_storage', label: 'Förråd', icon: Package, description: 'Förrådsutrymme', info: 'Visar bostäder med förråd eller extra förvaringsutrymme.' },
+  { key: 'wants_laundry', label: 'Tvättstuga', icon: WashingMachine, description: 'Gemensam tvättstuga', info: 'Filtrerar efter bostäder med tillgång till gemensam tvättstuga i föreningen.' },
   
   // Övrigt
-  { key: 'wants_pet_friendly', label: 'Husdjursvänligt', icon: Dog, description: 'Tillåter husdjur' },
-  { key: 'wants_new_production', label: 'Nyproduktion', icon: Sparkles, description: 'Nybyggda bostäder' },
+  { key: 'wants_pet_friendly', label: 'Husdjursvänligt', icon: Dog, description: 'Tillåter husdjur', info: 'Visar bostäder där husdjur är tillåtna enligt föreningens regler.' },
+  { key: 'wants_new_production', label: 'Nyproduktion', icon: Sparkles, description: 'Nybyggda bostäder', info: 'Filtrerar efter nyproducerade bostäder - helt nybyggda eller under produktion.' },
 ];
 
 const BuyerDashboard = () => {
@@ -1025,41 +1032,64 @@ const BuyerDashboard = () => {
                   Viktiga egenskaper
                 </CardTitle>
                 <CardDescription>
-                  Bocka i de egenskaper som är viktiga för dig
+                  Bocka i de egenskaper som är viktiga för dig. Klicka på <Info className="w-3 h-3 inline" /> för mer information.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {FEATURE_OPTIONS.map((option) => {
-                    const Icon = option.icon;
-                    const isActive = preferences?.[option.key as keyof BuyerPreferences] as boolean;
-                    
-                    return (
-                      <div
-                        key={option.key}
-                        onClick={() => toggleFeature(option.key as keyof BuyerPreferences)}
-                        className={`
-                          flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all
-                          ${isActive 
-                            ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
-                            : 'border-border hover:border-muted-foreground/50 hover:bg-accent'
-                          }
-                        `}
-                      >
-                        <div className={`p-2 rounded-full ${isActive ? 'bg-green-500/20' : 'bg-muted'}`}>
-                          <Icon className={`w-5 h-5 ${isActive ? 'text-green-600' : 'text-muted-foreground'}`} />
+                <TooltipProvider delayDuration={200}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {FEATURE_OPTIONS.map((option) => {
+                      const Icon = option.icon;
+                      const isActive = preferences?.[option.key as keyof BuyerPreferences] as boolean;
+                      
+                      return (
+                        <div
+                          key={option.key}
+                          className={`
+                            flex items-center gap-3 p-4 rounded-lg border-2 transition-all relative
+                            ${isActive 
+                              ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
+                              : 'border-border hover:border-muted-foreground/50 hover:bg-accent'
+                            }
+                          `}
+                        >
+                          {/* Info button */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                onClick={(e) => e.stopPropagation()}
+                                className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted/80 transition-colors z-10"
+                              >
+                                <Info className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-sm">
+                              <p>{option.info}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          
+                          {/* Clickable area for toggling */}
+                          <div 
+                            onClick={() => toggleFeature(option.key as keyof BuyerPreferences)}
+                            className="flex items-center gap-3 flex-1 cursor-pointer"
+                          >
+                            <div className={`p-2 rounded-full ${isActive ? 'bg-green-500/20' : 'bg-muted'}`}>
+                              <Icon className={`w-5 h-5 ${isActive ? 'text-green-600' : 'text-muted-foreground'}`} />
+                            </div>
+                            <div className="flex-1 pr-6">
+                              <p className={`font-medium ${isActive ? 'text-green-700 dark:text-green-400' : ''}`}>
+                                {option.label}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{option.description}</p>
+                            </div>
+                            <Checkbox checked={isActive} className="pointer-events-none" />
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className={`font-medium ${isActive ? 'text-green-700 dark:text-green-400' : ''}`}>
-                            {option.label}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{option.description}</p>
-                        </div>
-                        <Checkbox checked={isActive} className="pointer-events-none" />
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                </TooltipProvider>
                 
                 {/* Clear preferences button */}
                 {getActivePreferencesCount() > 0 && (

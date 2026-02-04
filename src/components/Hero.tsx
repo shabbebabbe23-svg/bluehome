@@ -564,7 +564,7 @@ const Hero = ({ onFinalPricesChange, onPropertyTypeChange, onSearchAddressChange
                             className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 border-b border-border ${index === agentHighlightedIndex ? 'bg-primary/10' : 'hover:bg-muted'}`}
                           >
                             {agency.logo_url ? (
-                              <img src={agency.logo_url} alt={agency.name} className="w-6 h-6 object-contain rounded" />
+                              <img src={agency.logo_url} alt={agency.name} className="w-6 h-6 object-contain rounded" loading="lazy" />
                             ) : (
                               <Building className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                             )}
