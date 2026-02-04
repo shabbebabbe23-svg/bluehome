@@ -259,20 +259,20 @@ const PropertyCard = ({
 
   // Different truncation lengths for different screen sizes
   const truncatedListDescriptionShort = description
-    ? description.length > 80
-      ? `${description.slice(0, 80)}…`
+    ? description.length > 65
+      ? `${description.slice(0, 65)}…`
       : description
     : "";
 
   const truncatedListDescriptionMedium = description
-    ? description.length > 150
-      ? `${description.slice(0, 150)}…`
+    ? description.length > 100
+      ? `${description.slice(0, 100)}…`
       : description
     : "";
 
   const truncatedListDescriptionLong = description
-    ? description.length > 254
-      ? `${description.slice(0, 254)}…`
+    ? description.length > 160
+      ? `${description.slice(0, 160)}…`
       : description
     : "";
 
@@ -494,35 +494,35 @@ const PropertyCard = ({
 
             {/* Bottom row: Details and Days on market */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1 mt-1.5 sm:mt-2 min-w-0">
-              <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-lg text-muted-foreground font-semibold min-w-0 overflow-hidden flex-nowrap">
+              <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 xl:gap-3 text-[11px] sm:text-xs lg:text-sm xl:text-base text-muted-foreground font-semibold min-w-0 overflow-hidden flex-nowrap">
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bed className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  <Bed className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                   <span className="whitespace-nowrap">{bedrooms} rum</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Bath className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  <Bath className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                   <span className="whitespace-nowrap">{bathrooms}</span>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <Square className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  <Square className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 xl:w-5 xl:h-5" />
                   <span className="whitespace-nowrap">{area} m²</span>
                 </div>
                 {viewCount !== undefined && (
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <Eye className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-500" />
+                    <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-500" />
                     <span className="whitespace-nowrap text-blue-600">{viewCount}</span>
                   </div>
                 )}
               </div>
-              <div className="flex items-center justify-between w-full sm:w-auto gap-2 sm:gap-3">
-                <p className="text-xs sm:text-base font-semibold text-muted-foreground whitespace-nowrap">
+              <div className="flex items-center justify-between w-full sm:w-auto gap-1 sm:gap-1.5 lg:gap-2">
+                <p className="text-[11px] sm:text-xs lg:text-sm xl:text-base font-semibold text-muted-foreground whitespace-nowrap">
                   {isSold && soldDate
                     ? `Såld ${new Date(soldDate).toLocaleDateString("sv-SE", { day: "numeric", month: "short" })}`
                     : daysOnMarketText
                   }
                 </p>
                 <Link to={`/fastighet/${id}`} onClick={handleNavigateToDetail} className="z-20 ml-auto">
-                  <Button className="bg-primary hover:bg-hero-gradient text-white text-sm sm:text-base px-4 py-1.5 h-8 sm:h-9">
+                  <Button className="bg-primary hover:bg-hero-gradient text-white text-[11px] sm:text-xs lg:text-sm px-2 sm:px-3 lg:px-4 py-1 h-6 sm:h-7 lg:h-8">
                     Visa objekt
                   </Button>
                 </Link>
