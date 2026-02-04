@@ -2,6 +2,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { inject } from "@vercel/analytics";
+
+// Initiera Vercel Analytics
+inject();
 
 // Preload a few critical vendor logos early to avoid flicker
 import logo1 from "@/assets/logo-1.svg";

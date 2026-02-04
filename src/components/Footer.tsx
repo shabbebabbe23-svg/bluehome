@@ -139,13 +139,13 @@ const Footer = () => {
             © 2024 BaraHem. Alla rättigheter förbehållna.
           </p>
           <div className="flex gap-4 md:gap-6 text-sm md:text-base">
-            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+            <a href="/integritet" className="text-white/60 hover:text-primary-glow transition-colors">
               Integritet
             </a>
-            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+            <a href="/villkor" className="text-white/60 hover:text-primary-glow transition-colors">
               Villkor
             </a>
-            <a href="#" className="text-white/60 hover:text-primary-glow transition-colors">
+            <a href="/cookies" className="text-white/60 hover:text-primary-glow transition-colors">
               Cookies
             </a>
           </div>
