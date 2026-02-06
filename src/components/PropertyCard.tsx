@@ -138,8 +138,14 @@ const PropertyCard = ({
   const images = [image, hoverImage].filter(Boolean) as string[];
 
   // Swipe hint state - show once per session on cards with multiple images
+  // Use ?showSwipeHint=true in URL to force show the hint for testing
   const [showHint, setShowHint] = useState(() => {
     if (allImages.length <= 1) return false;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showSwipeHint') === 'true') {
+      sessionStorage.removeItem('hasSeenSwipeHint');
+      return true;
+    }
     const hasSeenHint = sessionStorage.getItem('hasSeenSwipeHint');
     return !hasSeenHint;
   });
@@ -696,8 +702,8 @@ const PropertyCard = ({
               </div>
               {/* Swipe hint overlay - only visible on mobile */}
               {showHint && (
-                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 pointer-events-none z-50 ${hintFading ? 'opacity-0' : 'opacity-100'}`}>
-                  <div className="flex items-center gap-2 text-white text-base font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 pointer-events-none z-[100] bg-black/30 ${hintFading ? 'opacity-0' : 'opacity-100'}`}>
+                  <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full text-white text-base font-semibold shadow-lg">
                     <ChevronLeft className="w-6 h-6 animate-pulse" />
                     <span>Swipa för fler bilder</span>
                     <ChevronRight className="w-6 h-6 animate-pulse" />
