@@ -60,6 +60,7 @@ interface PropertyCardProps {
   tagline?: string;
   onEditClick?: () => void;
   viewCount?: number;
+  showSwipeHint?: boolean;
 }
 
 const PropertyCard = ({
@@ -113,6 +114,7 @@ const PropertyCard = ({
   tagline,
   onEditClick,
   viewCount,
+  showSwipeHint = false,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
@@ -134,6 +136,31 @@ const PropertyCard = ({
 
   // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
+
+  // Swipe hint state - show once per session on cards with multiple images
+  const [showHint, setShowHint] = useState(() => {
+    if (allImages.length <= 1) return false;
+    const hasSeenHint = sessionStorage.getItem('hasSeenSwipeHint');
+    return !hasSeenHint;
+  });
+  const [hintFading, setHintFading] = useState(false);
+
+  // Hide swipe hint after 3.5 seconds with fade-out
+  useEffect(() => {
+    if (!showHint) return;
+    // Mark as seen immediately when hint shows
+    sessionStorage.setItem('hasSeenSwipeHint', 'true');
+    const fadeTimer = setTimeout(() => {
+      setHintFading(true);
+    }, 3000);
+    const hideTimer = setTimeout(() => {
+      setShowHint(false);
+    }, 3500);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [showHint]);
 
   // Add non-passive touchmove listener to allow preventDefault for horizontal swipes
   useEffect(() => {
@@ -170,7 +197,15 @@ const PropertyCard = ({
     setIsSwiping(true);
     setIsHorizontalSwipe(null);
     isHorizontalSwipeRef.current = null;
-  }, []);
+    // Hide swipe hint when user starts touching
+    if (showHint) {
+      setHintFading(true);
+      setTimeout(() => {
+        setShowHint(false);
+        sessionStorage.setItem('hasSeenSwipeHint', 'true');
+      }, 300);
+    }
+  }, [showHint]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchStartX.current || !touchStartY.current || !containerRef.current) return;
@@ -659,6 +694,16 @@ const PropertyCard = ({
                   />
                 ))}
               </div>
+              {/* Swipe hint overlay - only visible on mobile */}
+              {showHint && (
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 pointer-events-none z-50 ${hintFading ? 'opacity-0' : 'opacity-100'}`}>
+                  <div className="flex items-center gap-2 text-white text-base font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    <ChevronLeft className="w-6 h-6 animate-pulse" />
+                    <span>Swipa för fler bilder</span>
+                    <ChevronRight className="w-6 h-6 animate-pulse" />
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             // Single image (original hover effect)

@@ -1254,6 +1254,7 @@ const PropertyGrid = ({ showFinalPrices = false, propertyType = "", searchAddres
                   brfDebtPerSqm={property.brf_debt_per_sqm}
                   viewCount={viewCounts[property.id as string]}
                   onEditClick={isOwnProperty ? () => navigate(`/maklare?edit=${property.id}`) : undefined}
+                  showSwipeHint={index === 0}
                 />
               </div>
             );
