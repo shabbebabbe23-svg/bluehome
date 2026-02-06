@@ -3,7 +3,7 @@ import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User,
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useComparison } from "@/contexts/ComparisonContext";
@@ -116,6 +116,7 @@ const PropertyCard = ({
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
+  const navigate = useNavigate();
   const isFavorite = isFavoriteHook(String(id));
   const isComparing = isInComparison(String(id));
 
@@ -210,6 +211,19 @@ const PropertyCard = ({
 
     const swipeThreshold = 15; // Percentage threshold to trigger slide (lowered for easier swiping)
 
+    // If it was a tap (no significant horizontal movement), navigate to detail page
+    if (isHorizontalSwipeRef.current === null || Math.abs(swipeOffset) < 3) {
+      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+      navigate(`/fastighet/${id}`);
+      setSwipeOffset(0);
+      setIsSwiping(false);
+      setIsHorizontalSwipe(null);
+      isHorizontalSwipeRef.current = null;
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return;
+    }
+
     if (isHorizontalSwipeRef.current && Math.abs(swipeOffset) > swipeThreshold) {
       if (swipeOffset < 0) {
         // Swipe left - next image or loop to first
@@ -226,7 +240,7 @@ const PropertyCard = ({
     isHorizontalSwipeRef.current = null;
     touchStartX.current = null;
     touchStartY.current = null;
-  }, [swipeOffset, allImages.length]);
+  }, [swipeOffset, allImages.length, navigate, id]);
 
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -573,7 +587,7 @@ const PropertyCard = ({
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none touch-pan-y"
+          className={`w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none ${allImages.length > 1 ? 'z-40 touch-none' : ''}`}
           style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
           onTouchStart={allImages.length > 1 ? handleTouchStart : undefined}
           onTouchMove={allImages.length > 1 ? handleTouchMove : undefined}
