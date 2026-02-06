@@ -3,7 +3,7 @@ import { Heart, MapPin, Bed, Bath, Square, Calendar, FileSignature, Gavel, User,
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useComparison } from "@/contexts/ComparisonContext";
@@ -60,6 +60,7 @@ interface PropertyCardProps {
   tagline?: string;
   onEditClick?: () => void;
   viewCount?: number;
+  showSwipeHint?: boolean;
 }
 
 const PropertyCard = ({
@@ -113,9 +114,11 @@ const PropertyCard = ({
   tagline,
   onEditClick,
   viewCount,
+  showSwipeHint = false,
 }: PropertyCardProps) => {
   const { toggleFavorite, isFavorite: isFavoriteHook } = useFavorites();
   const { toggleComparison, isInComparison, canAddMore } = useComparison();
+  const navigate = useNavigate();
   const isFavorite = isFavoriteHook(String(id));
   const isComparing = isInComparison(String(id));
 
@@ -133,6 +136,37 @@ const PropertyCard = ({
 
   // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
+
+  // Swipe hint state - show once per session on cards with multiple images
+  // Use ?showSwipeHint=true in URL to force show the hint for testing
+  const [showHint, setShowHint] = useState(() => {
+    if (allImages.length <= 1) return false;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showSwipeHint') === 'true') {
+      sessionStorage.removeItem('hasSeenSwipeHint');
+      return true;
+    }
+    const hasSeenHint = sessionStorage.getItem('hasSeenSwipeHint');
+    return !hasSeenHint;
+  });
+  const [hintFading, setHintFading] = useState(false);
+
+  // Hide swipe hint after 3.5 seconds with fade-out
+  useEffect(() => {
+    if (!showHint) return;
+    // Mark as seen immediately when hint shows
+    sessionStorage.setItem('hasSeenSwipeHint', 'true');
+    const fadeTimer = setTimeout(() => {
+      setHintFading(true);
+    }, 3000);
+    const hideTimer = setTimeout(() => {
+      setShowHint(false);
+    }, 3500);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [showHint]);
 
   // Add non-passive touchmove listener to allow preventDefault for horizontal swipes
   useEffect(() => {
@@ -169,7 +203,15 @@ const PropertyCard = ({
     setIsSwiping(true);
     setIsHorizontalSwipe(null);
     isHorizontalSwipeRef.current = null;
-  }, []);
+    // Hide swipe hint when user starts touching
+    if (showHint) {
+      setHintFading(true);
+      setTimeout(() => {
+        setShowHint(false);
+        sessionStorage.setItem('hasSeenSwipeHint', 'true');
+      }, 300);
+    }
+  }, [showHint]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchStartX.current || !touchStartY.current || !containerRef.current) return;
@@ -210,6 +252,19 @@ const PropertyCard = ({
 
     const swipeThreshold = 15; // Percentage threshold to trigger slide (lowered for easier swiping)
 
+    // If it was a tap (no significant horizontal movement), navigate to detail page
+    if (isHorizontalSwipeRef.current === null || Math.abs(swipeOffset) < 3) {
+      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+      navigate(`/fastighet/${id}`);
+      setSwipeOffset(0);
+      setIsSwiping(false);
+      setIsHorizontalSwipe(null);
+      isHorizontalSwipeRef.current = null;
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return;
+    }
+
     if (isHorizontalSwipeRef.current && Math.abs(swipeOffset) > swipeThreshold) {
       if (swipeOffset < 0) {
         // Swipe left - next image or loop to first
@@ -226,7 +281,7 @@ const PropertyCard = ({
     isHorizontalSwipeRef.current = null;
     touchStartX.current = null;
     touchStartY.current = null;
-  }, [swipeOffset, allImages.length]);
+  }, [swipeOffset, allImages.length, navigate, id]);
 
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -573,7 +628,7 @@ const PropertyCard = ({
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className="w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none touch-pan-y"
+          className={`w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none ${allImages.length > 1 ? 'z-40 touch-none' : ''}`}
           style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
           onTouchStart={allImages.length > 1 ? handleTouchStart : undefined}
           onTouchMove={allImages.length > 1 ? handleTouchMove : undefined}
@@ -645,6 +700,16 @@ const PropertyCard = ({
                   />
                 ))}
               </div>
+              {/* Swipe hint overlay - only visible on mobile */}
+              {showHint && (
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 pointer-events-none z-[100] bg-black/30 ${hintFading ? 'opacity-0' : 'opacity-100'}`}>
+                  <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full text-white text-base font-semibold shadow-lg">
+                    <ChevronLeft className="w-6 h-6 animate-pulse" />
+                    <span>Swipa för fler bilder</span>
+                    <ChevronRight className="w-6 h-6 animate-pulse" />
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             // Single image (original hover effect)
