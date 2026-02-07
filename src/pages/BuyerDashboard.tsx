@@ -670,7 +670,7 @@ const BuyerDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 py-20 sm:py-24">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,45%)] bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,50%)] bg-clip-text text-transparent mb-2">
             Mina önskemål
           </h1>
           <p className="text-white/90 text-xl">

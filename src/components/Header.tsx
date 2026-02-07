@@ -175,7 +175,7 @@ const Header = () => {
 
               {/* Text is always a link to home */}
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-serif font-bold bg-hero-gradient bg-clip-text text-transparent tracking-tight">
                   BaraHem
                 </span>
               </Link>
@@ -219,7 +219,7 @@ const Header = () => {
               <div className={`flex items-center gap-1 lg:gap-2 xl:gap-3 px-2 xl:px-4 py-1 lg:py-1.5 xl:py-2 rounded-full backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                 {/* Profile Avatar */}
                 <Link to={userType === "maklare" ? "/maklare?tab=profile" : "#"} className="hover:scale-110 transition-transform relative">
-                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,50%)] to-[hsl(142,76%,50%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
+                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,45%)] to-[hsl(142,76%,40%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
                   <Avatar className="relative w-7 h-7 lg:w-8 lg:h-8 xl:w-9 xl:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                     <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
                     <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs xl:text-sm font-bold">
@@ -293,8 +293,8 @@ const Header = () => {
               >
                 <defs>
                   <linearGradient id="mobileMenuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#0276B1" />
-                    <stop offset="100%" stopColor="#12873D" />
+                    <stop offset="0%" stopColor="hsl(200, 98%, 35%)" />
+                    <stop offset="100%" stopColor="hsl(142, 76%, 30%)" />
                   </linearGradient>
                 </defs>
                 <path d="M4 6h16M4 12h16M4 18h16" stroke="url(#mobileMenuGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:stroke-[3]" />
@@ -310,8 +310,8 @@ const Header = () => {
               >
                 <defs>
                   <linearGradient id="mobileCloseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#0276B1" />
-                    <stop offset="100%" stopColor="#12873D" />
+                    <stop offset="0%" stopColor="hsl(200, 98%, 35%)" />
+                    <stop offset="100%" stopColor="hsl(142, 76%, 30%)" />
                   </linearGradient>
                 </defs>
                 <path d="M18 6L6 18M6 6l12 12" stroke="url(#mobileCloseGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:stroke-[3]" />
@@ -337,7 +337,7 @@ const Header = () => {
               <div className={`flex items-center justify-center gap-3 px-4 py-3 mx-4 rounded-lg backdrop-blur-sm border-2 transition-all ${userType === "superadmin" ? "bg-gradient-to-r from-[hsl(200,98%,35%)]/20 to-[hsl(142,76%,30%)]/20 border-[hsl(200,98%,35%)]/60 shadow-lg shadow-[hsl(200,98%,35%)]/30" : "bg-white/10 border-white/30"}`}>
                 {/* Mobile Profile Avatar */}
                 <div className="relative">
-                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,50%)] to-[hsl(142,76%,50%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
+                  <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[hsl(200,98%,45%)] to-[hsl(142,76%,40%)] opacity-100 blur-[3px] animate-[pulse_1s_ease-in-out_infinite]"></div>
                   <Avatar className="relative w-10 h-10" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                     <AvatarImage src={avatarUrl || undefined} alt={profileName || "Profil"} />
                     <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-sm font-bold">
@@ -446,9 +446,9 @@ const Header = () => {
             </Link>
 
             <Link to={isCommercialPage ? "/" : "/foretag"} className="px-4">
-              <Button variant="outline" className={`text-base w-full ${isCommercialPage ? 'bg-gradient-to-r from-blue-600 to-green-600 border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' : 'bg-black border-black hover:bg-black/90'}`}>
+              <Button variant="outline" className={`text-base w-full ${isCommercialPage ? 'bg-gradient-to-r from-primary to-secondary border-none text-white hover:from-blue-700 hover:to-green-700 font-bold' : 'bg-black border-black hover:bg-black/90'}`}>
                 {isCommercialPage ? "Privat" : (
-                  <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-bold">
+                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold">
                     Företag
                   </span>
                 )}

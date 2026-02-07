@@ -12,6 +12,10 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      serif: ['Playfair Display', 'Georgia', 'serif'],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",

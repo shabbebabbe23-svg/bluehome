@@ -753,13 +753,13 @@ const PropertyDetail = () => {
               className="relative ml-1 sm:ml-2"
               title={user ? "Min profil" : `Mäklare: ${agentProfile?.full_name || 'Okänd'}`}
             >
-              <div className="absolute -inset-0.5 sm:-inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+              <div className="absolute -inset-0.5 sm:-inset-1 rounded-full bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
               <Avatar className="relative w-7 h-7 sm:w-9 sm:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
                 <AvatarImage
                   src={(user ? avatarUrl : agentProfile?.avatar_url) || undefined}
                   alt={(user ? profileName : agentProfile?.full_name) || "Profil"}
                 />
-                <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white text-xs sm:text-sm font-bold">
                   {(user ? profileName : agentProfile?.full_name)
                     ? (user ? profileName : agentProfile?.full_name).split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
                     : <User className="w-4 h-4" />}

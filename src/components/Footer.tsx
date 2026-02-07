@@ -19,7 +19,7 @@ const Footer = () => {
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#footerHomeGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 <polyline points="9 22 9 12 15 12 15 22" stroke="url(#footerHomeGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-2xl font-bold">BaraHem</span>
+              <span className="text-2xl font-serif font-bold tracking-tight">BaraHem</span>
             </div>
             <p className="text-white/80">
               En helt ny plattform för bostadsmarknaden med innovativa funktioner och tjänster. 
@@ -79,13 +79,13 @@ const Footer = () => {
                 href="mailto:info@barahem.se" 
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] rounded p-0.5">
                   <Mail className="w-full h-full text-white" />
                 </div>
                 <span>info@barahem.se</span>
               </a>
               <div className="flex items-center gap-3">
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] rounded p-0.5">
                   <MapPin className="w-full h-full text-white" />
                 </div>
                 <span className="text-white/80">Stockholm, Sverige</span>
@@ -103,7 +103,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] rounded p-0.5">
                   <Facebook className="w-full h-full text-white" />
                 </div>
                 <span>Facebook</span>
@@ -114,7 +114,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] rounded p-0.5">
                   <Linkedin className="w-full h-full text-white" />
                 </div>
                 <span>LinkedIn</span>
@@ -125,7 +125,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,39%)] to-[hsl(142,76%,36%)] rounded p-0.5">
+                <div className="w-5 h-5 bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] rounded p-0.5">
                   <Instagram className="w-full h-full text-white" />
                 </div>
                 <span>barahem.se</span>

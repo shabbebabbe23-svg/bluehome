@@ -738,7 +738,7 @@ const SuperAdminDashboard = () => {
 
           <Button
             size="default"
-            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] hover:opacity-90 transition-opacity text-white border-0 text-sm sm:text-base"
+            className="gap-2 w-full sm:w-auto bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] hover:opacity-90 transition-opacity text-white border-0 text-sm sm:text-base"
             onClick={() => navigate("/skapa-byra-manuellt")}
           >
             <Plus className="w-4 h-4" />
@@ -1059,7 +1059,7 @@ const SuperAdminDashboard = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleShowUsers(agency)}
-                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] hover:text-white hover:border-transparent transition-all"
+                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(30,40%,50%)] hover:to-[hsl(25,50%,40%)] hover:text-white hover:border-transparent transition-all"
                           >
                             <Users className="w-4 h-4" />
                             Visa användare
@@ -1071,7 +1071,7 @@ const SuperAdminDashboard = () => {
                               setEditingAgency(agency);
                               setIsEditDialogOpen(true);
                             }}
-                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] hover:text-white hover:border-transparent transition-all"
+                            className="gap-2 hover:bg-gradient-to-r hover:from-[hsl(30,40%,50%)] hover:to-[hsl(25,50%,40%)] hover:text-white hover:border-transparent transition-all"
                           >
                             <Pencil className="w-4 h-4" />
                             Redigera
@@ -1129,7 +1129,7 @@ const SuperAdminDashboard = () => {
                           key={agency.agency_id}
                           className="flex items-center gap-4 p-3 rounded-lg bg-accent/5 border"
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white font-bold">
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white font-bold">
                             {index + 1}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -1169,7 +1169,7 @@ const SuperAdminDashboard = () => {
                           key={agent.agent_id}
                           className="flex items-center gap-4 p-3 rounded-lg bg-accent/5 border"
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white font-bold">
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white font-bold">
                             {index + 1}
                           </div>
                           <div className="flex-1 min-w-0">
