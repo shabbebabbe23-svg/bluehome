@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         short_name: 'BaraHem',
         description: 'Sveriges modernaste fastighetsplattform',
         theme_color: '#0077B6',
-        background_color: '#ffffff',
+        background_color: '#F5EEE5',
         display: 'standalone',
         scope: '/',
         start_url: '/',

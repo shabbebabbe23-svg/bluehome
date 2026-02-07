@@ -5,10 +5,10 @@
 /* Design system variables and base utilities */
 @layer base {
   :root {
-    --background: 40 33% 97%;
+    --background: 35 47% 92%;
     --foreground: 220 20% 14%;
 
-    --card: 40 30% 99%;
+    --card: 36 40% 95%;
     --card-foreground: 220 20% 14%;
 
     --popover: 40 30% 99%;
@@ -41,13 +41,13 @@
     --hero-gradient-dark: linear-gradient(135deg, hsl(200 60% 18%), hsl(142 50% 14%));
     --property-shadow: 0 10px 40px -10px hsl(200 98% 35% / 0.1);
     --property-hover-shadow: 0 20px 60px -10px hsl(200 98% 35% / 0.2);
-    --glass-bg: hsl(40 30% 99% / 0.85);
-    --property-bg: hsl(40 30% 99%);
+    --glass-bg: hsl(35 44% 95% / 0.85);
+    --property-bg: hsl(36 40% 95%);
     --success: 142 76% 30%;
     --warning: 38 92% 50%;
-    --main-gradient: linear-gradient(135deg, hsl(40 33% 96%), hsl(40 25% 93%));
+    --main-gradient: linear-gradient(135deg, hsl(35 47% 92%), hsl(34 42% 89%));
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 35 47% 92%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -132,7 +132,7 @@
   }
 
   .bg-white {
-    background-color: hsl(40 30% 99% / 0.95) !important;
+    background-color: hsl(36 38% 96% / 0.95) !important;
   }
 }
 
