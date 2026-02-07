@@ -189,7 +189,7 @@ const PropertyDetailMap = ({ address, location }: PropertyDetailMapProps) => {
           </div>
           <Button 
             onClick={handleRouteSearch}
-            className="w-full hover:bg-gradient-to-r hover:from-[hsl(200,98%,35%)] hover:to-[hsl(142,76%,30%)] transition-all duration-300"
+            className="w-full hover:bg-gradient-to-r hover:from-[hsl(30,40%,50%)] hover:to-[hsl(25,50%,40%)] transition-all duration-300"
             disabled={!fromAddress || !toAddress}
           >
             Visa vägbeskrivning

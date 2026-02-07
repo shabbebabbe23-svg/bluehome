@@ -674,43 +674,46 @@ const AgentDashboard = () => {
   };
   return <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(${agentDashboardBg})` }}>
       {/* Header */}
-      <header className="border-b" style={{ background: 'var(--main-gradient)' }}>
-        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
+      <header className="border-b border-white/20 backdrop-blur-xl shadow-lg" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(240,253,244,0.8), rgba(224,242,254,0.85))' }}>
+        <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-5">
             {/* Back Arrow */}
-            <svg 
-              width="36" 
-              height="36" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
+            <button
               onClick={() => navigate('/')}
-              className="cursor-pointer hover:-translate-x-2 hover:scale-x-110 transition-all duration-300 ease-out origin-center flex-shrink-0"
+              className="w-10 h-10 rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm flex items-center justify-center hover:-translate-x-1 hover:shadow-md transition-all duration-300 ease-out group"
             >
-              <defs>
-                <linearGradient id="agentArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#agentArrowGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <Home className="hidden sm:block w-6 h-6 text-primary" />
-            <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-hero-gradient">Mäklarpanel</h1>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="agentArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: 'hsl(200 98% 35%)', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: 'hsl(142 76% 30%)', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="url(#agentArrowGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className="flex flex-col">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[hsl(30,40%,45%)] to-[hsl(25,50%,35%)]">
+                Mäklarpanel
+              </h1>
+              <span className="hidden sm:block text-xs text-muted-foreground/70 font-medium tracking-wide uppercase">
+                Hantera dina bostäder
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            {/* Profile Avatar with Glow */}
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] opacity-75 blur-md animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-              <Avatar className="relative w-8 h-8 xl:w-9 xl:h-9" style={{ boxShadow: '0 0 0 2px hsl(200, 98%, 35%), 0 0 0 4px hsl(142, 76%, 30%)' }}>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Profile Avatar */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] opacity-0 group-hover:opacity-60 blur-md transition-opacity duration-500"></div>
+              <Avatar className="relative w-9 h-9 xl:w-10 xl:h-10 ring-2 ring-white/80 shadow-md">
                 <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Profil"} />
-                <AvatarFallback className="bg-gradient-to-br from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] text-white text-xs sm:text-sm font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-[hsl(30,40%,55%)] to-[hsl(25,50%,45%)] text-white text-xs sm:text-sm font-semibold">
                   {profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
                 </AvatarFallback>
               </Avatar>
             </div>
-            <span className="hidden md:block text-xl bg-clip-text text-transparent bg-hero-gradient font-bold">{profile?.full_name || user?.email}</span>
-            <Button variant="destructive" size="sm" onClick={handleSignOut} className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 sm:px-4">
+            <span className="hidden md:block text-base font-semibold text-foreground/80">{profile?.full_name || user?.email}</span>
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium px-3 sm:px-4 rounded-xl transition-colors">
               <LogOut className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">Logga ut</span>
             </Button>
@@ -719,49 +722,50 @@ const AgentDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 bg-background/80 backdrop-blur-sm rounded-lg my-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Hantera fastigheter</CardTitle>
+      <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <Card className="bg-white/90 backdrop-blur-md border-white/40 shadow-xl shadow-black/5 rounded-2xl overflow-hidden">
+          <CardHeader className="pb-2 pt-6 px-6">
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground/90">Hantera fastigheter</CardTitle>
+            <p className="text-sm text-muted-foreground/70 mt-1">Skapa, redigera och följ upp dina bostäder</p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="flex flex-wrap w-full gap-0.5 p-0.5 h-auto bg-hero-gradient">
-                <TabsTrigger value="add" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
-                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+              <TabsList className="flex flex-wrap w-full gap-1 p-1 h-auto bg-muted/50 rounded-xl border border-border/50">
+                <TabsTrigger value="add" className="flex-1 min-w-[50px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 hover:bg-white/50 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm font-medium rounded-lg transition-all duration-200">
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="hidden sm:inline truncate">Ny bostad</span>
                   <span className="sm:hidden truncate">Ny</span>
                 </TabsTrigger>
-                <TabsTrigger value="existing" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
-                  <Home className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                <TabsTrigger value="existing" className="flex-1 min-w-[50px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 hover:bg-white/50 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm font-medium rounded-lg transition-all duration-200">
+                  <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="hidden sm:inline truncate">Aktiva</span>
                   <span className="sm:hidden truncate">Aktiva</span>
                 </TabsTrigger>
-                <TabsTrigger value="removed" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
-                  <Archive className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                <TabsTrigger value="removed" className="flex-1 min-w-[50px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 hover:bg-white/50 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm font-medium rounded-lg transition-all duration-200">
+                  <Archive className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="hidden sm:inline truncate">Borttagna</span>
                   <span className="sm:hidden truncate">Borttagna</span>
                 </TabsTrigger>
-                <TabsTrigger value="statistics" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
-                  <BarChart3 className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                <TabsTrigger value="statistics" className="flex-1 min-w-[50px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 hover:bg-white/50 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm font-medium rounded-lg transition-all duration-200">
+                  <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="hidden sm:inline truncate">Statistik</span>
                   <span className="sm:hidden truncate">Statistik</span>
                 </TabsTrigger>
-                <TabsTrigger value="profile" className="flex-1 min-w-[45px] gap-0.5 sm:gap-1 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20 flex-col sm:flex-row py-1.5 px-0.5 sm:px-2 text-[8px] sm:text-xs">
-                  <UserCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                <TabsTrigger value="profile" className="flex-1 min-w-[50px] gap-1 sm:gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 hover:bg-white/50 flex-col sm:flex-row py-2 px-1 sm:px-3 text-[9px] sm:text-sm font-medium rounded-lg transition-all duration-200">
+                  <UserCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="hidden sm:inline truncate">Profil</span>
                   <span className="sm:hidden truncate">Profil</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="add" className="mt-6">
+              <TabsContent value="add" className="mt-8">
                 <PropertyForm onSuccess={() => {
                 setActiveTab("existing");
                 toast.success("Fastighet tillagd!");
               }} />
               </TabsContent>
 
-              <TabsContent value="existing" className="mt-6 max-h-[calc(100vh-400px)] overflow-y-auto">
+              <TabsContent value="existing" className="mt-8 max-h-[calc(100vh-400px)] overflow-y-auto">
                 {isLoadingProperties ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-96" />)}
                   </div> : properties && properties.length > 0 ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -816,16 +820,22 @@ const AgentDashboard = () => {
                           </AlertDialog>
                         </div>
                       </div>)}
-                  </div> : <div className="text-center py-12">
-                    <Home className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Inga aktiva fastigheter</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Du har inga aktiva fastigheter för tillfället
+                  </div> : <div className="text-center py-16">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-green-500/10 flex items-center justify-center">
+                      <Home className="w-10 h-10 text-primary/40" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-foreground/80">Inga aktiva fastigheter</h3>
+                    <p className="text-muted-foreground/70 mb-6 max-w-sm mx-auto">
+                      Du har inga aktiva fastigheter för tillfället. Lägg till en ny bostad för att komma igång.
                     </p>
+                    <Button variant="outline" onClick={() => setActiveTab('add')} className="rounded-xl">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Lägg till bostad
+                    </Button>
                   </div>}
               </TabsContent>
 
-              <TabsContent value="removed" className="mt-6 max-h-[calc(100vh-400px)] overflow-y-auto">
+              <TabsContent value="removed" className="mt-8 max-h-[calc(100vh-400px)] overflow-y-auto">
                 <div className="mb-6">
                   {/* Year selector */}
                   <div className="max-w-xs">
@@ -881,21 +891,23 @@ const AgentDashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <Archive className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Inga borttagna fastigheter</h3>
-                    <p className="text-muted-foreground">
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-muted/80 to-muted flex items-center justify-center">
+                      <Archive className="w-10 h-10 text-muted-foreground/40" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-foreground/80">Inga borttagna fastigheter</h3>
+                    <p className="text-muted-foreground/70">
                       Du har inga borttagna fastigheter för år {selectedYear}
                     </p>
                   </div>
                 )}
               </TabsContent>
 
-              <TabsContent value="statistics" className="mt-6">
+              <TabsContent value="statistics" className="mt-8">
                 <AgentStatistics />
               </TabsContent>
 
-              <TabsContent value="profile" className="mt-6">
+              <TabsContent value="profile" className="mt-8">
                 <ProfileForm />
               </TabsContent>
             </Tabs>
@@ -905,18 +917,19 @@ const AgentDashboard = () => {
 
       {/* Edit Property Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Redigera fastighet</DialogTitle>
+            <DialogTitle className="text-xl font-bold tracking-tight">Redigera fastighet</DialogTitle>
+            <p className="text-sm text-muted-foreground/70">Uppdatera fastighetsinformation och bilder</p>
           </DialogHeader>
           {editingProperty && (
             <Tabs value={editDialogTab} onValueChange={setEditDialogTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4 p-1 bg-hero-gradient">
-                <TabsTrigger value="property" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
+              <TabsList className="grid w-full grid-cols-2 mb-6 p-1 bg-muted/50 rounded-xl border border-border/50">
+                <TabsTrigger value="property" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 rounded-lg font-medium transition-all duration-200">
                   <Pencil className="w-4 h-4" />
                   Fastighetsinfo
                 </TabsTrigger>
-                <TabsTrigger value="bidding" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary text-white hover:bg-white/20">
+                <TabsTrigger value="bidding" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground/80 rounded-lg font-medium transition-all duration-200">
                   <Gavel className="w-4 h-4" />
                   Budgivning
                 </TabsTrigger>
@@ -1175,7 +1188,7 @@ const AgentDashboard = () => {
                         setSoldPriceInput(editingProperty.price.toString());
                         setIsSoldDialogOpen(true);
                       }}
-                      className="w-full bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,36%)] text-white hover:opacity-90 border-0"
+                      className="w-full bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white hover:opacity-90 border-0"
                     >
                       Markera som såld
                     </Button>
@@ -1414,11 +1427,11 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 justify-end pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating}>
+              <div className="flex gap-3 justify-end pt-6 border-t border-border/50">
+                <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} disabled={isUpdating} className="rounded-xl px-6">
                   Avbryt
                 </Button>
-                <Button type="submit" disabled={isUpdating}>
+                <Button type="submit" disabled={isUpdating} className="rounded-xl px-6 bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white hover:opacity-90 shadow-md shadow-primary/20">
                   {isUpdating ? "Sparar..." : "Spara ändringar"}
                 </Button>
               </div>
@@ -1494,7 +1507,7 @@ const AgentDashboard = () => {
                         </div>
                       </div>
 
-                      <Button type="submit" className="w-full bg-hero-gradient hover:opacity-90 text-white shadow-lg transition-opacity">
+                      <Button type="submit" className="w-full bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] hover:opacity-90 text-white shadow-md shadow-primary/20 rounded-xl transition-all duration-200">
                         <Gavel className="w-4 h-4 mr-2" />
                         Lägg till bud
                       </Button>
@@ -1509,14 +1522,16 @@ const AgentDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     {!propertyBids || propertyBids.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Gavel className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>Inga bud registrerade ännu</p>
+                      <div className="text-center py-12 text-muted-foreground">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted/50 flex items-center justify-center">
+                          <Gavel className="w-8 h-8 text-muted-foreground/30" />
+                        </div>
+                        <p className="text-sm">Inga bud registrerade ännu</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
                         {propertyBids.map((bid: any) => (
-                          <div key={bid.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                          <div key={bid.id} className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-muted/30 hover:shadow-sm transition-all duration-200">
                             <div className="flex-1">
                               <div className="font-semibold text-lg">
                                 {bid.bid_amount.toLocaleString('sv-SE')} kr
@@ -1639,7 +1654,7 @@ const AgentDashboard = () => {
                   }
                 }}
                 disabled={isMarkingSold}
-                className="flex-1 bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,36%)] text-white hover:opacity-90"
+                className="flex-1 bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] text-white hover:opacity-90"
               >
                 {isMarkingSold ? "Sparar..." : "Bekräfta försäljning"}
               </Button>

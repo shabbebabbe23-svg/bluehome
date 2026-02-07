@@ -211,7 +211,7 @@ const InvitationAccept = () => {
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="url(#logoGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 <polyline points="9 22 9 12 15 12 15 22" stroke="url(#logoGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(200,98%,35%)] to-[hsl(142,76%,30%)] bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(30,40%,50%)] to-[hsl(25,50%,40%)] bg-clip-text text-transparent">
                 BaraHem
               </span>
             </div>
