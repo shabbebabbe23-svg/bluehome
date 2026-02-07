@@ -133,6 +133,7 @@ const PropertyCard = ({
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const swipeWasPerformedRef = useRef(false);
 
   // Auto-slide images state (for carousel mode)
   const images = [image, hoverImage].filter(Boolean) as string[];
@@ -203,6 +204,7 @@ const PropertyCard = ({
     setIsSwiping(true);
     setIsHorizontalSwipe(null);
     isHorizontalSwipeRef.current = null;
+    swipeWasPerformedRef.current = false;
     // Hide swipe hint when user starts touching
     if (showHint) {
       setHintFading(true);
@@ -250,28 +252,20 @@ const PropertyCard = ({
       return;
     }
 
-    const swipeThreshold = 15; // Percentage threshold to trigger slide (lowered for easier swiping)
+    const swipeThreshold = 15; // Percentage threshold to trigger slide
 
-    // If it was a tap (no significant horizontal movement), navigate to detail page
-    if (isHorizontalSwipeRef.current === null || Math.abs(swipeOffset) < 3) {
-      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
-      navigate(`/fastighet/${id}`);
-      setSwipeOffset(0);
-      setIsSwiping(false);
-      setIsHorizontalSwipe(null);
-      isHorizontalSwipeRef.current = null;
-      touchStartX.current = null;
-      touchStartY.current = null;
-      return;
-    }
+    // If any directional movement was detected, it's a swipe, not a tap
+    if (isHorizontalSwipeRef.current !== null) {
+      swipeWasPerformedRef.current = true;
 
-    if (isHorizontalSwipeRef.current && Math.abs(swipeOffset) > swipeThreshold) {
-      if (swipeOffset < 0) {
-        // Swipe left - next image or loop to first
-        setCurrentImageIndex(prev => (prev === allImages.length - 1 ? 0 : prev + 1));
-      } else if (swipeOffset > 0) {
-        // Swipe right - previous image or loop to last
-        setCurrentImageIndex(prev => (prev === 0 ? allImages.length - 1 : prev - 1));
+      if (isHorizontalSwipeRef.current && Math.abs(swipeOffset) > swipeThreshold) {
+        if (swipeOffset < 0) {
+          // Swipe left - next image or loop to first
+          setCurrentImageIndex(prev => (prev === allImages.length - 1 ? 0 : prev + 1));
+        } else {
+          // Swipe right - previous image or loop to last
+          setCurrentImageIndex(prev => (prev === 0 ? allImages.length - 1 : prev - 1));
+        }
       }
     }
 
@@ -281,7 +275,30 @@ const PropertyCard = ({
     isHorizontalSwipeRef.current = null;
     touchStartX.current = null;
     touchStartY.current = null;
-  }, [swipeOffset, allImages.length, navigate, id]);
+  }, [swipeOffset, allImages.length]);
+
+  const handleTouchCancel = useCallback(() => {
+    swipeWasPerformedRef.current = false;
+    setSwipeOffset(0);
+    setIsSwiping(false);
+    setIsHorizontalSwipe(null);
+    isHorizontalSwipeRef.current = null;
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, []);
+
+  const handleImageClick = useCallback((e: React.MouseEvent) => {
+    // If a swipe was just performed, don't navigate
+    if (swipeWasPerformedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      swipeWasPerformedRef.current = false;
+      return;
+    }
+    // Navigate to detail page on tap
+    sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+    navigate(`/fastighet/${id}`);
+  }, [navigate, id]);
 
   const goToPrevImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -628,11 +645,13 @@ const PropertyCard = ({
         {/* Layered images for smooth scrolling/swiping */}
         <div
           ref={containerRef}
-          className={`w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none ${allImages.length > 1 ? 'z-40 touch-none' : ''}`}
-          style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+          className={`w-full aspect-[4/3] sm:aspect-[16/10] relative overflow-hidden select-none ${allImages.length > 1 ? 'z-40' : ''}`}
+          style={{ WebkitUserSelect: 'none', userSelect: 'none', ...(allImages.length > 1 ? { touchAction: 'pan-y' } : {}) }}
+          onClick={allImages.length > 1 ? handleImageClick : undefined}
           onTouchStart={allImages.length > 1 ? handleTouchStart : undefined}
           onTouchMove={allImages.length > 1 ? handleTouchMove : undefined}
           onTouchEnd={allImages.length > 1 ? handleTouchEnd : undefined}
+          onTouchCancel={allImages.length > 1 ? handleTouchCancel : undefined}
         >
           {autoSlideImages ? (
             // Auto-slide mode: cycle through images
