@@ -563,39 +563,24 @@ const PropertyDetail = () => {
   if (!property) {
     property = properties.find(p => p.id === Number(id));
   }
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-lg">Laddar fastighet...</p>
-      </div>
-    </div>;
-  }
-  if (loadError || !property) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">{loadError || 'Fastighet hittades inte'}</h1>
-        <Link to="/">
-          <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
-        </Link>
-      </div>
-    </div>;
-  }
 
-  // Handle images for both database and hardcoded properties
-  const images = dbProperty ? [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) : property.images || [property1];
+  // Handle images for both database and hardcoded properties (must be before early returns for hooks)
+  const images = useMemo(() => {
+    if (dbProperty) {
+      return [getImageUrl(dbProperty.image_url), getImageUrl(dbProperty.hover_image_url), ...(dbProperty.additional_images || []).map(getImageUrl)].filter(Boolean) as string[];
+    }
+    return property?.images || [property1];
+  }, [dbProperty, property]);
 
   // Track image views
-  const trackImageView = async (imageIndex: number) => {
+  const trackImageView = useCallback(async (imageIndex: number) => {
     if (!id) return;
-
     try {
       const sessionId = sessionStorage.getItem('session_id') ||
         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
       if (!sessionStorage.getItem('session_id')) {
         sessionStorage.setItem('session_id', sessionId);
       }
-
       await supabase.from('image_views').insert({
         property_id: id,
         session_id: sessionId,
@@ -605,18 +590,19 @@ const PropertyDetail = () => {
     } catch (error) {
       console.error('Error tracking image view:', error);
     }
-  };
+  }, [id, images]);
 
-  const handlePreviousImage = () => {
+  const handlePreviousImage = useCallback(() => {
     const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
     setCurrentImageIndex(newIndex);
     trackImageView(newIndex);
-  };
-  const handleNextImage = () => {
+  }, [currentImageIndex, images.length, trackImageView]);
+
+  const handleNextImage = useCallback(() => {
     const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
     setCurrentImageIndex(newIndex);
     trackImageView(newIndex);
-  };
+  }, [currentImageIndex, images.length, trackImageView]);
 
   // ─── Swipe handlers for main gallery ───────────────────────
   useEffect(() => {
@@ -651,26 +637,26 @@ const PropertyDetail = () => {
 
   const handleGalleryTouchEnd = useCallback(() => {
     const threshold = 15;
-    if (swipeIsHorizontalRef.current !== null) {
+    if (swipeIsHorizontalRef.current === true && Math.abs(swipeOffset) > threshold) {
       swipePerformedRef.current = true;
-      if (swipeIsHorizontalRef.current && Math.abs(swipeOffset) > threshold) {
-        if (swipeOffset < 0) {
-          const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
-          setCurrentImageIndex(newIndex);
-          trackImageView(newIndex);
-        } else {
-          const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
-          setCurrentImageIndex(newIndex);
-          trackImageView(newIndex);
-        }
+      if (swipeOffset < 0) {
+        const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+        setCurrentImageIndex(newIndex);
+        trackImageView(newIndex);
+      } else {
+        const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+        setCurrentImageIndex(newIndex);
+        trackImageView(newIndex);
       }
+    } else if (swipeIsHorizontalRef.current !== null) {
+      swipePerformedRef.current = true;
     }
     setSwipeOffset(0);
     setIsSwiping(false);
     swipeIsHorizontalRef.current = null;
     swipeTouchStartX.current = null;
     swipeTouchStartY.current = null;
-  }, [swipeOffset, currentImageIndex, images.length]);
+  }, [swipeOffset, currentImageIndex, images.length, trackImageView]);
 
   const handleGalleryClick = useCallback(() => {
     if (swipePerformedRef.current) {
@@ -760,7 +746,7 @@ const PropertyDetail = () => {
     modalIsHorizontalRef.current = null;
     modalTouchStartX.current = null;
     modalTouchStartY.current = null;
-  }, [modalSwipeOffset]);
+  }, [modalSwipeOffset, handleNextImage, handlePreviousImage]);
 
   // ─── Mouse drag handlers for image modal ───────────────────
   const handleModalMouseDown = useCallback((e: React.MouseEvent) => {
@@ -796,6 +782,25 @@ const PropertyDetail = () => {
     isDraggingModal.current = false;
     handleModalTouchEnd();
   }, [handleModalTouchEnd]);
+
+  // ─── Early returns (AFTER all hooks) ───────────────────────
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-lg">Laddar fastighet...</p>
+      </div>
+    </div>;
+  }
+  if (loadError || !property) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">{loadError || 'Fastighet hittades inte'}</h1>
+        <Link to="/">
+          <Button className="bg-hero-gradient hover:scale-105 transition-transform text-white">Tillbaka till startsidan</Button>
+        </Link>
+      </div>
+    </div>;
+  }
 
   const handleDownloadViewing = (date: string, time: string) => {
     // Parse datum och tid för att skapa en riktig Date
@@ -1007,11 +1012,11 @@ const PropertyDetail = () => {
               ))}
             </div>
 
-            {/* Navigation Buttons */}
-            <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
+            {/* Navigation Buttons - hidden on mobile, swipe handles it */}
+            <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 hidden sm:opacity-0 sm:flex group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={(e) => { e.stopPropagation(); handlePreviousImage(); }}>
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handleNextImage}>
+            <Button variant="secondary" size="icon" className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 hidden sm:opacity-0 sm:flex group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={(e) => { e.stopPropagation(); handleNextImage(); }}>
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
 
@@ -1029,7 +1034,8 @@ const PropertyDetail = () => {
                   ? 'bg-primary hover:bg-primary/90'
                   : 'bg-white/90 hover:bg-white'
                   }`}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   if (!id) return;
                   const comparing = isInComparison(String(id));
                   if (!comparing && !canAddMore) {
@@ -1067,6 +1073,21 @@ const PropertyDetail = () => {
                   <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                 )}
               </Button>
+            )}
+
+            {/* Dots indicator for mobile */}
+            {images.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 sm:hidden">
+                {images.slice(0, 8).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentImageIndex ? 'bg-white scale-125 shadow' : 'bg-white/50'}`}
+                  />
+                ))}
+                {images.length > 8 && (
+                  <span className="text-white/70 text-xs ml-1">+{images.length - 8}</span>
+                )}
+              </div>
             )}
           </div>
 
