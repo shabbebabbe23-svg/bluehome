@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { downloadICS } from "@/lib/icsGenerator";
 import { toast } from "sonner";
 import { usePropertyViewTracking } from "@/hooks/usePropertyViewTracking";
@@ -53,6 +53,25 @@ const PropertyDetail = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  // Swipe/drag state for main gallery
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const swipeTouchStartX = useRef<number | null>(null);
+  const swipeTouchStartY = useRef<number | null>(null);
+  const swipeIsHorizontalRef = useRef<boolean | null>(null);
+  const swipePerformedRef = useRef(false);
+  const galleryContainerRef = useRef<HTMLDivElement>(null);
+  const isDraggingGallery = useRef(false);
+
+  // Swipe/drag state for image modal
+  const [modalSwipeOffset, setModalSwipeOffset] = useState(0);
+  const [modalIsSwiping, setModalIsSwiping] = useState(false);
+  const modalTouchStartX = useRef<number | null>(null);
+  const modalTouchStartY = useRef<number | null>(null);
+  const modalIsHorizontalRef = useRef<boolean | null>(null);
+  const modalContainerRef = useRef<HTMLDivElement>(null);
+  const isDraggingModal = useRef(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [isFloorplanModalOpen, setIsFloorplanModalOpen] = useState(false);
   const [currentFloorplanIndex, setCurrentFloorplanIndex] = useState(0);
@@ -598,6 +617,186 @@ const PropertyDetail = () => {
     setCurrentImageIndex(newIndex);
     trackImageView(newIndex);
   };
+
+  // ─── Swipe handlers for main gallery ───────────────────────
+  useEffect(() => {
+    const el = galleryContainerRef.current;
+    if (!el || images.length <= 1) return;
+    const handler = (e: TouchEvent) => {
+      if (swipeIsHorizontalRef.current === true) e.preventDefault();
+    };
+    el.addEventListener('touchmove', handler, { passive: false });
+    return () => el.removeEventListener('touchmove', handler);
+  }, [images.length]);
+
+  const handleGalleryTouchStart = useCallback((e: React.TouchEvent) => {
+    swipeTouchStartX.current = e.touches[0].clientX;
+    swipeTouchStartY.current = e.touches[0].clientY;
+    swipeIsHorizontalRef.current = null;
+    swipePerformedRef.current = false;
+    setIsSwiping(true);
+  }, []);
+
+  const handleGalleryTouchMove = useCallback((e: React.TouchEvent) => {
+    if (swipeTouchStartX.current === null || swipeTouchStartY.current === null || !galleryContainerRef.current) return;
+    const diffX = e.touches[0].clientX - swipeTouchStartX.current;
+    const diffY = e.touches[0].clientY - swipeTouchStartY.current;
+    if (swipeIsHorizontalRef.current === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+      swipeIsHorizontalRef.current = Math.abs(diffX) > Math.abs(diffY);
+    }
+    if (swipeIsHorizontalRef.current === false) return;
+    const w = galleryContainerRef.current.offsetWidth;
+    setSwipeOffset((diffX / w) * 100);
+  }, []);
+
+  const handleGalleryTouchEnd = useCallback(() => {
+    const threshold = 15;
+    if (swipeIsHorizontalRef.current !== null) {
+      swipePerformedRef.current = true;
+      if (swipeIsHorizontalRef.current && Math.abs(swipeOffset) > threshold) {
+        if (swipeOffset < 0) {
+          const newIndex = currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+          setCurrentImageIndex(newIndex);
+          trackImageView(newIndex);
+        } else {
+          const newIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+          setCurrentImageIndex(newIndex);
+          trackImageView(newIndex);
+        }
+      }
+    }
+    setSwipeOffset(0);
+    setIsSwiping(false);
+    swipeIsHorizontalRef.current = null;
+    swipeTouchStartX.current = null;
+    swipeTouchStartY.current = null;
+  }, [swipeOffset, currentImageIndex, images.length]);
+
+  const handleGalleryClick = useCallback(() => {
+    if (swipePerformedRef.current) {
+      swipePerformedRef.current = false;
+      return;
+    }
+    setIsImageModalOpen(true);
+  }, []);
+
+  // ─── Mouse drag handlers for main gallery ──────────────────
+  const handleGalleryMouseDown = useCallback((e: React.MouseEvent) => {
+    if (images.length <= 1) return;
+    e.preventDefault();
+    isDraggingGallery.current = true;
+    swipeTouchStartX.current = e.clientX;
+    swipeTouchStartY.current = e.clientY;
+    swipeIsHorizontalRef.current = null;
+    swipePerformedRef.current = false;
+    setIsSwiping(true);
+  }, [images.length]);
+
+  const handleGalleryMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDraggingGallery.current || swipeTouchStartX.current === null || !galleryContainerRef.current) return;
+    const diffX = e.clientX - swipeTouchStartX.current;
+    const diffY = e.clientY - (swipeTouchStartY.current || 0);
+    if (swipeIsHorizontalRef.current === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
+      swipeIsHorizontalRef.current = Math.abs(diffX) > Math.abs(diffY);
+    }
+    if (swipeIsHorizontalRef.current === false) return;
+    const w = galleryContainerRef.current.offsetWidth;
+    setSwipeOffset((diffX / w) * 100);
+  }, []);
+
+  const handleGalleryMouseUp = useCallback(() => {
+    if (!isDraggingGallery.current) return;
+    isDraggingGallery.current = false;
+    handleGalleryTouchEnd();
+  }, [handleGalleryTouchEnd]);
+
+  const handleGalleryMouseLeave = useCallback(() => {
+    if (!isDraggingGallery.current) return;
+    isDraggingGallery.current = false;
+    handleGalleryTouchEnd();
+  }, [handleGalleryTouchEnd]);
+
+  // ─── Swipe handlers for image modal ────────────────────────
+  useEffect(() => {
+    const el = modalContainerRef.current;
+    if (!el || images.length <= 1) return;
+    const handler = (e: TouchEvent) => {
+      if (modalIsHorizontalRef.current === true) e.preventDefault();
+    };
+    el.addEventListener('touchmove', handler, { passive: false });
+    return () => el.removeEventListener('touchmove', handler);
+  }, [isImageModalOpen, images.length]);
+
+  const handleModalTouchStart = useCallback((e: React.TouchEvent) => {
+    modalTouchStartX.current = e.touches[0].clientX;
+    modalTouchStartY.current = e.touches[0].clientY;
+    modalIsHorizontalRef.current = null;
+    setModalIsSwiping(true);
+  }, []);
+
+  const handleModalTouchMove = useCallback((e: React.TouchEvent) => {
+    if (modalTouchStartX.current === null || modalTouchStartY.current === null || !modalContainerRef.current) return;
+    const diffX = e.touches[0].clientX - modalTouchStartX.current;
+    const diffY = e.touches[0].clientY - modalTouchStartY.current;
+    if (modalIsHorizontalRef.current === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+      modalIsHorizontalRef.current = Math.abs(diffX) > Math.abs(diffY);
+    }
+    if (modalIsHorizontalRef.current === false) return;
+    const w = modalContainerRef.current.offsetWidth;
+    setModalSwipeOffset((diffX / w) * 100);
+  }, []);
+
+  const handleModalTouchEnd = useCallback(() => {
+    const threshold = 15;
+    if (modalIsHorizontalRef.current && Math.abs(modalSwipeOffset) > threshold) {
+      if (modalSwipeOffset < 0) {
+        handleNextImage();
+      } else {
+        handlePreviousImage();
+      }
+    }
+    setModalSwipeOffset(0);
+    setModalIsSwiping(false);
+    modalIsHorizontalRef.current = null;
+    modalTouchStartX.current = null;
+    modalTouchStartY.current = null;
+  }, [modalSwipeOffset]);
+
+  // ─── Mouse drag handlers for image modal ───────────────────
+  const handleModalMouseDown = useCallback((e: React.MouseEvent) => {
+    if (images.length <= 1) return;
+    e.preventDefault();
+    isDraggingModal.current = true;
+    modalTouchStartX.current = e.clientX;
+    modalTouchStartY.current = e.clientY;
+    modalIsHorizontalRef.current = null;
+    setModalIsSwiping(true);
+  }, [images.length]);
+
+  const handleModalMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDraggingModal.current || modalTouchStartX.current === null || !modalContainerRef.current) return;
+    const diffX = e.clientX - modalTouchStartX.current;
+    const diffY = e.clientY - (modalTouchStartY.current || 0);
+    if (modalIsHorizontalRef.current === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
+      modalIsHorizontalRef.current = Math.abs(diffX) > Math.abs(diffY);
+    }
+    if (modalIsHorizontalRef.current === false) return;
+    const w = modalContainerRef.current.offsetWidth;
+    setModalSwipeOffset((diffX / w) * 100);
+  }, []);
+
+  const handleModalMouseUp = useCallback(() => {
+    if (!isDraggingModal.current) return;
+    isDraggingModal.current = false;
+    handleModalTouchEnd();
+  }, [handleModalTouchEnd]);
+
+  const handleModalMouseLeave = useCallback(() => {
+    if (!isDraggingModal.current) return;
+    isDraggingModal.current = false;
+    handleModalTouchEnd();
+  }, [handleModalTouchEnd]);
+
   const handleDownloadViewing = (date: string, time: string) => {
     // Parse datum och tid för att skapa en riktig Date
     const [day, month] = date.split(' ').slice(1, 3);
@@ -775,8 +974,38 @@ const PropertyDetail = () => {
       {/* Intermediate Contained Gallery */}
       <div className="max-w-[1200px] mx-auto w-full">
         <Card className="overflow-hidden">
-          <div className="relative h-[250px] sm:h-[400px] md:h-[500px] lg:h-[550px] group" style={{ width: '100%' }}>
-            <img src={images[currentImageIndex]} alt={property.title} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity mx-auto" onClick={() => setIsImageModalOpen(true)} />
+          <div
+            ref={galleryContainerRef}
+            className="relative h-[250px] sm:h-[400px] md:h-[500px] lg:h-[550px] group overflow-hidden select-none"
+            style={{ width: '100%', touchAction: images.length > 1 ? 'pan-y' : undefined, WebkitUserSelect: 'none', userSelect: 'none', cursor: images.length > 1 ? 'grab' : 'pointer' }}
+            onClick={handleGalleryClick}
+            onTouchStart={images.length > 1 ? handleGalleryTouchStart : undefined}
+            onTouchMove={images.length > 1 ? handleGalleryTouchMove : undefined}
+            onTouchEnd={images.length > 1 ? handleGalleryTouchEnd : undefined}
+            onMouseDown={images.length > 1 ? handleGalleryMouseDown : undefined}
+            onMouseMove={images.length > 1 ? handleGalleryMouseMove : undefined}
+            onMouseUp={images.length > 1 ? handleGalleryMouseUp : undefined}
+            onMouseLeave={images.length > 1 ? handleGalleryMouseLeave : undefined}
+          >
+            <div
+              className="flex h-full"
+              style={{
+                transform: `translateX(calc(-${currentImageIndex * 100}% + ${swipeOffset}%))`,
+                transition: isSwiping ? 'none' : 'transform 0.45s cubic-bezier(.22,1,.36,1)',
+              }}
+            >
+              {images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`${property.title} ${idx + 1}`}
+                  className="w-full h-full object-cover flex-shrink-0 cursor-pointer"
+                  style={{ minWidth: '100%' }}
+                  draggable={false}
+                  loading={idx === 0 ? undefined : 'lazy'}
+                />
+              ))}
+            </div>
 
             {/* Navigation Buttons */}
             <Button variant="secondary" size="icon" className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 text-foreground hover:bg-hero-gradient hover:text-white hover:scale-105 h-8 w-8 sm:h-10 sm:w-10 border border-border" onClick={handlePreviousImage}>
@@ -1563,8 +1792,27 @@ const PropertyDetail = () => {
     {/* Image Modal */}
     <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
-        <div className="relative w-full h-full flex items-center justify-center bg-black/90">
-          <img src={images[currentImageIndex]} alt={property.title} className="max-w-full max-h-[90vh] object-contain" />
+        <div
+          ref={modalContainerRef}
+          className="relative w-full h-full flex items-center justify-center bg-black/90 select-none"
+          style={{ touchAction: 'pan-y', WebkitUserSelect: 'none', userSelect: 'none', cursor: images.length > 1 ? 'grab' : 'default' }}
+          onTouchStart={images.length > 1 ? handleModalTouchStart : undefined}
+          onTouchMove={images.length > 1 ? handleModalTouchMove : undefined}
+          onTouchEnd={images.length > 1 ? handleModalTouchEnd : undefined}
+          onMouseDown={images.length > 1 ? handleModalMouseDown : undefined}
+          onMouseMove={images.length > 1 ? handleModalMouseMove : undefined}
+          onMouseUp={images.length > 1 ? handleModalMouseUp : undefined}
+          onMouseLeave={images.length > 1 ? handleModalMouseLeave : undefined}
+        >
+          <div
+            className="flex items-center h-full w-full"
+            style={{
+              transform: `translateX(${modalSwipeOffset}%)`,
+              transition: modalIsSwiping ? 'none' : 'transform 0.35s cubic-bezier(.22,1,.36,1)',
+            }}
+          >
+            <img src={images[currentImageIndex]} alt={property.title} className="max-w-full max-h-[90vh] object-contain mx-auto" draggable={false} />
+          </div>
 
           {/* Navigation Buttons */}
           {images.length > 1 && <>
